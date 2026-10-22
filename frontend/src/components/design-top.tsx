@@ -1,4 +1,5 @@
 "use client";
+import { DashboardSelect } from "./ui/dashboard-select";
 const imgArrowDown = "/design-top/03efc.svg";
 const imgArrowUp = "/design-top/9851c.svg";
 const imgBell = "/design-top/7872e.svg";
@@ -287,7 +288,7 @@ export function DesignTop({
               data-node-id="10:12503"
               style={{ fontVariationSettings: '"wdth" 100' }}
             >
-              <select
+              <DashboardSelect
                 aria-label="Proceso electoral de referencia"
                 value={year}
                 onChange={(e) => onYear(Number(e.target.value))}
@@ -297,7 +298,7 @@ export function DesignTop({
                     Proceso Electoral {e.year}
                   </option>
                 ))}
-              </select>
+              </DashboardSelect>
             </p>
             <div
               className="relative shrink-0 size-[15px]"

@@ -45,6 +45,12 @@ export function Chart({
       textStyle: { fontFamily: "inherit", color: "#596D8D" },
       aria: { enabled: true },
       ...option,
+      tooltip: {
+        ...(option.tooltip as object),
+        confine: true,
+        extraCssText:
+          "max-width:100%;white-space:normal;overflow-wrap:anywhere;box-sizing:border-box;border-radius:9px;box-shadow:0 4px 16px #243e581a;",
+      },
     });
     const observer = new ResizeObserver(() => chart.resize());
     observer.observe(ref.current);

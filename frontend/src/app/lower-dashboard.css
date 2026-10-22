@@ -134,7 +134,7 @@
 .lower-trends .lower-card-heading {
   gap: 8px;
 }
-.lower-trends .lower-card-heading select {
+.lower-trends .lower-card-heading :is(select, .dashboard-select-trigger) {
   font-size: 9px;
   padding: 6px 13px 6px 7px;
   border: 1px solid #e7ecf3;
@@ -224,7 +224,7 @@
 .lower-scenarios .lower-card-heading {
   gap: 9px;
 }
-.lower-scenarios > select {
+.lower-scenarios > :is(select, .dashboard-select-trigger) {
   width: 100%;
   min-width: 0;
   min-height: 31px;
@@ -309,7 +309,7 @@
   margin: 22px 0;
   font-size: 13px;
 }
-.territory-filter-dialog select {
+.territory-filter-dialog :is(select, .dashboard-select-trigger) {
   width: 100%;
   min-width: 0;
 }
@@ -333,7 +333,7 @@
   .lower-dashboard > .insight-card {
     min-height: 260px;
   }
-  .lower-trends .lower-card-heading select {
+  .lower-trends .lower-card-heading :is(select, .dashboard-select-trigger) {
     max-width: 120px;
   }
   .lower-ranking li > button {

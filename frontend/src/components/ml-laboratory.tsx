@@ -1,4 +1,5 @@
 "use client";
+import { DashboardSelect } from "./ui/dashboard-select";
 
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -200,7 +201,7 @@ function Laboratory({
       <div className="ml-toolbar">
         <label>
           Modelo para explorar
-          <select
+          <DashboardSelect
             aria-label="Modelo de machine learning"
             value={modelName}
             onChange={(e) => setModelName(e.target.value)}
@@ -215,7 +216,7 @@ function Laboratory({
                     : ""}
               </option>
             ))}
-          </select>
+          </DashboardSelect>
         </label>
         <Button variant="outline" onClick={exportForecasts}>
           <Download size={15} /> Exportar 32 pronósticos

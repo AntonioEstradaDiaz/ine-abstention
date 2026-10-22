@@ -51,7 +51,7 @@
 .electoral-map-panel .map-period-picker > span {
   display: none;
 }
-.electoral-map-panel .map-period-picker select {
+.electoral-map-panel .map-period-picker :is(select, .dashboard-select-trigger) {
   min-height: 28px;
   width: 150px;
   font-size: 10px;
@@ -301,7 +301,7 @@
   display: flex;
   align-items: center;
 }
-.electoral-map-panel .map-period-picker select {
+.electoral-map-panel .map-period-picker :is(select, .dashboard-select-trigger) {
   width: 151px;
   height: 34px;
   min-height: 34px;
@@ -339,7 +339,7 @@
   font-weight: 600;
   box-shadow: none;
 }
-.electoral-map-panel .map-period-picker select:focus-visible,
+.electoral-map-panel .map-period-picker :is(select, .dashboard-select-trigger):focus-visible,
 .electoral-map-panel .segmented button:focus-visible {
   outline: 2px solid #c00063;
   outline-offset: 2px;
@@ -376,7 +376,7 @@
     flex: 1;
     padding: 7px 8px;
   }
-  .electoral-map-panel .map-period-picker select {
+  .electoral-map-panel .map-period-picker :is(select, .dashboard-select-trigger) {
     width: 140px;
     font-size: 10px;
   }
@@ -395,7 +395,7 @@
   .electoral-map-panel .map-period-picker {
     width: 100%;
   }
-  .electoral-map-panel .map-period-picker select {
+  .electoral-map-panel .map-period-picker :is(select, .dashboard-select-trigger) {
     width: 100%;
   }
 }

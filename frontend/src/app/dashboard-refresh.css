@@ -150,7 +150,7 @@ main {
 .global-filters label {
   min-width: 0;
 }
-.global-filters select {
+.global-filters :is(select, .dashboard-select-trigger) {
   background: white;
   min-width: 0;
 }
@@ -159,7 +159,7 @@ main {
   color: var(--muted);
 }
 input,
-select {
+:is(select, .dashboard-select-trigger) {
   background: #fff;
   border-color: var(--border);
   color: var(--text);
@@ -274,7 +274,7 @@ select {
   color: var(--muted);
   font-size: 10px;
 }
-.map-period-picker select {
+.map-period-picker :is(select, .dashboard-select-trigger) {
   background: white;
   border-color: var(--border);
   color: var(--text);
@@ -855,7 +855,7 @@ th {
     width: 100%;
     max-width: none;
   }
-  .global-filters select {
+  .global-filters :is(select, .dashboard-select-trigger) {
     width: 100%;
     max-width: 100%;
     font-size: 12px;
@@ -897,7 +897,7 @@ th {
     flex-wrap: wrap;
     gap: 9px;
   }
-  .map-period-picker select {
+  .map-period-picker :is(select, .dashboard-select-trigger) {
     width: 165px;
   }
   .electoral-map-panel .electoral-map-context {
@@ -1075,7 +1075,7 @@ th {
 .scenario-placeholder {
   background: #fff;
 }
-.ml-toolbar select,
+.ml-toolbar :is(select, .dashboard-select-trigger),
 .ml-sensitivity input[type="number"] {
   background: white;
   color: var(--text);
@@ -1147,7 +1147,7 @@ th {
     gap: 14px;
   }
 }
-.app-shell select,
+.app-shell :is(select, .dashboard-select-trigger),
 .app-shell input:not([type="range"]) {
   background: #fff;
   color: var(--text);

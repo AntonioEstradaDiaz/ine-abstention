@@ -1,4 +1,5 @@
 "use client";
+import { DashboardSelect } from "./ui/dashboard-select";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import * as Dialog from "@radix-ui/react-dialog";
@@ -218,7 +219,7 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
                 </Dialog.Description>
                 <label>
                   <span>Territorio seleccionado</span>
-                  <select
+                  <DashboardSelect
                     aria-label="Territorio seleccionado"
                     value={selected}
                     disabled={!items?.length}
@@ -236,7 +237,7 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
                     ) : (
                       <option value="17">Consultando estados…</option>
                     )}
-                  </select>
+                  </DashboardSelect>
                 </label>
                 <p className="muted small">
                   Municipios y secciones requieren homologación histórica antes
@@ -272,7 +273,7 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
                     <div className="electoral-map-settings">
                       <label className="map-period-picker">
                         <span>Referencia histórica</span>
-                        <select
+                        <DashboardSelect
                           aria-label="Año histórico"
                           value={year}
                           onChange={(e) => setYear(Number(e.target.value))}
@@ -286,7 +287,7 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
                                 : "Presidencial"}
                             </option>
                           )) ?? <option value="2021">2021</option>}
-                        </select>
+                        </DashboardSelect>
                       </label>
                       <div
                         className="segmented"

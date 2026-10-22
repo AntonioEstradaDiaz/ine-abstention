@@ -1,4 +1,5 @@
 "use client";
+import { DashboardSelect } from "./ui/dashboard-select";
 import { useState } from "react";
 import { useQueries } from "@tanstack/react-query";
 import {
@@ -146,14 +147,14 @@ export function DashboardInsights({
             <h2 id="lower-trend-title">Tendencia de participación</h2>
             <p>Comparativa por proceso electoral</p>
           </div>
-          <select
+          <DashboardSelect
             aria-label="Elecciones de la tendencia"
             value={type}
             onChange={(e) => setType(e.target.value as ElectionType)}
           >
             <option value="midterm">Intermedias</option>
             <option value="presidential">Presidenciales</option>
-          </select>
+          </DashboardSelect>
         </header>
         <Status
           loading={loading}
@@ -313,7 +314,7 @@ export function DashboardInsights({
             </p>
           </div>
         </header>
-        <select
+        <DashboardSelect
           aria-label="Supuesto de participación"
           value={change}
           onChange={(e) => setChange(Number(e.target.value))}
@@ -321,7 +322,7 @@ export function DashboardInsights({
           <option value={3}>Supuesto: +3 pp de participación</option>
           <option value={5.4}>Supuesto: +5.4 pp de participación</option>
           <option value={-3}>Supuesto: −3 pp de participación</option>
-        </select>
+        </DashboardSelect>
         <div className="lower-scenario-pair">
           <div>
             <span>Continuidad</span>

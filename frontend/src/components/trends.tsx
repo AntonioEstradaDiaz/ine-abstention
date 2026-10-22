@@ -1,4 +1,5 @@
 "use client";
+import { DashboardSelect } from "./ui/dashboard-select";
 import { useMemo, useState } from "react";
 import { useQueries } from "@tanstack/react-query";
 import { X } from "lucide-react";
@@ -118,14 +119,14 @@ export function Trends({
           </div>
           <label className="inline-label">
             Tipo de elección
-            <select
+            <DashboardSelect
               aria-label="Tipo de elección"
               value={type}
               onChange={(e) => setType(e.target.value as ElectionType)}
             >
               <option value="midterm">Intermedia</option>
               <option value="presidential">Presidencial</option>
-            </select>
+            </DashboardSelect>
           </label>
         </div>
         <div className="trend-controls">
@@ -145,7 +146,7 @@ export function Trends({
           </div>
           <label className="inline-label">
             Comparar con
-            <select
+            <DashboardSelect
               aria-label="Añadir estado a la comparación"
               value=""
               disabled={codes.length >= 3}
@@ -169,7 +170,7 @@ export function Trends({
                     {s.name}
                   </option>
                 ))}
-            </select>
+            </DashboardSelect>
           </label>
         </div>
         <div className="comparison-chips">

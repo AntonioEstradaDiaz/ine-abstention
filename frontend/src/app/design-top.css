@@ -797,7 +797,9 @@ button {
 .design-top [data-name="Sección"] {
   flex-shrink: 0;
 }
-.design-top [data-name="Selector de proceso electoral"] select {
+.design-top
+  [data-name="Selector de proceso electoral"]
+  :is(select, .dashboard-select-trigger) {
   padding: 0;
   border: 0;
   background: transparent;
@@ -890,7 +892,9 @@ button {
   min-height: 0;
   border-radius: 0;
 }
-.design-top [data-name="Selector de proceso electoral"] select {
+.design-top
+  [data-name="Selector de proceso electoral"]
+  :is(select, .dashboard-select-trigger) {
   appearance: none;
 }
 .design-top [data-name="Buscar territorio"] {
@@ -912,4 +916,128 @@ button {
 }
 .design-top [data-name="Sección"]:not([aria-current="page"]) p {
   color: #101016;
+}
+
+/* Equal metric cards: title, value, reference and change use shared rows. */
+.design-top [data-name="Indicadores clave"] {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 12px;
+  width: 100%;
+}
+.design-top
+  [data-name="Indicadores clave"]
+  > [data-name="Indicador electoral"] {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr);
+  align-items: start;
+  gap: 14px;
+  height: auto;
+  min-height: 176px;
+  min-width: 0;
+  padding: 16px;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+.design-top
+  [data-name="Indicador electoral"]
+  > [data-name="Símbolo del indicador"] {
+  width: 48px;
+  height: 48px;
+  margin: 0;
+  border-radius: 14px;
+}
+.design-top
+  [data-name="Indicador electoral"]
+  > [data-name="Datos del indicador"] {
+  display: grid;
+  grid-template-rows: 48px 30px 18px 22px;
+  gap: 4px;
+  width: 100%;
+  height: auto;
+  min-width: 0;
+  align-items: center;
+}
+.design-top [data-name="Datos del indicador"] > p {
+  position: static;
+  inset: auto;
+  width: auto;
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: normal;
+  margin: 0;
+}
+.design-top [data-name="Datos del indicador"] > p:first-child {
+  align-self: start;
+  font-size: 13px;
+  line-height: 16px;
+  font-weight: 400;
+}
+.design-top [data-name="Datos del indicador"] > p:nth-child(2) {
+  font-size: 25px;
+  line-height: 30px;
+  font-weight: 700;
+  padding-right: 54px;
+  white-space: nowrap;
+}
+.design-top [data-name="Datos del indicador"] > p:nth-child(3) {
+  font-size: 12px;
+  line-height: 18px;
+  padding-right: 54px;
+}
+.design-top [data-name="Datos del indicador"] > [data-name="Variación"] {
+  position: static;
+  inset: auto;
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  overflow: visible;
+  min-width: 0;
+  width: 100%;
+  height: auto;
+}
+.design-top [data-name="Datos del indicador"] > [data-name="Variación"] > p {
+  position: static;
+  font-size: 12px;
+  line-height: 18px;
+  white-space: normal;
+  min-width: 0;
+  flex-shrink: 1;
+  overflow-wrap: break-word;
+}
+.design-top [data-name="Indicador electoral"] > [data-name="Evolución"] {
+  position: absolute;
+  right: 16px;
+  bottom: 46px;
+  width: 48px;
+  height: 36px;
+  opacity: 0.85;
+  pointer-events: none;
+}
+@media (max-width: 1199px) {
+  .design-top [data-name="Indicadores clave"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 600px) {
+  .design-top [data-name="Indicadores clave"] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .design-top
+    [data-name="Indicadores clave"]
+    > [data-name="Indicador electoral"] {
+    min-height: 176px;
+  }
+}
+
+.design-top [data-name="Indicador electoral"] > [data-name="Evolución"] {
+  gap: 2px;
+}
+.design-top [data-name="Evolución"] > [data-name="Barra de tendencia"] {
+  flex: 1;
+  min-width: 0;
+  width: auto;
+  max-height: 100%;
 }

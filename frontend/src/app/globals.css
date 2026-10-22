@@ -26,13 +26,13 @@ body {
 }
 button,
 input,
-select {
+:is(select, .dashboard-select-trigger) {
   font: inherit;
 }
 button,
 a,
 input,
-select {
+:is(select, .dashboard-select-trigger) {
   -webkit-tap-highlight-color: transparent;
 }
 button,
@@ -43,7 +43,7 @@ button {
   cursor: pointer;
 }
 button:disabled,
-select:disabled {
+:is(select, .dashboard-select-trigger):disabled {
   cursor: not-allowed;
   opacity: 0.5;
 }
@@ -55,7 +55,7 @@ button {
   color: inherit;
 }
 input,
-select {
+:is(select, .dashboard-select-trigger) {
   color: var(--text);
   background: var(--bg);
   border: 1px solid var(--border);
@@ -63,12 +63,12 @@ select {
   min-height: 39px;
   padding: 8px 11px;
 }
-select {
+:is(select, .dashboard-select-trigger) {
   padding-right: 30px;
   max-width: 100%;
 }
 input:focus-visible,
-select:focus-visible,
+:is(select, .dashboard-select-trigger):focus-visible,
 button:focus-visible,
 a:focus-visible,
 [tabindex]:focus-visible {
@@ -375,7 +375,7 @@ main {
   align-items: center;
   gap: 6px;
 }
-.global-filters select {
+.global-filters :is(select, .dashboard-select-trigger) {
   background: var(--surface);
   font-size: 12px;
   width: 100%;
@@ -513,7 +513,7 @@ main {
   color: var(--muted);
   font-size: 10px;
 }
-.inline-label select {
+.inline-label :is(select, .dashboard-select-trigger) {
   font-size: 11px;
   min-height: 32px;
   padding: 5px 26px 5px 8px;
@@ -2060,7 +2060,7 @@ tbody tr:last-child td {
   .global-filters label > span {
     font-size: 9px;
   }
-  .global-filters select {
+  .global-filters :is(select, .dashboard-select-trigger) {
     font-size: 10px;
     padding-left: 8px;
     min-height: 38px;
@@ -2145,7 +2145,7 @@ tbody tr:last-child td {
   .inline-label {
     font-size: 9px;
   }
-  .inline-label select {
+  .inline-label :is(select, .dashboard-select-trigger) {
     font-size: 10px;
   }
   .map-wrap {
@@ -2245,7 +2245,7 @@ tbody tr:last-child td {
     width: 100%;
     justify-content: space-between;
   }
-  .trend-controls .inline-label select {
+  .trend-controls .inline-label :is(select, .dashboard-select-trigger) {
     max-width: 210px;
   }
   .comparison-chips {
@@ -2453,7 +2453,7 @@ tbody tr:last-child td {
   flex: 1;
   max-width: 450px;
 }
-.ml-toolbar select,
+.ml-toolbar :is(select, .dashboard-select-trigger),
 .ml-sensitivity input[type="number"] {
   padding: 12px 14px;
   border: 1px solid var(--border);
@@ -2655,7 +2655,7 @@ tbody tr:last-child td {
   letter-spacing: 0.4px;
   color: #92a7c8;
 }
-.map-period-picker select {
+.map-period-picker :is(select, .dashboard-select-trigger) {
   padding: 12px 15px;
   width: 225px;
   min-height: 45px;
@@ -3052,7 +3052,7 @@ tbody tr:last-child td {
     width: 100%;
     gap: 10px;
   }
-  .map-period-picker select {
+  .map-period-picker :is(select, .dashboard-select-trigger) {
     width: 180px;
     padding: 10px;
     font-size: 12px;
