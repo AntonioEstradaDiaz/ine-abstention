@@ -1,0 +1,24 @@
+{
+  "verified_at": "2026-10-22T05:58:12.5319600Z",
+  "frontend_url": "http://127.0.0.1:3000",
+  "backend_url": "http://127.0.0.1:8001",
+  "mode": "next start (production webpack build)",
+  "build_id": "UCPqlj-lMHY24wVXg-FKM",
+  "playwright_stats": {
+    "startTime": "2026-10-22T05:56:15.624Z",
+    "duration": 26105.985,
+    "expected": 6,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "backend_report": "frontend-backend-demo.json",
+  "geometry_sha256_verified": "170c3ea5ff472f08ece97970dc90ad4ba8c6f503e33859655f315091c105cc91",
+  "geometry_features": 32,
+  "lock_sha256": "83945901678ba454b68bb893d207d22c372b8dff2246f9daa374d850f37d6798",
+  "screenshots": [
+    "screenshots/dashboard.png",
+    "screenshots/scenario.png",
+    "screenshots/mobile.png"
+  ]
+}

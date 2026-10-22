@@ -1,0 +1,51 @@
+{
+  "uid": 1000,
+  "python": "3.12.15",
+  "platform": "Linux",
+  "env_file_present": false,
+  "migration_url_present": false,
+  "rows": {
+    "data_sources": 6,
+    "elections": 6,
+    "territories": 14971,
+    "participation_records": 14971,
+    "demographic_participation": 139653,
+    "model_versions": 6,
+    "forecast_runs": 1,
+    "territorial_predictions": 32
+  },
+  "database_role": "ine_api",
+  "superuser": false,
+  "bypass_rls": false,
+  "postgis_version": "3.4 USE_GEOS=1 USE_PROJ=1 USE_STATS=1",
+  "rls": {
+    "data_sources": true,
+    "elections": true,
+    "territories": true,
+    "participation_records": true,
+    "demographic_participation": true,
+    "ingestion_runs": true,
+    "model_versions": true,
+    "forecast_runs": true,
+    "territorial_predictions": true,
+    "simulation_runs": true
+  },
+  "write_privileges": {
+    "participation_records": {
+      "INSERT": false,
+      "UPDATE": false,
+      "DELETE": false
+    },
+    "territorial_predictions": {
+      "INSERT": false,
+      "UPDATE": false,
+      "DELETE": false
+    },
+    "simulation_runs": {
+      "INSERT": true,
+      "UPDATE": false,
+      "DELETE": false
+    }
+  },
+  "restored_sha256": "c8ffb954d34f1a455a628d1dc811f1557379722cc77625dbea0a4e789398553e"
+}

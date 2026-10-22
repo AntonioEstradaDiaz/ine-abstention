@@ -1,0 +1,16 @@
+.git
+.venv
+.env
+.env.*
+docs
+notebooks
+tests
+tmp
+.agents
+.codex
+__pycache__
+.pytest_cache
+.ruff_cache
+data
+artifacts
+frontend

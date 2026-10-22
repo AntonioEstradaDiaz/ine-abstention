@@ -1,0 +1,3112 @@
+{
+  "continuity": {
+    "id": "1cddb849b9e4a06786364fc3b977dd76d8f71bb4589a7e4907169563d83b4a3f",
+    "created_at": "2026-10-22T03:23:37.499273Z",
+    "result": {
+      "engine_version": "participation-absolute-shift-v1",
+      "implementation_sha256": "2ddf0c7456df8515c645c5f1817aef5404063fb1c7c11715ee4651706bf8abb3",
+      "forecast": {
+        "id": "e63b667cf09b747f7de8",
+        "model_version_id": 1,
+        "target_year": 2027,
+        "as_of_year": 2024,
+        "election_type": "midterm",
+        "fingerprint": "e63b667cf09b747f7de8dc71c689f9c63f126b5b069a2f2a3027ccebd90d9b33",
+        "calibration": {
+          "risk": {
+            "method": "historical_equal_state_election_terciles",
+            "thresholds": [
+              0.4812961765326275,
+              0.5644145998767056
+            ],
+            "boundary_rule": "low < t1; t1 <= medium < t2; high >= t2",
+            "interpretation": "relative historical abstention; not an official INE risk standard",
+            "reference_rows": 96,
+            "quantile_method": "inverse_empirical_cdf_ceiling_rank",
+            "reference_years": [
+              2009,
+              2015,
+              2021
+            ]
+          },
+          "version": "historical-terciles-empirical-errors-v1",
+          "as_of_year": 2024,
+          "fingerprint": "85208e3a99a33c935758cf0a3bbd62611c969943633c411e81a5c39b531b2ce7",
+          "uncertainty": {
+            "method": "same_election_type_absolute_out_of_time_errors",
+            "radius": 0.14368856461187757,
+            "support": "limited",
+            "limitations": [
+              "States share election shocks; rows are not independent calibration samples.",
+              "Empirical reference band, not a calibrated 90% confidence statement.",
+              "Does not cover publication revisions, NS bias or future structural changes."
+            ],
+            "election_blocks": 1,
+            "calibration_rows": 32,
+            "calibration_years": [
+              2021
+            ],
+            "reference_quantile": 0.9,
+            "coverage_guaranteed": false
+          },
+          "election_type": "midterm"
+        },
+        "provenance": {
+          "model_name": "baseline_last",
+          "rate_units": "fraction [0,1]; trend and gaps in percentage points",
+          "code_sha256": {
+            "forecasting.py": "61dc4c0966305c90174c93a14e0238f7fa20b2ede1b428c307d2d845b39bf9d5",
+            "forecast_calibration.py": "1947f9fb8fecb1c44f8c0307f4fdd0b0411c324454f38f616a527118a7a263e7"
+          },
+          "model_run_id": "daf97a195864693a644e",
+          "model_sha256": "28b757acc59aaaad93202bb2b0117eebc2bc929f75a8ecd221ee00f998781fac",
+          "source_datasets": [
+            {
+              "id": 1,
+              "year": 2009,
+              "checksum": "e626e9528a91206c23fc8f96987e1a297db285e7cbc0fa1e37a18ed473ebf61c",
+              "source_url": "https://ine.mx/wp-content/uploads/2022/04/DatosAbiertos_DECEyEC_ConteosCensales2009.zip"
+            },
+            {
+              "id": 2,
+              "year": 2012,
+              "checksum": "5999f86e21154138b904723cb5d55ebde9e108ac72872f2ff5695d9eb8fde9cd",
+              "source_url": "https://ine.mx/wp-content/uploads/2022/04/DatosAbiertos_DECEyEC_ConteosCensales2012.zip"
+            },
+            {
+              "id": 3,
+              "year": 2015,
+              "checksum": "7435ac54a3a6aebf5d9c9466a064b320b64bf5ff8b4d8ae787bad898497341da",
+              "source_url": "https://ine.mx/wp-content/uploads/2022/04/DatosAbiertos_DECEyEC_ConteosCensales2015.zip"
+            },
+            {
+              "id": 4,
+              "year": 2018,
+              "checksum": "b20981a0aea1ac773e7bc0b54784bba7619346585ba3996744ad22458279dd8b",
+              "source_url": "https://ine.mx/wp-content/uploads/2022/04/DatosAbiertos_DECEyEC_ConteosCensales2018.zip"
+            },
+            {
+              "id": 5,
+              "year": 2021,
+              "checksum": "29bdfaaa33be5151c2ae8c8e406d8a27976006d11e6cbe201ac05cc04def4849",
+              "source_url": "https://ine.mx/wp-content/uploads/2022/04/DatosAbiertos_DECEyEC_ConteosCensales2021.zip"
+            },
+            {
+              "id": 6,
+              "year": 2024,
+              "checksum": "c0de34d04e782ad99579b83591a6e3e6c8d1e20f4914d4845743bd79d2bd28b2",
+              "source_url": "https://ine.mx/wp-content/uploads/2025/08/DatosAbiertos_DECEyEC_ConteosCensales2024.zip"
+            }
+          ],
+          "production_ready": false,
+          "residuals_sha256": "343ce4b41d356eb12d9ed5c758ee3a6d65e4b6367e11b3664a8a117bafbd98f3",
+          "dataset_fingerprint": "5aa5d352892efdc10b19822cb3299dc391edf82d22fdee8b147cea8d9255c5f8",
+          "coverage_diagnostics": [
+            {
+              "radius": null,
+              "coverage": null,
+              "test_rows": 32,
+              "test_year": 2018,
+              "election_type": "presidential",
+              "interpretation": "retrospective diagnostic; selection used development years",
+              "calibration_rows": 0,
+              "calibration_years": []
+            },
+            {
+              "radius": null,
+              "coverage": null,
+              "test_rows": 32,
+              "test_year": 2021,
+              "election_type": "midterm",
+              "interpretation": "retrospective diagnostic; selection used development years",
+              "calibration_rows": 0,
+              "calibration_years": []
+            },
+            {
+              "radius": 0.05622312544975894,
+              "coverage": 0.8125,
+              "test_rows": 32,
+              "test_year": 2024,
+              "election_type": "presidential",
+              "interpretation": "retrospective diagnostic; selection used development years",
+              "calibration_rows": 32,
+              "calibration_years": [
+                2018
+              ]
+            }
+          ],
+          "target_interpretation": "analytical future election scenario, without INE endorsement",
+          "publication_vintage_verified": false
+        },
+        "created_at": "2026-10-22T03:04:33.514035Z"
+      },
+      "parameters": {
+        "name": "Demostración: continuidad",
+        "forecast_run_id": "e63b667cf09b747f7de8",
+        "target_year": 2027,
+        "state_codes": [
+          "01",
+          "02",
+          "03",
+          "04",
+          "05",
+          "06",
+          "07",
+          "08",
+          "09",
+          "10",
+          "11",
+          "12",
+          "13",
+          "14",
+          "15",
+          "16",
+          "17",
+          "18",
+          "19",
+          "20",
+          "21",
+          "22",
+          "23",
+          "24",
+          "25",
+          "26",
+          "27",
+          "28",
+          "29",
+          "30",
+          "31",
+          "32"
+        ],
+        "participation_change_pp": 0.0,
+        "state_changes": []
+      },
+      "assumptions": {
+        "sign": "positive increases participation; negative decreases participation",
+        "method": "scenario_abstention = clip(base_abstention - participation_change_pp/100, 0, 1)",
+        "aggregation": "equal weights per selected state; not a national electorate rate",
+        "change_type": "absolute percentage points, not a relative percent change",
+        "denominator": "SV + NV; NS excluded, as in the base forecast",
+        "limitations": [
+          "The user supplies the change; it is not learned from intervention evidence.",
+          "No causal, demographic, partisan or individual effects are inferred.",
+          "Clipping may narrow a band without increasing evidential confidence.",
+          "All limitations of the base forecast continue to apply."
+        ],
+        "uncertainty": {
+          "method": "translate original endpoints by the fixed assumed change and clip",
+          "interpretation": "conditional sensitivity band; coverage remains unverified",
+          "base_calibration": {
+            "method": "same_election_type_absolute_out_of_time_errors",
+            "radius": 0.14368856461187757,
+            "support": "limited",
+            "limitations": [
+              "States share election shocks; rows are not independent calibration samples.",
+              "Empirical reference band, not a calibrated 90% confidence statement.",
+              "Does not cover publication revisions, NS bias or future structural changes."
+            ],
+            "election_blocks": 1,
+            "calibration_rows": 32,
+            "calibration_years": [
+              2021
+            ],
+            "reference_quantile": 0.9,
+            "coverage_guaranteed": false
+          },
+          "coverage_guaranteed": false,
+          "intervention_effect_uncertainty_included": false
+        },
+        "state_changes": "replace the global change for that state; never add to it",
+        "risk_thresholds": "fixed to the base forecast calibration, without recalibration",
+        "aggregate_interval": "unavailable due to spatial dependence between states",
+        "causal_effect_estimated": false,
+        "base_prediction_retrained": false,
+        "future_voter_counts_estimated": false
+      },
+      "summary": {
+        "selected_states": 32,
+        "aggregation": "unweighted_mean_of_selected_states",
+        "national_electorate_estimate": false,
+        "baseline": {
+          "mean_abstention_rate": 0.48110960093618654,
+          "mean_participation_rate": 0.5188903990638134,
+          "risk_counts": {
+            "low": 14,
+            "high": 5,
+            "medium": 13
+          },
+          "uncertain_classifications": 32
+        },
+        "scenario": {
+          "mean_abstention_rate": 0.48110960093618654,
+          "mean_participation_rate": 0.5188903990638134,
+          "risk_counts": {
+            "low": 14,
+            "high": 5,
+            "medium": 13
+          },
+          "uncertain_classifications": 32
+        },
+        "mean_applied_participation_change_pp": 0.0,
+        "states_with_risk_change": 0,
+        "states_with_clipped_point": 0,
+        "states_with_clipped_band": 0,
+        "aggregate_prediction_interval": null
+      },
+      "states": [
+        {
+          "territory_id": 12463,
+          "state_code": "01",
+          "name": "AGUASCALIENTES",
+          "baseline": {
+            "abstention_rate": 0.505027900194361,
+            "participation_rate": 0.49497209980563905,
+            "abstention_band_lower": 0.3613393355824834,
+            "abstention_band_upper": 0.6487164648062385,
+            "participation_band_lower": 0.35128353519376154,
+            "participation_band_upper": 0.6386606644175166,
+            "risk_level": "medium",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.505027900194361,
+            "participation_rate": 0.49497209980563905,
+            "abstention_band_lower": 0.3613393355824834,
+            "abstention_band_upper": 0.6487164648062385,
+            "participation_band_lower": 0.35128353519376154,
+            "participation_band_upper": 0.6386606644175166,
+            "risk_level": "medium",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 0.0,
+          "applied_participation_change_pp": 0.0,
+          "applied_abstention_change_pp": 0.0,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": false
+        },
+        {
+          "territory_id": 12464,
+          "state_code": "02",
+          "name": "BAJA CALIFORNIA",
+          "baseline": {
+            "abstention_rate": 0.6240117593168858,
+            "participation_rate": 0.3759882406831142,
+            "abstention_band_lower": 0.4803231947050082,
+            "abstention_band_upper": 0.7677003239287634,
+            "participation_band_lower": 0.23229967607123658,
+            "participation_band_upper": 0.5196768052949918,
+            "risk_level": "high",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.6240117593168858,
+            "participation_rate": 0.3759882406831142,
+            "abstention_band_lower": 0.4803231947050082,
+            "abstention_band_upper": 0.7677003239287634,
+            "participation_band_lower": 0.23229967607123658,
+            "participation_band_upper": 0.5196768052949918,
+            "risk_level": "high",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 0.0,
+          "applied_participation_change_pp": 0.0,
+          "applied_abstention_change_pp": 0.0,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": false
+        },
+        {
+          "territory_id": 12465,
+          "state_code": "03",
+          "name": "BAJA CALIFORNIA SUR",
+          "baseline": {
+            "abstention_rate": 0.5207866334384645,
+            "participation_rate": 0.47921336656153546,
+            "abstention_band_lower": 0.377098068826587,
+            "abstention_band_upper": 0.664475198050342,
+            "participation_band_lower": 0.33552480194965795,
+            "participation_band_upper": 0.622901931173413,
+            "risk_level": "medium",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.5207866334384645,
+            "participation_rate": 0.47921336656153546,
+            "abstention_band_lower": 0.377098068826587,
+            "abstention_band_upper": 0.664475198050342,
+            "participation_band_lower": 0.33552480194965795,
+            "participation_band_upper": 0.622901931173413,
+            "risk_level": "medium",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 0.0,
+          "applied_participation_change_pp": 0.0,
+          "applied_abstention_change_pp": 0.0,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": false
+        },
+        {
+          "territory_id": 12466,
+          "state_code": "04",
+          "name": "CAMPECHE",
+          "baseline": {
+            "abstention_rate": 0.3801233543263519,
+            "participation_rate": 0.6198766456736481,
+            "abstention_band_lower": 0.23643478971447435,
+            "abstention_band_upper": 0.5238119189382295,
+            "participation_band_lower": 0.47618808106177046,
+            "participation_band_upper": 0.7635652102855257,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.3801233543263519,
+            "participation_rate": 0.6198766456736481,
+            "abstention_band_lower": 0.23643478971447435,
+            "abstention_band_upper": 0.5238119189382295,
+            "participation_band_lower": 0.47618808106177046,
+            "participation_band_upper": 0.7635652102855257,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 0.0,
+          "applied_participation_change_pp": 0.0,
+          "applied_abstention_change_pp": 0.0,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": false
+        },
+        {
+          "territory_id": 12467,
+          "state_code": "05",
+          "name": "COAHUILA",
+          "baseline": {
+            "abstention_rate": 0.4300332017106396,
+            "participation_rate": 0.5699667982893604,
+            "abstention_band_lower": 0.286344637098762,
+            "abstention_band_upper": 0.5737217663225171,
+            "participation_band_lower": 0.42627823367748285,
+            "participation_band_upper": 0.713655362901238,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.4300332017106396,
+            "participation_rate": 0.5699667982893604,
+            "abstention_band_lower": 0.286344637098762,
+            "abstention_band_upper": 0.5737217663225171,
+            "participation_band_lower": 0.42627823367748285,
+            "participation_band_upper": 0.713655362901238,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 0.0,
+          "applied_participation_change_pp": 0.0,
+          "applied_abstention_change_pp": 0.0,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": false
+        },
+        {
+          "territory_id": 12468,
+          "state_code": "06",
+          "name": "COLIMA",
+          "baseline": {
+            "abstention_rate": 0.4814363247349218,
+            "participation_rate": 0.5185636752650782,
+            "abstention_band_lower": 0.33774776012304425,
+            "abstention_band_upper": 0.6251248893467993,
+            "participation_band_lower": 0.37487511065320067,
+            "participation_band_upper": 0.6622522398769557,
+            "risk_level": "medium",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.4814363247349218,
+            "participation_rate": 0.5185636752650782,
+            "abstention_band_lower": 0.33774776012304425,
+            "abstention_band_upper": 0.6251248893467993,
+            "participation_band_lower": 0.37487511065320067,
+            "participation_band_upper": 0.6622522398769557,
+            "risk_level": "medium",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 0.0,
+          "applied_participation_change_pp": 0.0,
+          "applied_abstention_change_pp": 0.0,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": false
+        },
+        {
+          "territory_id": 12469,
+          "state_code": "07",
+          "name": "CHIAPAS",
+          "baseline": {
+            "abstention_rate": 0.38804418782623445,
+            "participation_rate": 0.6119558121737656,
+            "abstention_band_lower": 0.2443556232143569,
+            "abstention_band_upper": 0.531732752438112,
+            "participation_band_lower": 0.468267247561888,
+            "participation_band_upper": 0.7556443767856431,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.38804418782623445,
+            "participation_rate": 0.6119558121737656,
+            "abstention_band_lower": 0.2443556232143569,
+            "abstention_band_upper": 0.531732752438112,
+            "participation_band_lower": 0.468267247561888,
+            "participation_band_upper": 0.7556443767856431,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 0.0,
+          "applied_participation_change_pp": 0.0,
+          "applied_abstention_change_pp": 0.0,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": false
+        },
+        {
+          "territory_id": 12470,
+          "state_code": "08",
+          "name": "CHIHUAHUA",
+          "baseline": {
+            "abstention_rate": 0.5419783491847288,
+            "participation_rate": 0.45802165081527124,
+            "abstention_band_lower": 0.3982897845728512,
+            "abstention_band_upper": 0.6856669137966063,
+            "participation_band_lower": 0.31433308620339373,
+            "participation_band_upper": 0.6017102154271488,
+            "risk_level": "medium",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.5419783491847288,
+            "participation_rate": 0.45802165081527124,
+            "abstention_band_lower": 0.3982897845728512,
+            "abstention_band_upper": 0.6856669137966063,
+            "participation_band_lower": 0.31433308620339373,
+            "participation_band_upper": 0.6017102154271488,
+            "risk_level": "medium",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 0.0,
+          "applied_participation_change_pp": 0.0,
+          "applied_abstention_change_pp": 0.0,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": false
+        },
+        {
+          "territory_id": 12471,
+          "state_code": "09",
+          "name": "CIUDAD DE MEXICO",
+          "baseline": {
+            "abstention_rate": 0.4819722744852096,
+            "participation_rate": 0.5180277255147905,
+            "abstention_band_lower": 0.338283709873332,
+            "abstention_band_upper": 0.6256608390970871,
+            "participation_band_lower": 0.37433916090291286,
+            "participation_band_upper": 0.661716290126668,
+            "risk_level": "medium",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.4819722744852096,
+            "participation_rate": 0.5180277255147905,
+            "abstention_band_lower": 0.338283709873332,
+            "abstention_band_upper": 0.6256608390970871,
+            "participation_band_lower": 0.37433916090291286,
+            "participation_band_upper": 0.661716290126668,
+            "risk_level": "medium",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 0.0,
+          "applied_participation_change_pp": 0.0,
+          "applied_abstention_change_pp": 0.0,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": false
+        },
+        {
+          "territory_id": 12472,
+          "state_code": "10",
+          "name": "DURANGO",
+          "baseline": {
+            "abstention_rate": 0.5792525604471945,
+            "participation_rate": 0.42074743955280547,
+            "abstention_band_lower": 0.43556399583531696,
+            "abstention_band_upper": 0.722941125059072,
+            "participation_band_lower": 0.27705887494092796,
+            "participation_band_upper": 0.564436004164683,
+            "risk_level": "high",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.5792525604471945,
+            "participation_rate": 0.42074743955280547,
+            "abstention_band_lower": 0.43556399583531696,
+            "abstention_band_upper": 0.722941125059072,
+            "participation_band_lower": 0.27705887494092796,
+            "participation_band_upper": 0.564436004164683,
+            "risk_level": "high",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 0.0,
+          "applied_participation_change_pp": 0.0,
+          "applied_abstention_change_pp": 0.0,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": false
+        },
+        {
+          "territory_id": 12473,
+          "state_code": "11",
+          "name": "GUANAJUATO",
+          "baseline": {
+            "abstention_rate": 0.5644145998767056,
+            "participation_rate": 0.4355854001232944,
+            "abstention_band_lower": 0.42072603526482805,
+            "abstention_band_upper": 0.7081031644885831,
+            "participation_band_lower": 0.2918968355114169,
+            "participation_band_upper": 0.5792739647351719,
+            "risk_level": "high",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.5644145998767056,
+            "participation_rate": 0.4355854001232944,
+            "abstention_band_lower": 0.42072603526482805,
+            "abstention_band_upper": 0.7081031644885831,
+            "participation_band_lower": 0.2918968355114169,
+            "participation_band_upper": 0.5792739647351719,
+            "risk_level": "high",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 0.0,
+          "applied_participation_change_pp": 0.0,
+          "applied_abstention_change_pp": 0.0,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": false
+        },
+        {
+          "territory_id": 12474,
+          "state_code": "12",
+          "name": "GUERRERO",
+          "baseline": {
+            "abstention_rate": 0.43659667313906,
+            "participation_rate": 0.56340332686094,
+            "abstention_band_lower": 0.2929081085271824,
+            "abstention_band_upper": 0.5802852377509375,
+            "participation_band_lower": 0.41971476224906246,
+            "participation_band_upper": 0.7070918914728176,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.43659667313906,
+            "participation_rate": 0.56340332686094,
+            "abstention_band_lower": 0.2929081085271824,
+            "abstention_band_upper": 0.5802852377509375,
+            "participation_band_lower": 0.41971476224906246,
+            "participation_band_upper": 0.7070918914728176,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 0.0,
+          "applied_participation_change_pp": 0.0,
+          "applied_abstention_change_pp": 0.0,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": false
+        },
+        {
+          "territory_id": 12475,
+          "state_code": "13",
+          "name": "HIDALGO",
+          "baseline": {
+            "abstention_rate": 0.5398787442046863,
+            "participation_rate": 0.4601212557953137,
+            "abstention_band_lower": 0.3961901795928087,
+            "abstention_band_upper": 0.6835673088165639,
+            "participation_band_lower": 0.3164326911834361,
+            "participation_band_upper": 0.6038098204071913,
+            "risk_level": "medium",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.5398787442046863,
+            "participation_rate": 0.4601212557953137,
+            "abstention_band_lower": 0.3961901795928087,
+            "abstention_band_upper": 0.6835673088165639,
+            "participation_band_lower": 0.3164326911834361,
+            "participation_band_upper": 0.6038098204071913,
+            "risk_level": "medium",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 0.0,
+          "applied_participation_change_pp": 0.0,
+          "applied_abstention_change_pp": 0.0,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": false
+        },
+        {
+          "territory_id": 12476,
+          "state_code": "14",
+          "name": "JALISCO",
+          "baseline": {
+            "abstention_rate": 0.5262452940256629,
+            "participation_rate": 0.4737547059743371,
+            "abstention_band_lower": 0.3825567294137853,
+            "abstention_band_upper": 0.6699338586375405,
+            "participation_band_lower": 0.3300661413624595,
+            "participation_band_upper": 0.6174432705862147,
+            "risk_level": "medium",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.5262452940256629,
+            "participation_rate": 0.4737547059743371,
+            "abstention_band_lower": 0.3825567294137853,
+            "abstention_band_upper": 0.6699338586375405,
+            "participation_band_lower": 0.3300661413624595,
+            "participation_band_upper": 0.6174432705862147,
+            "risk_level": "medium",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 0.0,
+          "applied_participation_change_pp": 0.0,
+          "applied_abstention_change_pp": 0.0,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": false
+        },
+        {
+          "territory_id": 12477,
+          "state_code": "15",
+          "name": "MEXICO",
+          "baseline": {
+            "abstention_rate": 0.46482992509972654,
+            "participation_rate": 0.5351700749002735,
+            "abstention_band_lower": 0.32114136048784897,
+            "abstention_band_upper": 0.608518489711604,
+            "participation_band_lower": 0.39148151028839595,
+            "participation_band_upper": 0.678858639512151,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.46482992509972654,
+            "participation_rate": 0.5351700749002735,
+            "abstention_band_lower": 0.32114136048784897,
+            "abstention_band_upper": 0.608518489711604,
+            "participation_band_lower": 0.39148151028839595,
+            "participation_band_upper": 0.678858639512151,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 0.0,
+          "applied_participation_change_pp": 0.0,
+          "applied_abstention_change_pp": 0.0,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": false
+        },
+        {
+          "territory_id": 12478,
+          "state_code": "16",
+          "name": "MICHOACAN",
+          "baseline": {
+            "abstention_rate": 0.5175586250783535,
+            "participation_rate": 0.4824413749216465,
+            "abstention_band_lower": 0.3738700604664759,
+            "abstention_band_upper": 0.661247189690231,
+            "participation_band_lower": 0.338752810309769,
+            "participation_band_upper": 0.626129939533524,
+            "risk_level": "medium",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.5175586250783535,
+            "participation_rate": 0.4824413749216465,
+            "abstention_band_lower": 0.3738700604664759,
+            "abstention_band_upper": 0.661247189690231,
+            "participation_band_lower": 0.338752810309769,
+            "participation_band_upper": 0.626129939533524,
+            "risk_level": "medium",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 0.0,
+          "applied_participation_change_pp": 0.0,
+          "applied_abstention_change_pp": 0.0,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": false
+        },
+        {
+          "territory_id": 12479,
+          "state_code": "17",
+          "name": "MORELOS",
+          "baseline": {
+            "abstention_rate": 0.4812961765326275,
+            "participation_rate": 0.5187038234673724,
+            "abstention_band_lower": 0.33760761192074995,
+            "abstention_band_upper": 0.6249847411445051,
+            "participation_band_lower": 0.3750152588554949,
+            "participation_band_upper": 0.66239238807925,
+            "risk_level": "medium",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.4812961765326275,
+            "participation_rate": 0.5187038234673724,
+            "abstention_band_lower": 0.33760761192074995,
+            "abstention_band_upper": 0.6249847411445051,
+            "participation_band_lower": 0.3750152588554949,
+            "participation_band_upper": 0.66239238807925,
+            "risk_level": "medium",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 0.0,
+          "applied_participation_change_pp": 0.0,
+          "applied_abstention_change_pp": 0.0,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": false
+        },
+        {
+          "territory_id": 12480,
+          "state_code": "18",
+          "name": "NAYARIT",
+          "baseline": {
+            "abstention_rate": 0.4757322052124385,
+            "participation_rate": 0.5242677947875616,
+            "abstention_band_lower": 0.3320436406005609,
+            "abstention_band_upper": 0.619420769824316,
+            "participation_band_lower": 0.38057923017568396,
+            "participation_band_upper": 0.6679563593994391,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.4757322052124385,
+            "participation_rate": 0.5242677947875616,
+            "abstention_band_lower": 0.3320436406005609,
+            "abstention_band_upper": 0.619420769824316,
+            "participation_band_lower": 0.38057923017568396,
+            "participation_band_upper": 0.6679563593994391,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 0.0,
+          "applied_participation_change_pp": 0.0,
+          "applied_abstention_change_pp": 0.0,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": false
+        },
+        {
+          "territory_id": 12481,
+          "state_code": "19",
+          "name": "NUEVO LEON",
+          "baseline": {
+            "abstention_rate": 0.49531558294375605,
+            "participation_rate": 0.5046844170562439,
+            "abstention_band_lower": 0.3516270183318785,
+            "abstention_band_upper": 0.6390041475556336,
+            "participation_band_lower": 0.3609958524443664,
+            "participation_band_upper": 0.6483729816681215,
+            "risk_level": "medium",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.49531558294375605,
+            "participation_rate": 0.5046844170562439,
+            "abstention_band_lower": 0.3516270183318785,
+            "abstention_band_upper": 0.6390041475556336,
+            "participation_band_lower": 0.3609958524443664,
+            "participation_band_upper": 0.6483729816681215,
+            "risk_level": "medium",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 0.0,
+          "applied_participation_change_pp": 0.0,
+          "applied_abstention_change_pp": 0.0,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": false
+        },
+        {
+          "territory_id": 12482,
+          "state_code": "20",
+          "name": "OAXACA",
+          "baseline": {
+            "abstention_rate": 0.4419753398050967,
+            "participation_rate": 0.5580246601949033,
+            "abstention_band_lower": 0.2982867751932191,
+            "abstention_band_upper": 0.5856639044169742,
+            "participation_band_lower": 0.41433609558302575,
+            "participation_band_upper": 0.7017132248067809,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.4419753398050967,
+            "participation_rate": 0.5580246601949033,
+            "abstention_band_lower": 0.2982867751932191,
+            "abstention_band_upper": 0.5856639044169742,
+            "participation_band_lower": 0.41433609558302575,
+            "participation_band_upper": 0.7017132248067809,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 0.0,
+          "applied_participation_change_pp": 0.0,
+          "applied_abstention_change_pp": 0.0,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": false
+        },
+        {
+          "territory_id": 12483,
+          "state_code": "21",
+          "name": "PUEBLA",
+          "baseline": {
+            "abstention_rate": 0.4462998360394817,
+            "participation_rate": 0.5537001639605184,
+            "abstention_band_lower": 0.30261127142760413,
+            "abstention_band_upper": 0.5899884006513593,
+            "participation_band_lower": 0.41001159934864073,
+            "participation_band_upper": 0.6973887285723959,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.4462998360394817,
+            "participation_rate": 0.5537001639605184,
+            "abstention_band_lower": 0.30261127142760413,
+            "abstention_band_upper": 0.5899884006513593,
+            "participation_band_lower": 0.41001159934864073,
+            "participation_band_upper": 0.6973887285723959,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 0.0,
+          "applied_participation_change_pp": 0.0,
+          "applied_abstention_change_pp": 0.0,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": false
+        },
+        {
+          "territory_id": 12484,
+          "state_code": "22",
+          "name": "QUERETARO",
+          "baseline": {
+            "abstention_rate": 0.48942310981212234,
+            "participation_rate": 0.5105768901878777,
+            "abstention_band_lower": 0.34573454520024477,
+            "abstention_band_upper": 0.633111674424,
+            "participation_band_lower": 0.36688832557600004,
+            "participation_band_upper": 0.6542654547997553,
+            "risk_level": "medium",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.48942310981212234,
+            "participation_rate": 0.5105768901878777,
+            "abstention_band_lower": 0.34573454520024477,
+            "abstention_band_upper": 0.633111674424,
+            "participation_band_lower": 0.36688832557600004,
+            "participation_band_upper": 0.6542654547997553,
+            "risk_level": "medium",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 0.0,
+          "applied_participation_change_pp": 0.0,
+          "applied_abstention_change_pp": 0.0,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": false
+        },
+        {
+          "territory_id": 12485,
+          "state_code": "23",
+          "name": "QUINTANA ROO",
+          "baseline": {
+            "abstention_rate": 0.5667612690459958,
+            "participation_rate": 0.4332387309540042,
+            "abstention_band_lower": 0.4230727044341182,
+            "abstention_band_upper": 0.7104498336578733,
+            "participation_band_lower": 0.2895501663421267,
+            "participation_band_upper": 0.5769272955658817,
+            "risk_level": "high",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.5667612690459958,
+            "participation_rate": 0.4332387309540042,
+            "abstention_band_lower": 0.4230727044341182,
+            "abstention_band_upper": 0.7104498336578733,
+            "participation_band_lower": 0.2895501663421267,
+            "participation_band_upper": 0.5769272955658817,
+            "risk_level": "high",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 0.0,
+          "applied_participation_change_pp": 0.0,
+          "applied_abstention_change_pp": 0.0,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": false
+        },
+        {
+          "territory_id": 12486,
+          "state_code": "24",
+          "name": "SAN LUIS POTOSI",
+          "baseline": {
+            "abstention_rate": 0.41912162387572044,
+            "participation_rate": 0.5808783761242795,
+            "abstention_band_lower": 0.27543305926384287,
+            "abstention_band_upper": 0.562810188487598,
+            "participation_band_lower": 0.437189811512402,
+            "participation_band_upper": 0.7245669407361571,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.41912162387572044,
+            "participation_rate": 0.5808783761242795,
+            "abstention_band_lower": 0.27543305926384287,
+            "abstention_band_upper": 0.562810188487598,
+            "participation_band_lower": 0.437189811512402,
+            "participation_band_upper": 0.7245669407361571,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 0.0,
+          "applied_participation_change_pp": 0.0,
+          "applied_abstention_change_pp": 0.0,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": false
+        },
+        {
+          "territory_id": 12487,
+          "state_code": "25",
+          "name": "SINALOA",
+          "baseline": {
+            "abstention_rate": 0.5090024908077334,
+            "participation_rate": 0.4909975091922666,
+            "abstention_band_lower": 0.36531392619585584,
+            "abstention_band_upper": 0.652691055419611,
+            "participation_band_lower": 0.34730894458038897,
+            "participation_band_upper": 0.6346860738041442,
+            "risk_level": "medium",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.5090024908077334,
+            "participation_rate": 0.4909975091922666,
+            "abstention_band_lower": 0.36531392619585584,
+            "abstention_band_upper": 0.652691055419611,
+            "participation_band_lower": 0.34730894458038897,
+            "participation_band_upper": 0.6346860738041442,
+            "risk_level": "medium",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 0.0,
+          "applied_participation_change_pp": 0.0,
+          "applied_abstention_change_pp": 0.0,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": false
+        },
+        {
+          "territory_id": 12488,
+          "state_code": "26",
+          "name": "SONORA",
+          "baseline": {
+            "abstention_rate": 0.5746597366638367,
+            "participation_rate": 0.42534026333616326,
+            "abstention_band_lower": 0.4309711720519592,
+            "abstention_band_upper": 0.7183483012757144,
+            "participation_band_lower": 0.28165169872428564,
+            "participation_band_upper": 0.5690288279480409,
+            "risk_level": "high",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.5746597366638367,
+            "participation_rate": 0.42534026333616326,
+            "abstention_band_lower": 0.4309711720519592,
+            "abstention_band_upper": 0.7183483012757144,
+            "participation_band_lower": 0.28165169872428564,
+            "participation_band_upper": 0.5690288279480409,
+            "risk_level": "high",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 0.0,
+          "applied_participation_change_pp": 0.0,
+          "applied_abstention_change_pp": 0.0,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": false
+        },
+        {
+          "territory_id": 12489,
+          "state_code": "27",
+          "name": "TABASCO",
+          "baseline": {
+            "abstention_rate": 0.47439588296736185,
+            "participation_rate": 0.5256041170326382,
+            "abstention_band_lower": 0.3307073183554843,
+            "abstention_band_upper": 0.6180844475792394,
+            "participation_band_lower": 0.3819155524207606,
+            "participation_band_upper": 0.6692926816445157,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.47439588296736185,
+            "participation_rate": 0.5256041170326382,
+            "abstention_band_lower": 0.3307073183554843,
+            "abstention_band_upper": 0.6180844475792394,
+            "participation_band_lower": 0.3819155524207606,
+            "participation_band_upper": 0.6692926816445157,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 0.0,
+          "applied_participation_change_pp": 0.0,
+          "applied_abstention_change_pp": 0.0,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": false
+        },
+        {
+          "territory_id": 12490,
+          "state_code": "28",
+          "name": "TAMAULIPAS",
+          "baseline": {
+            "abstention_rate": 0.48354024998753514,
+            "participation_rate": 0.5164597500124648,
+            "abstention_band_lower": 0.3398516853756576,
+            "abstention_band_upper": 0.6272288145994127,
+            "participation_band_lower": 0.3727711854005873,
+            "participation_band_upper": 0.6601483146243424,
+            "risk_level": "medium",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.48354024998753514,
+            "participation_rate": 0.5164597500124648,
+            "abstention_band_lower": 0.3398516853756576,
+            "abstention_band_upper": 0.6272288145994127,
+            "participation_band_lower": 0.3727711854005873,
+            "participation_band_upper": 0.6601483146243424,
+            "risk_level": "medium",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 0.0,
+          "applied_participation_change_pp": 0.0,
+          "applied_abstention_change_pp": 0.0,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": false
+        },
+        {
+          "territory_id": 12491,
+          "state_code": "29",
+          "name": "TLAXCALA",
+          "baseline": {
+            "abstention_rate": 0.3422948839654427,
+            "participation_rate": 0.6577051160345573,
+            "abstention_band_lower": 0.19860631935356515,
+            "abstention_band_upper": 0.4859834485773203,
+            "participation_band_lower": 0.5140165514226798,
+            "participation_band_upper": 0.8013936806464348,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.3422948839654427,
+            "participation_rate": 0.6577051160345573,
+            "abstention_band_lower": 0.19860631935356515,
+            "abstention_band_upper": 0.4859834485773203,
+            "participation_band_lower": 0.5140165514226798,
+            "participation_band_upper": 0.8013936806464348,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 0.0,
+          "applied_participation_change_pp": 0.0,
+          "applied_abstention_change_pp": 0.0,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": false
+        },
+        {
+          "territory_id": 12492,
+          "state_code": "30",
+          "name": "VERACRUZ",
+          "baseline": {
+            "abstention_rate": 0.4061771596849747,
+            "participation_rate": 0.5938228403150253,
+            "abstention_band_lower": 0.26248859507309713,
+            "abstention_band_upper": 0.5498657242968523,
+            "participation_band_lower": 0.4501342757031477,
+            "participation_band_upper": 0.7375114049269029,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.4061771596849747,
+            "participation_rate": 0.5938228403150253,
+            "abstention_band_lower": 0.26248859507309713,
+            "abstention_band_upper": 0.5498657242968523,
+            "participation_band_lower": 0.4501342757031477,
+            "participation_band_upper": 0.7375114049269029,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 0.0,
+          "applied_participation_change_pp": 0.0,
+          "applied_abstention_change_pp": 0.0,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": false
+        },
+        {
+          "territory_id": 12493,
+          "state_code": "31",
+          "name": "YUCATAN",
+          "baseline": {
+            "abstention_rate": 0.36934012500231594,
+            "participation_rate": 0.6306598749976841,
+            "abstention_band_lower": 0.22565156039043838,
+            "abstention_band_upper": 0.5130286896141936,
+            "participation_band_lower": 0.48697131038580643,
+            "participation_band_upper": 0.7743484396095617,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.36934012500231594,
+            "participation_rate": 0.6306598749976841,
+            "abstention_band_lower": 0.22565156039043838,
+            "abstention_band_upper": 0.5130286896141936,
+            "participation_band_lower": 0.48697131038580643,
+            "participation_band_upper": 0.7743484396095617,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 0.0,
+          "applied_participation_change_pp": 0.0,
+          "applied_abstention_change_pp": 0.0,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": false
+        },
+        {
+          "territory_id": 12494,
+          "state_code": "32",
+          "name": "ZACATECAS",
+          "baseline": {
+            "abstention_rate": 0.43798115052234315,
+            "participation_rate": 0.5620188494776568,
+            "abstention_band_lower": 0.2942925859104656,
+            "abstention_band_upper": 0.5816697151342207,
+            "participation_band_lower": 0.4183302848657793,
+            "participation_band_upper": 0.7057074140895344,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.43798115052234315,
+            "participation_rate": 0.5620188494776568,
+            "abstention_band_lower": 0.2942925859104656,
+            "abstention_band_upper": 0.5816697151342207,
+            "participation_band_lower": 0.4183302848657793,
+            "participation_band_upper": 0.7057074140895344,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 0.0,
+          "applied_participation_change_pp": 0.0,
+          "applied_abstention_change_pp": 0.0,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": false
+        }
+      ]
+    }
+  },
+  "hypothetical_increase": {
+    "id": "4cc0a257b2147b00b11ea52c337445371605b9a549f0db83fcae08ff3927c625",
+    "created_at": "2026-10-22T03:23:39.530997Z",
+    "result": {
+      "engine_version": "participation-absolute-shift-v1",
+      "implementation_sha256": "2ddf0c7456df8515c645c5f1817aef5404063fb1c7c11715ee4651706bf8abb3",
+      "forecast": {
+        "id": "e63b667cf09b747f7de8",
+        "model_version_id": 1,
+        "target_year": 2027,
+        "as_of_year": 2024,
+        "election_type": "midterm",
+        "fingerprint": "e63b667cf09b747f7de8dc71c689f9c63f126b5b069a2f2a3027ccebd90d9b33",
+        "calibration": {
+          "risk": {
+            "method": "historical_equal_state_election_terciles",
+            "thresholds": [
+              0.4812961765326275,
+              0.5644145998767056
+            ],
+            "boundary_rule": "low < t1; t1 <= medium < t2; high >= t2",
+            "interpretation": "relative historical abstention; not an official INE risk standard",
+            "reference_rows": 96,
+            "quantile_method": "inverse_empirical_cdf_ceiling_rank",
+            "reference_years": [
+              2009,
+              2015,
+              2021
+            ]
+          },
+          "version": "historical-terciles-empirical-errors-v1",
+          "as_of_year": 2024,
+          "fingerprint": "85208e3a99a33c935758cf0a3bbd62611c969943633c411e81a5c39b531b2ce7",
+          "uncertainty": {
+            "method": "same_election_type_absolute_out_of_time_errors",
+            "radius": 0.14368856461187757,
+            "support": "limited",
+            "limitations": [
+              "States share election shocks; rows are not independent calibration samples.",
+              "Empirical reference band, not a calibrated 90% confidence statement.",
+              "Does not cover publication revisions, NS bias or future structural changes."
+            ],
+            "election_blocks": 1,
+            "calibration_rows": 32,
+            "calibration_years": [
+              2021
+            ],
+            "reference_quantile": 0.9,
+            "coverage_guaranteed": false
+          },
+          "election_type": "midterm"
+        },
+        "provenance": {
+          "model_name": "baseline_last",
+          "rate_units": "fraction [0,1]; trend and gaps in percentage points",
+          "code_sha256": {
+            "forecasting.py": "61dc4c0966305c90174c93a14e0238f7fa20b2ede1b428c307d2d845b39bf9d5",
+            "forecast_calibration.py": "1947f9fb8fecb1c44f8c0307f4fdd0b0411c324454f38f616a527118a7a263e7"
+          },
+          "model_run_id": "daf97a195864693a644e",
+          "model_sha256": "28b757acc59aaaad93202bb2b0117eebc2bc929f75a8ecd221ee00f998781fac",
+          "source_datasets": [
+            {
+              "id": 1,
+              "year": 2009,
+              "checksum": "e626e9528a91206c23fc8f96987e1a297db285e7cbc0fa1e37a18ed473ebf61c",
+              "source_url": "https://ine.mx/wp-content/uploads/2022/04/DatosAbiertos_DECEyEC_ConteosCensales2009.zip"
+            },
+            {
+              "id": 2,
+              "year": 2012,
+              "checksum": "5999f86e21154138b904723cb5d55ebde9e108ac72872f2ff5695d9eb8fde9cd",
+              "source_url": "https://ine.mx/wp-content/uploads/2022/04/DatosAbiertos_DECEyEC_ConteosCensales2012.zip"
+            },
+            {
+              "id": 3,
+              "year": 2015,
+              "checksum": "7435ac54a3a6aebf5d9c9466a064b320b64bf5ff8b4d8ae787bad898497341da",
+              "source_url": "https://ine.mx/wp-content/uploads/2022/04/DatosAbiertos_DECEyEC_ConteosCensales2015.zip"
+            },
+            {
+              "id": 4,
+              "year": 2018,
+              "checksum": "b20981a0aea1ac773e7bc0b54784bba7619346585ba3996744ad22458279dd8b",
+              "source_url": "https://ine.mx/wp-content/uploads/2022/04/DatosAbiertos_DECEyEC_ConteosCensales2018.zip"
+            },
+            {
+              "id": 5,
+              "year": 2021,
+              "checksum": "29bdfaaa33be5151c2ae8c8e406d8a27976006d11e6cbe201ac05cc04def4849",
+              "source_url": "https://ine.mx/wp-content/uploads/2022/04/DatosAbiertos_DECEyEC_ConteosCensales2021.zip"
+            },
+            {
+              "id": 6,
+              "year": 2024,
+              "checksum": "c0de34d04e782ad99579b83591a6e3e6c8d1e20f4914d4845743bd79d2bd28b2",
+              "source_url": "https://ine.mx/wp-content/uploads/2025/08/DatosAbiertos_DECEyEC_ConteosCensales2024.zip"
+            }
+          ],
+          "production_ready": false,
+          "residuals_sha256": "343ce4b41d356eb12d9ed5c758ee3a6d65e4b6367e11b3664a8a117bafbd98f3",
+          "dataset_fingerprint": "5aa5d352892efdc10b19822cb3299dc391edf82d22fdee8b147cea8d9255c5f8",
+          "coverage_diagnostics": [
+            {
+              "radius": null,
+              "coverage": null,
+              "test_rows": 32,
+              "test_year": 2018,
+              "election_type": "presidential",
+              "interpretation": "retrospective diagnostic; selection used development years",
+              "calibration_rows": 0,
+              "calibration_years": []
+            },
+            {
+              "radius": null,
+              "coverage": null,
+              "test_rows": 32,
+              "test_year": 2021,
+              "election_type": "midterm",
+              "interpretation": "retrospective diagnostic; selection used development years",
+              "calibration_rows": 0,
+              "calibration_years": []
+            },
+            {
+              "radius": 0.05622312544975894,
+              "coverage": 0.8125,
+              "test_rows": 32,
+              "test_year": 2024,
+              "election_type": "presidential",
+              "interpretation": "retrospective diagnostic; selection used development years",
+              "calibration_rows": 32,
+              "calibration_years": [
+                2018
+              ]
+            }
+          ],
+          "target_interpretation": "analytical future election scenario, without INE endorsement",
+          "publication_vintage_verified": false
+        },
+        "created_at": "2026-10-22T03:04:33.514035Z"
+      },
+      "parameters": {
+        "name": "Demostración: +3 pp",
+        "forecast_run_id": "e63b667cf09b747f7de8",
+        "target_year": 2027,
+        "state_codes": [
+          "01",
+          "02",
+          "03",
+          "04",
+          "05",
+          "06",
+          "07",
+          "08",
+          "09",
+          "10",
+          "11",
+          "12",
+          "13",
+          "14",
+          "15",
+          "16",
+          "17",
+          "18",
+          "19",
+          "20",
+          "21",
+          "22",
+          "23",
+          "24",
+          "25",
+          "26",
+          "27",
+          "28",
+          "29",
+          "30",
+          "31",
+          "32"
+        ],
+        "participation_change_pp": 3.0,
+        "state_changes": []
+      },
+      "assumptions": {
+        "sign": "positive increases participation; negative decreases participation",
+        "method": "scenario_abstention = clip(base_abstention - participation_change_pp/100, 0, 1)",
+        "aggregation": "equal weights per selected state; not a national electorate rate",
+        "change_type": "absolute percentage points, not a relative percent change",
+        "denominator": "SV + NV; NS excluded, as in the base forecast",
+        "limitations": [
+          "The user supplies the change; it is not learned from intervention evidence.",
+          "No causal, demographic, partisan or individual effects are inferred.",
+          "Clipping may narrow a band without increasing evidential confidence.",
+          "All limitations of the base forecast continue to apply."
+        ],
+        "uncertainty": {
+          "method": "translate original endpoints by the fixed assumed change and clip",
+          "interpretation": "conditional sensitivity band; coverage remains unverified",
+          "base_calibration": {
+            "method": "same_election_type_absolute_out_of_time_errors",
+            "radius": 0.14368856461187757,
+            "support": "limited",
+            "limitations": [
+              "States share election shocks; rows are not independent calibration samples.",
+              "Empirical reference band, not a calibrated 90% confidence statement.",
+              "Does not cover publication revisions, NS bias or future structural changes."
+            ],
+            "election_blocks": 1,
+            "calibration_rows": 32,
+            "calibration_years": [
+              2021
+            ],
+            "reference_quantile": 0.9,
+            "coverage_guaranteed": false
+          },
+          "coverage_guaranteed": false,
+          "intervention_effect_uncertainty_included": false
+        },
+        "state_changes": "replace the global change for that state; never add to it",
+        "risk_thresholds": "fixed to the base forecast calibration, without recalibration",
+        "aggregate_interval": "unavailable due to spatial dependence between states",
+        "causal_effect_estimated": false,
+        "base_prediction_retrained": false,
+        "future_voter_counts_estimated": false
+      },
+      "summary": {
+        "selected_states": 32,
+        "aggregation": "unweighted_mean_of_selected_states",
+        "national_electorate_estimate": false,
+        "baseline": {
+          "mean_abstention_rate": 0.48110960093618654,
+          "mean_participation_rate": 0.5188903990638134,
+          "risk_counts": {
+            "low": 14,
+            "high": 5,
+            "medium": 13
+          },
+          "uncertain_classifications": 32
+        },
+        "scenario": {
+          "mean_abstention_rate": 0.4511096009361865,
+          "mean_participation_rate": 0.5488903990638134,
+          "risk_counts": {
+            "low": 22,
+            "high": 1,
+            "medium": 9
+          },
+          "uncertain_classifications": 31
+        },
+        "mean_applied_participation_change_pp": 3.0000000000000004,
+        "states_with_risk_change": 12,
+        "states_with_clipped_point": 0,
+        "states_with_clipped_band": 0,
+        "aggregate_prediction_interval": null
+      },
+      "states": [
+        {
+          "territory_id": 12463,
+          "state_code": "01",
+          "name": "AGUASCALIENTES",
+          "baseline": {
+            "abstention_rate": 0.505027900194361,
+            "participation_rate": 0.49497209980563905,
+            "abstention_band_lower": 0.3613393355824834,
+            "abstention_band_upper": 0.6487164648062385,
+            "participation_band_lower": 0.35128353519376154,
+            "participation_band_upper": 0.6386606644175166,
+            "risk_level": "medium",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.4750279001943609,
+            "participation_rate": 0.5249720998056391,
+            "abstention_band_lower": 0.3313393355824834,
+            "abstention_band_upper": 0.6187164648062384,
+            "participation_band_lower": 0.38128353519376157,
+            "participation_band_upper": 0.6686606644175166,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 3.0,
+          "applied_participation_change_pp": 3.0000000000000027,
+          "applied_abstention_change_pp": -3.0000000000000027,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": true
+        },
+        {
+          "territory_id": 12464,
+          "state_code": "02",
+          "name": "BAJA CALIFORNIA",
+          "baseline": {
+            "abstention_rate": 0.6240117593168858,
+            "participation_rate": 0.3759882406831142,
+            "abstention_band_lower": 0.4803231947050082,
+            "abstention_band_upper": 0.7677003239287634,
+            "participation_band_lower": 0.23229967607123658,
+            "participation_band_upper": 0.5196768052949918,
+            "risk_level": "high",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.5940117593168858,
+            "participation_rate": 0.40598824068311423,
+            "abstention_band_lower": 0.45032319470500826,
+            "abstention_band_upper": 0.7377003239287634,
+            "participation_band_lower": 0.2622996760712366,
+            "participation_band_upper": 0.5496768052949917,
+            "risk_level": "high",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 3.0,
+          "applied_participation_change_pp": 3.0000000000000027,
+          "applied_abstention_change_pp": -3.0000000000000027,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": false
+        },
+        {
+          "territory_id": 12465,
+          "state_code": "03",
+          "name": "BAJA CALIFORNIA SUR",
+          "baseline": {
+            "abstention_rate": 0.5207866334384645,
+            "participation_rate": 0.47921336656153546,
+            "abstention_band_lower": 0.377098068826587,
+            "abstention_band_upper": 0.664475198050342,
+            "participation_band_lower": 0.33552480194965795,
+            "participation_band_upper": 0.622901931173413,
+            "risk_level": "medium",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.4907866334384645,
+            "participation_rate": 0.5092133665615355,
+            "abstention_band_lower": 0.347098068826587,
+            "abstention_band_upper": 0.634475198050342,
+            "participation_band_lower": 0.365524801949658,
+            "participation_band_upper": 0.652901931173413,
+            "risk_level": "medium",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 3.0,
+          "applied_participation_change_pp": 3.0000000000000027,
+          "applied_abstention_change_pp": -3.0000000000000027,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": false
+        },
+        {
+          "territory_id": 12466,
+          "state_code": "04",
+          "name": "CAMPECHE",
+          "baseline": {
+            "abstention_rate": 0.3801233543263519,
+            "participation_rate": 0.6198766456736481,
+            "abstention_band_lower": 0.23643478971447435,
+            "abstention_band_upper": 0.5238119189382295,
+            "participation_band_lower": 0.47618808106177046,
+            "participation_band_upper": 0.7635652102855257,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.3501233543263519,
+            "participation_rate": 0.6498766456736481,
+            "abstention_band_lower": 0.20643478971447435,
+            "abstention_band_upper": 0.4938119189382295,
+            "participation_band_lower": 0.5061880810617705,
+            "participation_band_upper": 0.7935652102855256,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 3.0,
+          "applied_participation_change_pp": 3.0000000000000027,
+          "applied_abstention_change_pp": -3.0000000000000027,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": false
+        },
+        {
+          "territory_id": 12467,
+          "state_code": "05",
+          "name": "COAHUILA",
+          "baseline": {
+            "abstention_rate": 0.4300332017106396,
+            "participation_rate": 0.5699667982893604,
+            "abstention_band_lower": 0.286344637098762,
+            "abstention_band_upper": 0.5737217663225171,
+            "participation_band_lower": 0.42627823367748285,
+            "participation_band_upper": 0.713655362901238,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.4000332017106396,
+            "participation_rate": 0.5999667982893604,
+            "abstention_band_lower": 0.256344637098762,
+            "abstention_band_upper": 0.5437217663225171,
+            "participation_band_lower": 0.4562782336774829,
+            "participation_band_upper": 0.743655362901238,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 3.0,
+          "applied_participation_change_pp": 2.9999999999999973,
+          "applied_abstention_change_pp": -2.9999999999999973,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": false
+        },
+        {
+          "territory_id": 12468,
+          "state_code": "06",
+          "name": "COLIMA",
+          "baseline": {
+            "abstention_rate": 0.4814363247349218,
+            "participation_rate": 0.5185636752650782,
+            "abstention_band_lower": 0.33774776012304425,
+            "abstention_band_upper": 0.6251248893467993,
+            "participation_band_lower": 0.37487511065320067,
+            "participation_band_upper": 0.6622522398769557,
+            "risk_level": "medium",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.4514363247349218,
+            "participation_rate": 0.5485636752650782,
+            "abstention_band_lower": 0.3077477601230443,
+            "abstention_band_upper": 0.5951248893467993,
+            "participation_band_lower": 0.4048751106532007,
+            "participation_band_upper": 0.6922522398769557,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 3.0,
+          "applied_participation_change_pp": 3.0000000000000027,
+          "applied_abstention_change_pp": -3.0000000000000027,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": true
+        },
+        {
+          "territory_id": 12469,
+          "state_code": "07",
+          "name": "CHIAPAS",
+          "baseline": {
+            "abstention_rate": 0.38804418782623445,
+            "participation_rate": 0.6119558121737656,
+            "abstention_band_lower": 0.2443556232143569,
+            "abstention_band_upper": 0.531732752438112,
+            "participation_band_lower": 0.468267247561888,
+            "participation_band_upper": 0.7556443767856431,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.3580441878262345,
+            "participation_rate": 0.6419558121737655,
+            "abstention_band_lower": 0.2143556232143569,
+            "abstention_band_upper": 0.501732752438112,
+            "participation_band_lower": 0.498267247561888,
+            "participation_band_upper": 0.7856443767856431,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 3.0,
+          "applied_participation_change_pp": 2.9999999999999973,
+          "applied_abstention_change_pp": -2.9999999999999973,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": false
+        },
+        {
+          "territory_id": 12470,
+          "state_code": "08",
+          "name": "CHIHUAHUA",
+          "baseline": {
+            "abstention_rate": 0.5419783491847288,
+            "participation_rate": 0.45802165081527124,
+            "abstention_band_lower": 0.3982897845728512,
+            "abstention_band_upper": 0.6856669137966063,
+            "participation_band_lower": 0.31433308620339373,
+            "participation_band_upper": 0.6017102154271488,
+            "risk_level": "medium",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.5119783491847287,
+            "participation_rate": 0.48802165081527127,
+            "abstention_band_lower": 0.3682897845728512,
+            "abstention_band_upper": 0.6556669137966062,
+            "participation_band_lower": 0.34433308620339376,
+            "participation_band_upper": 0.6317102154271488,
+            "risk_level": "medium",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 3.0,
+          "applied_participation_change_pp": 3.0000000000000027,
+          "applied_abstention_change_pp": -3.0000000000000027,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": false
+        },
+        {
+          "territory_id": 12471,
+          "state_code": "09",
+          "name": "CIUDAD DE MEXICO",
+          "baseline": {
+            "abstention_rate": 0.4819722744852096,
+            "participation_rate": 0.5180277255147905,
+            "abstention_band_lower": 0.338283709873332,
+            "abstention_band_upper": 0.6256608390970871,
+            "participation_band_lower": 0.37433916090291286,
+            "participation_band_upper": 0.661716290126668,
+            "risk_level": "medium",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.4519722744852096,
+            "participation_rate": 0.5480277255147904,
+            "abstention_band_lower": 0.308283709873332,
+            "abstention_band_upper": 0.5956608390970871,
+            "participation_band_lower": 0.4043391609029129,
+            "participation_band_upper": 0.691716290126668,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 3.0,
+          "applied_participation_change_pp": 2.9999999999999973,
+          "applied_abstention_change_pp": -2.9999999999999973,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": true
+        },
+        {
+          "territory_id": 12472,
+          "state_code": "10",
+          "name": "DURANGO",
+          "baseline": {
+            "abstention_rate": 0.5792525604471945,
+            "participation_rate": 0.42074743955280547,
+            "abstention_band_lower": 0.43556399583531696,
+            "abstention_band_upper": 0.722941125059072,
+            "participation_band_lower": 0.27705887494092796,
+            "participation_band_upper": 0.564436004164683,
+            "risk_level": "high",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.5492525604471945,
+            "participation_rate": 0.4507474395528055,
+            "abstention_band_lower": 0.405563995835317,
+            "abstention_band_upper": 0.692941125059072,
+            "participation_band_lower": 0.307058874940928,
+            "participation_band_upper": 0.594436004164683,
+            "risk_level": "medium",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 3.0,
+          "applied_participation_change_pp": 3.0000000000000027,
+          "applied_abstention_change_pp": -3.0000000000000027,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": true
+        },
+        {
+          "territory_id": 12473,
+          "state_code": "11",
+          "name": "GUANAJUATO",
+          "baseline": {
+            "abstention_rate": 0.5644145998767056,
+            "participation_rate": 0.4355854001232944,
+            "abstention_band_lower": 0.42072603526482805,
+            "abstention_band_upper": 0.7081031644885831,
+            "participation_band_lower": 0.2918968355114169,
+            "participation_band_upper": 0.5792739647351719,
+            "risk_level": "high",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.5344145998767056,
+            "participation_rate": 0.4655854001232944,
+            "abstention_band_lower": 0.3907260352648281,
+            "abstention_band_upper": 0.6781031644885831,
+            "participation_band_lower": 0.3218968355114169,
+            "participation_band_upper": 0.6092739647351719,
+            "risk_level": "medium",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 3.0,
+          "applied_participation_change_pp": 3.0000000000000027,
+          "applied_abstention_change_pp": -3.0000000000000027,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": true
+        },
+        {
+          "territory_id": 12474,
+          "state_code": "12",
+          "name": "GUERRERO",
+          "baseline": {
+            "abstention_rate": 0.43659667313906,
+            "participation_rate": 0.56340332686094,
+            "abstention_band_lower": 0.2929081085271824,
+            "abstention_band_upper": 0.5802852377509375,
+            "participation_band_lower": 0.41971476224906246,
+            "participation_band_upper": 0.7070918914728176,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.40659667313906,
+            "participation_rate": 0.59340332686094,
+            "abstention_band_lower": 0.2629081085271824,
+            "abstention_band_upper": 0.5502852377509375,
+            "participation_band_lower": 0.4497147622490625,
+            "participation_band_upper": 0.7370918914728176,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 3.0,
+          "applied_participation_change_pp": 2.9999999999999973,
+          "applied_abstention_change_pp": -2.9999999999999973,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": false
+        },
+        {
+          "territory_id": 12475,
+          "state_code": "13",
+          "name": "HIDALGO",
+          "baseline": {
+            "abstention_rate": 0.5398787442046863,
+            "participation_rate": 0.4601212557953137,
+            "abstention_band_lower": 0.3961901795928087,
+            "abstention_band_upper": 0.6835673088165639,
+            "participation_band_lower": 0.3164326911834361,
+            "participation_band_upper": 0.6038098204071913,
+            "risk_level": "medium",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.5098787442046863,
+            "participation_rate": 0.49012125579531374,
+            "abstention_band_lower": 0.36619017959280875,
+            "abstention_band_upper": 0.6535673088165639,
+            "participation_band_lower": 0.3464326911834361,
+            "participation_band_upper": 0.6338098204071912,
+            "risk_level": "medium",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 3.0,
+          "applied_participation_change_pp": 3.0000000000000027,
+          "applied_abstention_change_pp": -3.0000000000000027,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": false
+        },
+        {
+          "territory_id": 12476,
+          "state_code": "14",
+          "name": "JALISCO",
+          "baseline": {
+            "abstention_rate": 0.5262452940256629,
+            "participation_rate": 0.4737547059743371,
+            "abstention_band_lower": 0.3825567294137853,
+            "abstention_band_upper": 0.6699338586375405,
+            "participation_band_lower": 0.3300661413624595,
+            "participation_band_upper": 0.6174432705862147,
+            "risk_level": "medium",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.49624529402566286,
+            "participation_rate": 0.5037547059743371,
+            "abstention_band_lower": 0.35255672941378535,
+            "abstention_band_upper": 0.6399338586375405,
+            "participation_band_lower": 0.3600661413624595,
+            "participation_band_upper": 0.6474432705862146,
+            "risk_level": "medium",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 3.0,
+          "applied_participation_change_pp": 3.0000000000000027,
+          "applied_abstention_change_pp": -3.0000000000000027,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": false
+        },
+        {
+          "territory_id": 12477,
+          "state_code": "15",
+          "name": "MEXICO",
+          "baseline": {
+            "abstention_rate": 0.46482992509972654,
+            "participation_rate": 0.5351700749002735,
+            "abstention_band_lower": 0.32114136048784897,
+            "abstention_band_upper": 0.608518489711604,
+            "participation_band_lower": 0.39148151028839595,
+            "participation_band_upper": 0.678858639512151,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.4348299250997265,
+            "participation_rate": 0.5651700749002735,
+            "abstention_band_lower": 0.291141360487849,
+            "abstention_band_upper": 0.578518489711604,
+            "participation_band_lower": 0.421481510288396,
+            "participation_band_upper": 0.708858639512151,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 3.0,
+          "applied_participation_change_pp": 3.0000000000000027,
+          "applied_abstention_change_pp": -3.0000000000000027,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": false
+        },
+        {
+          "territory_id": 12478,
+          "state_code": "16",
+          "name": "MICHOACAN",
+          "baseline": {
+            "abstention_rate": 0.5175586250783535,
+            "participation_rate": 0.4824413749216465,
+            "abstention_band_lower": 0.3738700604664759,
+            "abstention_band_upper": 0.661247189690231,
+            "participation_band_lower": 0.338752810309769,
+            "participation_band_upper": 0.626129939533524,
+            "risk_level": "medium",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.48755862507835346,
+            "participation_rate": 0.5124413749216465,
+            "abstention_band_lower": 0.34387006046647595,
+            "abstention_band_upper": 0.631247189690231,
+            "participation_band_lower": 0.36875281030976903,
+            "participation_band_upper": 0.656129939533524,
+            "risk_level": "medium",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 3.0,
+          "applied_participation_change_pp": 3.0000000000000027,
+          "applied_abstention_change_pp": -3.0000000000000027,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": false
+        },
+        {
+          "territory_id": 12479,
+          "state_code": "17",
+          "name": "MORELOS",
+          "baseline": {
+            "abstention_rate": 0.4812961765326275,
+            "participation_rate": 0.5187038234673724,
+            "abstention_band_lower": 0.33760761192074995,
+            "abstention_band_upper": 0.6249847411445051,
+            "participation_band_lower": 0.3750152588554949,
+            "participation_band_upper": 0.66239238807925,
+            "risk_level": "medium",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.45129617653262755,
+            "participation_rate": 0.5487038234673725,
+            "abstention_band_lower": 0.3076076119207499,
+            "abstention_band_upper": 0.5949847411445051,
+            "participation_band_lower": 0.40501525885549494,
+            "participation_band_upper": 0.6923923880792501,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 3.0,
+          "applied_participation_change_pp": 2.9999999999999973,
+          "applied_abstention_change_pp": -2.9999999999999973,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": true
+        },
+        {
+          "territory_id": 12480,
+          "state_code": "18",
+          "name": "NAYARIT",
+          "baseline": {
+            "abstention_rate": 0.4757322052124385,
+            "participation_rate": 0.5242677947875616,
+            "abstention_band_lower": 0.3320436406005609,
+            "abstention_band_upper": 0.619420769824316,
+            "participation_band_lower": 0.38057923017568396,
+            "participation_band_upper": 0.6679563593994391,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.4457322052124385,
+            "participation_rate": 0.5542677947875615,
+            "abstention_band_lower": 0.3020436406005609,
+            "abstention_band_upper": 0.589420769824316,
+            "participation_band_lower": 0.410579230175684,
+            "participation_band_upper": 0.6979563593994391,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 3.0,
+          "applied_participation_change_pp": 2.9999999999999973,
+          "applied_abstention_change_pp": -2.9999999999999973,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": false
+        },
+        {
+          "territory_id": 12481,
+          "state_code": "19",
+          "name": "NUEVO LEON",
+          "baseline": {
+            "abstention_rate": 0.49531558294375605,
+            "participation_rate": 0.5046844170562439,
+            "abstention_band_lower": 0.3516270183318785,
+            "abstention_band_upper": 0.6390041475556336,
+            "participation_band_lower": 0.3609958524443664,
+            "participation_band_upper": 0.6483729816681215,
+            "risk_level": "medium",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.4653155829437561,
+            "participation_rate": 0.5346844170562439,
+            "abstention_band_lower": 0.32162701833187846,
+            "abstention_band_upper": 0.6090041475556336,
+            "participation_band_lower": 0.3909958524443664,
+            "participation_band_upper": 0.6783729816681215,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 3.0,
+          "applied_participation_change_pp": 2.9999999999999973,
+          "applied_abstention_change_pp": -2.9999999999999973,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": true
+        },
+        {
+          "territory_id": 12482,
+          "state_code": "20",
+          "name": "OAXACA",
+          "baseline": {
+            "abstention_rate": 0.4419753398050967,
+            "participation_rate": 0.5580246601949033,
+            "abstention_band_lower": 0.2982867751932191,
+            "abstention_band_upper": 0.5856639044169742,
+            "participation_band_lower": 0.41433609558302575,
+            "participation_band_upper": 0.7017132248067809,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.4119753398050967,
+            "participation_rate": 0.5880246601949033,
+            "abstention_band_lower": 0.2682867751932191,
+            "abstention_band_upper": 0.5556639044169742,
+            "participation_band_lower": 0.4443360955830258,
+            "participation_band_upper": 0.7317132248067809,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 3.0,
+          "applied_participation_change_pp": 2.9999999999999973,
+          "applied_abstention_change_pp": -2.9999999999999973,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": false
+        },
+        {
+          "territory_id": 12483,
+          "state_code": "21",
+          "name": "PUEBLA",
+          "baseline": {
+            "abstention_rate": 0.4462998360394817,
+            "participation_rate": 0.5537001639605184,
+            "abstention_band_lower": 0.30261127142760413,
+            "abstention_band_upper": 0.5899884006513593,
+            "participation_band_lower": 0.41001159934864073,
+            "participation_band_upper": 0.6973887285723959,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.41629983603948173,
+            "participation_rate": 0.5837001639605183,
+            "abstention_band_lower": 0.2726112714276041,
+            "abstention_band_upper": 0.5599884006513592,
+            "participation_band_lower": 0.44001159934864076,
+            "participation_band_upper": 0.7273887285723959,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 3.0,
+          "applied_participation_change_pp": 2.9999999999999973,
+          "applied_abstention_change_pp": -2.9999999999999973,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": false
+        },
+        {
+          "territory_id": 12484,
+          "state_code": "22",
+          "name": "QUERETARO",
+          "baseline": {
+            "abstention_rate": 0.48942310981212234,
+            "participation_rate": 0.5105768901878777,
+            "abstention_band_lower": 0.34573454520024477,
+            "abstention_band_upper": 0.633111674424,
+            "participation_band_lower": 0.36688832557600004,
+            "participation_band_upper": 0.6542654547997553,
+            "risk_level": "medium",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.4594231098121223,
+            "participation_rate": 0.5405768901878777,
+            "abstention_band_lower": 0.3157345452002448,
+            "abstention_band_upper": 0.6031116744239999,
+            "participation_band_lower": 0.39688832557600007,
+            "participation_band_upper": 0.6842654547997552,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 3.0,
+          "applied_participation_change_pp": 3.0000000000000027,
+          "applied_abstention_change_pp": -3.0000000000000027,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": true
+        },
+        {
+          "territory_id": 12485,
+          "state_code": "23",
+          "name": "QUINTANA ROO",
+          "baseline": {
+            "abstention_rate": 0.5667612690459958,
+            "participation_rate": 0.4332387309540042,
+            "abstention_band_lower": 0.4230727044341182,
+            "abstention_band_upper": 0.7104498336578733,
+            "participation_band_lower": 0.2895501663421267,
+            "participation_band_upper": 0.5769272955658817,
+            "risk_level": "high",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.5367612690459957,
+            "participation_rate": 0.46323873095400425,
+            "abstention_band_lower": 0.39307270443411824,
+            "abstention_band_upper": 0.6804498336578733,
+            "participation_band_lower": 0.31955016634212674,
+            "participation_band_upper": 0.6069272955658818,
+            "risk_level": "medium",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 3.0,
+          "applied_participation_change_pp": 3.0000000000000027,
+          "applied_abstention_change_pp": -3.0000000000000027,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": true
+        },
+        {
+          "territory_id": 12486,
+          "state_code": "24",
+          "name": "SAN LUIS POTOSI",
+          "baseline": {
+            "abstention_rate": 0.41912162387572044,
+            "participation_rate": 0.5808783761242795,
+            "abstention_band_lower": 0.27543305926384287,
+            "abstention_band_upper": 0.562810188487598,
+            "participation_band_lower": 0.437189811512402,
+            "participation_band_upper": 0.7245669407361571,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.38912162387572047,
+            "participation_rate": 0.6108783761242795,
+            "abstention_band_lower": 0.24543305926384287,
+            "abstention_band_upper": 0.532810188487598,
+            "participation_band_lower": 0.467189811512402,
+            "participation_band_upper": 0.7545669407361572,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 3.0,
+          "applied_participation_change_pp": 2.9999999999999973,
+          "applied_abstention_change_pp": -2.9999999999999973,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": false
+        },
+        {
+          "territory_id": 12487,
+          "state_code": "25",
+          "name": "SINALOA",
+          "baseline": {
+            "abstention_rate": 0.5090024908077334,
+            "participation_rate": 0.4909975091922666,
+            "abstention_band_lower": 0.36531392619585584,
+            "abstention_band_upper": 0.652691055419611,
+            "participation_band_lower": 0.34730894458038897,
+            "participation_band_upper": 0.6346860738041442,
+            "risk_level": "medium",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.4790024908077334,
+            "participation_rate": 0.5209975091922666,
+            "abstention_band_lower": 0.33531392619585587,
+            "abstention_band_upper": 0.622691055419611,
+            "participation_band_lower": 0.377308944580389,
+            "participation_band_upper": 0.6646860738041441,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 3.0,
+          "applied_participation_change_pp": 3.0000000000000027,
+          "applied_abstention_change_pp": -3.0000000000000027,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": true
+        },
+        {
+          "territory_id": 12488,
+          "state_code": "26",
+          "name": "SONORA",
+          "baseline": {
+            "abstention_rate": 0.5746597366638367,
+            "participation_rate": 0.42534026333616326,
+            "abstention_band_lower": 0.4309711720519592,
+            "abstention_band_upper": 0.7183483012757144,
+            "participation_band_lower": 0.28165169872428564,
+            "participation_band_upper": 0.5690288279480409,
+            "risk_level": "high",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.5446597366638367,
+            "participation_rate": 0.4553402633361633,
+            "abstention_band_lower": 0.4009711720519592,
+            "abstention_band_upper": 0.6883483012757143,
+            "participation_band_lower": 0.31165169872428566,
+            "participation_band_upper": 0.5990288279480408,
+            "risk_level": "medium",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 3.0,
+          "applied_participation_change_pp": 3.0000000000000027,
+          "applied_abstention_change_pp": -3.0000000000000027,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": true
+        },
+        {
+          "territory_id": 12489,
+          "state_code": "27",
+          "name": "TABASCO",
+          "baseline": {
+            "abstention_rate": 0.47439588296736185,
+            "participation_rate": 0.5256041170326382,
+            "abstention_band_lower": 0.3307073183554843,
+            "abstention_band_upper": 0.6180844475792394,
+            "participation_band_lower": 0.3819155524207606,
+            "participation_band_upper": 0.6692926816445157,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.4443958829673619,
+            "participation_rate": 0.5556041170326381,
+            "abstention_band_lower": 0.30070731835548425,
+            "abstention_band_upper": 0.5880844475792394,
+            "participation_band_lower": 0.4119155524207606,
+            "participation_band_upper": 0.6992926816445157,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 3.0,
+          "applied_participation_change_pp": 2.9999999999999973,
+          "applied_abstention_change_pp": -2.9999999999999973,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": false
+        },
+        {
+          "territory_id": 12490,
+          "state_code": "28",
+          "name": "TAMAULIPAS",
+          "baseline": {
+            "abstention_rate": 0.48354024998753514,
+            "participation_rate": 0.5164597500124648,
+            "abstention_band_lower": 0.3398516853756576,
+            "abstention_band_upper": 0.6272288145994127,
+            "participation_band_lower": 0.3727711854005873,
+            "participation_band_upper": 0.6601483146243424,
+            "risk_level": "medium",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.45354024998753517,
+            "participation_rate": 0.5464597500124648,
+            "abstention_band_lower": 0.30985168537565755,
+            "abstention_band_upper": 0.5972288145994127,
+            "participation_band_lower": 0.4027711854005873,
+            "participation_band_upper": 0.6901483146243425,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 3.0,
+          "applied_participation_change_pp": 2.9999999999999973,
+          "applied_abstention_change_pp": -2.9999999999999973,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": true
+        },
+        {
+          "territory_id": 12491,
+          "state_code": "29",
+          "name": "TLAXCALA",
+          "baseline": {
+            "abstention_rate": 0.3422948839654427,
+            "participation_rate": 0.6577051160345573,
+            "abstention_band_lower": 0.19860631935356515,
+            "abstention_band_upper": 0.4859834485773203,
+            "participation_band_lower": 0.5140165514226798,
+            "participation_band_upper": 0.8013936806464348,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.3122948839654427,
+            "participation_rate": 0.6877051160345573,
+            "abstention_band_lower": 0.16860631935356515,
+            "abstention_band_upper": 0.4559834485773203,
+            "participation_band_lower": 0.5440165514226797,
+            "participation_band_upper": 0.8313936806464348,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low"
+            ],
+            "classification_uncertain": false
+          },
+          "requested_participation_change_pp": 3.0,
+          "applied_participation_change_pp": 3.0000000000000027,
+          "applied_abstention_change_pp": -3.0000000000000027,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": false
+        },
+        {
+          "territory_id": 12492,
+          "state_code": "30",
+          "name": "VERACRUZ",
+          "baseline": {
+            "abstention_rate": 0.4061771596849747,
+            "participation_rate": 0.5938228403150253,
+            "abstention_band_lower": 0.26248859507309713,
+            "abstention_band_upper": 0.5498657242968523,
+            "participation_band_lower": 0.4501342757031477,
+            "participation_band_upper": 0.7375114049269029,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.37617715968497467,
+            "participation_rate": 0.6238228403150253,
+            "abstention_band_lower": 0.23248859507309713,
+            "abstention_band_upper": 0.5198657242968523,
+            "participation_band_lower": 0.4801342757031477,
+            "participation_band_upper": 0.7675114049269028,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 3.0,
+          "applied_participation_change_pp": 3.0000000000000027,
+          "applied_abstention_change_pp": -3.0000000000000027,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": false
+        },
+        {
+          "territory_id": 12493,
+          "state_code": "31",
+          "name": "YUCATAN",
+          "baseline": {
+            "abstention_rate": 0.36934012500231594,
+            "participation_rate": 0.6306598749976841,
+            "abstention_band_lower": 0.22565156039043838,
+            "abstention_band_upper": 0.5130286896141936,
+            "participation_band_lower": 0.48697131038580643,
+            "participation_band_upper": 0.7743484396095617,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.3393401250023159,
+            "participation_rate": 0.6606598749976841,
+            "abstention_band_lower": 0.19565156039043838,
+            "abstention_band_upper": 0.48302868961419354,
+            "participation_band_lower": 0.5169713103858065,
+            "participation_band_upper": 0.8043484396095616,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 3.0,
+          "applied_participation_change_pp": 3.0000000000000027,
+          "applied_abstention_change_pp": -3.0000000000000027,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": false
+        },
+        {
+          "territory_id": 12494,
+          "state_code": "32",
+          "name": "ZACATECAS",
+          "baseline": {
+            "abstention_rate": 0.43798115052234315,
+            "participation_rate": 0.5620188494776568,
+            "abstention_band_lower": 0.2942925859104656,
+            "abstention_band_upper": 0.5816697151342207,
+            "participation_band_lower": 0.4183302848657793,
+            "participation_band_upper": 0.7057074140895344,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "classification_uncertain": true
+          },
+          "scenario": {
+            "abstention_rate": 0.4079811505223432,
+            "participation_rate": 0.5920188494776568,
+            "abstention_band_lower": 0.26429258591046556,
+            "abstention_band_upper": 0.5516697151342207,
+            "participation_band_lower": 0.4483302848657793,
+            "participation_band_upper": 0.7357074140895344,
+            "risk_level": "low",
+            "risk_levels_possible": [
+              "low",
+              "medium"
+            ],
+            "classification_uncertain": true
+          },
+          "requested_participation_change_pp": 3.0,
+          "applied_participation_change_pp": 2.9999999999999973,
+          "applied_abstention_change_pp": -2.9999999999999973,
+          "point_was_clipped": false,
+          "band_was_clipped": false,
+          "risk_changed": false
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,959 @@
+{
+  "landing_url": "https://ine.mx/transparencia/datos-abiertos/visualizacion-datos/conteos-censales-participacion/",
+  "datasets": [
+    {
+      "year": 2009,
+      "url": "https://ine.mx/wp-content/uploads/2022/04/DatosAbiertos_DECEyEC_ConteosCensales2009.zip",
+      "sha256": "e626e9528a91206c23fc8f96987e1a297db285e7cbc0fa1e37a18ed473ebf61c",
+      "retrieved_at": "2026-10-22T01:48:59.931533+00:00",
+      "compressed_bytes": 40203573,
+      "uncompressed_bytes": 587030170,
+      "raw_rows": 8706843,
+      "territories": 2490,
+      "demographic_rows": 23204,
+      "totals": {
+        "LN": 77481831,
+        "SV": 33316974,
+        "NV": 42298963,
+        "NS": 1865894
+      },
+      "members": [
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2009/",
+          "bytes": 0
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2009/01_descripcioncampos_conteoscensales2009.txt",
+          "bytes": 2557
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2009/datosabiertos_deceyec_conteoscensales2009_ags.csv",
+          "bytes": 5552712
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2009/datosabiertos_deceyec_conteoscensales2009_bc.csv",
+          "bytes": 13522857
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2009/datosabiertos_deceyec_conteoscensales2009_bcs.csv",
+          "bytes": 3405505
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2009/datosabiertos_deceyec_conteoscensales2009_camp.csv",
+          "bytes": 3885548
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2009/datosabiertos_deceyec_conteoscensales2009_cdmx.csv",
+          "bytes": 60120753
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2009/datosabiertos_deceyec_conteoscensales2009_chih.csv",
+          "bytes": 23341673
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2009/datosabiertos_deceyec_conteoscensales2009_chis.csv",
+          "bytes": 17457216
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2009/datosabiertos_deceyec_conteoscensales2009_coah.csv",
+          "bytes": 12723149
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2009/datosabiertos_deceyec_conteoscensales2009_col.csv",
+          "bytes": 2727737
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2009/datosabiertos_deceyec_conteoscensales2009_dgo.csv",
+          "bytes": 10910185
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2009/datosabiertos_deceyec_conteoscensales2009_gro.csv",
+          "bytes": 24962049
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2009/datosabiertos_deceyec_conteoscensales2009_gto.csv",
+          "bytes": 28434184
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2009/datosabiertos_deceyec_conteoscensales2009_hgo.csv",
+          "bytes": 15237001
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2009/datosabiertos_deceyec_conteoscensales2009_jal.csv",
+          "bytes": 31658665
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2009/datosabiertos_deceyec_conteoscensales2009_mex.csv",
+          "bytes": 57763411
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2009/datosabiertos_deceyec_conteoscensales2009_mich.csv",
+          "bytes": 24563802
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2009/datosabiertos_deceyec_conteoscensales2009_mor.csv",
+          "bytes": 7900341
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2009/datosabiertos_deceyec_conteoscensales2009_nay.csv",
+          "bytes": 7195553
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2009/datosabiertos_deceyec_conteoscensales2009_nl.csv",
+          "bytes": 19881277
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2009/datosabiertos_deceyec_conteoscensales2009_oax.csv",
+          "bytes": 24988980
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2009/datosabiertos_deceyec_conteoscensales2009_pue.csv",
+          "bytes": 23482782
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2009/datosabiertos_deceyec_conteoscensales2009_qro.csv",
+          "bytes": 6933201
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2009/datosabiertos_deceyec_conteoscensales2009_qroo.csv",
+          "bytes": 5913683
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2009/datosabiertos_deceyec_conteoscensales2009_sin.csv",
+          "bytes": 26897255
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2009/datosabiertos_deceyec_conteoscensales2009_slp.csv",
+          "bytes": 17525628
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2009/datosabiertos_deceyec_conteoscensales2009_son.csv",
+          "bytes": 11234323
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2009/datosabiertos_deceyec_conteoscensales2009_tab.csv",
+          "bytes": 9379003
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2009/datosabiertos_deceyec_conteoscensales2009_tamps.csv",
+          "bytes": 16268337
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2009/datosabiertos_deceyec_conteoscensales2009_tlax.csv",
+          "bytes": 5514562
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2009/datosabiertos_deceyec_conteoscensales2009_ver.csv",
+          "bytes": 43897367
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2009/datosabiertos_deceyec_conteoscensales2009_yuc.csv",
+          "bytes": 8898302
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2009/datosabiertos_deceyec_conteoscensales2009_zac.csv",
+          "bytes": 14850572
+        }
+      ],
+      "missing_local_district": 0,
+      "age_min": 18,
+      "age_max": 130,
+      "quality_status": "validated"
+    },
+    {
+      "year": 2012,
+      "url": "https://ine.mx/wp-content/uploads/2022/04/DatosAbiertos_DECEyEC_ConteosCensales2012.zip",
+      "sha256": "5999f86e21154138b904723cb5d55ebde9e108ac72872f2ff5695d9eb8fde9cd",
+      "retrieved_at": "2026-10-22T01:48:57.471230+00:00",
+      "compressed_bytes": 39515896,
+      "uncompressed_bytes": 580117253,
+      "raw_rows": 8604456,
+      "territories": 2487,
+      "demographic_rows": 23160,
+      "totals": {
+        "LN": 76490962,
+        "SV": 47383154,
+        "NV": 28939159,
+        "NS": 168649
+      },
+      "members": [
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2012/",
+          "bytes": 0
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2012/01_descripcioncampos_conteoscensales2012.txt",
+          "bytes": 2557
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2012/datosabiertos_deceyec_conteoscensales2012_ags.csv",
+          "bytes": 5533362
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2012/datosabiertos_deceyec_conteoscensales2012_bc.csv",
+          "bytes": 14959132
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2012/datosabiertos_deceyec_conteoscensales2012_bcs.csv",
+          "bytes": 3542315
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2012/datosabiertos_deceyec_conteoscensales2012_camp.csv",
+          "bytes": 3790656
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2012/datosabiertos_deceyec_conteoscensales2012_cdmx.csv",
+          "bytes": 58378861
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2012/datosabiertos_deceyec_conteoscensales2012_chih.csv",
+          "bytes": 22075356
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2012/datosabiertos_deceyec_conteoscensales2012_chis.csv",
+          "bytes": 17693368
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2012/datosabiertos_deceyec_conteoscensales2012_coah.csv",
+          "bytes": 12812395
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2012/datosabiertos_deceyec_conteoscensales2012_col.csv",
+          "bytes": 2798815
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2012/datosabiertos_deceyec_conteoscensales2012_dgo.csv",
+          "bytes": 10600855
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2012/datosabiertos_deceyec_conteoscensales2012_gro.csv",
+          "bytes": 23825833
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2012/datosabiertos_deceyec_conteoscensales2012_gto.csv",
+          "bytes": 27810449
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2012/datosabiertos_deceyec_conteoscensales2012_hgo.csv",
+          "bytes": 14780796
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2012/datosabiertos_deceyec_conteoscensales2012_jal.csv",
+          "bytes": 31819429
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2012/datosabiertos_deceyec_conteoscensales2012_mex.csv",
+          "bytes": 58243334
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2012/datosabiertos_deceyec_conteoscensales2012_mich.csv",
+          "bytes": 23242397
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2012/datosabiertos_deceyec_conteoscensales2012_mor.csv",
+          "bytes": 7826003
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2012/datosabiertos_deceyec_conteoscensales2012_nay.csv",
+          "bytes": 7226884
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2012/datosabiertos_deceyec_conteoscensales2012_nl.csv",
+          "bytes": 21146117
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2012/datosabiertos_deceyec_conteoscensales2012_oax.csv",
+          "bytes": 24615948
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2012/datosabiertos_deceyec_conteoscensales2012_pue.csv",
+          "bytes": 23220049
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2012/datosabiertos_deceyec_conteoscensales2012_qro.csv",
+          "bytes": 7249014
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2012/datosabiertos_deceyec_conteoscensales2012_qroo.csv",
+          "bytes": 6745282
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2012/datosabiertos_deceyec_conteoscensales2012_sin.csv",
+          "bytes": 24850324
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2012/datosabiertos_deceyec_conteoscensales2012_slp.csv",
+          "bytes": 17075704
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2012/datosabiertos_deceyec_conteoscensales2012_son.csv",
+          "bytes": 10824363
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2012/datosabiertos_deceyec_conteoscensales2012_tab.csv",
+          "bytes": 9175188
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2012/datosabiertos_deceyec_conteoscensales2012_tamps.csv",
+          "bytes": 15970255
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2012/datosabiertos_deceyec_conteoscensales2012_tlax.csv",
+          "bytes": 5524362
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2012/datosabiertos_deceyec_conteoscensales2012_ver.csv",
+          "bytes": 43561162
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2012/datosabiertos_deceyec_conteoscensales2012_yuc.csv",
+          "bytes": 8763247
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2012/datosabiertos_deceyec_conteoscensales2012_zac.csv",
+          "bytes": 14433441
+        }
+      ],
+      "missing_local_district": 0,
+      "age_min": 18,
+      "age_max": 132,
+      "quality_status": "validated"
+    },
+    {
+      "year": 2015,
+      "url": "https://ine.mx/wp-content/uploads/2022/04/DatosAbiertos_DECEyEC_ConteosCensales2015.zip",
+      "sha256": "7435ac54a3a6aebf5d9c9466a064b320b64bf5ff8b4d8ae787bad898497341da",
+      "retrieved_at": "2026-10-22T01:48:59.475688+00:00",
+      "compressed_bytes": 42594136,
+      "uncompressed_bytes": 613223117,
+      "raw_rows": 9106059,
+      "territories": 2490,
+      "demographic_rows": 23213,
+      "totals": {
+        "LN": 83563462,
+        "SV": 36926612,
+        "NV": 41517874,
+        "NS": 5118976
+      },
+      "members": [
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2015/",
+          "bytes": 0
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2015/01_descripcioncampos_conteoscensales2015.txt",
+          "bytes": 2557
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2015/datosabiertos_deceyec_conteoscensales2015_ags.csv",
+          "bytes": 5782338
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2015/datosabiertos_deceyec_conteoscensales2015_bc.csv",
+          "bytes": 16568141
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2015/datosabiertos_deceyec_conteoscensales2015_bcs.csv",
+          "bytes": 4116283
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2015/datosabiertos_deceyec_conteoscensales2015_camp.csv",
+          "bytes": 4153327
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2015/datosabiertos_deceyec_conteoscensales2015_cdmx.csv",
+          "bytes": 59121908
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2015/datosabiertos_deceyec_conteoscensales2015_chih.csv",
+          "bytes": 24799573
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2015/datosabiertos_deceyec_conteoscensales2015_chis.csv",
+          "bytes": 18502088
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2015/datosabiertos_deceyec_conteoscensales2015_coah.csv",
+          "bytes": 13558885
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2015/datosabiertos_deceyec_conteoscensales2015_col.csv",
+          "bytes": 2996838
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2015/datosabiertos_deceyec_conteoscensales2015_dgo.csv",
+          "bytes": 11041628
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2015/datosabiertos_deceyec_conteoscensales2015_gro.csv",
+          "bytes": 25130335
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2015/datosabiertos_deceyec_conteoscensales2015_gto.csv",
+          "bytes": 29630013
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2015/datosabiertos_deceyec_conteoscensales2015_hgo.csv",
+          "bytes": 15849613
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2015/datosabiertos_deceyec_conteoscensales2015_jal.csv",
+          "bytes": 33397660
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2015/datosabiertos_deceyec_conteoscensales2015_mex.csv",
+          "bytes": 60570306
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2015/datosabiertos_deceyec_conteoscensales2015_mich.csv",
+          "bytes": 24449930
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2015/datosabiertos_deceyec_conteoscensales2015_mor.csv",
+          "bytes": 7975480
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2015/datosabiertos_deceyec_conteoscensales2015_nay.csv",
+          "bytes": 7723884
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2015/datosabiertos_deceyec_conteoscensales2015_nl.csv",
+          "bytes": 23575951
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2015/datosabiertos_deceyec_conteoscensales2015_oax.csv",
+          "bytes": 25110927
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2015/datosabiertos_deceyec_conteoscensales2015_pue.csv",
+          "bytes": 24375630
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2015/datosabiertos_deceyec_conteoscensales2015_qro.csv",
+          "bytes": 7820600
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2015/datosabiertos_deceyec_conteoscensales2015_qroo.csv",
+          "bytes": 7718329
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2015/datosabiertos_deceyec_conteoscensales2015_sin.csv",
+          "bytes": 27338518
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2015/datosabiertos_deceyec_conteoscensales2015_slp.csv",
+          "bytes": 17927476
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2015/datosabiertos_deceyec_conteoscensales2015_son.csv",
+          "bytes": 12330295
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2015/datosabiertos_deceyec_conteoscensales2015_tab.csv",
+          "bytes": 9504011
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2015/datosabiertos_deceyec_conteoscensales2015_tamps.csv",
+          "bytes": 17562091
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2015/datosabiertos_deceyec_conteoscensales2015_tlax.csv",
+          "bytes": 5618306
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2015/datosabiertos_deceyec_conteoscensales2015_ver.csv",
+          "bytes": 44914418
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2015/datosabiertos_deceyec_conteoscensales2015_yuc.csv",
+          "bytes": 9240512
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2015/datosabiertos_deceyec_conteoscensales2015_zac.csv",
+          "bytes": 14815266
+        }
+      ],
+      "missing_local_district": 0,
+      "age_min": 18,
+      "age_max": 117,
+      "quality_status": "validated"
+    },
+    {
+      "year": 2018,
+      "url": "https://ine.mx/wp-content/uploads/2022/04/DatosAbiertos_DECEyEC_ConteosCensales2018.zip",
+      "sha256": "b20981a0aea1ac773e7bc0b54784bba7619346585ba3996744ad22458279dd8b",
+      "retrieved_at": "2026-10-22T01:49:01.850486+00:00",
+      "compressed_bytes": 43389665,
+      "uncompressed_bytes": 623270421,
+      "raw_rows": 9251122,
+      "territories": 2495,
+      "demographic_rows": 23266,
+      "totals": {
+        "LN": 89123997,
+        "SV": 51784399,
+        "NV": 31249856,
+        "NS": 6089742
+      },
+      "members": [
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2018/",
+          "bytes": 0
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2018/01_descripcioncampos_conteoscensales2018.txt",
+          "bytes": 2557
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2018/datosabiertos_deceyec_conteoscensales2018_ags.csv",
+          "bytes": 5891067
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2018/datosabiertos_deceyec_conteoscensales2018_bc.csv",
+          "bytes": 17071740
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2018/datosabiertos_deceyec_conteoscensales2018_bcs.csv",
+          "bytes": 4240393
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2018/datosabiertos_deceyec_conteoscensales2018_camp.csv",
+          "bytes": 4222192
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2018/datosabiertos_deceyec_conteoscensales2018_cdmx.csv",
+          "bytes": 59706449
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2018/datosabiertos_deceyec_conteoscensales2018_chih.csv",
+          "bytes": 25385054
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2018/datosabiertos_deceyec_conteoscensales2018_chis.csv",
+          "bytes": 18857168
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2018/datosabiertos_deceyec_conteoscensales2018_coah.csv",
+          "bytes": 13809327
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2018/datosabiertos_deceyec_conteoscensales2018_col.csv",
+          "bytes": 3040596
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2018/datosabiertos_deceyec_conteoscensales2018_dgo.csv",
+          "bytes": 11267678
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2018/datosabiertos_deceyec_conteoscensales2018_gro.csv",
+          "bytes": 25529015
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2018/datosabiertos_deceyec_conteoscensales2018_gto.csv",
+          "bytes": 29838917
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2018/datosabiertos_deceyec_conteoscensales2018_hgo.csv",
+          "bytes": 16103446
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2018/datosabiertos_deceyec_conteoscensales2018_jal.csv",
+          "bytes": 33814778
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2018/datosabiertos_deceyec_conteoscensales2018_mex.csv",
+          "bytes": 61626427
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2018/datosabiertos_deceyec_conteoscensales2018_mich.csv",
+          "bytes": 24749266
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2018/datosabiertos_deceyec_conteoscensales2018_mor.csv",
+          "bytes": 8064265
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2018/datosabiertos_deceyec_conteoscensales2018_nay.csv",
+          "bytes": 7848473
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2018/datosabiertos_deceyec_conteoscensales2018_nl.csv",
+          "bytes": 24229057
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2018/datosabiertos_deceyec_conteoscensales2018_oax.csv",
+          "bytes": 25490278
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2018/datosabiertos_deceyec_conteoscensales2018_pue.csv",
+          "bytes": 24853542
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2018/datosabiertos_deceyec_conteoscensales2018_qro.csv",
+          "bytes": 7972360
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2018/datosabiertos_deceyec_conteoscensales2018_qroo.csv",
+          "bytes": 7977788
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2018/datosabiertos_deceyec_conteoscensales2018_sin.csv",
+          "bytes": 27799396
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2018/datosabiertos_deceyec_conteoscensales2018_slp.csv",
+          "bytes": 18207670
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2018/datosabiertos_deceyec_conteoscensales2018_son.csv",
+          "bytes": 12588534
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2018/datosabiertos_deceyec_conteoscensales2018_tab.csv",
+          "bytes": 9602443
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2018/datosabiertos_deceyec_conteoscensales2018_tamps.csv",
+          "bytes": 17956570
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2018/datosabiertos_deceyec_conteoscensales2018_tlax.csv",
+          "bytes": 5714172
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2018/datosabiertos_deceyec_conteoscensales2018_ver.csv",
+          "bytes": 45416526
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2018/datosabiertos_deceyec_conteoscensales2018_yuc.csv",
+          "bytes": 9333974
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2018/datosabiertos_deceyec_conteoscensales2018_zac.csv",
+          "bytes": 15059303
+        }
+      ],
+      "missing_local_district": 0,
+      "age_min": 18,
+      "age_max": 137,
+      "quality_status": "validated"
+    },
+    {
+      "year": 2021,
+      "url": "https://ine.mx/wp-content/uploads/2022/04/DatosAbiertos_DECEyEC_ConteosCensales2021.zip",
+      "sha256": "29bdfaaa33be5151c2ae8c8e406d8a27976006d11e6cbe201ac05cc04def4849",
+      "retrieved_at": "2026-10-22T01:49:07.271195+00:00",
+      "compressed_bytes": 44357326,
+      "uncompressed_bytes": 635485658,
+      "raw_rows": 9430502,
+      "territories": 2500,
+      "demographic_rows": 23323,
+      "totals": {
+        "LN": 93532133,
+        "SV": 46389189,
+        "NV": 43099624,
+        "NS": 4043320
+      },
+      "members": [
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2021/",
+          "bytes": 0
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2021/01_descripcioncampos_conteoscensales2021.txt",
+          "bytes": 2557
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2021/datosabiertos_deceyec_conteoscensales2021_ags.csv",
+          "bytes": 6141176
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2021/datosabiertos_deceyec_conteoscensales2021_bc.csv",
+          "bytes": 17942152
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2021/datosabiertos_deceyec_conteoscensales2021_bcs.csv",
+          "bytes": 4315920
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2021/datosabiertos_deceyec_conteoscensales2021_camp.csv",
+          "bytes": 4311047
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2021/datosabiertos_deceyec_conteoscensales2021_cdmx.csv",
+          "bytes": 60047509
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2021/datosabiertos_deceyec_conteoscensales2021_chih.csv",
+          "bytes": 25889625
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2021/datosabiertos_deceyec_conteoscensales2021_chis.csv",
+          "bytes": 19449413
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2021/datosabiertos_deceyec_conteoscensales2021_coah.csv",
+          "bytes": 14092891
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2021/datosabiertos_deceyec_conteoscensales2021_col.csv",
+          "bytes": 3069130
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2021/datosabiertos_deceyec_conteoscensales2021_dgo.csv",
+          "bytes": 11206621
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2021/datosabiertos_deceyec_conteoscensales2021_gro.csv",
+          "bytes": 25248823
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2021/datosabiertos_deceyec_conteoscensales2021_gto.csv",
+          "bytes": 30196421
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2021/datosabiertos_deceyec_conteoscensales2021_hgo.csv",
+          "bytes": 16209187
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2021/datosabiertos_deceyec_conteoscensales2021_jal.csv",
+          "bytes": 34535885
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2021/datosabiertos_deceyec_conteoscensales2021_mex.csv",
+          "bytes": 62980968
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2021/datosabiertos_deceyec_conteoscensales2021_mich.csv",
+          "bytes": 25147879
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2021/datosabiertos_deceyec_conteoscensales2021_mor.csv",
+          "bytes": 8204297
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2021/datosabiertos_deceyec_conteoscensales2021_nay.csv",
+          "bytes": 8036274
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2021/datosabiertos_deceyec_conteoscensales2021_nl.csv",
+          "bytes": 25860975
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2021/datosabiertos_deceyec_conteoscensales2021_oax.csv",
+          "bytes": 26001336
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2021/datosabiertos_deceyec_conteoscensales2021_pue.csv",
+          "bytes": 25363589
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2021/datosabiertos_deceyec_conteoscensales2021_qro.csv",
+          "bytes": 8355483
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2021/datosabiertos_deceyec_conteoscensales2021_qroo.csv",
+          "bytes": 8848146
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2021/datosabiertos_deceyec_conteoscensales2021_sin.csv",
+          "bytes": 28257746
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2021/datosabiertos_deceyec_conteoscensales2021_slp.csv",
+          "bytes": 18315276
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2021/datosabiertos_deceyec_conteoscensales2021_son.csv",
+          "bytes": 12768871
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2021/datosabiertos_deceyec_conteoscensales2021_tab.csv",
+          "bytes": 9804013
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2021/datosabiertos_deceyec_conteoscensales2021_tamps.csv",
+          "bytes": 18284819
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2021/datosabiertos_deceyec_conteoscensales2021_tlax.csv",
+          "bytes": 5769747
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2021/datosabiertos_deceyec_conteoscensales2021_ver.csv",
+          "bytes": 46423403
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2021/datosabiertos_deceyec_conteoscensales2021_yuc.csv",
+          "bytes": 9523298
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2021/datosabiertos_deceyec_conteoscensales2021_zac.csv",
+          "bytes": 14881181
+        }
+      ],
+      "missing_local_district": 0,
+      "age_min": 18,
+      "age_max": 139,
+      "quality_status": "validated"
+    },
+    {
+      "year": 2024,
+      "url": "https://ine.mx/wp-content/uploads/2025/08/DatosAbiertos_DECEyEC_ConteosCensales2024.zip",
+      "sha256": "c0de34d04e782ad99579b83591a6e3e6c8d1e20f4914d4845743bd79d2bd28b2",
+      "retrieved_at": "2026-10-22T01:49:04.792190+00:00",
+      "compressed_bytes": 82419841,
+      "uncompressed_bytes": 688046232,
+      "raw_rows": 9773730,
+      "territories": 2509,
+      "demographic_rows": 23487,
+      "totals": {
+        "LN": 98330348,
+        "SV": 54899228,
+        "NV": 37105466,
+        "NS": 6325654
+      },
+      "members": [
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2024/",
+          "bytes": 0
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2024/01_descripcioncampos_conteoscensales2024.txt",
+          "bytes": 2502
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2024/datosabiertos_deceyec_conteoscensales2024_ags.csv",
+          "bytes": 6892228
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2024/datosabiertos_deceyec_conteoscensales2024_bc.csv",
+          "bytes": 19970589
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2024/datosabiertos_deceyec_conteoscensales2024_bcs.csv",
+          "bytes": 4943002
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2024/datosabiertos_deceyec_conteoscensales2024_camp.csv",
+          "bytes": 4690759
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2024/datosabiertos_deceyec_conteoscensales2024_cdmx.csv",
+          "bytes": 63091165
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2024/datosabiertos_deceyec_conteoscensales2024_chih.csv",
+          "bytes": 27844434
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2024/datosabiertos_deceyec_conteoscensales2024_chis.csv",
+          "bytes": 21909602
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2024/datosabiertos_deceyec_conteoscensales2024_coah.csv",
+          "bytes": 15648663
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2024/datosabiertos_deceyec_conteoscensales2024_col.csv",
+          "bytes": 3436311
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2024/datosabiertos_deceyec_conteoscensales2024_dgo.csv",
+          "bytes": 11985347
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2024/datosabiertos_deceyec_conteoscensales2024_gro.csv",
+          "bytes": 26936056
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2024/datosabiertos_deceyec_conteoscensales2024_gto.csv",
+          "bytes": 32490308
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2024/datosabiertos_deceyec_conteoscensales2024_hgo.csv",
+          "bytes": 17727112
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2024/datosabiertos_deceyec_conteoscensales2024_jal.csv",
+          "bytes": 37965120
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2024/datosabiertos_deceyec_conteoscensales2024_mex.csv",
+          "bytes": 68310064
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2024/datosabiertos_deceyec_conteoscensales2024_mich.csv",
+          "bytes": 26854055
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2024/datosabiertos_deceyec_conteoscensales2024_mor.csv",
+          "bytes": 8870475
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2024/datosabiertos_deceyec_conteoscensales2024_nay.csv",
+          "bytes": 8773939
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2024/datosabiertos_deceyec_conteoscensales2024_nl.csv",
+          "bytes": 28002087
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2024/datosabiertos_deceyec_conteoscensales2024_oax.csv",
+          "bytes": 27906407
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2024/datosabiertos_deceyec_conteoscensales2024_pue.csv",
+          "bytes": 27861640
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2024/datosabiertos_deceyec_conteoscensales2024_qro.csv",
+          "bytes": 9415936
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2024/datosabiertos_deceyec_conteoscensales2024_qroo.csv",
+          "bytes": 9874344
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2024/datosabiertos_deceyec_conteoscensales2024_sin.csv",
+          "bytes": 30456190
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2024/datosabiertos_deceyec_conteoscensales2024_slp.csv",
+          "bytes": 19725525
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2024/datosabiertos_deceyec_conteoscensales2024_son.csv",
+          "bytes": 13951509
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2024/datosabiertos_deceyec_conteoscensales2024_tab.csv",
+          "bytes": 10692727
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2024/datosabiertos_deceyec_conteoscensales2024_tam.csv",
+          "bytes": 20039821
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2024/datosabiertos_deceyec_conteoscensales2024_tlax.csv",
+          "bytes": 6257886
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2024/datosabiertos_deceyec_conteoscensales2024_ver.csv",
+          "bytes": 49243799
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2024/datosabiertos_deceyec_conteoscensales2024_yuc.csv",
+          "bytes": 10366709
+        },
+        {
+          "name": "DatosAbiertos_DECEyEC_ConteosCensales2024/datosabiertos_deceyec_conteoscensales2024_zac.csv",
+          "bytes": 15909921
+        }
+      ],
+      "missing_local_district": 20912,
+      "age_min": 18,
+      "age_max": 140,
+      "quality_status": "validated"
+    }
+  ]
+}

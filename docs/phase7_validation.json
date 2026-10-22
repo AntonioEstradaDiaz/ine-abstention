@@ -1,0 +1,63 @@
+{
+  "verified_at": "2026-10-22T04:08:14.725563+00:00",
+  "tests_passed": 96,
+  "http_demo_checks": 26,
+  "ruff_check": "passed",
+  "ruff_format": "passed",
+  "alembic_check": "no_pending_operations",
+  "supabase_security_advisories": [],
+  "compose_local_config": "passed",
+  "compose_supabase_config": "passed",
+  "docker_image_build": "passed",
+  "docker_runtime": "healthy",
+  "docker_restore": "passed",
+  "demo_export_repeated_sha256": "c8ffb954d34f1a455a628d1dc811f1557379722cc77625dbea0a4e789398553e",
+  "demo_bundle_bytes": 2886080,
+  "map_geometry": "unavailable_explicit_null",
+  "docker_engine_version": "29.1.3",
+  "docker_api_image_id": "sha256:f02368c0a388e9b6862a02c84d5a02646014939af98812fe4cca37f089d0f4cc",
+  "docker_restore_repeat": "already_restored",
+  "docker_cold_volume_restore": "passed",
+  "docker_tests_passed": 96,
+  "docker_http_demo_checks": 26,
+  "docker_results_match_supabase": true,
+  "docker_compared_fields": [
+    "source_datasets",
+    "elections",
+    "forecast_run_id",
+    "risk_counts",
+    "simulation_id",
+    "scenario_summary",
+    "statistics_2024"
+  ],
+  "docker_identity_sequences": {
+    "data_sources": true,
+    "elections": true,
+    "territories": true,
+    "participation_records": true,
+    "demographic_participation": true,
+    "model_versions": true,
+    "territorial_predictions": true
+  },
+  "docker_containers": [
+    {
+      "Service": "api",
+      "Name": "ine-abstention-local-api-1",
+      "State": "running",
+      "Health": "healthy",
+      "Ports": "127.0.0.1:8001->8000/tcp"
+    },
+    {
+      "Service": "db",
+      "Name": "ine-abstention-local-db-1",
+      "State": "running",
+      "Health": "healthy",
+      "Ports": "127.0.0.1:15432->5432/tcp"
+    }
+  ],
+  "docker_runtime_checks": "docs/phase7_container_checks.json",
+  "docker_demo_report": "docs/phase7_demo_local.json",
+  "docker_repair": "Preserved and recreated inaccessible runtime socket directories; existing VM data retained",
+  "docker_port_conflict_fix": "PostgreSQL published on 15432; existing service on 5433 retained",
+  "docker_readiness_fix": "pg_isready uses TCP 127.0.0.1 during first initialization"
+}

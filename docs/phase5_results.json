@@ -1,0 +1,2786 @@
+{
+  "id": "e63b667cf09b747f7de8",
+  "fingerprint": "e63b667cf09b747f7de8dc71c689f9c63f126b5b069a2f2a3027ccebd90d9b33",
+  "model_version_id": 1,
+  "target_year": 2027,
+  "as_of_year": 2024,
+  "election_type": "midterm",
+  "calibration": {
+    "version": "historical-terciles-empirical-errors-v1",
+    "as_of_year": 2024,
+    "election_type": "midterm",
+    "risk": {
+      "method": "historical_equal_state_election_terciles",
+      "quantile_method": "inverse_empirical_cdf_ceiling_rank",
+      "thresholds": [
+        0.4812961765326275,
+        0.5644145998767056
+      ],
+      "boundary_rule": "low < t1; t1 <= medium < t2; high >= t2",
+      "reference_years": [
+        2009,
+        2015,
+        2021
+      ],
+      "reference_rows": 96,
+      "interpretation": "relative historical abstention; not an official INE risk standard"
+    },
+    "uncertainty": {
+      "method": "same_election_type_absolute_out_of_time_errors",
+      "reference_quantile": 0.9,
+      "radius": 0.14368856461187757,
+      "calibration_years": [
+        2021
+      ],
+      "calibration_rows": 32,
+      "election_blocks": 1,
+      "coverage_guaranteed": false,
+      "support": "limited",
+      "limitations": [
+        "States share election shocks; rows are not independent calibration samples.",
+        "Empirical reference band, not a calibrated 90% confidence statement.",
+        "Does not cover publication revisions, NS bias or future structural changes."
+      ]
+    },
+    "fingerprint": "85208e3a99a33c935758cf0a3bbd62611c969943633c411e81a5c39b531b2ce7"
+  },
+  "provenance": {
+    "model_run_id": "daf97a195864693a644e",
+    "model_name": "baseline_last",
+    "dataset_fingerprint": "5aa5d352892efdc10b19822cb3299dc391edf82d22fdee8b147cea8d9255c5f8",
+    "model_sha256": "28b757acc59aaaad93202bb2b0117eebc2bc929f75a8ecd221ee00f998781fac",
+    "residuals_sha256": "343ce4b41d356eb12d9ed5c758ee3a6d65e4b6367e11b3664a8a117bafbd98f3",
+    "source_datasets": [
+      {
+        "checksum": "e626e9528a91206c23fc8f96987e1a297db285e7cbc0fa1e37a18ed473ebf61c",
+        "id": 1,
+        "source_url": "https://ine.mx/wp-content/uploads/2022/04/DatosAbiertos_DECEyEC_ConteosCensales2009.zip",
+        "year": 2009
+      },
+      {
+        "checksum": "5999f86e21154138b904723cb5d55ebde9e108ac72872f2ff5695d9eb8fde9cd",
+        "id": 2,
+        "source_url": "https://ine.mx/wp-content/uploads/2022/04/DatosAbiertos_DECEyEC_ConteosCensales2012.zip",
+        "year": 2012
+      },
+      {
+        "checksum": "7435ac54a3a6aebf5d9c9466a064b320b64bf5ff8b4d8ae787bad898497341da",
+        "id": 3,
+        "source_url": "https://ine.mx/wp-content/uploads/2022/04/DatosAbiertos_DECEyEC_ConteosCensales2015.zip",
+        "year": 2015
+      },
+      {
+        "checksum": "b20981a0aea1ac773e7bc0b54784bba7619346585ba3996744ad22458279dd8b",
+        "id": 4,
+        "source_url": "https://ine.mx/wp-content/uploads/2022/04/DatosAbiertos_DECEyEC_ConteosCensales2018.zip",
+        "year": 2018
+      },
+      {
+        "checksum": "29bdfaaa33be5151c2ae8c8e406d8a27976006d11e6cbe201ac05cc04def4849",
+        "id": 5,
+        "source_url": "https://ine.mx/wp-content/uploads/2022/04/DatosAbiertos_DECEyEC_ConteosCensales2021.zip",
+        "year": 2021
+      },
+      {
+        "checksum": "c0de34d04e782ad99579b83591a6e3e6c8d1e20f4914d4845743bd79d2bd28b2",
+        "id": 6,
+        "source_url": "https://ine.mx/wp-content/uploads/2025/08/DatosAbiertos_DECEyEC_ConteosCensales2024.zip",
+        "year": 2024
+      }
+    ],
+    "publication_vintage_verified": false,
+    "production_ready": false,
+    "target_interpretation": "analytical future election scenario, without INE endorsement",
+    "rate_units": "fraction [0,1]; trend and gaps in percentage points",
+    "coverage_diagnostics": [
+      {
+        "test_year": 2018,
+        "election_type": "presidential",
+        "calibration_years": [],
+        "calibration_rows": 0,
+        "test_rows": 32,
+        "radius": null,
+        "coverage": null,
+        "interpretation": "retrospective diagnostic; selection used development years"
+      },
+      {
+        "test_year": 2021,
+        "election_type": "midterm",
+        "calibration_years": [],
+        "calibration_rows": 0,
+        "test_rows": 32,
+        "radius": null,
+        "coverage": null,
+        "interpretation": "retrospective diagnostic; selection used development years"
+      },
+      {
+        "test_year": 2024,
+        "election_type": "presidential",
+        "calibration_years": [
+          2018
+        ],
+        "calibration_rows": 32,
+        "test_rows": 32,
+        "radius": 0.05622312544975894,
+        "coverage": 0.8125,
+        "interpretation": "retrospective diagnostic; selection used development years"
+      }
+    ],
+    "code_sha256": {
+      "forecasting.py": "61dc4c0966305c90174c93a14e0238f7fa20b2ede1b428c307d2d845b39bf9d5",
+      "forecast_calibration.py": "1947f9fb8fecb1c44f8c0307f4fdd0b0411c324454f38f616a527118a7a263e7"
+    }
+  },
+  "predictions": [
+    {
+      "territory_id": 12463,
+      "state_code": "01",
+      "name": "AGUASCALIENTES",
+      "predicted": 0.505027900194361,
+      "lower": 0.3613393355824834,
+      "upper": 0.6487164648062385,
+      "risk_level": "medium",
+      "uncertainty": {
+        "method": "same_election_type_absolute_out_of_time_errors",
+        "reference_quantile": 0.9,
+        "radius": 0.14368856461187757,
+        "calibration_years": [
+          2021
+        ],
+        "calibration_rows": 32,
+        "election_blocks": 1,
+        "coverage_guaranteed": false,
+        "support": "limited",
+        "limitations": [
+          "States share election shocks; rows are not independent calibration samples.",
+          "Empirical reference band, not a calibrated 90% confidence statement.",
+          "Does not cover publication revisions, NS bias or future structural changes."
+        ],
+        "risk_levels_possible": [
+          "low",
+          "medium",
+          "high"
+        ],
+        "classification_uncertain": true,
+        "high_risk_probability": null
+      },
+      "explanation": {
+        "method": "exact_baseline_identity",
+        "causal": false,
+        "formula": "prediction = previous comparable NV / (SV + NV)",
+        "reference_year": 2021,
+        "source_id": 5,
+        "voter_count": 489469,
+        "nonvoter_count": 499413,
+        "reference_unspecified_rate": 0.028049379803817498,
+        "used_features": [
+          {
+            "name": "previous_abstention_rate",
+            "value": 0.505027900194361
+          }
+        ],
+        "context_only": {
+          "historical_mean_abstention": 0.5740519613911231,
+          "abstention_trend_pp_per_year": -0.6352263649286168,
+          "previous_gap_vs_national_pp": 2.34076556616728,
+          "same_type_history_count": 3
+        },
+        "missing_status_bounds_in_reference_election": {
+          "lower": 0.4908621808102848,
+          "upper": 0.5189115606141024,
+          "interpretation": "historical NS scenarios, separate from forecast bands"
+        }
+      },
+      "lineage": {
+        "target_year": 2027,
+        "feature_source_years": [
+          2009,
+          2012,
+          2015,
+          2018,
+          2021,
+          2024
+        ],
+        "feature_source_ids": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "previous_same_type_year": 2021,
+        "demographic_reference_year": 2024,
+        "publication_vintage_verified": false,
+        "territory_reference_year": 2024
+      }
+    },
+    {
+      "territory_id": 12464,
+      "state_code": "02",
+      "name": "BAJA CALIFORNIA",
+      "predicted": 0.6240117593168858,
+      "lower": 0.4803231947050082,
+      "upper": 0.7677003239287634,
+      "risk_level": "high",
+      "uncertainty": {
+        "method": "same_election_type_absolute_out_of_time_errors",
+        "reference_quantile": 0.9,
+        "radius": 0.14368856461187757,
+        "calibration_years": [
+          2021
+        ],
+        "calibration_rows": 32,
+        "election_blocks": 1,
+        "coverage_guaranteed": false,
+        "support": "limited",
+        "limitations": [
+          "States share election shocks; rows are not independent calibration samples.",
+          "Empirical reference band, not a calibrated 90% confidence statement.",
+          "Does not cover publication revisions, NS bias or future structural changes."
+        ],
+        "risk_levels_possible": [
+          "low",
+          "medium",
+          "high"
+        ],
+        "classification_uncertain": true,
+        "high_risk_probability": null
+      },
+      "explanation": {
+        "method": "exact_baseline_identity",
+        "causal": false,
+        "formula": "prediction = previous comparable NV / (SV + NV)",
+        "reference_year": 2021,
+        "source_id": 5,
+        "voter_count": 1025203,
+        "nonvoter_count": 1701486,
+        "reference_unspecified_rate": 0.06594905193463432,
+        "used_features": [
+          {
+            "name": "previous_abstention_rate",
+            "value": 0.6240117593168858
+          }
+        ],
+        "context_only": {
+          "historical_mean_abstention": 0.6735613272443836,
+          "abstention_trend_pp_per_year": -0.6017304707385318,
+          "previous_gap_vs_national_pp": 14.239151478419764,
+          "same_type_history_count": 3
+        },
+        "missing_status_bounds_in_reference_election": {
+          "lower": 0.582858775393874,
+          "upper": 0.6488078273285083,
+          "interpretation": "historical NS scenarios, separate from forecast bands"
+        }
+      },
+      "lineage": {
+        "target_year": 2027,
+        "feature_source_years": [
+          2009,
+          2012,
+          2015,
+          2018,
+          2021,
+          2024
+        ],
+        "feature_source_ids": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "previous_same_type_year": 2021,
+        "demographic_reference_year": 2024,
+        "publication_vintage_verified": false,
+        "territory_reference_year": 2024
+      }
+    },
+    {
+      "territory_id": 12465,
+      "state_code": "03",
+      "name": "BAJA CALIFORNIA SUR",
+      "predicted": 0.5207866334384645,
+      "lower": 0.377098068826587,
+      "upper": 0.664475198050342,
+      "risk_level": "medium",
+      "uncertainty": {
+        "method": "same_election_type_absolute_out_of_time_errors",
+        "reference_quantile": 0.9,
+        "radius": 0.14368856461187757,
+        "calibration_years": [
+          2021
+        ],
+        "calibration_rows": 32,
+        "election_blocks": 1,
+        "coverage_guaranteed": false,
+        "support": "limited",
+        "limitations": [
+          "States share election shocks; rows are not independent calibration samples.",
+          "Empirical reference band, not a calibrated 90% confidence statement.",
+          "Does not cover publication revisions, NS bias or future structural changes."
+        ],
+        "risk_levels_possible": [
+          "low",
+          "medium",
+          "high"
+        ],
+        "classification_uncertain": true,
+        "high_risk_probability": null
+      },
+      "explanation": {
+        "method": "exact_baseline_identity",
+        "causal": false,
+        "formula": "prediction = previous comparable NV / (SV + NV)",
+        "reference_year": 2021,
+        "source_id": 5,
+        "voter_count": 256325,
+        "nonvoter_count": 278562,
+        "reference_unspecified_rate": 0.04767949692611458,
+        "used_features": [
+          {
+            "name": "previous_abstention_rate",
+            "value": 0.5207866334384645
+          }
+        ],
+        "context_only": {
+          "historical_mean_abstention": 0.558988519232035,
+          "abstention_trend_pp_per_year": -1.2416358736922224,
+          "previous_gap_vs_national_pp": 3.9166388905776395,
+          "same_type_history_count": 3
+        },
+        "missing_status_bounds_in_reference_election": {
+          "lower": 0.49595578875027374,
+          "upper": 0.5436352856763883,
+          "interpretation": "historical NS scenarios, separate from forecast bands"
+        }
+      },
+      "lineage": {
+        "target_year": 2027,
+        "feature_source_years": [
+          2009,
+          2012,
+          2015,
+          2018,
+          2021,
+          2024
+        ],
+        "feature_source_ids": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "previous_same_type_year": 2021,
+        "demographic_reference_year": 2024,
+        "publication_vintage_verified": false,
+        "territory_reference_year": 2024
+      }
+    },
+    {
+      "territory_id": 12466,
+      "state_code": "04",
+      "name": "CAMPECHE",
+      "predicted": 0.3801233543263519,
+      "lower": 0.23643478971447435,
+      "upper": 0.5238119189382295,
+      "risk_level": "low",
+      "uncertainty": {
+        "method": "same_election_type_absolute_out_of_time_errors",
+        "reference_quantile": 0.9,
+        "radius": 0.14368856461187757,
+        "calibration_years": [
+          2021
+        ],
+        "calibration_rows": 32,
+        "election_blocks": 1,
+        "coverage_guaranteed": false,
+        "support": "limited",
+        "limitations": [
+          "States share election shocks; rows are not independent calibration samples.",
+          "Empirical reference band, not a calibrated 90% confidence statement.",
+          "Does not cover publication revisions, NS bias or future structural changes."
+        ],
+        "risk_levels_possible": [
+          "low",
+          "medium"
+        ],
+        "classification_uncertain": true,
+        "high_risk_probability": null
+      },
+      "explanation": {
+        "method": "exact_baseline_identity",
+        "causal": false,
+        "formula": "prediction = previous comparable NV / (SV + NV)",
+        "reference_year": 2021,
+        "source_id": 5,
+        "voter_count": 380908,
+        "nonvoter_count": 233582,
+        "reference_unspecified_rate": 0.08114331855462763,
+        "used_features": [
+          {
+            "name": "previous_abstention_rate",
+            "value": 0.3801233543263519
+          }
+        ],
+        "context_only": {
+          "historical_mean_abstention": 0.38689553580780256,
+          "abstention_trend_pp_per_year": 0.004910402454387046,
+          "previous_gap_vs_national_pp": -10.149689020633623,
+          "same_type_history_count": 3
+        },
+        "missing_status_bounds_in_reference_election": {
+          "lower": 0.34927888389619516,
+          "upper": 0.4304222024508228,
+          "interpretation": "historical NS scenarios, separate from forecast bands"
+        }
+      },
+      "lineage": {
+        "target_year": 2027,
+        "feature_source_years": [
+          2009,
+          2012,
+          2015,
+          2018,
+          2021,
+          2024
+        ],
+        "feature_source_ids": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "previous_same_type_year": 2021,
+        "demographic_reference_year": 2024,
+        "publication_vintage_verified": false,
+        "territory_reference_year": 2024
+      }
+    },
+    {
+      "territory_id": 12467,
+      "state_code": "05",
+      "name": "COAHUILA",
+      "predicted": 0.4300332017106396,
+      "lower": 0.286344637098762,
+      "upper": 0.5737217663225171,
+      "risk_level": "low",
+      "uncertainty": {
+        "method": "same_election_type_absolute_out_of_time_errors",
+        "reference_quantile": 0.9,
+        "radius": 0.14368856461187757,
+        "calibration_years": [
+          2021
+        ],
+        "calibration_rows": 32,
+        "election_blocks": 1,
+        "coverage_guaranteed": false,
+        "support": "limited",
+        "limitations": [
+          "States share election shocks; rows are not independent calibration samples.",
+          "Empirical reference band, not a calibrated 90% confidence statement.",
+          "Does not cover publication revisions, NS bias or future structural changes."
+        ],
+        "risk_levels_possible": [
+          "low",
+          "medium",
+          "high"
+        ],
+        "classification_uncertain": true,
+        "high_risk_probability": null
+      },
+      "explanation": {
+        "method": "exact_baseline_identity",
+        "causal": false,
+        "formula": "prediction = previous comparable NV / (SV + NV)",
+        "reference_year": 2021,
+        "source_id": 5,
+        "voter_count": 1251459,
+        "nonvoter_count": 944211,
+        "reference_unspecified_rate": 0.02935621968492659,
+        "used_features": [
+          {
+            "name": "previous_abstention_rate",
+            "value": 0.4300332017106396
+          }
+        ],
+        "context_only": {
+          "historical_mean_abstention": 0.5152737523053537,
+          "abstention_trend_pp_per_year": -1.08082650783475,
+          "previous_gap_vs_national_pp": -5.158704282204857,
+          "same_type_history_count": 3
+        },
+        "missing_status_bounds_in_reference_election": {
+          "lower": 0.4174090525694097,
+          "upper": 0.44676527225433627,
+          "interpretation": "historical NS scenarios, separate from forecast bands"
+        }
+      },
+      "lineage": {
+        "target_year": 2027,
+        "feature_source_years": [
+          2009,
+          2012,
+          2015,
+          2018,
+          2021,
+          2024
+        ],
+        "feature_source_ids": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "previous_same_type_year": 2021,
+        "demographic_reference_year": 2024,
+        "publication_vintage_verified": false,
+        "territory_reference_year": 2024
+      }
+    },
+    {
+      "territory_id": 12468,
+      "state_code": "06",
+      "name": "COLIMA",
+      "predicted": 0.4814363247349218,
+      "lower": 0.33774776012304425,
+      "upper": 0.6251248893467993,
+      "risk_level": "medium",
+      "uncertainty": {
+        "method": "same_election_type_absolute_out_of_time_errors",
+        "reference_quantile": 0.9,
+        "radius": 0.14368856461187757,
+        "calibration_years": [
+          2021
+        ],
+        "calibration_rows": 32,
+        "election_blocks": 1,
+        "coverage_guaranteed": false,
+        "support": "limited",
+        "limitations": [
+          "States share election shocks; rows are not independent calibration samples.",
+          "Empirical reference band, not a calibrated 90% confidence statement.",
+          "Does not cover publication revisions, NS bias or future structural changes."
+        ],
+        "risk_levels_possible": [
+          "low",
+          "medium",
+          "high"
+        ],
+        "classification_uncertain": true,
+        "high_risk_probability": null
+      },
+      "explanation": {
+        "method": "exact_baseline_identity",
+        "causal": false,
+        "formula": "prediction = previous comparable NV / (SV + NV)",
+        "reference_year": 2021,
+        "source_id": 5,
+        "voter_count": 284539,
+        "nonvoter_count": 264167,
+        "reference_unspecified_rate": 0.013688140480046592,
+        "used_features": [
+          {
+            "name": "previous_abstention_rate",
+            "value": 0.4814363247349218
+          }
+        ],
+        "context_only": {
+          "historical_mean_abstention": 0.4371013022225872,
+          "abstention_trend_pp_per_year": 0.49092070365436097,
+          "previous_gap_vs_national_pp": -0.018391979776632983,
+          "same_type_history_count": 3
+        },
+        "missing_status_bounds_in_reference_election": {
+          "lower": 0.47484635668975284,
+          "upper": 0.48853449716979946,
+          "interpretation": "historical NS scenarios, separate from forecast bands"
+        }
+      },
+      "lineage": {
+        "target_year": 2027,
+        "feature_source_years": [
+          2009,
+          2012,
+          2015,
+          2018,
+          2021,
+          2024
+        ],
+        "feature_source_ids": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "previous_same_type_year": 2021,
+        "demographic_reference_year": 2024,
+        "publication_vintage_verified": false,
+        "territory_reference_year": 2024
+      }
+    },
+    {
+      "territory_id": 12469,
+      "state_code": "07",
+      "name": "CHIAPAS",
+      "predicted": 0.38804418782623445,
+      "lower": 0.2443556232143569,
+      "upper": 0.531732752438112,
+      "risk_level": "low",
+      "uncertainty": {
+        "method": "same_election_type_absolute_out_of_time_errors",
+        "reference_quantile": 0.9,
+        "radius": 0.14368856461187757,
+        "calibration_years": [
+          2021
+        ],
+        "calibration_rows": 32,
+        "election_blocks": 1,
+        "coverage_guaranteed": false,
+        "support": "limited",
+        "limitations": [
+          "States share election shocks; rows are not independent calibration samples.",
+          "Empirical reference band, not a calibrated 90% confidence statement.",
+          "Does not cover publication revisions, NS bias or future structural changes."
+        ],
+        "risk_levels_possible": [
+          "low",
+          "medium"
+        ],
+        "classification_uncertain": true,
+        "high_risk_probability": null
+      },
+      "explanation": {
+        "method": "exact_baseline_identity",
+        "causal": false,
+        "formula": "prediction = previous comparable NV / (SV + NV)",
+        "reference_year": 2021,
+        "source_id": 5,
+        "voter_count": 2078287,
+        "nonvoter_count": 1317852,
+        "reference_unspecified_rate": 0.10201781242406399,
+        "used_features": [
+          {
+            "name": "previous_abstention_rate",
+            "value": 0.38804418782623445
+          }
+        ],
+        "context_only": {
+          "historical_mean_abstention": 0.5127888829574935,
+          "abstention_trend_pp_per_year": -1.8516229392402803,
+          "previous_gap_vs_national_pp": -9.35760567064537,
+          "same_type_history_count": 3
+        },
+        "missing_status_bounds_in_reference_election": {
+          "lower": 0.3484567686603294,
+          "upper": 0.45047458108439337,
+          "interpretation": "historical NS scenarios, separate from forecast bands"
+        }
+      },
+      "lineage": {
+        "target_year": 2027,
+        "feature_source_years": [
+          2009,
+          2012,
+          2015,
+          2018,
+          2021,
+          2024
+        ],
+        "feature_source_ids": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "previous_same_type_year": 2021,
+        "demographic_reference_year": 2024,
+        "publication_vintage_verified": false,
+        "territory_reference_year": 2024
+      }
+    },
+    {
+      "territory_id": 12470,
+      "state_code": "08",
+      "name": "CHIHUAHUA",
+      "predicted": 0.5419783491847288,
+      "lower": 0.3982897845728512,
+      "upper": 0.6856669137966063,
+      "risk_level": "medium",
+      "uncertainty": {
+        "method": "same_election_type_absolute_out_of_time_errors",
+        "reference_quantile": 0.9,
+        "radius": 0.14368856461187757,
+        "calibration_years": [
+          2021
+        ],
+        "calibration_rows": 32,
+        "election_blocks": 1,
+        "coverage_guaranteed": false,
+        "support": "limited",
+        "limitations": [
+          "States share election shocks; rows are not independent calibration samples.",
+          "Empirical reference band, not a calibrated 90% confidence statement.",
+          "Does not cover publication revisions, NS bias or future structural changes."
+        ],
+        "risk_levels_possible": [
+          "low",
+          "medium",
+          "high"
+        ],
+        "classification_uncertain": true,
+        "high_risk_probability": null
+      },
+      "explanation": {
+        "method": "exact_baseline_identity",
+        "causal": false,
+        "formula": "prediction = previous comparable NV / (SV + NV)",
+        "reference_year": 2021,
+        "source_id": 5,
+        "voter_count": 1156752,
+        "nonvoter_count": 1368788,
+        "reference_unspecified_rate": 0.1274663239465329,
+        "used_features": [
+          {
+            "name": "previous_abstention_rate",
+            "value": 0.5419783491847288
+          }
+        ],
+        "context_only": {
+          "historical_mean_abstention": 0.636311741856028,
+          "abstention_trend_pp_per_year": -1.1768670672973807,
+          "previous_gap_vs_national_pp": 6.035810465204062,
+          "same_type_history_count": 3
+        },
+        "missing_status_bounds_in_reference_election": {
+          "lower": 0.472894361355541,
+          "upper": 0.600360685302074,
+          "interpretation": "historical NS scenarios, separate from forecast bands"
+        }
+      },
+      "lineage": {
+        "target_year": 2027,
+        "feature_source_years": [
+          2009,
+          2012,
+          2015,
+          2018,
+          2021,
+          2024
+        ],
+        "feature_source_ids": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "previous_same_type_year": 2021,
+        "demographic_reference_year": 2024,
+        "publication_vintage_verified": false,
+        "territory_reference_year": 2024
+      }
+    },
+    {
+      "territory_id": 12471,
+      "state_code": "09",
+      "name": "CIUDAD DE MEXICO",
+      "predicted": 0.4819722744852096,
+      "lower": 0.338283709873332,
+      "upper": 0.6256608390970871,
+      "risk_level": "medium",
+      "uncertainty": {
+        "method": "same_election_type_absolute_out_of_time_errors",
+        "reference_quantile": 0.9,
+        "radius": 0.14368856461187757,
+        "calibration_years": [
+          2021
+        ],
+        "calibration_rows": 32,
+        "election_blocks": 1,
+        "coverage_guaranteed": false,
+        "support": "limited",
+        "limitations": [
+          "States share election shocks; rows are not independent calibration samples.",
+          "Empirical reference band, not a calibrated 90% confidence statement.",
+          "Does not cover publication revisions, NS bias or future structural changes."
+        ],
+        "risk_levels_possible": [
+          "low",
+          "medium",
+          "high"
+        ],
+        "classification_uncertain": true,
+        "high_risk_probability": null
+      },
+      "explanation": {
+        "method": "exact_baseline_identity",
+        "causal": false,
+        "formula": "prediction = previous comparable NV / (SV + NV)",
+        "reference_year": 2021,
+        "source_id": 5,
+        "voter_count": 3964777,
+        "nonvoter_count": 3688823,
+        "reference_unspecified_rate": 0.015299803744423622,
+        "used_features": [
+          {
+            "name": "previous_abstention_rate",
+            "value": 0.4819722744852096
+          }
+        ],
+        "context_only": {
+          "historical_mean_abstention": 0.5463715273545786,
+          "abstention_trend_pp_per_year": -0.9253089351727208,
+          "previous_gap_vs_national_pp": 0.035202995252142655,
+          "same_type_history_count": 3
+        },
+        "missing_status_bounds_in_reference_election": {
+          "lower": 0.47459819327533237,
+          "upper": 0.489897997019756,
+          "interpretation": "historical NS scenarios, separate from forecast bands"
+        }
+      },
+      "lineage": {
+        "target_year": 2027,
+        "feature_source_years": [
+          2009,
+          2012,
+          2015,
+          2018,
+          2021,
+          2024
+        ],
+        "feature_source_ids": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "previous_same_type_year": 2021,
+        "demographic_reference_year": 2024,
+        "publication_vintage_verified": false,
+        "territory_reference_year": 2024
+      }
+    },
+    {
+      "territory_id": 12472,
+      "state_code": "10",
+      "name": "DURANGO",
+      "predicted": 0.5792525604471945,
+      "lower": 0.43556399583531696,
+      "upper": 0.722941125059072,
+      "risk_level": "high",
+      "uncertainty": {
+        "method": "same_election_type_absolute_out_of_time_errors",
+        "reference_quantile": 0.9,
+        "radius": 0.14368856461187757,
+        "calibration_years": [
+          2021
+        ],
+        "calibration_rows": 32,
+        "election_blocks": 1,
+        "coverage_guaranteed": false,
+        "support": "limited",
+        "limitations": [
+          "States share election shocks; rows are not independent calibration samples.",
+          "Empirical reference band, not a calibrated 90% confidence statement.",
+          "Does not cover publication revisions, NS bias or future structural changes."
+        ],
+        "risk_levels_possible": [
+          "low",
+          "medium",
+          "high"
+        ],
+        "classification_uncertain": true,
+        "high_risk_probability": null
+      },
+      "explanation": {
+        "method": "exact_baseline_identity",
+        "causal": false,
+        "formula": "prediction = previous comparable NV / (SV + NV)",
+        "reference_year": 2021,
+        "source_id": 5,
+        "voter_count": 546301,
+        "nonvoter_count": 752105,
+        "reference_unspecified_rate": 0.02658291999784086,
+        "used_features": [
+          {
+            "name": "previous_abstention_rate",
+            "value": 0.5792525604471945
+          }
+        ],
+        "context_only": {
+          "historical_mean_abstention": 0.584704639099752,
+          "abstention_trend_pp_per_year": -0.07804297448484321,
+          "previous_gap_vs_national_pp": 9.763231591450639,
+          "same_type_history_count": 3
+        },
+        "missing_status_bounds_in_reference_election": {
+          "lower": 0.5638543359742823,
+          "upper": 0.590437255972123,
+          "interpretation": "historical NS scenarios, separate from forecast bands"
+        }
+      },
+      "lineage": {
+        "target_year": 2027,
+        "feature_source_years": [
+          2009,
+          2012,
+          2015,
+          2018,
+          2021,
+          2024
+        ],
+        "feature_source_ids": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "previous_same_type_year": 2021,
+        "demographic_reference_year": 2024,
+        "publication_vintage_verified": false,
+        "territory_reference_year": 2024
+      }
+    },
+    {
+      "territory_id": 12473,
+      "state_code": "11",
+      "name": "GUANAJUATO",
+      "predicted": 0.5644145998767056,
+      "lower": 0.42072603526482805,
+      "upper": 0.7081031644885831,
+      "risk_level": "high",
+      "uncertainty": {
+        "method": "same_election_type_absolute_out_of_time_errors",
+        "reference_quantile": 0.9,
+        "radius": 0.14368856461187757,
+        "calibration_years": [
+          2021
+        ],
+        "calibration_rows": 32,
+        "election_blocks": 1,
+        "coverage_guaranteed": false,
+        "support": "limited",
+        "limitations": [
+          "States share election shocks; rows are not independent calibration samples.",
+          "Empirical reference band, not a calibrated 90% confidence statement.",
+          "Does not cover publication revisions, NS bias or future structural changes."
+        ],
+        "risk_levels_possible": [
+          "low",
+          "medium",
+          "high"
+        ],
+        "classification_uncertain": true,
+        "high_risk_probability": null
+      },
+      "explanation": {
+        "method": "exact_baseline_identity",
+        "causal": false,
+        "formula": "prediction = previous comparable NV / (SV + NV)",
+        "reference_year": 2021,
+        "source_id": 5,
+        "voter_count": 1948742,
+        "nonvoter_count": 2525104,
+        "reference_unspecified_rate": 0.023970060985427113,
+        "used_features": [
+          {
+            "name": "previous_abstention_rate",
+            "value": 0.5644145998767056
+          }
+        ],
+        "context_only": {
+          "historical_mean_abstention": 0.5478532310758666,
+          "abstention_trend_pp_per_year": 0.2860675790607929,
+          "previous_gap_vs_national_pp": 8.279435534401747,
+          "same_type_history_count": 3
+        },
+        "missing_status_bounds_in_reference_election": {
+          "lower": 0.5508855474965956,
+          "upper": 0.5748556084820227,
+          "interpretation": "historical NS scenarios, separate from forecast bands"
+        }
+      },
+      "lineage": {
+        "target_year": 2027,
+        "feature_source_years": [
+          2009,
+          2012,
+          2015,
+          2018,
+          2021,
+          2024
+        ],
+        "feature_source_ids": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "previous_same_type_year": 2021,
+        "demographic_reference_year": 2024,
+        "publication_vintage_verified": false,
+        "territory_reference_year": 2024
+      }
+    },
+    {
+      "territory_id": 12474,
+      "state_code": "12",
+      "name": "GUERRERO",
+      "predicted": 0.43659667313906,
+      "lower": 0.2929081085271824,
+      "upper": 0.5802852377509375,
+      "risk_level": "low",
+      "uncertainty": {
+        "method": "same_election_type_absolute_out_of_time_errors",
+        "reference_quantile": 0.9,
+        "radius": 0.14368856461187757,
+        "calibration_years": [
+          2021
+        ],
+        "calibration_rows": 32,
+        "election_blocks": 1,
+        "coverage_guaranteed": false,
+        "support": "limited",
+        "limitations": [
+          "States share election shocks; rows are not independent calibration samples.",
+          "Empirical reference band, not a calibrated 90% confidence statement.",
+          "Does not cover publication revisions, NS bias or future structural changes."
+        ],
+        "risk_levels_possible": [
+          "low",
+          "medium",
+          "high"
+        ],
+        "classification_uncertain": true,
+        "high_risk_probability": null
+      },
+      "explanation": {
+        "method": "exact_baseline_identity",
+        "causal": false,
+        "formula": "prediction = previous comparable NV / (SV + NV)",
+        "reference_year": 2021,
+        "source_id": 5,
+        "voter_count": 1405231,
+        "nonvoter_count": 1088952,
+        "reference_unspecified_rate": 0.026873336217905074,
+        "used_features": [
+          {
+            "name": "previous_abstention_rate",
+            "value": 0.43659667313906
+          }
+        ],
+        "context_only": {
+          "historical_mean_abstention": 0.5173084917974355,
+          "abstention_trend_pp_per_year": -2.0350833334132887,
+          "previous_gap_vs_national_pp": -4.502357139362817,
+          "same_type_history_count": 3
+        },
+        "missing_status_bounds_in_reference_election": {
+          "lower": 0.4248638639501752,
+          "upper": 0.4517372001680803,
+          "interpretation": "historical NS scenarios, separate from forecast bands"
+        }
+      },
+      "lineage": {
+        "target_year": 2027,
+        "feature_source_years": [
+          2009,
+          2012,
+          2015,
+          2018,
+          2021,
+          2024
+        ],
+        "feature_source_ids": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "previous_same_type_year": 2021,
+        "demographic_reference_year": 2024,
+        "publication_vintage_verified": false,
+        "territory_reference_year": 2024
+      }
+    },
+    {
+      "territory_id": 12475,
+      "state_code": "13",
+      "name": "HIDALGO",
+      "predicted": 0.5398787442046863,
+      "lower": 0.3961901795928087,
+      "upper": 0.6835673088165639,
+      "risk_level": "medium",
+      "uncertainty": {
+        "method": "same_election_type_absolute_out_of_time_errors",
+        "reference_quantile": 0.9,
+        "radius": 0.14368856461187757,
+        "calibration_years": [
+          2021
+        ],
+        "calibration_rows": 32,
+        "election_blocks": 1,
+        "coverage_guaranteed": false,
+        "support": "limited",
+        "limitations": [
+          "States share election shocks; rows are not independent calibration samples.",
+          "Empirical reference band, not a calibrated 90% confidence statement.",
+          "Does not cover publication revisions, NS bias or future structural changes."
+        ],
+        "risk_levels_possible": [
+          "low",
+          "medium",
+          "high"
+        ],
+        "classification_uncertain": true,
+        "high_risk_probability": null
+      },
+      "explanation": {
+        "method": "exact_baseline_identity",
+        "causal": false,
+        "formula": "prediction = previous comparable NV / (SV + NV)",
+        "reference_year": 2021,
+        "source_id": 5,
+        "voter_count": 1001176,
+        "nonvoter_count": 1174720,
+        "reference_unspecified_rate": 0.02875920736535665,
+        "used_features": [
+          {
+            "name": "previous_abstention_rate",
+            "value": 0.5398787442046863
+          }
+        ],
+        "context_only": {
+          "historical_mean_abstention": 0.5551816728748594,
+          "abstention_trend_pp_per_year": -0.2781131752319745,
+          "previous_gap_vs_national_pp": 5.825849967199814,
+          "same_type_history_count": 3
+        },
+        "missing_status_bounds_in_reference_election": {
+          "lower": 0.5243522594479554,
+          "upper": 0.553111466813312,
+          "interpretation": "historical NS scenarios, separate from forecast bands"
+        }
+      },
+      "lineage": {
+        "target_year": 2027,
+        "feature_source_years": [
+          2009,
+          2012,
+          2015,
+          2018,
+          2021,
+          2024
+        ],
+        "feature_source_ids": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "previous_same_type_year": 2021,
+        "demographic_reference_year": 2024,
+        "publication_vintage_verified": false,
+        "territory_reference_year": 2024
+      }
+    },
+    {
+      "territory_id": 12476,
+      "state_code": "14",
+      "name": "JALISCO",
+      "predicted": 0.5262452940256629,
+      "lower": 0.3825567294137853,
+      "upper": 0.6699338586375405,
+      "risk_level": "medium",
+      "uncertainty": {
+        "method": "same_election_type_absolute_out_of_time_errors",
+        "reference_quantile": 0.9,
+        "radius": 0.14368856461187757,
+        "calibration_years": [
+          2021
+        ],
+        "calibration_rows": 32,
+        "election_blocks": 1,
+        "coverage_guaranteed": false,
+        "support": "limited",
+        "limitations": [
+          "States share election shocks; rows are not independent calibration samples.",
+          "Empirical reference band, not a calibrated 90% confidence statement.",
+          "Does not cover publication revisions, NS bias or future structural changes."
+        ],
+        "risk_levels_possible": [
+          "low",
+          "medium",
+          "high"
+        ],
+        "classification_uncertain": true,
+        "high_risk_probability": null
+      },
+      "explanation": {
+        "method": "exact_baseline_identity",
+        "causal": false,
+        "formula": "prediction = previous comparable NV / (SV + NV)",
+        "reference_year": 2021,
+        "source_id": 5,
+        "voter_count": 2844834,
+        "nonvoter_count": 3160033,
+        "reference_unspecified_rate": 0.03377392930769375,
+        "used_features": [
+          {
+            "name": "previous_abstention_rate",
+            "value": 0.5262452940256629
+          }
+        ],
+        "context_only": {
+          "historical_mean_abstention": 0.49794192183098945,
+          "abstention_trend_pp_per_year": 0.3177382289293688,
+          "previous_gap_vs_national_pp": 4.462504949297474,
+          "same_type_history_count": 3
+        },
+        "missing_status_bounds_in_reference_election": {
+          "lower": 0.5084719226667336,
+          "upper": 0.5422458519744273,
+          "interpretation": "historical NS scenarios, separate from forecast bands"
+        }
+      },
+      "lineage": {
+        "target_year": 2027,
+        "feature_source_years": [
+          2009,
+          2012,
+          2015,
+          2018,
+          2021,
+          2024
+        ],
+        "feature_source_ids": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "previous_same_type_year": 2021,
+        "demographic_reference_year": 2024,
+        "publication_vintage_verified": false,
+        "territory_reference_year": 2024
+      }
+    },
+    {
+      "territory_id": 12477,
+      "state_code": "15",
+      "name": "MEXICO",
+      "predicted": 0.46482992509972654,
+      "lower": 0.32114136048784897,
+      "upper": 0.608518489711604,
+      "risk_level": "low",
+      "uncertainty": {
+        "method": "same_election_type_absolute_out_of_time_errors",
+        "reference_quantile": 0.9,
+        "radius": 0.14368856461187757,
+        "calibration_years": [
+          2021
+        ],
+        "calibration_rows": 32,
+        "election_blocks": 1,
+        "coverage_guaranteed": false,
+        "support": "limited",
+        "limitations": [
+          "States share election shocks; rows are not independent calibration samples.",
+          "Empirical reference band, not a calibrated 90% confidence statement.",
+          "Does not cover publication revisions, NS bias or future structural changes."
+        ],
+        "risk_levels_possible": [
+          "low",
+          "medium",
+          "high"
+        ],
+        "classification_uncertain": true,
+        "high_risk_probability": null
+      },
+      "explanation": {
+        "method": "exact_baseline_identity",
+        "causal": false,
+        "formula": "prediction = previous comparable NV / (SV + NV)",
+        "reference_year": 2021,
+        "source_id": 5,
+        "voter_count": 6456957,
+        "nonvoter_count": 5608286,
+        "reference_unspecified_rate": 0.025156909005704314,
+        "used_features": [
+          {
+            "name": "previous_abstention_rate",
+            "value": 0.46482992509972654
+          }
+        ],
+        "context_only": {
+          "historical_mean_abstention": 0.4854235921491014,
+          "abstention_trend_pp_per_year": -0.2232642056574502,
+          "previous_gap_vs_national_pp": -1.679031943296161,
+          "same_type_history_count": 3
+        },
+        "missing_status_bounds_in_reference_election": {
+          "lower": 0.45313624097086436,
+          "upper": 0.4782931499765687,
+          "interpretation": "historical NS scenarios, separate from forecast bands"
+        }
+      },
+      "lineage": {
+        "target_year": 2027,
+        "feature_source_years": [
+          2009,
+          2012,
+          2015,
+          2018,
+          2021,
+          2024
+        ],
+        "feature_source_ids": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "previous_same_type_year": 2021,
+        "demographic_reference_year": 2024,
+        "publication_vintage_verified": false,
+        "territory_reference_year": 2024
+      }
+    },
+    {
+      "territory_id": 12478,
+      "state_code": "16",
+      "name": "MICHOACAN",
+      "predicted": 0.5175586250783535,
+      "lower": 0.3738700604664759,
+      "upper": 0.661247189690231,
+      "risk_level": "medium",
+      "uncertainty": {
+        "method": "same_election_type_absolute_out_of_time_errors",
+        "reference_quantile": 0.9,
+        "radius": 0.14368856461187757,
+        "calibration_years": [
+          2021
+        ],
+        "calibration_rows": 32,
+        "election_blocks": 1,
+        "coverage_guaranteed": false,
+        "support": "limited",
+        "limitations": [
+          "States share election shocks; rows are not independent calibration samples.",
+          "Empirical reference band, not a calibrated 90% confidence statement.",
+          "Does not cover publication revisions, NS bias or future structural changes."
+        ],
+        "risk_levels_possible": [
+          "low",
+          "medium",
+          "high"
+        ],
+        "classification_uncertain": true,
+        "high_risk_probability": null
+      },
+      "explanation": {
+        "method": "exact_baseline_identity",
+        "causal": false,
+        "formula": "prediction = previous comparable NV / (SV + NV)",
+        "reference_year": 2021,
+        "source_id": 5,
+        "voter_count": 1619355,
+        "nonvoter_count": 1737229,
+        "reference_unspecified_rate": 0.06104915934322921,
+        "used_features": [
+          {
+            "name": "previous_abstention_rate",
+            "value": 0.5175586250783535
+          }
+        ],
+        "context_only": {
+          "historical_mean_abstention": 0.5505317094440668,
+          "abstention_trend_pp_per_year": -1.2981737706805467,
+          "previous_gap_vs_national_pp": 3.593838054566534,
+          "same_type_history_count": 3
+        },
+        "missing_status_bounds_in_reference_election": {
+          "lower": 0.48596210610648244,
+          "upper": 0.5470112654497117,
+          "interpretation": "historical NS scenarios, separate from forecast bands"
+        }
+      },
+      "lineage": {
+        "target_year": 2027,
+        "feature_source_years": [
+          2009,
+          2012,
+          2015,
+          2018,
+          2021,
+          2024
+        ],
+        "feature_source_ids": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "previous_same_type_year": 2021,
+        "demographic_reference_year": 2024,
+        "publication_vintage_verified": false,
+        "territory_reference_year": 2024
+      }
+    },
+    {
+      "territory_id": 12479,
+      "state_code": "17",
+      "name": "MORELOS",
+      "predicted": 0.4812961765326275,
+      "lower": 0.33760761192074995,
+      "upper": 0.6249847411445051,
+      "risk_level": "medium",
+      "uncertainty": {
+        "method": "same_election_type_absolute_out_of_time_errors",
+        "reference_quantile": 0.9,
+        "radius": 0.14368856461187757,
+        "calibration_years": [
+          2021
+        ],
+        "calibration_rows": 32,
+        "election_blocks": 1,
+        "coverage_guaranteed": false,
+        "support": "limited",
+        "limitations": [
+          "States share election shocks; rows are not independent calibration samples.",
+          "Empirical reference band, not a calibrated 90% confidence statement.",
+          "Does not cover publication revisions, NS bias or future structural changes."
+        ],
+        "risk_levels_possible": [
+          "low",
+          "medium",
+          "high"
+        ],
+        "classification_uncertain": true,
+        "high_risk_probability": null
+      },
+      "explanation": {
+        "method": "exact_baseline_identity",
+        "causal": false,
+        "formula": "prediction = previous comparable NV / (SV + NV)",
+        "reference_year": 2021,
+        "source_id": 5,
+        "voter_count": 745103,
+        "nonvoter_count": 691368,
+        "reference_unspecified_rate": 0.03984474113049953,
+        "used_features": [
+          {
+            "name": "previous_abstention_rate",
+            "value": 0.4812961765326275
+          }
+        ],
+        "context_only": {
+          "historical_mean_abstention": 0.4823522618090039,
+          "abstention_trend_pp_per_year": -0.24266816360978685,
+          "previous_gap_vs_national_pp": -0.032406800006062886,
+          "same_type_history_count": 3
+        },
+        "missing_status_bounds_in_reference_election": {
+          "lower": 0.4621190549715858,
+          "upper": 0.5019637961020853,
+          "interpretation": "historical NS scenarios, separate from forecast bands"
+        }
+      },
+      "lineage": {
+        "target_year": 2027,
+        "feature_source_years": [
+          2009,
+          2012,
+          2015,
+          2018,
+          2021,
+          2024
+        ],
+        "feature_source_ids": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "previous_same_type_year": 2021,
+        "demographic_reference_year": 2024,
+        "publication_vintage_verified": false,
+        "territory_reference_year": 2024
+      }
+    },
+    {
+      "territory_id": 12480,
+      "state_code": "18",
+      "name": "NAYARIT",
+      "predicted": 0.4757322052124385,
+      "lower": 0.3320436406005609,
+      "upper": 0.619420769824316,
+      "risk_level": "low",
+      "uncertainty": {
+        "method": "same_election_type_absolute_out_of_time_errors",
+        "reference_quantile": 0.9,
+        "radius": 0.14368856461187757,
+        "calibration_years": [
+          2021
+        ],
+        "calibration_rows": 32,
+        "election_blocks": 1,
+        "coverage_guaranteed": false,
+        "support": "limited",
+        "limitations": [
+          "States share election shocks; rows are not independent calibration samples.",
+          "Empirical reference band, not a calibrated 90% confidence statement.",
+          "Does not cover publication revisions, NS bias or future structural changes."
+        ],
+        "risk_levels_possible": [
+          "low",
+          "medium",
+          "high"
+        ],
+        "classification_uncertain": true,
+        "high_risk_probability": null
+      },
+      "explanation": {
+        "method": "exact_baseline_identity",
+        "causal": false,
+        "formula": "prediction = previous comparable NV / (SV + NV)",
+        "reference_year": 2021,
+        "source_id": 5,
+        "voter_count": 443659,
+        "nonvoter_count": 402586,
+        "reference_unspecified_rate": 0.05076808318517563,
+        "used_features": [
+          {
+            "name": "previous_abstention_rate",
+            "value": 0.4757322052124385
+          }
+        ],
+        "context_only": {
+          "historical_mean_abstention": 0.5508807435836404,
+          "abstention_trend_pp_per_year": -0.905271728563511,
+          "previous_gap_vs_national_pp": -0.5888039320249672,
+          "same_type_history_count": 3
+        },
+        "missing_status_bounds_in_reference_election": {
+          "lower": 0.4515801930443464,
+          "upper": 0.5023482762295219,
+          "interpretation": "historical NS scenarios, separate from forecast bands"
+        }
+      },
+      "lineage": {
+        "target_year": 2027,
+        "feature_source_years": [
+          2009,
+          2012,
+          2015,
+          2018,
+          2021,
+          2024
+        ],
+        "feature_source_ids": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "previous_same_type_year": 2021,
+        "demographic_reference_year": 2024,
+        "publication_vintage_verified": false,
+        "territory_reference_year": 2024
+      }
+    },
+    {
+      "territory_id": 12481,
+      "state_code": "19",
+      "name": "NUEVO LEON",
+      "predicted": 0.49531558294375605,
+      "lower": 0.3516270183318785,
+      "upper": 0.6390041475556336,
+      "risk_level": "medium",
+      "uncertainty": {
+        "method": "same_election_type_absolute_out_of_time_errors",
+        "reference_quantile": 0.9,
+        "radius": 0.14368856461187757,
+        "calibration_years": [
+          2021
+        ],
+        "calibration_rows": 32,
+        "election_blocks": 1,
+        "coverage_guaranteed": false,
+        "support": "limited",
+        "limitations": [
+          "States share election shocks; rows are not independent calibration samples.",
+          "Empirical reference band, not a calibrated 90% confidence statement.",
+          "Does not cover publication revisions, NS bias or future structural changes."
+        ],
+        "risk_levels_possible": [
+          "low",
+          "medium",
+          "high"
+        ],
+        "classification_uncertain": true,
+        "high_risk_probability": null
+      },
+      "explanation": {
+        "method": "exact_baseline_identity",
+        "causal": false,
+        "formula": "prediction = previous comparable NV / (SV + NV)",
+        "reference_year": 2021,
+        "source_id": 5,
+        "voter_count": 1941149,
+        "nonvoter_count": 1905114,
+        "reference_unspecified_rate": 0.08197656073601065,
+        "used_features": [
+          {
+            "name": "previous_abstention_rate",
+            "value": 0.49531558294375605
+          }
+        ],
+        "context_only": {
+          "historical_mean_abstention": 0.46120933930169294,
+          "abstention_trend_pp_per_year": 0.22976406365561308,
+          "previous_gap_vs_national_pp": 1.3695338411067903,
+          "same_type_history_count": 3
+        },
+        "missing_status_bounds_in_reference_election": {
+          "lower": 0.4547113149750747,
+          "upper": 0.5366878757110853,
+          "interpretation": "historical NS scenarios, separate from forecast bands"
+        }
+      },
+      "lineage": {
+        "target_year": 2027,
+        "feature_source_years": [
+          2009,
+          2012,
+          2015,
+          2018,
+          2021,
+          2024
+        ],
+        "feature_source_ids": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "previous_same_type_year": 2021,
+        "demographic_reference_year": 2024,
+        "publication_vintage_verified": false,
+        "territory_reference_year": 2024
+      }
+    },
+    {
+      "territory_id": 12482,
+      "state_code": "20",
+      "name": "OAXACA",
+      "predicted": 0.4419753398050967,
+      "lower": 0.2982867751932191,
+      "upper": 0.5856639044169742,
+      "risk_level": "low",
+      "uncertainty": {
+        "method": "same_election_type_absolute_out_of_time_errors",
+        "reference_quantile": 0.9,
+        "radius": 0.14368856461187757,
+        "calibration_years": [
+          2021
+        ],
+        "calibration_rows": 32,
+        "election_blocks": 1,
+        "coverage_guaranteed": false,
+        "support": "limited",
+        "limitations": [
+          "States share election shocks; rows are not independent calibration samples.",
+          "Empirical reference band, not a calibrated 90% confidence statement.",
+          "Does not cover publication revisions, NS bias or future structural changes."
+        ],
+        "risk_levels_possible": [
+          "low",
+          "medium",
+          "high"
+        ],
+        "classification_uncertain": true,
+        "high_risk_probability": null
+      },
+      "explanation": {
+        "method": "exact_baseline_identity",
+        "causal": false,
+        "formula": "prediction = previous comparable NV / (SV + NV)",
+        "reference_year": 2021,
+        "source_id": 5,
+        "voter_count": 1635909,
+        "nonvoter_count": 1295698,
+        "reference_unspecified_rate": 0.02711177734200643,
+        "used_features": [
+          {
+            "name": "previous_abstention_rate",
+            "value": 0.4419753398050967
+          }
+        ],
+        "context_only": {
+          "historical_mean_abstention": 0.5421667584219069,
+          "abstention_trend_pp_per_year": -1.2460016239925076,
+          "previous_gap_vs_national_pp": -3.964490472759147,
+          "same_type_history_count": 3
+        },
+        "missing_status_bounds_in_reference_election": {
+          "lower": 0.42999260280164325,
+          "upper": 0.4571043801436497,
+          "interpretation": "historical NS scenarios, separate from forecast bands"
+        }
+      },
+      "lineage": {
+        "target_year": 2027,
+        "feature_source_years": [
+          2009,
+          2012,
+          2015,
+          2018,
+          2021,
+          2024
+        ],
+        "feature_source_ids": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "previous_same_type_year": 2021,
+        "demographic_reference_year": 2024,
+        "publication_vintage_verified": false,
+        "territory_reference_year": 2024
+      }
+    },
+    {
+      "territory_id": 12483,
+      "state_code": "21",
+      "name": "PUEBLA",
+      "predicted": 0.4462998360394817,
+      "lower": 0.30261127142760413,
+      "upper": 0.5899884006513593,
+      "risk_level": "low",
+      "uncertainty": {
+        "method": "same_election_type_absolute_out_of_time_errors",
+        "reference_quantile": 0.9,
+        "radius": 0.14368856461187757,
+        "calibration_years": [
+          2021
+        ],
+        "calibration_rows": 32,
+        "election_blocks": 1,
+        "coverage_guaranteed": false,
+        "support": "limited",
+        "limitations": [
+          "States share election shocks; rows are not independent calibration samples.",
+          "Empirical reference band, not a calibrated 90% confidence statement.",
+          "Does not cover publication revisions, NS bias or future structural changes."
+        ],
+        "risk_levels_possible": [
+          "low",
+          "medium",
+          "high"
+        ],
+        "classification_uncertain": true,
+        "high_risk_probability": null
+      },
+      "explanation": {
+        "method": "exact_baseline_identity",
+        "causal": false,
+        "formula": "prediction = previous comparable NV / (SV + NV)",
+        "reference_year": 2021,
+        "source_id": 5,
+        "voter_count": 2549998,
+        "nonvoter_count": 2055379,
+        "reference_unspecified_rate": 0.028395327396586897,
+        "used_features": [
+          {
+            "name": "previous_abstention_rate",
+            "value": 0.4462998360394817
+          }
+        ],
+        "context_only": {
+          "historical_mean_abstention": 0.553704878067539,
+          "abstention_trend_pp_per_year": -1.487721345602452,
+          "previous_gap_vs_national_pp": -3.5320408493206443,
+          "same_type_history_count": 3
+        },
+        "missing_status_bounds_in_reference_election": {
+          "lower": 0.43362700607809757,
+          "upper": 0.46202233347468447,
+          "interpretation": "historical NS scenarios, separate from forecast bands"
+        }
+      },
+      "lineage": {
+        "target_year": 2027,
+        "feature_source_years": [
+          2009,
+          2012,
+          2015,
+          2018,
+          2021,
+          2024
+        ],
+        "feature_source_ids": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "previous_same_type_year": 2021,
+        "demographic_reference_year": 2024,
+        "publication_vintage_verified": false,
+        "territory_reference_year": 2024
+      }
+    },
+    {
+      "territory_id": 12484,
+      "state_code": "22",
+      "name": "QUERETARO",
+      "predicted": 0.48942310981212234,
+      "lower": 0.34573454520024477,
+      "upper": 0.633111674424,
+      "risk_level": "medium",
+      "uncertainty": {
+        "method": "same_election_type_absolute_out_of_time_errors",
+        "reference_quantile": 0.9,
+        "radius": 0.14368856461187757,
+        "calibration_years": [
+          2021
+        ],
+        "calibration_rows": 32,
+        "election_blocks": 1,
+        "coverage_guaranteed": false,
+        "support": "limited",
+        "limitations": [
+          "States share election shocks; rows are not independent calibration samples.",
+          "Empirical reference band, not a calibrated 90% confidence statement.",
+          "Does not cover publication revisions, NS bias or future structural changes."
+        ],
+        "risk_levels_possible": [
+          "low",
+          "medium",
+          "high"
+        ],
+        "classification_uncertain": true,
+        "high_risk_probability": null
+      },
+      "explanation": {
+        "method": "exact_baseline_identity",
+        "causal": false,
+        "formula": "prediction = previous comparable NV / (SV + NV)",
+        "reference_year": 2021,
+        "source_id": 5,
+        "voter_count": 865774,
+        "nonvoter_count": 829904,
+        "reference_unspecified_rate": 0.02344522076863005,
+        "used_features": [
+          {
+            "name": "previous_abstention_rate",
+            "value": 0.48942310981212234
+          }
+        ],
+        "context_only": {
+          "historical_mean_abstention": 0.4465849174505703,
+          "abstention_trend_pp_per_year": 0.6162876063677394,
+          "previous_gap_vs_national_pp": 0.780286527943419,
+          "same_type_history_count": 3
+        },
+        "missing_status_bounds_in_reference_election": {
+          "lower": 0.47794847695330767,
+          "upper": 0.5013936977219378,
+          "interpretation": "historical NS scenarios, separate from forecast bands"
+        }
+      },
+      "lineage": {
+        "target_year": 2027,
+        "feature_source_years": [
+          2009,
+          2012,
+          2015,
+          2018,
+          2021,
+          2024
+        ],
+        "feature_source_ids": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "previous_same_type_year": 2021,
+        "demographic_reference_year": 2024,
+        "publication_vintage_verified": false,
+        "territory_reference_year": 2024
+      }
+    },
+    {
+      "territory_id": 12485,
+      "state_code": "23",
+      "name": "QUINTANA ROO",
+      "predicted": 0.5667612690459958,
+      "lower": 0.4230727044341182,
+      "upper": 0.7104498336578733,
+      "risk_level": "high",
+      "uncertainty": {
+        "method": "same_election_type_absolute_out_of_time_errors",
+        "reference_quantile": 0.9,
+        "radius": 0.14368856461187757,
+        "calibration_years": [
+          2021
+        ],
+        "calibration_rows": 32,
+        "election_blocks": 1,
+        "coverage_guaranteed": false,
+        "support": "limited",
+        "limitations": [
+          "States share election shocks; rows are not independent calibration samples.",
+          "Empirical reference band, not a calibrated 90% confidence statement.",
+          "Does not cover publication revisions, NS bias or future structural changes."
+        ],
+        "risk_levels_possible": [
+          "low",
+          "medium",
+          "high"
+        ],
+        "classification_uncertain": true,
+        "high_risk_probability": null
+      },
+      "explanation": {
+        "method": "exact_baseline_identity",
+        "causal": false,
+        "formula": "prediction = previous comparable NV / (SV + NV)",
+        "reference_year": 2021,
+        "source_id": 5,
+        "voter_count": 546496,
+        "nonvoter_count": 714924,
+        "reference_unspecified_rate": 0.046258092954715745,
+        "used_features": [
+          {
+            "name": "previous_abstention_rate",
+            "value": 0.5667612690459958
+          }
+        ],
+        "context_only": {
+          "historical_mean_abstention": 0.6015697225509634,
+          "abstention_trend_pp_per_year": -0.5802694127316923,
+          "previous_gap_vs_national_pp": 8.514102451330762,
+          "same_type_history_count": 3
+        },
+        "missing_status_bounds_in_reference_election": {
+          "lower": 0.5405439735793335,
+          "upper": 0.5868020665340492,
+          "interpretation": "historical NS scenarios, separate from forecast bands"
+        }
+      },
+      "lineage": {
+        "target_year": 2027,
+        "feature_source_years": [
+          2009,
+          2012,
+          2015,
+          2018,
+          2021,
+          2024
+        ],
+        "feature_source_ids": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "previous_same_type_year": 2021,
+        "demographic_reference_year": 2024,
+        "publication_vintage_verified": false,
+        "territory_reference_year": 2024
+      }
+    },
+    {
+      "territory_id": 12486,
+      "state_code": "24",
+      "name": "SAN LUIS POTOSI",
+      "predicted": 0.41912162387572044,
+      "lower": 0.27543305926384287,
+      "upper": 0.562810188487598,
+      "risk_level": "low",
+      "uncertainty": {
+        "method": "same_election_type_absolute_out_of_time_errors",
+        "reference_quantile": 0.9,
+        "radius": 0.14368856461187757,
+        "calibration_years": [
+          2021
+        ],
+        "calibration_rows": 32,
+        "election_blocks": 1,
+        "coverage_guaranteed": false,
+        "support": "limited",
+        "limitations": [
+          "States share election shocks; rows are not independent calibration samples.",
+          "Empirical reference band, not a calibrated 90% confidence statement.",
+          "Does not cover publication revisions, NS bias or future structural changes."
+        ],
+        "risk_levels_possible": [
+          "low",
+          "medium"
+        ],
+        "classification_uncertain": true,
+        "high_risk_probability": null
+      },
+      "explanation": {
+        "method": "exact_baseline_identity",
+        "causal": false,
+        "formula": "prediction = previous comparable NV / (SV + NV)",
+        "reference_year": 2021,
+        "source_id": 5,
+        "voter_count": 1149197,
+        "nonvoter_count": 829181,
+        "reference_unspecified_rate": 0.04347952214057198,
+        "used_features": [
+          {
+            "name": "previous_abstention_rate",
+            "value": 0.41912162387572044
+          }
+        ],
+        "context_only": {
+          "historical_mean_abstention": 0.43619487363261383,
+          "abstention_trend_pp_per_year": -0.2942644251928815,
+          "previous_gap_vs_national_pp": -6.249862065696771,
+          "same_type_history_count": 3
+        },
+        "missing_status_bounds_in_reference_election": {
+          "lower": 0.40089841595082354,
+          "upper": 0.44437793809139553,
+          "interpretation": "historical NS scenarios, separate from forecast bands"
+        }
+      },
+      "lineage": {
+        "target_year": 2027,
+        "feature_source_years": [
+          2009,
+          2012,
+          2015,
+          2018,
+          2021,
+          2024
+        ],
+        "feature_source_ids": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "previous_same_type_year": 2021,
+        "demographic_reference_year": 2024,
+        "publication_vintage_verified": false,
+        "territory_reference_year": 2024
+      }
+    },
+    {
+      "territory_id": 12487,
+      "state_code": "25",
+      "name": "SINALOA",
+      "predicted": 0.5090024908077334,
+      "lower": 0.36531392619585584,
+      "upper": 0.652691055419611,
+      "risk_level": "medium",
+      "uncertainty": {
+        "method": "same_election_type_absolute_out_of_time_errors",
+        "reference_quantile": 0.9,
+        "radius": 0.14368856461187757,
+        "calibration_years": [
+          2021
+        ],
+        "calibration_rows": 32,
+        "election_blocks": 1,
+        "coverage_guaranteed": false,
+        "support": "limited",
+        "limitations": [
+          "States share election shocks; rows are not independent calibration samples.",
+          "Empirical reference band, not a calibrated 90% confidence statement.",
+          "Does not cover publication revisions, NS bias or future structural changes."
+        ],
+        "risk_levels_possible": [
+          "low",
+          "medium",
+          "high"
+        ],
+        "classification_uncertain": true,
+        "high_risk_probability": null
+      },
+      "explanation": {
+        "method": "exact_baseline_identity",
+        "causal": false,
+        "formula": "prediction = previous comparable NV / (SV + NV)",
+        "reference_year": 2021,
+        "source_id": 5,
+        "voter_count": 993504,
+        "nonvoter_count": 1029936,
+        "reference_unspecified_rate": 0.10154466967300319,
+        "used_features": [
+          {
+            "name": "previous_abstention_rate",
+            "value": 0.5090024908077334
+          }
+        ],
+        "context_only": {
+          "historical_mean_abstention": 0.5748741554674707,
+          "abstention_trend_pp_per_year": -0.6899644630576388,
+          "previous_gap_vs_national_pp": 2.7382246275045263,
+          "same_type_history_count": 3
+        },
+        "missing_status_bounds_in_reference_election": {
+          "lower": 0.45731600101592623,
+          "upper": 0.5588606706889294,
+          "interpretation": "historical NS scenarios, separate from forecast bands"
+        }
+      },
+      "lineage": {
+        "target_year": 2027,
+        "feature_source_years": [
+          2009,
+          2012,
+          2015,
+          2018,
+          2021,
+          2024
+        ],
+        "feature_source_ids": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "previous_same_type_year": 2021,
+        "demographic_reference_year": 2024,
+        "publication_vintage_verified": false,
+        "territory_reference_year": 2024
+      }
+    },
+    {
+      "territory_id": 12488,
+      "state_code": "26",
+      "name": "SONORA",
+      "predicted": 0.5746597366638367,
+      "lower": 0.4309711720519592,
+      "upper": 0.7183483012757144,
+      "risk_level": "high",
+      "uncertainty": {
+        "method": "same_election_type_absolute_out_of_time_errors",
+        "reference_quantile": 0.9,
+        "radius": 0.14368856461187757,
+        "calibration_years": [
+          2021
+        ],
+        "calibration_rows": 32,
+        "election_blocks": 1,
+        "coverage_guaranteed": false,
+        "support": "limited",
+        "limitations": [
+          "States share election shocks; rows are not independent calibration samples.",
+          "Empirical reference band, not a calibrated 90% confidence statement.",
+          "Does not cover publication revisions, NS bias or future structural changes."
+        ],
+        "risk_levels_possible": [
+          "low",
+          "medium",
+          "high"
+        ],
+        "classification_uncertain": true,
+        "high_risk_probability": null
+      },
+      "explanation": {
+        "method": "exact_baseline_identity",
+        "causal": false,
+        "formula": "prediction = previous comparable NV / (SV + NV)",
+        "reference_year": 2021,
+        "source_id": 5,
+        "voter_count": 862710,
+        "nonvoter_count": 1165572,
+        "reference_unspecified_rate": 0.07285572843386513,
+        "used_features": [
+          {
+            "name": "previous_abstention_rate",
+            "value": 0.5746597366638367
+          }
+        ],
+        "context_only": {
+          "historical_mean_abstention": 0.5214811238119614,
+          "abstention_trend_pp_per_year": 0.6445711467743577,
+          "previous_gap_vs_national_pp": 9.303949213114858,
+          "same_type_history_count": 3
+        },
+        "missing_status_bounds_in_reference_election": {
+          "lower": 0.5327924829475797,
+          "upper": 0.6056482113814449,
+          "interpretation": "historical NS scenarios, separate from forecast bands"
+        }
+      },
+      "lineage": {
+        "target_year": 2027,
+        "feature_source_years": [
+          2009,
+          2012,
+          2015,
+          2018,
+          2021,
+          2024
+        ],
+        "feature_source_ids": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "previous_same_type_year": 2021,
+        "demographic_reference_year": 2024,
+        "publication_vintage_verified": false,
+        "territory_reference_year": 2024
+      }
+    },
+    {
+      "territory_id": 12489,
+      "state_code": "27",
+      "name": "TABASCO",
+      "predicted": 0.47439588296736185,
+      "lower": 0.3307073183554843,
+      "upper": 0.6180844475792394,
+      "risk_level": "low",
+      "uncertainty": {
+        "method": "same_election_type_absolute_out_of_time_errors",
+        "reference_quantile": 0.9,
+        "radius": 0.14368856461187757,
+        "calibration_years": [
+          2021
+        ],
+        "calibration_rows": 32,
+        "election_blocks": 1,
+        "coverage_guaranteed": false,
+        "support": "limited",
+        "limitations": [
+          "States share election shocks; rows are not independent calibration samples.",
+          "Empirical reference band, not a calibrated 90% confidence statement.",
+          "Does not cover publication revisions, NS bias or future structural changes."
+        ],
+        "risk_levels_possible": [
+          "low",
+          "medium",
+          "high"
+        ],
+        "classification_uncertain": true,
+        "high_risk_probability": null
+      },
+      "explanation": {
+        "method": "exact_baseline_identity",
+        "causal": false,
+        "formula": "prediction = previous comparable NV / (SV + NV)",
+        "reference_year": 2021,
+        "source_id": 5,
+        "voter_count": 895703,
+        "nonvoter_count": 808437,
+        "reference_unspecified_rate": 0.027743546208054918,
+        "used_features": [
+          {
+            "name": "previous_abstention_rate",
+            "value": 0.47439588296736185
+          }
+        ],
+        "context_only": {
+          "historical_mean_abstention": 0.49876601459124853,
+          "abstention_trend_pp_per_year": -0.9868667588026084,
+          "previous_gap_vs_national_pp": -0.7224361565326298,
+          "same_type_history_count": 3
+        },
+        "missing_status_bounds_in_reference_election": {
+          "lower": 0.4612344588673458,
+          "upper": 0.48897800507540073,
+          "interpretation": "historical NS scenarios, separate from forecast bands"
+        }
+      },
+      "lineage": {
+        "target_year": 2027,
+        "feature_source_years": [
+          2009,
+          2012,
+          2015,
+          2018,
+          2021,
+          2024
+        ],
+        "feature_source_ids": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "previous_same_type_year": 2021,
+        "demographic_reference_year": 2024,
+        "publication_vintage_verified": false,
+        "territory_reference_year": 2024
+      }
+    },
+    {
+      "territory_id": 12490,
+      "state_code": "28",
+      "name": "TAMAULIPAS",
+      "predicted": 0.48354024998753514,
+      "lower": 0.3398516853756576,
+      "upper": 0.6272288145994127,
+      "risk_level": "medium",
+      "uncertainty": {
+        "method": "same_election_type_absolute_out_of_time_errors",
+        "reference_quantile": 0.9,
+        "radius": 0.14368856461187757,
+        "calibration_years": [
+          2021
+        ],
+        "calibration_rows": 32,
+        "election_blocks": 1,
+        "coverage_guaranteed": false,
+        "support": "limited",
+        "limitations": [
+          "States share election shocks; rows are not independent calibration samples.",
+          "Empirical reference band, not a calibrated 90% confidence statement.",
+          "Does not cover publication revisions, NS bias or future structural changes."
+        ],
+        "risk_levels_possible": [
+          "low",
+          "medium",
+          "high"
+        ],
+        "classification_uncertain": true,
+        "high_risk_probability": null
+      },
+      "explanation": {
+        "method": "exact_baseline_identity",
+        "causal": false,
+        "formula": "prediction = previous comparable NV / (SV + NV)",
+        "reference_year": 2021,
+        "source_id": 5,
+        "voter_count": 1346581,
+        "nonvoter_count": 1260749,
+        "reference_unspecified_rate": 0.047011441359878156,
+        "used_features": [
+          {
+            "name": "previous_abstention_rate",
+            "value": 0.48354024998753514
+          }
+        ],
+        "context_only": {
+          "historical_mean_abstention": 0.5454398190002202,
+          "abstention_trend_pp_per_year": -0.9139659202439324,
+          "previous_gap_vs_national_pp": 0.19200054548469958,
+          "same_type_history_count": 3
+        },
+        "missing_status_bounds_in_reference_election": {
+          "lower": 0.4608083258801053,
+          "upper": 0.5078197672399835,
+          "interpretation": "historical NS scenarios, separate from forecast bands"
+        }
+      },
+      "lineage": {
+        "target_year": 2027,
+        "feature_source_years": [
+          2009,
+          2012,
+          2015,
+          2018,
+          2021,
+          2024
+        ],
+        "feature_source_ids": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "previous_same_type_year": 2021,
+        "demographic_reference_year": 2024,
+        "publication_vintage_verified": false,
+        "territory_reference_year": 2024
+      }
+    },
+    {
+      "territory_id": 12491,
+      "state_code": "29",
+      "name": "TLAXCALA",
+      "predicted": 0.3422948839654427,
+      "lower": 0.19860631935356515,
+      "upper": 0.4859834485773203,
+      "risk_level": "low",
+      "uncertainty": {
+        "method": "same_election_type_absolute_out_of_time_errors",
+        "reference_quantile": 0.9,
+        "radius": 0.14368856461187757,
+        "calibration_years": [
+          2021
+        ],
+        "calibration_rows": 32,
+        "election_blocks": 1,
+        "coverage_guaranteed": false,
+        "support": "limited",
+        "limitations": [
+          "States share election shocks; rows are not independent calibration samples.",
+          "Empirical reference band, not a calibrated 90% confidence statement.",
+          "Does not cover publication revisions, NS bias or future structural changes."
+        ],
+        "risk_levels_possible": [
+          "low",
+          "medium"
+        ],
+        "classification_uncertain": true,
+        "high_risk_probability": null
+      },
+      "explanation": {
+        "method": "exact_baseline_identity",
+        "causal": false,
+        "formula": "prediction = previous comparable NV / (SV + NV)",
+        "reference_year": 2021,
+        "source_id": 5,
+        "voter_count": 605532,
+        "nonvoter_count": 315142,
+        "reference_unspecified_rate": 0.0541668378878159,
+        "used_features": [
+          {
+            "name": "previous_abstention_rate",
+            "value": 0.3422948839654427
+          }
+        ],
+        "context_only": {
+          "historical_mean_abstention": 0.5314114979026456,
+          "abstention_trend_pp_per_year": -2.4799248634094915,
+          "previous_gap_vs_national_pp": -13.932536056724542,
+          "same_type_history_count": 3
+        },
+        "missing_status_bounds_in_reference_election": {
+          "lower": 0.3237538524758578,
+          "upper": 0.3779206903636737,
+          "interpretation": "historical NS scenarios, separate from forecast bands"
+        }
+      },
+      "lineage": {
+        "target_year": 2027,
+        "feature_source_years": [
+          2009,
+          2012,
+          2015,
+          2018,
+          2021,
+          2024
+        ],
+        "feature_source_ids": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "previous_same_type_year": 2021,
+        "demographic_reference_year": 2024,
+        "publication_vintage_verified": false,
+        "territory_reference_year": 2024
+      }
+    },
+    {
+      "territory_id": 12492,
+      "state_code": "30",
+      "name": "VERACRUZ",
+      "predicted": 0.4061771596849747,
+      "lower": 0.26248859507309713,
+      "upper": 0.5498657242968523,
+      "risk_level": "low",
+      "uncertainty": {
+        "method": "same_election_type_absolute_out_of_time_errors",
+        "reference_quantile": 0.9,
+        "radius": 0.14368856461187757,
+        "calibration_years": [
+          2021
+        ],
+        "calibration_rows": 32,
+        "election_blocks": 1,
+        "coverage_guaranteed": false,
+        "support": "limited",
+        "limitations": [
+          "States share election shocks; rows are not independent calibration samples.",
+          "Empirical reference band, not a calibrated 90% confidence statement.",
+          "Does not cover publication revisions, NS bias or future structural changes."
+        ],
+        "risk_levels_possible": [
+          "low",
+          "medium"
+        ],
+        "classification_uncertain": true,
+        "high_risk_probability": null
+      },
+      "explanation": {
+        "method": "exact_baseline_identity",
+        "causal": false,
+        "formula": "prediction = previous comparable NV / (SV + NV)",
+        "reference_year": 2021,
+        "source_id": 5,
+        "voter_count": 3452793,
+        "nonvoter_count": 2361724,
+        "reference_unspecified_rate": 0.02761566774237083,
+        "used_features": [
+          {
+            "name": "previous_abstention_rate",
+            "value": 0.4061771596849747
+          }
+        ],
+        "context_only": {
+          "historical_mean_abstention": 0.49552031467504243,
+          "abstention_trend_pp_per_year": -1.040630625829994,
+          "previous_gap_vs_national_pp": -7.544308484771345,
+          "same_type_history_count": 3
+        },
+        "missing_status_bounds_in_reference_election": {
+          "lower": 0.39496030619857453,
+          "upper": 0.42257597394094537,
+          "interpretation": "historical NS scenarios, separate from forecast bands"
+        }
+      },
+      "lineage": {
+        "target_year": 2027,
+        "feature_source_years": [
+          2009,
+          2012,
+          2015,
+          2018,
+          2021,
+          2024
+        ],
+        "feature_source_ids": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "previous_same_type_year": 2021,
+        "demographic_reference_year": 2024,
+        "publication_vintage_verified": false,
+        "territory_reference_year": 2024
+      }
+    },
+    {
+      "territory_id": 12493,
+      "state_code": "31",
+      "name": "YUCATAN",
+      "predicted": 0.36934012500231594,
+      "lower": 0.22565156039043838,
+      "upper": 0.5130286896141936,
+      "risk_level": "low",
+      "uncertainty": {
+        "method": "same_election_type_absolute_out_of_time_errors",
+        "reference_quantile": 0.9,
+        "radius": 0.14368856461187757,
+        "calibration_years": [
+          2021
+        ],
+        "calibration_rows": 32,
+        "election_blocks": 1,
+        "coverage_guaranteed": false,
+        "support": "limited",
+        "limitations": [
+          "States share election shocks; rows are not independent calibration samples.",
+          "Empirical reference band, not a calibrated 90% confidence statement.",
+          "Does not cover publication revisions, NS bias or future structural changes."
+        ],
+        "risk_levels_possible": [
+          "low",
+          "medium"
+        ],
+        "classification_uncertain": true,
+        "high_risk_probability": null
+      },
+      "explanation": {
+        "method": "exact_baseline_identity",
+        "causal": false,
+        "formula": "prediction = previous comparable NV / (SV + NV)",
+        "reference_year": 2021,
+        "source_id": 5,
+        "voter_count": 987141,
+        "nonvoter_count": 578110,
+        "reference_unspecified_rate": 0.05711860690379694,
+        "used_features": [
+          {
+            "name": "previous_abstention_rate",
+            "value": 0.36934012500231594
+          }
+        ],
+        "context_only": {
+          "historical_mean_abstention": 0.3688282509659771,
+          "abstention_trend_pp_per_year": -0.6109849636752892,
+          "previous_gap_vs_national_pp": -11.228011953037221,
+          "same_type_history_count": 3
+        },
+        "missing_status_bounds_in_reference_election": {
+          "lower": 0.3482439315885094,
+          "upper": 0.40536253849230636,
+          "interpretation": "historical NS scenarios, separate from forecast bands"
+        }
+      },
+      "lineage": {
+        "target_year": 2027,
+        "feature_source_years": [
+          2009,
+          2012,
+          2015,
+          2018,
+          2021,
+          2024
+        ],
+        "feature_source_ids": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "previous_same_type_year": 2021,
+        "demographic_reference_year": 2024,
+        "publication_vintage_verified": false,
+        "territory_reference_year": 2024
+      }
+    },
+    {
+      "territory_id": 12494,
+      "state_code": "32",
+      "name": "ZACATECAS",
+      "predicted": 0.43798115052234315,
+      "lower": 0.2942925859104656,
+      "upper": 0.5816697151342207,
+      "risk_level": "low",
+      "uncertainty": {
+        "method": "same_election_type_absolute_out_of_time_errors",
+        "reference_quantile": 0.9,
+        "radius": 0.14368856461187757,
+        "calibration_years": [
+          2021
+        ],
+        "calibration_rows": 32,
+        "election_blocks": 1,
+        "coverage_guaranteed": false,
+        "support": "limited",
+        "limitations": [
+          "States share election shocks; rows are not independent calibration samples.",
+          "Empirical reference band, not a calibrated 90% confidence statement.",
+          "Does not cover publication revisions, NS bias or future structural changes."
+        ],
+        "risk_levels_possible": [
+          "low",
+          "medium",
+          "high"
+        ],
+        "classification_uncertain": true,
+        "high_risk_probability": null
+      },
+      "explanation": {
+        "method": "exact_baseline_identity",
+        "causal": false,
+        "formula": "prediction = previous comparable NV / (SV + NV)",
+        "reference_year": 2021,
+        "source_id": 5,
+        "voter_count": 657625,
+        "nonvoter_count": 512487,
+        "reference_unspecified_rate": 0.033794150142274645,
+        "used_features": [
+          {
+            "name": "previous_abstention_rate",
+            "value": 0.43798115052234315
+          }
+        ],
+        "context_only": {
+          "historical_mean_abstention": 0.5180213734429054,
+          "abstention_trend_pp_per_year": -1.033779975319936,
+          "previous_gap_vs_national_pp": -4.363909401034499,
+          "same_type_history_count": 3
+        },
+        "missing_status_bounds_in_reference_election": {
+          "lower": 0.4231799497621049,
+          "upper": 0.45697409990437954,
+          "interpretation": "historical NS scenarios, separate from forecast bands"
+        }
+      },
+      "lineage": {
+        "target_year": 2027,
+        "feature_source_years": [
+          2009,
+          2012,
+          2015,
+          2018,
+          2021,
+          2024
+        ],
+        "feature_source_ids": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "previous_same_type_year": 2021,
+        "demographic_reference_year": 2024,
+        "publication_vintage_verified": false,
+        "territory_reference_year": 2024
+      }
+    }
+  ]
+}

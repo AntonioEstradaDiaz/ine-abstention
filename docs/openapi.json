@@ -1,0 +1,3862 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "INE Abstention API",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/api/v1/health": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Health",
+        "description": "Comprobar que el proceso de API responde, sin consultar la base.",
+        "operationId": "health_api_v1_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response Health Api V1 Health Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/health/ready": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Readiness",
+        "description": "Verificar conexión a PostgreSQL y disponibilidad de PostGIS.",
+        "operationId": "readiness_api_v1_health_ready_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response Readiness Api V1 Health Ready Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/data-sources": {
+      "get": {
+        "tags": [
+          "official-data"
+        ],
+        "summary": "Data Sources",
+        "operationId": "data_sources_api_v1_data_sources_get",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page_DataSourceRead_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/elections": {
+      "get": {
+        "tags": [
+          "official-data"
+        ],
+        "summary": "Elections",
+        "operationId": "elections_api_v1_elections_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ElectionRead"
+                  },
+                  "type": "array",
+                  "title": "Response Elections Api V1 Elections Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/participation/history": {
+      "get": {
+        "tags": [
+          "official-data"
+        ],
+        "summary": "History",
+        "description": "Histórico por instantánea territorial; no implica homologación municipal.",
+        "operationId": "history_api_v1_participation_history_get",
+        "parameters": [
+          {
+            "name": "territory_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "state",
+                "municipality"
+              ],
+              "type": "string",
+              "default": "state",
+              "title": "Territory Type"
+            }
+          },
+          {
+            "name": "year",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "maximum": 2024,
+                  "minimum": 2009
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Year"
+            }
+          },
+          {
+            "name": "state_code",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^(0[1-9]|[12][0-9]|3[0-2])$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "State Code"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 500,
+              "minimum": 1,
+              "default": 100,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HistoryPage"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/statistics/summary": {
+      "get": {
+        "tags": [
+          "statistics"
+        ],
+        "summary": "Statistical Summary",
+        "description": "Suma de conteos antes de calcular tasas; cambios frente al mismo tipo electoral.",
+        "operationId": "statistical_summary_api_v1_statistics_summary_get",
+        "parameters": [
+          {
+            "name": "year",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/ElectionYear"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Year"
+            }
+          },
+          {
+            "name": "state_code",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^(0[1-9]|[12][0-9]|3[0-2])$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "State Code"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SummaryResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/statistics/trends": {
+      "get": {
+        "tags": [
+          "statistics"
+        ],
+        "summary": "Historical Trends",
+        "description": "Tendencias descriptivas separadas para elecciones presidenciales e intermedias.",
+        "operationId": "historical_trends_api_v1_statistics_trends_get",
+        "parameters": [
+          {
+            "name": "state_code",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^(0[1-9]|[12][0-9]|3[0-2])$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "State Code"
+            }
+          },
+          {
+            "name": "election_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "presidential",
+                    "midterm"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Election Type"
+            }
+          },
+          {
+            "name": "through_year",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/ElectionYear"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Through Year"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrendsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/statistics/territories": {
+      "get": {
+        "tags": [
+          "statistics"
+        ],
+        "summary": "Territorial Statistics",
+        "description": "Indicadores y comparaciones; municipios limitados a instantáneas de cada año.",
+        "operationId": "territorial_statistics_api_v1_statistics_territories_get",
+        "parameters": [
+          {
+            "name": "year",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/ElectionYear"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Year"
+            }
+          },
+          {
+            "name": "territory_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "state",
+                "municipality"
+              ],
+              "type": "string",
+              "default": "state",
+              "title": "Territory Type"
+            }
+          },
+          {
+            "name": "state_code",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^(0[1-9]|[12][0-9]|3[0-2])$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "State Code"
+            }
+          },
+          {
+            "name": "sort_by",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "abstention_desc",
+                "participation_desc",
+                "abstention_change_desc",
+                "trend_desc"
+              ],
+              "type": "string",
+              "default": "abstention_desc",
+              "title": "Sort By"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 500,
+              "minimum": 1,
+              "default": 100,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TerritoryStatisticsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/statistics/demographics": {
+      "get": {
+        "tags": [
+          "statistics"
+        ],
+        "summary": "Demographic Statistics",
+        "description": "Una dimensión por consulta: no sumar márgenes de sexo, edad y sección entre sí.",
+        "operationId": "demographic_statistics_api_v1_statistics_demographics_get",
+        "parameters": [
+          {
+            "name": "dimension",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "enum": [
+                "sex",
+                "age_band",
+                "section_type"
+              ],
+              "type": "string",
+              "title": "Dimension"
+            }
+          },
+          {
+            "name": "year",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/ElectionYear"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Year"
+            }
+          },
+          {
+            "name": "state_code",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^(0[1-9]|[12][0-9]|3[0-2])$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "State Code"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DemographicResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/models/metrics": {
+      "get": {
+        "tags": [
+          "models"
+        ],
+        "summary": "Model Metrics",
+        "description": "Comparaciones registradas; no cargar ni ejecutar archivos de pesos desde la API.",
+        "operationId": "model_metrics_api_v1_models_metrics_get",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{20}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Run Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelMetricsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/risk/map": {
+      "get": {
+        "tags": [
+          "predictions"
+        ],
+        "summary": "Risk Map",
+        "description": "GeoJSON con geometría nula hasta incorporar cartografía estatal verificada.",
+        "operationId": "risk_map_api_v1_risk_map_get",
+        "parameters": [
+          {
+            "name": "state_code",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^(0[1-9]|[12][0-9]|3[0-2])$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "State Code"
+            }
+          },
+          {
+            "name": "target_year",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "maximum": 2100,
+                  "minimum": 2025
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Target Year"
+            }
+          },
+          {
+            "name": "run_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{20}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Run Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RiskMap"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/predictions": {
+      "get": {
+        "tags": [
+          "predictions"
+        ],
+        "summary": "Predictions",
+        "description": "Resultados estatales materializados. Las tasas son fracciones, no porcentajes.",
+        "operationId": "predictions_api_v1_predictions_get",
+        "parameters": [
+          {
+            "name": "state_code",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^(0[1-9]|[12][0-9]|3[0-2])$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "State Code"
+            }
+          },
+          {
+            "name": "risk_level",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "low",
+                    "medium",
+                    "high"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Risk Level"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 32,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          },
+          {
+            "name": "target_year",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "maximum": 2100,
+                  "minimum": 2025
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Target Year"
+            }
+          },
+          {
+            "name": "run_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{20}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Run Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PredictionPage"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/predictions/{territory_id}": {
+      "get": {
+        "tags": [
+          "predictions"
+        ],
+        "summary": "Prediction Detail",
+        "operationId": "prediction_detail_api_v1_predictions__territory_id__get",
+        "parameters": [
+          {
+            "name": "territory_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "title": "Territory Id"
+            }
+          },
+          {
+            "name": "target_year",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "maximum": 2100,
+                  "minimum": 2025
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Target Year"
+            }
+          },
+          {
+            "name": "run_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{20}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Run Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PredictionDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/risk/calibration": {
+      "get": {
+        "tags": [
+          "predictions"
+        ],
+        "summary": "Risk Calibration",
+        "description": "Umbrales, residuos, cortes cronológicos y límites de interpretación.",
+        "operationId": "risk_calibration_api_v1_risk_calibration_get",
+        "parameters": [
+          {
+            "name": "target_year",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "maximum": 2100,
+                  "minimum": 2025
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Target Year"
+            }
+          },
+          {
+            "name": "run_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{20}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Run Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForecastRunRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/risk/summary": {
+      "get": {
+        "tags": [
+          "predictions"
+        ],
+        "summary": "Risk Summary",
+        "operationId": "risk_summary_api_v1_risk_summary_get",
+        "parameters": [
+          {
+            "name": "target_year",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "maximum": 2100,
+                  "minimum": 2025
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Target Year"
+            }
+          },
+          {
+            "name": "run_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{20}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Run Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RiskSummary"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/simulations": {
+      "post": {
+        "tags": [
+          "simulations"
+        ],
+        "summary": "Create Simulation",
+        "description": "Comparar base y supuesto aritmético, guardar y devolver sus parámetros y resultados.",
+        "operationId": "create_simulation_api_v1_simulations_post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SimulationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimulationRead"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Escenario ya registrado"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "simulations"
+        ],
+        "summary": "Simulations",
+        "operationId": "simulations_api_v1_simulations_get",
+        "parameters": [
+          {
+            "name": "forecast_run_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{20}$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Forecast Run Id"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page_SimulationListItem_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/simulations/{simulation_id}": {
+      "get": {
+        "tags": [
+          "simulations"
+        ],
+        "summary": "Simulation Detail",
+        "operationId": "simulation_detail_api_v1_simulations__simulation_id__get",
+        "parameters": [
+          {
+            "name": "simulation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$",
+              "title": "Simulation Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimulationRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/territories": {
+      "get": {
+        "tags": [
+          "territories"
+        ],
+        "summary": "Territories",
+        "description": "Catálogo por instantánea; omitir año selecciona el último disponible.",
+        "operationId": "territories_api_v1_territories_get",
+        "parameters": [
+          {
+            "name": "territory_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "state",
+                "municipality"
+              ],
+              "type": "string",
+              "default": "state",
+              "title": "Territory Type"
+            }
+          },
+          {
+            "name": "year",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/ElectionYear"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Year"
+            }
+          },
+          {
+            "name": "state_code",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^(0[1-9]|[12][0-9]|3[0-2])$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "State Code"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 500,
+              "minimum": 1,
+              "default": 100,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page_TerritoryRead_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/territories/{territory_id}": {
+      "get": {
+        "tags": [
+          "territories"
+        ],
+        "summary": "Territory Detail",
+        "operationId": "territory_detail_api_v1_territories__territory_id__get",
+        "parameters": [
+          {
+            "name": "territory_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "title": "Territory Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TerritoryRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AnnualStatistics": {
+        "properties": {
+          "nominal_list": {
+            "type": "integer",
+            "title": "Nominal List"
+          },
+          "voter_count": {
+            "type": "integer",
+            "title": "Voter Count"
+          },
+          "nonvoter_count": {
+            "type": "integer",
+            "title": "Nonvoter Count"
+          },
+          "unspecified_count": {
+            "type": "integer",
+            "title": "Unspecified Count"
+          },
+          "known_participation_count": {
+            "type": "integer",
+            "title": "Known Participation Count"
+          },
+          "participation_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Participation Rate"
+          },
+          "abstention_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Abstention Rate"
+          },
+          "unspecified_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unspecified Rate"
+          },
+          "known_participation_fraction": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Known Participation Fraction"
+          },
+          "missing_data_abstention_lower": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Missing Data Abstention Lower"
+          },
+          "missing_data_abstention_upper": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Missing Data Abstention Upper"
+          },
+          "year": {
+            "type": "integer",
+            "title": "Year"
+          },
+          "election_type": {
+            "type": "string",
+            "enum": [
+              "presidential",
+              "midterm"
+            ],
+            "title": "Election Type"
+          },
+          "source_ids": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Source Ids"
+          },
+          "territory_count": {
+            "type": "integer",
+            "title": "Territory Count"
+          },
+          "expected_territory_count": {
+            "type": "integer",
+            "title": "Expected Territory Count"
+          },
+          "previous_comparable_year": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Previous Comparable Year"
+          },
+          "participation_change_pp": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Participation Change Pp"
+          },
+          "abstention_change_pp": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Abstention Change Pp"
+          },
+          "quality_notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Quality Notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "nominal_list",
+          "voter_count",
+          "nonvoter_count",
+          "unspecified_count",
+          "known_participation_count",
+          "participation_rate",
+          "abstention_rate",
+          "unspecified_rate",
+          "known_participation_fraction",
+          "missing_data_abstention_lower",
+          "missing_data_abstention_upper",
+          "year",
+          "election_type",
+          "source_ids",
+          "territory_count",
+          "expected_territory_count",
+          "previous_comparable_year",
+          "participation_change_pp",
+          "abstention_change_pp",
+          "quality_notes"
+        ],
+        "title": "AnnualStatistics"
+      },
+      "DataSourceRead": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "institution": {
+            "type": "string",
+            "title": "Institution"
+          },
+          "dataset_name": {
+            "type": "string",
+            "title": "Dataset Name"
+          },
+          "year": {
+            "type": "integer",
+            "title": "Year"
+          },
+          "source_url": {
+            "type": "string",
+            "title": "Source Url"
+          },
+          "landing_url": {
+            "type": "string",
+            "title": "Landing Url"
+          },
+          "retrieved_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Retrieved At"
+          },
+          "checksum": {
+            "type": "string",
+            "title": "Checksum"
+          },
+          "byte_size": {
+            "type": "integer",
+            "title": "Byte Size"
+          },
+          "license_notes": {
+            "type": "string",
+            "title": "License Notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "institution",
+          "dataset_name",
+          "year",
+          "source_url",
+          "landing_url",
+          "retrieved_at",
+          "checksum",
+          "byte_size",
+          "license_notes"
+        ],
+        "title": "DataSourceRead"
+      },
+      "DemographicIndicator": {
+        "properties": {
+          "nominal_list": {
+            "type": "integer",
+            "title": "Nominal List"
+          },
+          "voter_count": {
+            "type": "integer",
+            "title": "Voter Count"
+          },
+          "nonvoter_count": {
+            "type": "integer",
+            "title": "Nonvoter Count"
+          },
+          "unspecified_count": {
+            "type": "integer",
+            "title": "Unspecified Count"
+          },
+          "known_participation_count": {
+            "type": "integer",
+            "title": "Known Participation Count"
+          },
+          "participation_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Participation Rate"
+          },
+          "abstention_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Abstention Rate"
+          },
+          "unspecified_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unspecified Rate"
+          },
+          "known_participation_fraction": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Known Participation Fraction"
+          },
+          "missing_data_abstention_lower": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Missing Data Abstention Lower"
+          },
+          "missing_data_abstention_upper": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Missing Data Abstention Upper"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "territory_count": {
+            "type": "integer",
+            "title": "Territory Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "nominal_list",
+          "voter_count",
+          "nonvoter_count",
+          "unspecified_count",
+          "known_participation_count",
+          "participation_rate",
+          "abstention_rate",
+          "unspecified_rate",
+          "known_participation_fraction",
+          "missing_data_abstention_lower",
+          "missing_data_abstention_upper",
+          "category",
+          "territory_count"
+        ],
+        "title": "DemographicIndicator"
+      },
+      "DemographicResponse": {
+        "properties": {
+          "methodology_version": {
+            "type": "string",
+            "title": "Methodology Version",
+            "default": "descriptive-v1"
+          },
+          "rate_denominator": {
+            "type": "string",
+            "title": "Rate Denominator",
+            "default": "SV + NV; NS excluded"
+          },
+          "rate_unit": {
+            "type": "string",
+            "title": "Rate Unit",
+            "default": "fraction"
+          },
+          "change_unit": {
+            "type": "string",
+            "title": "Change Unit",
+            "default": "percentage_points"
+          },
+          "historical_comparison": {
+            "type": "string",
+            "title": "Historical Comparison",
+            "default": "same_election_type"
+          },
+          "missing_data_bounds_interpretation": {
+            "type": "string",
+            "title": "Missing Data Bounds Interpretation",
+            "default": "worst_case_for_NS_not_prediction_intervals"
+          },
+          "scope": {
+            "type": "string",
+            "enum": [
+              "national",
+              "state"
+            ],
+            "title": "Scope"
+          },
+          "state_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "State Code"
+          },
+          "year": {
+            "type": "integer",
+            "title": "Year"
+          },
+          "dimension": {
+            "type": "string",
+            "enum": [
+              "sex",
+              "age_band",
+              "section_type"
+            ],
+            "title": "Dimension"
+          },
+          "source_ids": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Source Ids"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Notes"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/DemographicIndicator"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "scope",
+          "state_code",
+          "year",
+          "dimension",
+          "source_ids",
+          "notes",
+          "items"
+        ],
+        "title": "DemographicResponse"
+      },
+      "ElectionRead": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "year": {
+            "type": "integer",
+            "title": "Year"
+          },
+          "election_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Election Date"
+          },
+          "election_type": {
+            "type": "string",
+            "title": "Election Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "year",
+          "election_date",
+          "election_type"
+        ],
+        "title": "ElectionRead"
+      },
+      "ElectionYear": {
+        "type": "integer",
+        "enum": [
+          2009,
+          2012,
+          2015,
+          2018,
+          2021,
+          2024
+        ],
+        "title": "ElectionYear"
+      },
+      "ForecastRunRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "model_version_id": {
+            "type": "integer",
+            "title": "Model Version Id"
+          },
+          "target_year": {
+            "type": "integer",
+            "title": "Target Year"
+          },
+          "as_of_year": {
+            "type": "integer",
+            "title": "As Of Year"
+          },
+          "election_type": {
+            "type": "string",
+            "enum": [
+              "midterm",
+              "presidential"
+            ],
+            "title": "Election Type"
+          },
+          "fingerprint": {
+            "type": "string",
+            "title": "Fingerprint"
+          },
+          "calibration": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Calibration"
+          },
+          "provenance": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Provenance"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "model_version_id",
+          "target_year",
+          "as_of_year",
+          "election_type",
+          "fingerprint",
+          "calibration",
+          "provenance",
+          "created_at"
+        ],
+        "title": "ForecastRunRead"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "HistoryPage": {
+        "properties": {
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/HistoryRead"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "rates_denominator": {
+            "type": "string",
+            "title": "Rates Denominator",
+            "default": "SV + NV; NS excluded"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total",
+          "limit",
+          "offset",
+          "items"
+        ],
+        "title": "HistoryPage"
+      },
+      "HistoryRead": {
+        "properties": {
+          "territory_id": {
+            "type": "integer",
+            "title": "Territory Id"
+          },
+          "territory_type": {
+            "type": "string",
+            "title": "Territory Type"
+          },
+          "official_code": {
+            "type": "string",
+            "title": "Official Code"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "year": {
+            "type": "integer",
+            "title": "Year"
+          },
+          "election_type": {
+            "type": "string",
+            "title": "Election Type"
+          },
+          "comparability_status": {
+            "type": "string",
+            "title": "Comparability Status"
+          },
+          "nominal_list": {
+            "type": "integer",
+            "title": "Nominal List"
+          },
+          "voter_count": {
+            "type": "integer",
+            "title": "Voter Count"
+          },
+          "nonvoter_count": {
+            "type": "integer",
+            "title": "Nonvoter Count"
+          },
+          "unspecified_count": {
+            "type": "integer",
+            "title": "Unspecified Count"
+          },
+          "participation_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Participation Rate"
+          },
+          "abstention_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Abstention Rate"
+          },
+          "unspecified_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unspecified Rate"
+          },
+          "source_id": {
+            "type": "integer",
+            "title": "Source Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "territory_id",
+          "territory_type",
+          "official_code",
+          "name",
+          "year",
+          "election_type",
+          "comparability_status",
+          "nominal_list",
+          "voter_count",
+          "nonvoter_count",
+          "unspecified_count",
+          "participation_rate",
+          "abstention_rate",
+          "unspecified_rate",
+          "source_id"
+        ],
+        "title": "HistoryRead"
+      },
+      "ModelMetrics": {
+        "properties": {
+          "model_name": {
+            "type": "string",
+            "title": "Model Name"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "development_selected",
+              "candidate"
+            ],
+            "title": "Status"
+          },
+          "training_period": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Training Period"
+          },
+          "features": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Features"
+          },
+          "hyperparameters": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Hyperparameters"
+          },
+          "metrics": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Metrics"
+          },
+          "artifact_manifest": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Artifact Manifest"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "model_name",
+          "version",
+          "status",
+          "training_period",
+          "features",
+          "hyperparameters",
+          "metrics",
+          "artifact_manifest",
+          "created_at"
+        ],
+        "title": "ModelMetrics"
+      },
+      "ModelMetricsResponse": {
+        "properties": {
+          "run_id": {
+            "type": "string",
+            "title": "Run Id"
+          },
+          "selected_on_development": {
+            "type": "string",
+            "title": "Selected On Development"
+          },
+          "dataset_fingerprint": {
+            "type": "string",
+            "title": "Dataset Fingerprint"
+          },
+          "implementation_fingerprint": {
+            "type": "string",
+            "title": "Implementation Fingerprint"
+          },
+          "protocol": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Protocol"
+          },
+          "source_datasets": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Source Datasets"
+          },
+          "package_versions": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Package Versions"
+          },
+          "models": {
+            "items": {
+              "$ref": "#/components/schemas/ModelMetrics"
+            },
+            "type": "array",
+            "title": "Models"
+          },
+          "error_unit": {
+            "type": "string",
+            "title": "Error Unit",
+            "default": "percentage_points"
+          }
+        },
+        "type": "object",
+        "required": [
+          "run_id",
+          "selected_on_development",
+          "dataset_fingerprint",
+          "implementation_fingerprint",
+          "protocol",
+          "source_datasets",
+          "package_versions",
+          "models"
+        ],
+        "title": "ModelMetricsResponse"
+      },
+      "Page_DataSourceRead_": {
+        "properties": {
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/DataSourceRead"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total",
+          "limit",
+          "offset",
+          "items"
+        ],
+        "title": "Page[DataSourceRead]"
+      },
+      "Page_SimulationListItem_": {
+        "properties": {
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/SimulationListItem"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total",
+          "limit",
+          "offset",
+          "items"
+        ],
+        "title": "Page[SimulationListItem]"
+      },
+      "Page_TerritoryRead_": {
+        "properties": {
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/TerritoryRead"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total",
+          "limit",
+          "offset",
+          "items"
+        ],
+        "title": "Page[TerritoryRead]"
+      },
+      "PredictionDetail": {
+        "properties": {
+          "forecast": {
+            "$ref": "#/components/schemas/ForecastRunRead"
+          },
+          "prediction": {
+            "$ref": "#/components/schemas/PredictionRead"
+          }
+        },
+        "type": "object",
+        "required": [
+          "forecast",
+          "prediction"
+        ],
+        "title": "PredictionDetail"
+      },
+      "PredictionPage": {
+        "properties": {
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/PredictionRead"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "forecast": {
+            "$ref": "#/components/schemas/ForecastRunRead"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total",
+          "limit",
+          "offset",
+          "items",
+          "forecast"
+        ],
+        "title": "PredictionPage"
+      },
+      "PredictionRead": {
+        "properties": {
+          "territory_id": {
+            "type": "integer",
+            "title": "Territory Id"
+          },
+          "state_code": {
+            "type": "string",
+            "title": "State Code"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "predicted": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Predicted",
+            "description": "Abstención prevista NV/(SV+NV), fracción; NS excluidos"
+          },
+          "lower": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Lower",
+            "description": "Extremo inferior de banda empírica; cobertura no garantizada"
+          },
+          "upper": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Upper"
+          },
+          "risk_level": {
+            "type": "string",
+            "enum": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "title": "Risk Level"
+          },
+          "uncertainty": {
+            "$ref": "#/components/schemas/UncertaintyRead"
+          },
+          "explanation": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Explanation"
+          },
+          "lineage": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Lineage"
+          }
+        },
+        "type": "object",
+        "required": [
+          "territory_id",
+          "state_code",
+          "name",
+          "predicted",
+          "lower",
+          "upper",
+          "risk_level",
+          "uncertainty",
+          "explanation",
+          "lineage"
+        ],
+        "title": "PredictionRead"
+      },
+      "RiskFeature": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "Feature",
+            "title": "Type",
+            "default": "Feature"
+          },
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "geometry": {
+            "type": "null",
+            "title": "Geometry"
+          },
+          "properties": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Properties"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "geometry",
+          "properties"
+        ],
+        "title": "RiskFeature"
+      },
+      "RiskMap": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "FeatureCollection",
+            "title": "Type",
+            "default": "FeatureCollection"
+          },
+          "forecast_run_id": {
+            "type": "string",
+            "title": "Forecast Run Id"
+          },
+          "target_year": {
+            "type": "integer",
+            "title": "Target Year"
+          },
+          "geometry_status": {
+            "type": "string",
+            "const": "unavailable",
+            "title": "Geometry Status",
+            "default": "unavailable"
+          },
+          "join_key": {
+            "type": "string",
+            "title": "Join Key",
+            "default": "properties.state_code"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Notes"
+          },
+          "features": {
+            "items": {
+              "$ref": "#/components/schemas/RiskFeature"
+            },
+            "type": "array",
+            "title": "Features"
+          }
+        },
+        "type": "object",
+        "required": [
+          "forecast_run_id",
+          "target_year",
+          "notes",
+          "features"
+        ],
+        "title": "RiskMap"
+      },
+      "RiskSummary": {
+        "properties": {
+          "forecast": {
+            "$ref": "#/components/schemas/ForecastRunRead"
+          },
+          "total_states": {
+            "type": "integer",
+            "title": "Total States"
+          },
+          "counts": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "propertyNames": {
+              "enum": [
+                "low",
+                "medium",
+                "high"
+              ]
+            },
+            "type": "object",
+            "title": "Counts"
+          },
+          "uncertain_classifications": {
+            "type": "integer",
+            "title": "Uncertain Classifications"
+          }
+        },
+        "type": "object",
+        "required": [
+          "forecast",
+          "total_states",
+          "counts",
+          "uncertain_classifications"
+        ],
+        "title": "RiskSummary"
+      },
+      "ScenarioAggregate": {
+        "properties": {
+          "mean_abstention_rate": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Mean Abstention Rate"
+          },
+          "mean_participation_rate": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Mean Participation Rate"
+          },
+          "risk_counts": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "propertyNames": {
+              "enum": [
+                "low",
+                "medium",
+                "high"
+              ]
+            },
+            "type": "object",
+            "title": "Risk Counts"
+          },
+          "uncertain_classifications": {
+            "type": "integer",
+            "title": "Uncertain Classifications"
+          }
+        },
+        "type": "object",
+        "required": [
+          "mean_abstention_rate",
+          "mean_participation_rate",
+          "risk_counts",
+          "uncertain_classifications"
+        ],
+        "title": "ScenarioAggregate"
+      },
+      "ScenarioRates": {
+        "properties": {
+          "abstention_rate": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Abstention Rate"
+          },
+          "participation_rate": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Participation Rate"
+          },
+          "abstention_band_lower": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Abstention Band Lower"
+          },
+          "abstention_band_upper": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Abstention Band Upper"
+          },
+          "participation_band_lower": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Participation Band Lower"
+          },
+          "participation_band_upper": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Participation Band Upper"
+          },
+          "risk_level": {
+            "type": "string",
+            "enum": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "title": "Risk Level"
+          },
+          "risk_levels_possible": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "low",
+                "medium",
+                "high"
+              ]
+            },
+            "type": "array",
+            "title": "Risk Levels Possible"
+          },
+          "classification_uncertain": {
+            "type": "boolean",
+            "title": "Classification Uncertain"
+          }
+        },
+        "type": "object",
+        "required": [
+          "abstention_rate",
+          "participation_rate",
+          "abstention_band_lower",
+          "abstention_band_upper",
+          "participation_band_lower",
+          "participation_band_upper",
+          "risk_level",
+          "risk_levels_possible",
+          "classification_uncertain"
+        ],
+        "title": "ScenarioRates"
+      },
+      "SimulationListItem": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "forecast_run_id": {
+            "type": "string",
+            "title": "Forecast Run Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "forecast_run_id",
+          "name",
+          "created_at"
+        ],
+        "title": "SimulationListItem"
+      },
+      "SimulationRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "result": {
+            "$ref": "#/components/schemas/SimulationResult"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "created_at",
+          "result"
+        ],
+        "title": "SimulationRead"
+      },
+      "SimulationRequest": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Name",
+            "default": "Escenario hipotético"
+          },
+          "forecast_run_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[a-f0-9]{20}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Forecast Run Id"
+          },
+          "target_year": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 2100.0,
+                "minimum": 2025.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Year"
+          },
+          "state_codes": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string",
+                  "pattern": "^(0[1-9]|[12][0-9]|3[0-2])$"
+                },
+                "type": "array",
+                "maxItems": 32,
+                "minItems": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "State Codes"
+          },
+          "participation_change_pp": {
+            "type": "number",
+            "maximum": 100.0,
+            "minimum": -100.0,
+            "title": "Participation Change Pp",
+            "description": "Cambio absoluto supuesto; +3 aumenta participación tres puntos porcentuales"
+          },
+          "state_changes": {
+            "items": {
+              "$ref": "#/components/schemas/StateChange"
+            },
+            "type": "array",
+            "maxItems": 32,
+            "title": "State Changes"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "participation_change_pp"
+        ],
+        "title": "SimulationRequest"
+      },
+      "SimulationResult": {
+        "properties": {
+          "engine_version": {
+            "type": "string",
+            "title": "Engine Version"
+          },
+          "implementation_sha256": {
+            "type": "string",
+            "title": "Implementation Sha256"
+          },
+          "forecast": {
+            "$ref": "#/components/schemas/ForecastRunRead"
+          },
+          "parameters": {
+            "$ref": "#/components/schemas/SimulationRequest"
+          },
+          "assumptions": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Assumptions"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/SimulationSummary"
+          },
+          "states": {
+            "items": {
+              "$ref": "#/components/schemas/StateSimulation"
+            },
+            "type": "array",
+            "title": "States"
+          }
+        },
+        "type": "object",
+        "required": [
+          "engine_version",
+          "implementation_sha256",
+          "forecast",
+          "parameters",
+          "assumptions",
+          "summary",
+          "states"
+        ],
+        "title": "SimulationResult"
+      },
+      "SimulationSummary": {
+        "properties": {
+          "selected_states": {
+            "type": "integer",
+            "title": "Selected States"
+          },
+          "aggregation": {
+            "type": "string",
+            "const": "unweighted_mean_of_selected_states",
+            "title": "Aggregation"
+          },
+          "national_electorate_estimate": {
+            "type": "boolean",
+            "const": false,
+            "title": "National Electorate Estimate"
+          },
+          "baseline": {
+            "$ref": "#/components/schemas/ScenarioAggregate"
+          },
+          "scenario": {
+            "$ref": "#/components/schemas/ScenarioAggregate"
+          },
+          "mean_applied_participation_change_pp": {
+            "type": "number",
+            "maximum": 100.0,
+            "minimum": -100.0,
+            "title": "Mean Applied Participation Change Pp"
+          },
+          "states_with_risk_change": {
+            "type": "integer",
+            "title": "States With Risk Change"
+          },
+          "states_with_clipped_point": {
+            "type": "integer",
+            "title": "States With Clipped Point"
+          },
+          "states_with_clipped_band": {
+            "type": "integer",
+            "title": "States With Clipped Band"
+          },
+          "aggregate_prediction_interval": {
+            "type": "null",
+            "title": "Aggregate Prediction Interval"
+          }
+        },
+        "type": "object",
+        "required": [
+          "selected_states",
+          "aggregation",
+          "national_electorate_estimate",
+          "baseline",
+          "scenario",
+          "mean_applied_participation_change_pp",
+          "states_with_risk_change",
+          "states_with_clipped_point",
+          "states_with_clipped_band",
+          "aggregate_prediction_interval"
+        ],
+        "title": "SimulationSummary"
+      },
+      "StateChange": {
+        "properties": {
+          "state_code": {
+            "type": "string",
+            "pattern": "^(0[1-9]|[12][0-9]|3[0-2])$",
+            "title": "State Code"
+          },
+          "participation_change_pp": {
+            "type": "number",
+            "maximum": 100.0,
+            "minimum": -100.0,
+            "title": "Participation Change Pp"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "state_code",
+          "participation_change_pp"
+        ],
+        "title": "StateChange"
+      },
+      "StateSimulation": {
+        "properties": {
+          "territory_id": {
+            "type": "integer",
+            "title": "Territory Id"
+          },
+          "state_code": {
+            "type": "string",
+            "pattern": "^(0[1-9]|[12][0-9]|3[0-2])$",
+            "title": "State Code"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "baseline": {
+            "$ref": "#/components/schemas/ScenarioRates"
+          },
+          "scenario": {
+            "$ref": "#/components/schemas/ScenarioRates"
+          },
+          "requested_participation_change_pp": {
+            "type": "number",
+            "maximum": 100.0,
+            "minimum": -100.0,
+            "title": "Requested Participation Change Pp"
+          },
+          "applied_participation_change_pp": {
+            "type": "number",
+            "maximum": 100.0,
+            "minimum": -100.0,
+            "title": "Applied Participation Change Pp"
+          },
+          "applied_abstention_change_pp": {
+            "type": "number",
+            "maximum": 100.0,
+            "minimum": -100.0,
+            "title": "Applied Abstention Change Pp"
+          },
+          "point_was_clipped": {
+            "type": "boolean",
+            "title": "Point Was Clipped"
+          },
+          "band_was_clipped": {
+            "type": "boolean",
+            "title": "Band Was Clipped"
+          },
+          "risk_changed": {
+            "type": "boolean",
+            "title": "Risk Changed"
+          }
+        },
+        "type": "object",
+        "required": [
+          "territory_id",
+          "state_code",
+          "name",
+          "baseline",
+          "scenario",
+          "requested_participation_change_pp",
+          "applied_participation_change_pp",
+          "applied_abstention_change_pp",
+          "point_was_clipped",
+          "band_was_clipped",
+          "risk_changed"
+        ],
+        "title": "StateSimulation"
+      },
+      "SummaryResponse": {
+        "properties": {
+          "methodology_version": {
+            "type": "string",
+            "title": "Methodology Version",
+            "default": "descriptive-v1"
+          },
+          "rate_denominator": {
+            "type": "string",
+            "title": "Rate Denominator",
+            "default": "SV + NV; NS excluded"
+          },
+          "rate_unit": {
+            "type": "string",
+            "title": "Rate Unit",
+            "default": "fraction"
+          },
+          "change_unit": {
+            "type": "string",
+            "title": "Change Unit",
+            "default": "percentage_points"
+          },
+          "historical_comparison": {
+            "type": "string",
+            "title": "Historical Comparison",
+            "default": "same_election_type"
+          },
+          "missing_data_bounds_interpretation": {
+            "type": "string",
+            "title": "Missing Data Bounds Interpretation",
+            "default": "worst_case_for_NS_not_prediction_intervals"
+          },
+          "scope": {
+            "type": "string",
+            "enum": [
+              "national",
+              "state"
+            ],
+            "title": "Scope"
+          },
+          "state_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "State Code"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AnnualStatistics"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "scope",
+          "state_code",
+          "items"
+        ],
+        "title": "SummaryResponse"
+      },
+      "TerritoryIndicator": {
+        "properties": {
+          "nominal_list": {
+            "type": "integer",
+            "title": "Nominal List"
+          },
+          "voter_count": {
+            "type": "integer",
+            "title": "Voter Count"
+          },
+          "nonvoter_count": {
+            "type": "integer",
+            "title": "Nonvoter Count"
+          },
+          "unspecified_count": {
+            "type": "integer",
+            "title": "Unspecified Count"
+          },
+          "known_participation_count": {
+            "type": "integer",
+            "title": "Known Participation Count"
+          },
+          "participation_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Participation Rate"
+          },
+          "abstention_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Abstention Rate"
+          },
+          "unspecified_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unspecified Rate"
+          },
+          "known_participation_fraction": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Known Participation Fraction"
+          },
+          "missing_data_abstention_lower": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Missing Data Abstention Lower"
+          },
+          "missing_data_abstention_upper": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Missing Data Abstention Upper"
+          },
+          "territory_id": {
+            "type": "integer",
+            "title": "Territory Id"
+          },
+          "territory_type": {
+            "type": "string",
+            "enum": [
+              "state",
+              "municipality"
+            ],
+            "title": "Territory Type"
+          },
+          "official_code": {
+            "type": "string",
+            "title": "Official Code"
+          },
+          "state_code": {
+            "type": "string",
+            "title": "State Code"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "year": {
+            "type": "integer",
+            "title": "Year"
+          },
+          "election_type": {
+            "type": "string",
+            "enum": [
+              "presidential",
+              "midterm"
+            ],
+            "title": "Election Type"
+          },
+          "source_id": {
+            "type": "integer",
+            "title": "Source Id"
+          },
+          "comparability_status": {
+            "type": "string",
+            "title": "Comparability Status"
+          },
+          "history": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TrendMetrics"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "previous_comparable_year": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Previous Comparable Year"
+          },
+          "participation_change_pp": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Participation Change Pp"
+          },
+          "abstention_change_pp": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Abstention Change Pp"
+          },
+          "gap_vs_national_abstention_pp": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gap Vs National Abstention Pp"
+          },
+          "gap_vs_state_abstention_pp": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gap Vs State Abstention Pp"
+          },
+          "persistent_low_participation": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Persistent Low Participation"
+          },
+          "above_national_in_last_three": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Above National In Last Three"
+          },
+          "persistence_elections_required": {
+            "type": "integer",
+            "title": "Persistence Elections Required"
+          },
+          "quality_notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Quality Notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "nominal_list",
+          "voter_count",
+          "nonvoter_count",
+          "unspecified_count",
+          "known_participation_count",
+          "participation_rate",
+          "abstention_rate",
+          "unspecified_rate",
+          "known_participation_fraction",
+          "missing_data_abstention_lower",
+          "missing_data_abstention_upper",
+          "territory_id",
+          "territory_type",
+          "official_code",
+          "state_code",
+          "name",
+          "year",
+          "election_type",
+          "source_id",
+          "comparability_status",
+          "history",
+          "previous_comparable_year",
+          "participation_change_pp",
+          "abstention_change_pp",
+          "gap_vs_national_abstention_pp",
+          "gap_vs_state_abstention_pp",
+          "persistent_low_participation",
+          "above_national_in_last_three",
+          "persistence_elections_required",
+          "quality_notes"
+        ],
+        "title": "TerritoryIndicator"
+      },
+      "TerritoryRead": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "source_id": {
+            "type": "integer",
+            "title": "Source Id"
+          },
+          "territory_type": {
+            "type": "string",
+            "enum": [
+              "state",
+              "municipality"
+            ],
+            "title": "Territory Type"
+          },
+          "official_code": {
+            "type": "string",
+            "title": "Official Code"
+          },
+          "state_code": {
+            "type": "string",
+            "title": "State Code"
+          },
+          "municipality_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Municipality Code"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "reference_year": {
+            "type": "integer",
+            "title": "Reference Year"
+          },
+          "parent_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Id"
+          },
+          "cartography_reference": {
+            "type": "string",
+            "title": "Cartography Reference"
+          },
+          "comparability_status": {
+            "type": "string",
+            "title": "Comparability Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "source_id",
+          "territory_type",
+          "official_code",
+          "state_code",
+          "municipality_code",
+          "name",
+          "reference_year",
+          "parent_id",
+          "cartography_reference",
+          "comparability_status"
+        ],
+        "title": "TerritoryRead"
+      },
+      "TerritoryStatisticsResponse": {
+        "properties": {
+          "methodology_version": {
+            "type": "string",
+            "title": "Methodology Version",
+            "default": "descriptive-v1"
+          },
+          "rate_denominator": {
+            "type": "string",
+            "title": "Rate Denominator",
+            "default": "SV + NV; NS excluded"
+          },
+          "rate_unit": {
+            "type": "string",
+            "title": "Rate Unit",
+            "default": "fraction"
+          },
+          "change_unit": {
+            "type": "string",
+            "title": "Change Unit",
+            "default": "percentage_points"
+          },
+          "historical_comparison": {
+            "type": "string",
+            "title": "Historical Comparison",
+            "default": "same_election_type"
+          },
+          "missing_data_bounds_interpretation": {
+            "type": "string",
+            "title": "Missing Data Bounds Interpretation",
+            "default": "worst_case_for_NS_not_prediction_intervals"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "limit": {
+            "type": "integer",
+            "title": "Limit"
+          },
+          "offset": {
+            "type": "integer",
+            "title": "Offset"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/TerritoryIndicator"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "year": {
+            "type": "integer",
+            "title": "Year"
+          },
+          "territory_type": {
+            "type": "string",
+            "title": "Territory Type"
+          },
+          "sort_by": {
+            "type": "string",
+            "title": "Sort By"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total",
+          "limit",
+          "offset",
+          "items",
+          "year",
+          "territory_type",
+          "sort_by"
+        ],
+        "title": "TerritoryStatisticsResponse"
+      },
+      "TrendMetrics": {
+        "properties": {
+          "observed_elections": {
+            "type": "integer",
+            "title": "Observed Elections"
+          },
+          "valid_elections": {
+            "type": "integer",
+            "title": "Valid Elections"
+          },
+          "years": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Years"
+          },
+          "mean_abstention_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mean Abstention Rate"
+          },
+          "mean_participation_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mean Participation Rate"
+          },
+          "pooled_abstention_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pooled Abstention Rate"
+          },
+          "pooled_participation_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pooled Participation Rate"
+          },
+          "abstention_sample_std_pp": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Abstention Sample Std Pp"
+          },
+          "abstention_slope_pp_per_year": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Abstention Slope Pp Per Year"
+          },
+          "participation_slope_pp_per_year": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Participation Slope Pp Per Year"
+          },
+          "linear_fit_r_squared": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Linear Fit R Squared"
+          },
+          "direction": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Direction"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "observed_elections",
+          "valid_elections",
+          "years",
+          "mean_abstention_rate",
+          "mean_participation_rate",
+          "pooled_abstention_rate",
+          "pooled_participation_rate",
+          "abstention_sample_std_pp",
+          "abstention_slope_pp_per_year",
+          "participation_slope_pp_per_year",
+          "linear_fit_r_squared",
+          "direction",
+          "notes"
+        ],
+        "title": "TrendMetrics"
+      },
+      "TrendSeries": {
+        "properties": {
+          "election_type": {
+            "type": "string",
+            "enum": [
+              "presidential",
+              "midterm"
+            ],
+            "title": "Election Type"
+          },
+          "observations": {
+            "items": {
+              "$ref": "#/components/schemas/AnnualStatistics"
+            },
+            "type": "array",
+            "title": "Observations"
+          },
+          "metrics": {
+            "$ref": "#/components/schemas/TrendMetrics"
+          }
+        },
+        "type": "object",
+        "required": [
+          "election_type",
+          "observations",
+          "metrics"
+        ],
+        "title": "TrendSeries"
+      },
+      "TrendsResponse": {
+        "properties": {
+          "methodology_version": {
+            "type": "string",
+            "title": "Methodology Version",
+            "default": "descriptive-v1"
+          },
+          "rate_denominator": {
+            "type": "string",
+            "title": "Rate Denominator",
+            "default": "SV + NV; NS excluded"
+          },
+          "rate_unit": {
+            "type": "string",
+            "title": "Rate Unit",
+            "default": "fraction"
+          },
+          "change_unit": {
+            "type": "string",
+            "title": "Change Unit",
+            "default": "percentage_points"
+          },
+          "historical_comparison": {
+            "type": "string",
+            "title": "Historical Comparison",
+            "default": "same_election_type"
+          },
+          "missing_data_bounds_interpretation": {
+            "type": "string",
+            "title": "Missing Data Bounds Interpretation",
+            "default": "worst_case_for_NS_not_prediction_intervals"
+          },
+          "scope": {
+            "type": "string",
+            "enum": [
+              "national",
+              "state"
+            ],
+            "title": "Scope"
+          },
+          "state_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "State Code"
+          },
+          "series": {
+            "items": {
+              "$ref": "#/components/schemas/TrendSeries"
+            },
+            "type": "array",
+            "title": "Series"
+          }
+        },
+        "type": "object",
+        "required": [
+          "scope",
+          "state_code",
+          "series"
+        ],
+        "title": "TrendsResponse"
+      },
+      "UncertaintyRead": {
+        "properties": {
+          "method": {
+            "type": "string",
+            "title": "Method"
+          },
+          "reference_quantile": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Reference Quantile"
+          },
+          "radius": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Radius"
+          },
+          "calibration_years": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Calibration Years"
+          },
+          "calibration_rows": {
+            "type": "integer",
+            "title": "Calibration Rows"
+          },
+          "election_blocks": {
+            "type": "integer",
+            "title": "Election Blocks"
+          },
+          "coverage_guaranteed": {
+            "type": "boolean",
+            "const": false,
+            "title": "Coverage Guaranteed"
+          },
+          "support": {
+            "type": "string",
+            "enum": [
+              "limited",
+              "insufficient"
+            ],
+            "title": "Support"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Limitations"
+          },
+          "risk_levels_possible": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "low",
+                "medium",
+                "high"
+              ]
+            },
+            "type": "array",
+            "title": "Risk Levels Possible"
+          },
+          "classification_uncertain": {
+            "type": "boolean",
+            "title": "Classification Uncertain"
+          },
+          "high_risk_probability": {
+            "type": "null",
+            "title": "High Risk Probability"
+          }
+        },
+        "type": "object",
+        "required": [
+          "method",
+          "reference_quantile",
+          "radius",
+          "calibration_years",
+          "calibration_rows",
+          "election_blocks",
+          "coverage_guaranteed",
+          "support",
+          "limitations",
+          "risk_levels_possible",
+          "classification_uncertain",
+          "high_risk_probability"
+        ],
+        "title": "UncertaintyRead"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

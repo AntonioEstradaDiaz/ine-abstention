@@ -1,0 +1,60 @@
+name: ine-abstention-local
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_USER: ine_owner
+      POSTGRES_PASSWORD: ine_owner_local
+      POSTGRES_DB: ${POSTGRES_DB:-ine_abstention}
+    ports:
+      - "127.0.0.1:${DB_PORT:-15432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+  migrate:
+    build: .
+    environment:
+      DATABASE_URL: postgresql+psycopg://ine_owner:ine_owner_local@db:5432/${POSTGRES_DB:-ine_abstention}
+      DATABASE_SCHEMA: ine
+      ENVIRONMENT: local-demo
+      LOCAL_API_PASSWORD: ine_api_local
+    command: ["python", "scripts/bootstrap_local.py"]
+    depends_on:
+      db:
+        condition: service_healthy
+  api:
+    build: .
+    environment:
+      DATABASE_URL: postgresql+psycopg://ine_api:ine_api_local@db:5432/${POSTGRES_DB:-ine_abstention}
+      DATABASE_SCHEMA: ine
+      ENVIRONMENT: local-demo
+      CORS_ORIGINS: ${CORS_ORIGINS:-[]}
+    ports:
+      - "127.0.0.1:${API_PORT:-8001}:8000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health/ready')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  seed:
+    profiles: [demo]
+    build: .
+    environment:
+      DATABASE_URL: postgresql+psycopg://ine_owner:ine_owner_local@db:5432/${POSTGRES_DB:-ine_abstention}
+      DATABASE_SCHEMA: ine
+      ENVIRONMENT: local-demo
+    command: ["python", "scripts/demo_bundle.py", "restore"]
+    volumes:
+      - ./data/demo:/srv/data/demo:ro
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+volumes:
+  postgres_data:

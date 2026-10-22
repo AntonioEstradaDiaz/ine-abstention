@@ -1,0 +1,807 @@
+{
+  "run_id": "daf97a195864693a644e",
+  "full_run_hash": "daf97a195864693a644e6e71e044b5026d02a3ca4bac2c11dc43944148cdc338",
+  "created_at": "2026-10-22T02:44:21.420988+00:00",
+  "dataset_fingerprint": "5aa5d352892efdc10b19822cb3299dc391edf82d22fdee8b147cea8d9255c5f8",
+  "implementation_fingerprint": "9b00220d2e589a5d34c4b23f4e4473d127b29dfe554e09827ab3c58a3a9b7d2d",
+  "source_files": {
+    "__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "evaluation.py": "f831c9549ea48f825c937d795548d5cd3b126814d3f02e2c958dd08fe8d11966",
+    "extraction.py": "798401bdaf7a659278afe34f0c3624787d841f4e4e1cb71ccb9e0b5131090035",
+    "features.py": "b933a0af67bd79976a20a6d26f29fe98d5507c32e1b14732f339795ce341973a",
+    "models.py": "0f0f879530a9a6efedddb736c235059cb1953f8e298a4dae547f9209641b1055",
+    "registry.py": "b04f9f98e5231dd60b98e097151c98792f2661240e08981507cb92c98ee7ece8",
+    "reporting.py": "90c9c42420a34e4f461db6a51e0f7f64db26510d3795d0b3bf3dda640fa671d5",
+    "training.py": "16364efc62797ad1bc8a3363d8e90d29fc902b603e130f67e2176edae7a16e94"
+  },
+  "package_versions": {
+    "numpy": "2.5.4",
+    "scikit-learn": "1.9.1",
+    "xgboost": "3.4.1",
+    "lightgbm": "4.7.0",
+    "joblib": "1.6.0"
+  },
+  "protocol": {
+    "version": "state-temporal-v1",
+    "feature_version": "state-history-v1",
+    "unit": "state",
+    "target": "NV / (SV + NV)",
+    "seed": 42,
+    "outer_test_years": [
+      2018,
+      2021,
+      2024
+    ],
+    "development_years": [
+      2018,
+      2021
+    ],
+    "final_holdout_year": 2024,
+    "primary_metric": "unweighted_state_mae_pp",
+    "selection": "lowest_development_MAE_only; ties follow declared model order",
+    "hyperparameter_search": "none; fixed presets before evaluation",
+    "preprocessing": "fit exclusively on training election blocks; unknown categories ignored",
+    "prediction_bounds": "clip all predictions to [0, 1]; report clipping count",
+    "baselines": [
+      "last comparable election",
+      "mean of prior comparable elections"
+    ],
+    "final_refit": "refit every fixed candidate on all eligible labels after holdout evaluation",
+    "publication_vintage_verified": false,
+    "validation_interpretation": "retrospective event-year validation, not a verified historical data-release backtest",
+    "production_ready": false
+  },
+  "source_datasets": [
+    {
+      "id": 1,
+      "year": 2009,
+      "checksum": "e626e9528a91206c23fc8f96987e1a297db285e7cbc0fa1e37a18ed473ebf61c",
+      "source_url": "https://ine.mx/wp-content/uploads/2022/04/DatosAbiertos_DECEyEC_ConteosCensales2009.zip"
+    },
+    {
+      "id": 2,
+      "year": 2012,
+      "checksum": "5999f86e21154138b904723cb5d55ebde9e108ac72872f2ff5695d9eb8fde9cd",
+      "source_url": "https://ine.mx/wp-content/uploads/2022/04/DatosAbiertos_DECEyEC_ConteosCensales2012.zip"
+    },
+    {
+      "id": 3,
+      "year": 2015,
+      "checksum": "7435ac54a3a6aebf5d9c9466a064b320b64bf5ff8b4d8ae787bad898497341da",
+      "source_url": "https://ine.mx/wp-content/uploads/2022/04/DatosAbiertos_DECEyEC_ConteosCensales2015.zip"
+    },
+    {
+      "id": 4,
+      "year": 2018,
+      "checksum": "b20981a0aea1ac773e7bc0b54784bba7619346585ba3996744ad22458279dd8b",
+      "source_url": "https://ine.mx/wp-content/uploads/2022/04/DatosAbiertos_DECEyEC_ConteosCensales2018.zip"
+    },
+    {
+      "id": 5,
+      "year": 2021,
+      "checksum": "29bdfaaa33be5151c2ae8c8e406d8a27976006d11e6cbe201ac05cc04def4849",
+      "source_url": "https://ine.mx/wp-content/uploads/2022/04/DatosAbiertos_DECEyEC_ConteosCensales2021.zip"
+    },
+    {
+      "id": 6,
+      "year": 2024,
+      "checksum": "c0de34d04e782ad99579b83591a6e3e6c8d1e20f4914d4845743bd79d2bd28b2",
+      "source_url": "https://ine.mx/wp-content/uploads/2025/08/DatosAbiertos_DECEyEC_ConteosCensales2024.zip"
+    }
+  ],
+  "feature_names": [
+    "previous_abstention_rate",
+    "historical_mean_abstention",
+    "abstention_trend_pp_per_year",
+    "abstention_volatility_pp",
+    "previous_participation_change_pp",
+    "same_type_history_count",
+    "all_history_count",
+    "years_since_previous_same_type",
+    "last_abstention_rate_all_types",
+    "previous_unspecified_rate",
+    "last_unspecified_rate",
+    "last_nominal_log1p",
+    "previous_gap_vs_national_pp",
+    "prior_above_national_fraction",
+    "lag_female_nominal_share",
+    "lag_age_18_24_share",
+    "lag_age_25_34_share",
+    "lag_age_35_44_share",
+    "lag_age_45_59_share",
+    "lag_age_60_plus_share",
+    "lag_urban_share",
+    "lag_mixed_share",
+    "lag_rural_share",
+    "state_code",
+    "election_type"
+  ],
+  "supervised_rows": 128,
+  "excluded_rows": 64,
+  "training_target_years": [
+    2015,
+    2018,
+    2021,
+    2024
+  ],
+  "folds": [
+    {
+      "test_year": 2018,
+      "train_target_years": [
+        2015
+      ],
+      "train_rows": 32,
+      "test_rows": 32,
+      "test_election_types_unseen_in_training": [
+        "presidential"
+      ],
+      "models": [
+        {
+          "model_name": "baseline_last",
+          "test_year": 2018,
+          "metrics": {
+            "n": 32,
+            "mae_pp": 2.7885463168801814,
+            "rmse_pp": 3.4300748824314864,
+            "r_squared": 0.6682020916017437,
+            "bias_pp": 0.09179611765434537,
+            "max_absolute_error_pp": 7.031592085559252,
+            "weighted_mae_pp": 3.1442084832804174
+          },
+          "clipped_predictions": 0,
+          "warnings": []
+        },
+        {
+          "model_name": "baseline_mean",
+          "test_year": 2018,
+          "metrics": {
+            "n": 32,
+            "mae_pp": 2.7885463168801814,
+            "rmse_pp": 3.4300748824314864,
+            "r_squared": 0.6682020916017437,
+            "bias_pp": 0.09179611765434537,
+            "max_absolute_error_pp": 7.031592085559252,
+            "weighted_mae_pp": 3.1442084832804174
+          },
+          "clipped_predictions": 0,
+          "warnings": []
+        },
+        {
+          "model_name": "ridge",
+          "test_year": 2018,
+          "metrics": {
+            "n": 32,
+            "mae_pp": 17.47324265288139,
+            "rmse_pp": 21.907625554556983,
+            "r_squared": -12.53496260133023,
+            "bias_pp": -11.01750459501659,
+            "max_absolute_error_pp": 49.62122829500329,
+            "weighted_mae_pp": 15.053097557940632
+          },
+          "clipped_predictions": 7,
+          "warnings": []
+        },
+        {
+          "model_name": "random_forest",
+          "test_year": 2018,
+          "metrics": {
+            "n": 32,
+            "mae_pp": 9.38641230833474,
+            "rmse_pp": 10.531750049731706,
+            "r_squared": -2.128005645885807,
+            "bias_pp": 9.362359795287984,
+            "max_absolute_error_pp": 18.14743606279478,
+            "weighted_mae_pp": 10.188467666572004
+          },
+          "clipped_predictions": 0,
+          "warnings": []
+        },
+        {
+          "model_name": "xgboost",
+          "test_year": 2018,
+          "metrics": {
+            "n": 32,
+            "mae_pp": 5.89783299870277,
+            "rmse_pp": 7.178516768955502,
+            "r_squared": -0.45323510340338835,
+            "bias_pp": 4.278252444953196,
+            "max_absolute_error_pp": 13.680968316927844,
+            "weighted_mae_pp": 7.137850177301823
+          },
+          "clipped_predictions": 0,
+          "warnings": []
+        },
+        {
+          "model_name": "lightgbm",
+          "test_year": 2018,
+          "metrics": {
+            "n": 32,
+            "mae_pp": 8.59373438591792,
+            "rmse_pp": 10.245321380413174,
+            "r_squared": -1.9601765482091689,
+            "bias_pp": 8.499631929371338,
+            "max_absolute_error_pp": 18.958206405588896,
+            "weighted_mae_pp": 10.121265078544555
+          },
+          "clipped_predictions": 0,
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "test_year": 2021,
+      "train_target_years": [
+        2015,
+        2018
+      ],
+      "train_rows": 64,
+      "test_rows": 32,
+      "test_election_types_unseen_in_training": [],
+      "models": [
+        {
+          "model_name": "baseline_last",
+          "test_year": 2021,
+          "metrics": {
+            "n": 32,
+            "mae_pp": 7.98111619929946,
+            "rmse_pp": 9.857303580535884,
+            "r_squared": -1.27925539274668,
+            "bias_pp": 4.311287034942943,
+            "max_absolute_error_pp": 26.97588582024697,
+            "weighted_mae_pp": 7.708297769654846
+          },
+          "clipped_predictions": 0,
+          "warnings": []
+        },
+        {
+          "model_name": "baseline_mean",
+          "test_year": 2021,
+          "metrics": {
+            "n": 32,
+            "mae_pp": 8.219334357001133,
+            "rmse_pp": 10.249206770596125,
+            "r_squared": -1.4640938042348375,
+            "bias_pp": 6.158384172004167,
+            "max_absolute_error_pp": 28.367492090580427,
+            "weighted_mae_pp": 8.056120055218614
+          },
+          "clipped_predictions": 0,
+          "warnings": []
+        },
+        {
+          "model_name": "ridge",
+          "test_year": 2021,
+          "metrics": {
+            "n": 32,
+            "mae_pp": 6.830544141082641,
+            "rmse_pp": 8.363921771222612,
+            "r_squared": -0.6409549239994468,
+            "bias_pp": -4.765763018645594,
+            "max_absolute_error_pp": 15.300455287095843,
+            "weighted_mae_pp": 6.535244127199967
+          },
+          "clipped_predictions": 0,
+          "warnings": []
+        },
+        {
+          "model_name": "random_forest",
+          "test_year": 2021,
+          "metrics": {
+            "n": 32,
+            "mae_pp": 6.391388812124949,
+            "rmse_pp": 7.940877748719406,
+            "r_squared": -0.4791552086373927,
+            "bias_pp": 2.409308926360253,
+            "max_absolute_error_pp": 22.328683498952163,
+            "weighted_mae_pp": 6.681771676953452
+          },
+          "clipped_predictions": 0,
+          "warnings": []
+        },
+        {
+          "model_name": "xgboost",
+          "test_year": 2021,
+          "metrics": {
+            "n": 32,
+            "mae_pp": 7.0130756752215415,
+            "rmse_pp": 8.258073520725928,
+            "r_squared": -0.5996840594842663,
+            "bias_pp": -3.248515581072592,
+            "max_absolute_error_pp": 16.69089672575492,
+            "weighted_mae_pp": 6.597137794431844
+          },
+          "clipped_predictions": 0,
+          "warnings": []
+        },
+        {
+          "model_name": "lightgbm",
+          "test_year": 2021,
+          "metrics": {
+            "n": 32,
+            "mae_pp": 7.648672397326283,
+            "rmse_pp": 9.024492179456917,
+            "r_squared": -0.9103910417421313,
+            "bias_pp": -2.0474106563796384,
+            "max_absolute_error_pp": 19.654330963404444,
+            "weighted_mae_pp": 7.138635331705662
+          },
+          "clipped_predictions": 0,
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "test_year": 2024,
+      "train_target_years": [
+        2015,
+        2018,
+        2021
+      ],
+      "train_rows": 96,
+      "test_rows": 32,
+      "test_election_types_unseen_in_training": [],
+      "models": [
+        {
+          "model_name": "baseline_last",
+          "test_year": 2024,
+          "metrics": {
+            "n": 32,
+            "mae_pp": 3.4919292247590827,
+            "rmse_pp": 4.134100984909028,
+            "r_squared": 0.45065358752397666,
+            "bias_pp": -2.7193412134042956,
+            "max_absolute_error_pp": 9.963339368117547,
+            "weighted_mae_pp": 3.282266118178813
+          },
+          "clipped_predictions": 0,
+          "warnings": []
+        },
+        {
+          "model_name": "baseline_mean",
+          "test_year": 2024,
+          "metrics": {
+            "n": 32,
+            "mae_pp": 3.3248528529604457,
+            "rmse_pp": 3.939951045057357,
+            "r_squared": 0.5010399416458979,
+            "bias_pp": -2.673443154577124,
+            "max_absolute_error_pp": 10.096028360485148,
+            "weighted_mae_pp": 2.979416135256856
+          },
+          "clipped_predictions": 0,
+          "warnings": []
+        },
+        {
+          "model_name": "ridge",
+          "test_year": 2024,
+          "metrics": {
+            "n": 32,
+            "mae_pp": 4.68146537035619,
+            "rmse_pp": 5.396312148141698,
+            "r_squared": 0.06399480900490118,
+            "bias_pp": -4.430045192002889,
+            "max_absolute_error_pp": 10.651910196498825,
+            "weighted_mae_pp": 4.123457265370166
+          },
+          "clipped_predictions": 0,
+          "warnings": []
+        },
+        {
+          "model_name": "random_forest",
+          "test_year": 2024,
+          "metrics": {
+            "n": 32,
+            "mae_pp": 3.013861033665376,
+            "rmse_pp": 3.467173936170436,
+            "r_squared": 0.613601538014994,
+            "bias_pp": -1.3786974219059618,
+            "max_absolute_error_pp": 6.757005442131886,
+            "weighted_mae_pp": 3.042449489343843
+          },
+          "clipped_predictions": 0,
+          "warnings": []
+        },
+        {
+          "model_name": "xgboost",
+          "test_year": 2024,
+          "metrics": {
+            "n": 32,
+            "mae_pp": 2.947422350350013,
+            "rmse_pp": 3.8173509502856464,
+            "r_squared": 0.5316092516059048,
+            "bias_pp": 0.6316077795041746,
+            "max_absolute_error_pp": 9.66377623827191,
+            "weighted_mae_pp": 2.9392033932762143
+          },
+          "clipped_predictions": 0,
+          "warnings": []
+        },
+        {
+          "model_name": "lightgbm",
+          "test_year": 2024,
+          "metrics": {
+            "n": 32,
+            "mae_pp": 2.8811131622190107,
+            "rmse_pp": 3.8795832464637527,
+            "r_squared": 0.5162129032215262,
+            "bias_pp": 0.7105625936244462,
+            "max_absolute_error_pp": 10.654846515995464,
+            "weighted_mae_pp": 2.879344421655528
+          },
+          "clipped_predictions": 0,
+          "warnings": []
+        }
+      ]
+    }
+  ],
+  "models": {
+    "baseline_last": {
+      "development": {
+        "n": 64,
+        "mae_pp": 5.384831258089821,
+        "rmse_pp": 7.380103237012777,
+        "r_squared": 0.12478069698178917,
+        "bias_pp": 2.201541576298644,
+        "max_absolute_error_pp": 26.97588582024697,
+        "weighted_mae_pp": 5.5116306338282195
+      },
+      "holdout_2024": {
+        "n": 32,
+        "mae_pp": 3.4919292247590827,
+        "rmse_pp": 4.134100984909028,
+        "r_squared": 0.45065358752397666,
+        "bias_pp": -2.7193412134042956,
+        "max_absolute_error_pp": 9.963339368117547,
+        "weighted_mae_pp": 3.282266118178813
+      },
+      "all_outer_folds_descriptive": {
+        "n": 96,
+        "mae_pp": 4.753863913646242,
+        "rmse_pp": 6.481322872463581,
+        "r_squared": 0.20491378111240288,
+        "bias_pp": 0.5612473130643308,
+        "max_absolute_error_pp": 26.97588582024697,
+        "weighted_mae_pp": null
+      },
+      "by_election_type_descriptive": {
+        "midterm": {
+          "n": 32,
+          "mae_pp": 7.98111619929946,
+          "rmse_pp": 9.857303580535884,
+          "r_squared": -1.27925539274668,
+          "bias_pp": 4.311287034942943,
+          "max_absolute_error_pp": 26.97588582024697,
+          "weighted_mae_pp": null
+        },
+        "presidential": {
+          "n": 64,
+          "mae_pp": 3.1402377708196325,
+          "rmse_pp": 3.798434194014237,
+          "r_squared": 0.5893414561382777,
+          "bias_pp": -1.3137725478749755,
+          "max_absolute_error_pp": 9.963339368117547,
+          "weighted_mae_pp": null
+        }
+      },
+      "final_artifact": "final_baseline_last.joblib",
+      "holdout_evaluation_artifact": "fold_2024_baseline_last.joblib",
+      "hyperparameters": {
+        "feature": "previous_abstention_rate"
+      },
+      "selected_on_development": true
+    },
+    "baseline_mean": {
+      "development": {
+        "n": 64,
+        "mae_pp": 5.503940336940657,
+        "rmse_pp": 7.642370480600924,
+        "r_squared": 0.061469938258589374,
+        "bias_pp": 3.125090144829256,
+        "max_absolute_error_pp": 28.367492090580427,
+        "weighted_mae_pp": 5.692048266269398
+      },
+      "holdout_2024": {
+        "n": 32,
+        "mae_pp": 3.3248528529604457,
+        "rmse_pp": 3.939951045057357,
+        "r_squared": 0.5010399416458979,
+        "bias_pp": -2.673443154577124,
+        "max_absolute_error_pp": 10.096028360485148,
+        "weighted_mae_pp": 2.979416135256856
+      },
+      "all_outer_folds_descriptive": {
+        "n": 96,
+        "mae_pp": 4.777577842280587,
+        "rmse_pp": 6.641658110315761,
+        "r_squared": 0.16508945896706284,
+        "bias_pp": 1.1922457116937961,
+        "max_absolute_error_pp": 28.367492090580427,
+        "weighted_mae_pp": null
+      },
+      "by_election_type_descriptive": {
+        "midterm": {
+          "n": 32,
+          "mae_pp": 8.219334357001133,
+          "rmse_pp": 10.249206770596125,
+          "r_squared": -1.4640938042348375,
+          "bias_pp": 6.158384172004167,
+          "max_absolute_error_pp": 28.367492090580427,
+          "weighted_mae_pp": null
+        },
+        "presidential": {
+          "n": 64,
+          "mae_pp": 3.056699584920314,
+          "rmse_pp": 3.6938210525508635,
+          "r_squared": 0.6116499606462914,
+          "bias_pp": -1.290823518461389,
+          "max_absolute_error_pp": 10.096028360485148,
+          "weighted_mae_pp": null
+        }
+      },
+      "final_artifact": "final_baseline_mean.joblib",
+      "holdout_evaluation_artifact": "fold_2024_baseline_mean.joblib",
+      "hyperparameters": {
+        "feature": "historical_mean_abstention"
+      },
+      "selected_on_development": false
+    },
+    "ridge": {
+      "development": {
+        "n": 64,
+        "mae_pp": 12.151893396982013,
+        "rmse_pp": 16.581604940924898,
+        "r_squared": -3.418197657479044,
+        "bias_pp": -7.891633806831091,
+        "max_absolute_error_pp": 49.62122829500329,
+        "weighted_mae_pp": 10.634832791022854
+      },
+      "holdout_2024": {
+        "n": 32,
+        "mae_pp": 4.68146537035619,
+        "rmse_pp": 5.396312148141698,
+        "r_squared": 0.06399480900490118,
+        "bias_pp": -4.430045192002889,
+        "max_absolute_error_pp": 10.651910196498825,
+        "weighted_mae_pp": 4.123457265370166
+      },
+      "all_outer_folds_descriptive": {
+        "n": 96,
+        "mae_pp": 9.661750721440072,
+        "rmse_pp": 13.892677083437297,
+        "r_squared": -2.653076735538969,
+        "bias_pp": -6.737770935221691,
+        "max_absolute_error_pp": 49.62122829500329,
+        "weighted_mae_pp": null
+      },
+      "by_election_type_descriptive": {
+        "midterm": {
+          "n": 32,
+          "mae_pp": 6.830544141082641,
+          "rmse_pp": 8.363921771222612,
+          "r_squared": -0.6409549239994468,
+          "bias_pp": -4.765763018645594,
+          "max_absolute_error_pp": 15.300455287095843,
+          "weighted_mae_pp": null
+        },
+        "presidential": {
+          "n": 64,
+          "mae_pp": 11.077354011618787,
+          "rmse_pp": 15.95406284052529,
+          "r_squared": -6.2445972354051165,
+          "bias_pp": -7.72377489350974,
+          "max_absolute_error_pp": 49.62122829500329,
+          "weighted_mae_pp": null
+        }
+      },
+      "final_artifact": "final_ridge.joblib",
+      "holdout_evaluation_artifact": "fold_2024_ridge.joblib",
+      "hyperparameters": {
+        "alpha": 10.0,
+        "solver": "svd"
+      },
+      "selected_on_development": false
+    },
+    "random_forest": {
+      "development": {
+        "n": 64,
+        "mae_pp": 7.888900560229843,
+        "rmse_pp": 9.326716960703022,
+        "r_squared": -0.39781471541635627,
+        "bias_pp": 5.885834360824119,
+        "max_absolute_error_pp": 22.328683498952163,
+        "weighted_mae_pp": 8.369522146412203
+      },
+      "holdout_2024": {
+        "n": 32,
+        "mae_pp": 3.013861033665376,
+        "rmse_pp": 3.467173936170436,
+        "r_squared": 0.613601538014994,
+        "bias_pp": -1.3786974219059618,
+        "max_absolute_error_pp": 6.757005442131886,
+        "weighted_mae_pp": 3.042449489343843
+      },
+      "all_outer_folds_descriptive": {
+        "n": 96,
+        "mae_pp": 6.263887384708355,
+        "rmse_pp": 7.87393577219149,
+        "r_squared": -0.17346637145249844,
+        "bias_pp": 3.4643237665807582,
+        "max_absolute_error_pp": 22.328683498952163,
+        "weighted_mae_pp": null
+      },
+      "by_election_type_descriptive": {
+        "midterm": {
+          "n": 32,
+          "mae_pp": 6.391388812124949,
+          "rmse_pp": 7.940877748719406,
+          "r_squared": -0.4791552086373927,
+          "bias_pp": 2.409308926360253,
+          "max_absolute_error_pp": 22.328683498952163,
+          "weighted_mae_pp": null
+        },
+        "presidential": {
+          "n": 64,
+          "mae_pp": 6.200136671000058,
+          "rmse_pp": 7.840250449242148,
+          "r_squared": -0.7495707975141344,
+          "bias_pp": 3.991831186691011,
+          "max_absolute_error_pp": 18.14743606279478,
+          "weighted_mae_pp": null
+        }
+      },
+      "final_artifact": "final_random_forest.joblib",
+      "holdout_evaluation_artifact": "fold_2024_random_forest.joblib",
+      "hyperparameters": {
+        "n_estimators": 300,
+        "max_depth": 4,
+        "min_samples_leaf": 5,
+        "max_features": 0.8,
+        "random_state": 42,
+        "n_jobs": 1
+      },
+      "selected_on_development": false
+    },
+    "xgboost": {
+      "development": {
+        "n": 64,
+        "mae_pp": 6.455454336962155,
+        "rmse_pp": 7.7371468021451575,
+        "r_squared": 0.03804736711308587,
+        "bias_pp": 0.5148684319403021,
+        "max_absolute_error_pp": 16.69089672575492,
+        "weighted_mae_pp": 6.857379224180146
+      },
+      "holdout_2024": {
+        "n": 32,
+        "mae_pp": 2.947422350350013,
+        "rmse_pp": 3.8173509502856464,
+        "r_squared": 0.5316092516059048,
+        "bias_pp": 0.6316077795041746,
+        "max_absolute_error_pp": 9.66377623827191,
+        "weighted_mae_pp": 2.9392033932762143
+      },
+      "all_outer_folds_descriptive": {
+        "n": 96,
+        "mae_pp": 5.2861103414247745,
+        "rmse_pp": 6.6907660137819,
+        "r_squared": 0.15269728713742736,
+        "bias_pp": 0.5537815477949263,
+        "max_absolute_error_pp": 16.69089672575492,
+        "weighted_mae_pp": null
+      },
+      "by_election_type_descriptive": {
+        "midterm": {
+          "n": 32,
+          "mae_pp": 7.0130756752215415,
+          "rmse_pp": 8.258073520725928,
+          "r_squared": -0.5996840594842663,
+          "bias_pp": -3.248515581072592,
+          "max_absolute_error_pp": 16.69089672575492,
+          "weighted_mae_pp": null
+        },
+        "presidential": {
+          "n": 64,
+          "mae_pp": 4.4226276745263915,
+          "rmse_pp": 5.749055195413507,
+          "r_squared": 0.059270841222568094,
+          "bias_pp": 2.4549301122286855,
+          "max_absolute_error_pp": 13.680968316927844,
+          "weighted_mae_pp": null
+        }
+      },
+      "final_artifact": "final_xgboost.joblib",
+      "holdout_evaluation_artifact": "fold_2024_xgboost.joblib",
+      "hyperparameters": {
+        "n_estimators": 150,
+        "max_depth": 2,
+        "learning_rate": 0.05,
+        "min_child_weight": 5,
+        "reg_lambda": 10.0,
+        "subsample": 1.0,
+        "colsample_bytree": 1.0,
+        "objective": "reg:squarederror",
+        "tree_method": "hist",
+        "device": "cpu",
+        "random_state": 42,
+        "n_jobs": 1
+      },
+      "selected_on_development": false
+    },
+    "lightgbm": {
+      "development": {
+        "n": 64,
+        "mae_pp": 8.121203391622101,
+        "rmse_pp": 9.654223668556432,
+        "r_squared": -0.4977065394938245,
+        "bias_pp": 3.226110636495849,
+        "max_absolute_error_pp": 19.654330963404444,
+        "weighted_mae_pp": 8.574156052735303
+      },
+      "holdout_2024": {
+        "n": 32,
+        "mae_pp": 2.8811131622190107,
+        "rmse_pp": 3.8795832464637527,
+        "r_squared": 0.5162129032215262,
+        "bias_pp": 0.7105625936244462,
+        "max_absolute_error_pp": 10.654846515995464,
+        "weighted_mae_pp": 2.879344421655528
+      },
+      "all_outer_folds_descriptive": {
+        "n": 96,
+        "mae_pp": 6.374506648487739,
+        "rmse_pp": 8.194698193573545,
+        "r_squared": -0.2710213311006091,
+        "bias_pp": 2.387594622205382,
+        "max_absolute_error_pp": 19.654330963404444,
+        "weighted_mae_pp": null
+      },
+      "by_election_type_descriptive": {
+        "midterm": {
+          "n": 32,
+          "mae_pp": 7.648672397326283,
+          "rmse_pp": 9.024492179456917,
+          "r_squared": -0.9103910417421313,
+          "bias_pp": -2.0474106563796384,
+          "max_absolute_error_pp": 19.654330963404444,
+          "weighted_mae_pp": null
+        },
+        "presidential": {
+          "n": 64,
+          "mae_pp": 5.737423774068465,
+          "rmse_pp": 7.746540400533439,
+          "r_squared": -0.7079974954655879,
+          "bias_pp": 4.605097261497891,
+          "max_absolute_error_pp": 18.958206405588896,
+          "weighted_mae_pp": null
+        }
+      },
+      "final_artifact": "final_lightgbm.joblib",
+      "holdout_evaluation_artifact": "fold_2024_lightgbm.joblib",
+      "hyperparameters": {
+        "n_estimators": 150,
+        "max_depth": 3,
+        "num_leaves": 7,
+        "min_child_samples": 10,
+        "learning_rate": 0.05,
+        "reg_lambda": 10.0,
+        "deterministic": true,
+        "force_col_wise": true,
+        "random_state": 42,
+        "n_jobs": 1,
+        "verbosity": -1
+      },
+      "selected_on_development": false
+    }
+  },
+  "development_selected_model": "baseline_last",
+  "selected_model_holdout_mae_delta_vs_baseline_pp": 0.0,
+  "limitations": [
+    "32 states; spatially dependent observations",
+    "only two development election blocks and one final holdout election",
+    "first development fold has an unseen election type in supervised training",
+    "municipalities excluded pending temporal crosswalk",
+    "NS and historical data coverage may bias the observed target",
+    "historical publication vintages not verified; retrospective event-year backtest only",
+    "no predictive intervals, causal effects, or production promotion in this phase"
+  ]
+}

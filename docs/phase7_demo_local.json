@@ -1,0 +1,244 @@
+{
+  "status": "passed",
+  "api_url": "http://127.0.0.1:8001",
+  "checks": [
+    {
+      "method": "GET",
+      "path": "/health",
+      "status": 200,
+      "elapsed_ms": 99.93
+    },
+    {
+      "method": "GET",
+      "path": "/health/ready",
+      "status": 200,
+      "elapsed_ms": 10.5
+    },
+    {
+      "method": "GET",
+      "path": "/data-sources",
+      "status": 200,
+      "elapsed_ms": 131.14
+    },
+    {
+      "method": "GET",
+      "path": "/elections",
+      "status": 200,
+      "elapsed_ms": 15.4
+    },
+    {
+      "method": "GET",
+      "path": "/territories?year=2024",
+      "status": 200,
+      "elapsed_ms": 75.47
+    },
+    {
+      "method": "GET",
+      "path": "/territories/12463",
+      "status": 200,
+      "elapsed_ms": 45.0
+    },
+    {
+      "method": "GET",
+      "path": "/territories?territory_type=municipality&state_code=17&year=2024&limit=2",
+      "status": 200,
+      "elapsed_ms": 15.88
+    },
+    {
+      "method": "GET",
+      "path": "/participation/history?state_code=17&limit=6",
+      "status": 200,
+      "elapsed_ms": 55.92
+    },
+    {
+      "method": "GET",
+      "path": "/statistics/summary?year=2024",
+      "status": 200,
+      "elapsed_ms": 43.64
+    },
+    {
+      "method": "GET",
+      "path": "/statistics/trends?state_code=17",
+      "status": 200,
+      "elapsed_ms": 26.27
+    },
+    {
+      "method": "GET",
+      "path": "/statistics/territories?territory_type=municipality&year=2024&state_code=17&limit=2",
+      "status": 200,
+      "elapsed_ms": 30.63
+    },
+    {
+      "method": "GET",
+      "path": "/statistics/demographics?dimension=sex&year=2024",
+      "status": 200,
+      "elapsed_ms": 31.38
+    },
+    {
+      "method": "GET",
+      "path": "/predictions",
+      "status": 200,
+      "elapsed_ms": 47.94
+    },
+    {
+      "method": "GET",
+      "path": "/predictions/12463?run_id=e63b667cf09b747f7de8",
+      "status": 200,
+      "elapsed_ms": 28.78
+    },
+    {
+      "method": "GET",
+      "path": "/models/metrics?run_id=daf97a195864693a644e",
+      "status": 200,
+      "elapsed_ms": 40.41
+    },
+    {
+      "method": "GET",
+      "path": "/risk/calibration?run_id=e63b667cf09b747f7de8",
+      "status": 200,
+      "elapsed_ms": 12.98
+    },
+    {
+      "method": "GET",
+      "path": "/risk/summary?run_id=e63b667cf09b747f7de8",
+      "status": 200,
+      "elapsed_ms": 23.93
+    },
+    {
+      "method": "GET",
+      "path": "/risk/map?run_id=e63b667cf09b747f7de8",
+      "status": 200,
+      "elapsed_ms": 31.59
+    },
+    {
+      "method": "POST",
+      "path": "/simulations",
+      "status": 200,
+      "elapsed_ms": 69.66
+    },
+    {
+      "method": "GET",
+      "path": "/simulations/225cfc40ad0579ed72bed5571efe3d7f5f4a09e164c6eef8532287d246c17eb1",
+      "status": 200,
+      "elapsed_ms": 14.52
+    },
+    {
+      "method": "POST",
+      "path": "/simulations",
+      "status": 200,
+      "elapsed_ms": 26.52
+    },
+    {
+      "method": "GET",
+      "path": "/simulations?limit=2",
+      "status": 200,
+      "elapsed_ms": 31.77
+    },
+    {
+      "method": "GET",
+      "path": "/territories?state_code=99",
+      "status": 422,
+      "elapsed_ms": 10.36
+    },
+    {
+      "method": "GET",
+      "path": "/territories/999999999",
+      "status": 404,
+      "elapsed_ms": 12.03
+    },
+    {
+      "method": "GET",
+      "path": "/statistics/territories?territory_type=municipality&sort_by=trend_desc",
+      "status": 409,
+      "elapsed_ms": 5.98
+    },
+    {
+      "method": "GET",
+      "path": "/predictions?run_id=e63b667cf09b747f7de8",
+      "status": 200,
+      "elapsed_ms": 19.64
+    }
+  ],
+  "source_datasets": 6,
+  "elections": 6,
+  "forecast_run_id": "e63b667cf09b747f7de8",
+  "risk_counts": {
+    "low": 14,
+    "medium": 13,
+    "high": 5
+  },
+  "simulation_id": "225cfc40ad0579ed72bed5571efe3d7f5f4a09e164c6eef8532287d246c17eb1",
+  "scenario_summary": {
+    "selected_states": 32,
+    "aggregation": "unweighted_mean_of_selected_states",
+    "national_electorate_estimate": false,
+    "baseline": {
+      "mean_abstention_rate": 0.48110960093618654,
+      "mean_participation_rate": 0.5188903990638134,
+      "risk_counts": {
+        "low": 14,
+        "high": 5,
+        "medium": 13
+      },
+      "uncertain_classifications": 32
+    },
+    "scenario": {
+      "mean_abstention_rate": 0.4511096009361865,
+      "mean_participation_rate": 0.5488903990638134,
+      "risk_counts": {
+        "low": 22,
+        "high": 1,
+        "medium": 9
+      },
+      "uncertain_classifications": 31
+    },
+    "mean_applied_participation_change_pp": 3.0000000000000004,
+    "states_with_risk_change": 12,
+    "states_with_clipped_point": 0,
+    "states_with_clipped_band": 0,
+    "aggregate_prediction_interval": null
+  },
+  "statistics_2024": {
+    "methodology_version": "descriptive-v1",
+    "rate_denominator": "SV + NV; NS excluded",
+    "rate_unit": "fraction",
+    "change_unit": "percentage_points",
+    "historical_comparison": "same_election_type",
+    "missing_data_bounds_interpretation": "worst_case_for_NS_not_prediction_intervals",
+    "scope": "national",
+    "state_code": null,
+    "items": [
+      {
+        "nominal_list": 98330348,
+        "voter_count": 54899228,
+        "nonvoter_count": 37105466,
+        "unspecified_count": 6325654,
+        "known_participation_count": 92004694,
+        "participation_rate": 0.5967002944436727,
+        "abstention_rate": 0.4032997055563274,
+        "unspecified_rate": 0.06433063778031173,
+        "known_participation_fraction": 0.9356693622196882,
+        "missing_data_abstention_lower": 0.3773551782812769,
+        "missing_data_abstention_upper": 0.44168581606158863,
+        "year": 2024,
+        "election_type": "presidential",
+        "source_ids": [
+          6
+        ],
+        "territory_count": 32,
+        "expected_territory_count": 32,
+        "previous_comparable_year": 2018,
+        "participation_change_pp": -2.6950739698802573,
+        "abstention_change_pp": 2.6950739698802684,
+        "quality_notes": [
+          "unspecified_participation_present"
+        ]
+      }
+    ]
+  },
+  "limitations": [
+    "Frozen official aggregates; ML retraining is a separate workflow",
+    "No verified geometry; map features have null geometry",
+    "Scenario changes are hypothetical, without causal interpretation"
+  ]
+}
