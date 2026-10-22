@@ -1,0 +1,226 @@
+.design-top .reference-kpis[data-name="Indicadores clave"] {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+  align-items: stretch;
+}
+.design-top .reference-kpis > .reference-kpi[data-name="Indicador electoral"] {
+  container-type: inline-size;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  min-width: 0;
+  min-height: 128px;
+  height: auto;
+  padding: 18px;
+  border: 1px solid #fbe1ef;
+  border-radius: 15px;
+  background: #fff;
+  box-shadow: 0 3px 14px #b2497a05;
+  overflow: hidden;
+}
+.reference-kpi-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 50px;
+  width: 50px;
+  height: 58px;
+  border-radius: 15px;
+  background: linear-gradient(145deg, #fff2f9, #fce7f3);
+}
+.reference-kpi-icon img {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+}
+.reference-kpi-body {
+  flex: 1;
+  min-width: 0;
+}
+.design-top .reference-kpi-title {
+  font-size: 13px;
+  line-height: 17px;
+  min-height: 34px;
+  color: #0d172f;
+  white-space: normal;
+  overflow-wrap: normal;
+}
+.reference-kpi-details {
+  display: grid;
+  grid-template-columns: minmax(68px, 1fr) 70px minmax(50px, 0.85fr);
+  align-items: center;
+  gap: 10px;
+}
+.reference-kpi-value {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.reference-kpi-value strong {
+  font-size: 28px;
+  line-height: 31px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: #0d172f;
+  white-space: nowrap;
+}
+.reference-kpi-value > span {
+  font-size: 12px;
+  line-height: 16px;
+  color: #7a89a5;
+  white-space: nowrap;
+}
+.reference-kpi-change {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1px;
+  border-radius: 22px;
+  background: #fff0f8;
+  padding: 9px 4px;
+  color: #e5007e;
+  min-height: 48px;
+}
+.reference-kpi-change > div {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+.reference-kpi-change svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 3;
+}
+.reference-kpi-change strong {
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 700;
+}
+.reference-kpi-change > span {
+  font-size: 10px;
+  line-height: 13px;
+  color: #7788a5;
+}
+.reference-kpi-chart {
+  height: 54px;
+  border-left: 1px solid #dde2e9;
+  padding-left: 11px;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+}
+.reference-kpi-chart svg {
+  width: 100%;
+  height: 54px;
+  overflow: visible;
+}
+@media (min-width: 1800px) {
+  .design-top
+    .reference-kpis
+    > .reference-kpi[data-name="Indicador electoral"] {
+    gap: 20px;
+    padding: 18px 20px;
+  }
+  .reference-kpi-icon {
+    flex-basis: 60px;
+    width: 60px;
+    height: 60px;
+  }
+  .reference-kpi-details {
+    grid-template-columns: minmax(86px, 1fr) 94px minmax(90px, 1fr);
+    gap: 13px;
+  }
+  .reference-kpi-change strong {
+    font-size: 14px;
+  }
+  .reference-kpi-change > span {
+    font-size: 12px;
+  }
+  .design-top .reference-kpi-title {
+    min-height: 29px;
+    font-size: 15px;
+  }
+  .reference-kpi-value strong {
+    font-size: 30px;
+  }
+  .reference-kpi-value > span {
+    font-size: 14px;
+  }
+}
+@media (max-width: 1399px) {
+  .design-top .reference-kpis[data-name="Indicadores clave"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 650px) {
+  .design-top .reference-kpis[data-name="Indicadores clave"] {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+}
+@media (max-width: 370px) {
+  .design-top
+    .reference-kpis
+    > .reference-kpi[data-name="Indicador electoral"] {
+    gap: 9px;
+    padding: 13px;
+    min-height: 124px;
+  }
+  .reference-kpi-icon {
+    flex-basis: 36px;
+    width: 36px;
+    height: 44px;
+    border-radius: 12px;
+  }
+  .reference-kpi-icon img {
+    width: 26px;
+    height: 26px;
+  }
+  .reference-kpi-details {
+    grid-template-columns: minmax(60px, 1fr) 62px minmax(36px, 0.7fr);
+    gap: 5px;
+  }
+  .design-top .reference-kpi-title {
+    font-size: 11px;
+    line-height: 15px;
+    min-height: 32px;
+  }
+  .reference-kpi-value strong {
+    font-size: 23px;
+  }
+  .reference-kpi-value > span {
+    font-size: 10px;
+  }
+  .reference-kpi-change strong {
+    font-size: 10px;
+  }
+  .reference-kpi-chart {
+    padding-left: 6px;
+  }
+  .reference-kpi-change svg {
+    width: 12px;
+    height: 12px;
+  }
+}
+
+.reference-kpi-icon {
+  position: relative;
+}
+.reference-kpi-alert {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -40%);
+  font-size: 23px;
+  line-height: 1;
+  font-weight: 800;
+  color: #fff;
+}
+.reference-kpi-icon-dots img {
+  width: 100%;
+  height: 100%;
+}
