@@ -1,17 +1,15 @@
 "use client";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import * as Dialog from "@radix-ui/react-dialog";
 import {
   Activity,
   BrainCircuit,
-  AlertTriangle,
   ChevronRight,
   CircleHelp,
   Download,
   FlaskConical,
-  Layers3,
   Map,
-  MapPin,
   Search,
   SlidersHorizontal,
   TrendingUp,
@@ -74,6 +72,7 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
   const [selected, setSelected] = useState("17");
   const [year, setYear] = useState(2024);
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [scenarioChange, setScenarioChange] = useState(3);
   const [historical, setHistorical] = useState(false);
   const [filter, setFilter] = useState<Risk | "all">("all");
   const [search, setSearch] = useState("");
@@ -89,10 +88,6 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
     queryKey: ["indicators", year],
     queryFn: ({ signal }) => api.indicators(year, signal),
   });
-  const summary = useQuery({
-    queryKey: ["summary", year],
-    queryFn: ({ signal }) => api.summary(year, signal),
-  });
   const sources = useQuery({
     queryKey: ["sources"],
     queryFn: ({ signal }) => api.sources(signal),
@@ -102,11 +97,6 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
   const actual = indicators.data?.items.find(
     (r) => (r.state_code || r.official_code) === selected,
   );
-  const national = summary.data?.items[0];
-  const mean = items?.length
-    ? items.reduce((s, r) => s + r.predicted, 0) / items.length
-    : null;
-  const highCount = items?.filter((r) => r.risk_level === "high").length;
   const rows = useMemo<MapDatum[]>(
     () =>
       historical
@@ -213,128 +203,65 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
               </h1>
               <p>{currentSection.subtitle}</p>
             </div>
+            <Button
+              hidden={view === "map"}
+              variant="outline"
+              size="sm"
+              onClick={() => setFiltersOpen(true)}
+            >
+              Cambiar territorio
+            </Button>
             <span className="experimental">
               <FlaskConical size={14} />
               Prototipo experimental
             </span>
           </div>
-          {preview && (
-            <div className="preview-banner" role="status">
-              <strong>Vista previa interactiva</strong>
-              <span>
-                Datos de muestra del repositorio · Sin conexión a la base de
-                datos. Los escenarios no se guardan.
-              </span>
-            </div>
-          )}
-          <div
-            className="global-filters"
-            id="dashboard-filters"
-            hidden={view === "map" && !filtersOpen}
-          >
-            <label>
-              <span>
-                <MapPin size={14} />
-                Territorio seleccionado
-              </span>
-              <select
-                aria-label="Territorio seleccionado"
-                value={selected}
-                onChange={(e) => setSelected(e.target.value)}
-                disabled={!items?.length}
+          <Dialog.Root open={filtersOpen} onOpenChange={setFiltersOpen}>
+            <Dialog.Portal>
+              <Dialog.Overlay className="dialog-overlay" />
+              <Dialog.Content
+                className="dialog-content territory-filter-dialog"
+                id="dashboard-filters"
               >
-                {items?.length ? (
-                  items.map((r) => (
-                    <option key={r.state_code} value={r.state_code}>
-                      {titleCase(r.name)}
-                    </option>
-                  ))
-                ) : (
-                  <option value="17">Consultando estados…</option>
-                )}
-              </select>
-            </label>
-            <label>
-              <span>
-                <Layers3 size={14} />
-                Nivel territorial
-              </span>
-              <select aria-label="Nivel territorial" defaultValue="state">
-                <option value="state">Estatal · 32 entidades</option>
-                <option disabled>Municipal · sin homologación histórica</option>
-                <option disabled>Distrito / sección · no disponible</option>
-              </select>
-            </label>
-            <div className="filter-context">
-              <span className="tiny-dot" />
-              Estimación 2027 · Elección intermedia
-            </div>
-            <Methodology sources={sources.data?.items} />
-          </div>
+                <Dialog.Title>Seleccionar territorio</Dialog.Title>
+                <Dialog.Description>
+                  El mapa y sus métricas usan las 32 entidades federativas de
+                  México.
+                </Dialog.Description>
+                <label>
+                  <span>Territorio seleccionado</span>
+                  <select
+                    aria-label="Territorio seleccionado"
+                    value={selected}
+                    disabled={!items?.length}
+                    onChange={(e) => {
+                      setSelected(e.target.value);
+                      setFiltersOpen(false);
+                    }}
+                  >
+                    {items?.length ? (
+                      items.map((r) => (
+                        <option key={r.state_code} value={r.state_code}>
+                          {titleCase(r.name)}
+                        </option>
+                      ))
+                    ) : (
+                      <option value="17">Consultando estados…</option>
+                    )}
+                  </select>
+                </label>
+                <p className="muted small">
+                  Municipios y secciones requieren homologación histórica antes
+                  de habilitarse.
+                </p>
+                <Dialog.Close asChild>
+                  <Button variant="outline">Cerrar filtros</Button>
+                </Dialog.Close>
+              </Dialog.Content>
+            </Dialog.Portal>
+          </Dialog.Root>
           {view === "map" && (
             <>
-              <p className="design-data-note">
-                Los cuatro indicadores superiores conservan los valores
-                ilustrativos del diseño. Los datos y pronósticos disponibles se
-                consultan a continuación.
-              </p>
-              <details className="observed-indicators">
-                <summary>
-                  Indicadores calculados · Datos del repositorio
-                </summary>
-                <div className="kpi-grid">
-                  <div className="kpi">
-                    <div className="kpi-label">
-                      Abstención histórica <span>{year}</span>
-                    </div>
-                    <strong>{pct(national?.abstention_rate)}</strong>
-                    <div className="kpi-description">
-                      Nacional · ponderada por SV + NV
-                    </div>
-                    {summary.isError && (
-                      <button
-                        className="text-link"
-                        onClick={() => void summary.refetch()}
-                      >
-                        Reintentar indicador
-                      </button>
-                    )}
-                  </div>
-                  <div className="kpi">
-                    <div className="kpi-label">
-                      Abstención estimada <span>2027</span>
-                    </div>
-                    <strong className="purple-text">{pct(mean)}</strong>
-                    <div className="kpi-description">
-                      Media simple de los 32 estados
-                    </div>
-                  </div>
-                  <div className="kpi">
-                    <div className="kpi-label">
-                      Estados con riesgo alto <span>2027</span>
-                    </div>
-                    <strong>
-                      {highCount == null ? "—" : highCount}
-                      <small> / {items?.length ?? "—"}</small>
-                      <span className="kpi-spark">
-                        <AlertTriangle size={22} />
-                      </span>
-                    </strong>
-                    <div className="kpi-description">
-                      Categoría relativa · con incertidumbre
-                    </div>
-                  </div>
-                  <div className="kpi">
-                    <div className="kpi-label">
-                      Participación observada <span>{year}</span>
-                    </div>
-                    <strong>{pct(national?.participation_rate)}</strong>
-                    <div className="kpi-description">
-                      Nacional · ponderada por SV + NV
-                    </div>
-                  </div>
-                </div>
-              </details>
               <div className="map-detail-grid electoral-map-layout">
                 <section
                   className="panel map-panel electoral-map-panel"
@@ -499,7 +426,20 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
                 states={items ?? []}
                 selected={selected}
                 onSelect={setSelected}
-                onNavigate={setView}
+                onNavigate={(next, change) => {
+                  if (change != null) setScenarioChange(change);
+                  setView(next);
+                }}
+                onShowAll={() => {
+                  setSearch("");
+                  setFilter("all");
+                  setHistorical(false);
+                  requestAnimationFrame(() =>
+                    document
+                      .getElementById("table-title")
+                      ?.scrollIntoView({ behavior: "smooth", block: "start" }),
+                  );
+                }}
               />
               <section
                 className="panel territory-table"
@@ -637,6 +577,7 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
             <Scenarios
               prediction={chosen}
               forecast={forecast}
+              initialChange={scenarioChange}
               loading={predictions.isPending}
               error={predictions.error}
               retry={() => void predictions.refetch()}
@@ -644,10 +585,12 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
           )}
           {view === "ml" && <MLLaboratoryView selected={selected} />}
           <footer className="page-footer">
+            <Methodology sources={sources.data?.items} />
+            <span>Tarjetas superiores: valores del diseño</span>
             <span role="status" data-connected={predictions.isSuccess}>
               {predictions.isSuccess
                 ? preview
-                  ? "Vista previa local"
+                  ? "Datos del repositorio"
                   : "Backend conectado"
                 : predictions.isError
                   ? "Backend sin conexión"

@@ -1,180 +1,357 @@
 "use client";
-import { useQuery } from "@tanstack/react-query";
-import { ArrowUpRight, TrendingUp, SlidersHorizontal } from "lucide-react";
+import { useState } from "react";
+import { useQueries } from "@tanstack/react-query";
+import {
+  ArrowRight,
+  ArrowUpRight,
+  ChartNoAxesColumnIncreasing,
+  TrendingUp,
+  ChartPie,
+  FlaskConical,
+} from "lucide-react";
 import { api } from "@/lib/api";
-import type { Prediction, Risk } from "@/lib/types";
-import { pct, riskLabels } from "@/lib/utils";
+import type { ElectionType, Prediction, Risk } from "@/lib/types";
+import { pct, pp, riskLabels } from "@/lib/utils";
 import { Chart, chartAxis, chartTooltip } from "./chart";
-import { RiskBadge, Status } from "./shared";
+import { Status } from "./shared";
 import { Button } from "./ui/button";
 
+const name = (s: string) =>
+  s
+    .toLocaleLowerCase("es-MX")
+    .replace(/(^|\s)\S/g, (c) => c.toLocaleUpperCase("es-MX"));
+const palette = ["#83909f", "#e5007e", "#f575b5", "#7c16ff"];
+const riskPalette = { high: "#c00063", medium: "#f45ca9", low: "#bec4cb" };
 export function DashboardInsights({
   states,
   selected,
   onSelect,
   onNavigate,
+  onShowAll,
 }: {
   states: Prediction[];
   selected: string;
   onSelect: (code: string) => void;
-  onNavigate: (view: "trends" | "scenarios" | "ml") => void;
+  onNavigate: (view: "trends" | "scenarios" | "ml", changePP?: number) => void;
+  onShowAll: () => void;
 }) {
-  const history = useQuery({
-    queryKey: ["history", selected],
-    queryFn: ({ signal }) => api.history(selected, signal),
+  const [type, setType] = useState<ElectionType>("midterm");
+  const [change, setChange] = useState(5.4);
+  const codes = [...new Set([selected, "12", "16", "07"])].slice(0, 3);
+  const histories = useQueries({
+    queries: codes.map((code) => ({
+      queryKey: ["history", code],
+      queryFn: ({ signal }: { signal: AbortSignal }) =>
+        api.history(code, signal),
+      enabled: states.length > 0,
+    })),
   });
+  const records = histories.map((query) =>
+    (query.data?.items ?? [])
+      .filter((r) => r.election_type === type)
+      .sort((a, b) => a.year - b.year),
+  );
+  const years = [...new Set(records.flat().map((r) => r.year))].sort(
+    (a, b) => a - b,
+  );
+  const national = useQueries({
+    queries: years.map((year) => ({
+      queryKey: ["summary", year],
+      queryFn: ({ signal }: { signal: AbortSignal }) =>
+        api.summary(year, signal),
+    })),
+  });
+  const loading =
+    states.length > 0 &&
+    (histories.some((q) => q.isPending) || national.some((q) => q.isPending));
+  const error =
+    histories.find((q) => q.error)?.error ??
+    national.find((q) => q.error)?.error;
   const chosen = states.find((s) => s.state_code === selected);
-  const series = (history.data?.items ?? [])
-    .filter((r) => r.election_type === "midterm")
-    .sort((a, b) => a.year - b.year);
   const ranked = [...states]
     .sort((a, b) => b.predicted - a.predicted)
     .slice(0, 5);
-  const name = (s: string) =>
-    s
-      .toLocaleLowerCase("es-MX")
-      .replace(/(^|\s)\S/g, (c) => c.toLocaleUpperCase("es-MX"));
-  const counts = (["low", "medium", "high"] as Risk[]).map((risk) => ({
+  const counts = (["high", "medium", "low"] as Risk[]).map((risk) => ({
     risk,
     count: states.filter((s) => s.risk_level === risk).length,
   }));
+  const base = chosen ? 1 - chosen.predicted : null;
+  const simulated =
+    base == null ? null : Math.max(0, Math.min(1, base + change / 100));
+  const applied =
+    base == null || simulated == null ? null : (simulated - base) * 100;
   return (
     <section
-      className="dashboard-insights"
+      className="dashboard-insights lower-dashboard"
       aria-label="Resumen del análisis territorial"
     >
-      <article className="panel insight-card">
-        <h2>Entidades con mayor abstención estimada</h2>
-        <p className="muted small">2027 · Estimación puntual estatal</p>
-        <ol className="risk-ranking">
-          {ranked.map((state, i) => (
+      <article
+        className="panel insight-card lower-ranking"
+        aria-labelledby="ranking-title"
+      >
+        <header className="lower-card-heading">
+          <ChartNoAxesColumnIncreasing size={18} />
+          <h2 id="ranking-title">Entidades con mayor riesgo</h2>
+          <button className="lower-see-all" onClick={onShowAll}>
+            Ver todas <ArrowRight size={11} />
+          </button>
+        </header>
+        <div className="lower-ranking-heading">
+          <span>#</span>
+          <span>Entidad</span>
+          <span>Abstención 2027</span>
+        </div>
+        <ol>
+          {ranked.map((state, index) => (
             <li key={state.state_code}>
               <button
                 aria-label={`Seleccionar ${name(state.name)}`}
                 aria-pressed={selected === state.state_code}
                 onClick={() => onSelect(state.state_code)}
               >
-                <span className="ranking-position">{i + 1}</span>
+                <span>{index + 1}</span>
                 <span>{name(state.name)}</span>
+                <span className="lower-ranking-bar" aria-hidden="true">
+                  <i
+                    style={{
+                      width: `${state.predicted * 100}%`,
+                      background:
+                        index < 2
+                          ? "#cb006b"
+                          : index === 2
+                            ? "#ed52a0"
+                            : "#f5a9d1",
+                    }}
+                  />
+                </span>
                 <strong>{pct(state.predicted)}</strong>
-                <RiskBadge risk={state.risk_level} />
               </button>
             </li>
           ))}
         </ol>
         {!states.length && (
-          <p className="muted small">Sin estimaciones disponibles.</p>
+          <p className="lower-card-note">Sin estimaciones disponibles.</p>
         )}
-      </article>
-      <article className="panel insight-card">
-        <h2>
-          <TrendingUp size={17} /> Tendencia de participación
-        </h2>
-        <p className="muted small">
-          {chosen ? name(chosen.name) : "Territorio seleccionado"} · Elecciones
-          intermedias
+        <p className="lower-card-note">
+          Clasificación relativa estatal · Estimación puntual
         </p>
+      </article>
+      <article
+        className="panel insight-card lower-trends"
+        aria-labelledby="lower-trend-title"
+      >
+        <header className="lower-card-heading">
+          <TrendingUp size={18} />
+          <div>
+            <h2 id="lower-trend-title">Tendencia de participación</h2>
+            <p>Comparativa por proceso electoral</p>
+          </div>
+          <select
+            aria-label="Elecciones de la tendencia"
+            value={type}
+            onChange={(e) => setType(e.target.value as ElectionType)}
+          >
+            <option value="midterm">Intermedias</option>
+            <option value="presidential">Presidenciales</option>
+          </select>
+        </header>
         <Status
-          loading={history.isPending}
-          error={history.error}
-          retry={() => void history.refetch()}
+          loading={loading}
+          error={error}
+          retry={() => {
+            histories.forEach((q) => void q.refetch());
+            national.forEach((q) => void q.refetch());
+          }}
         />
-        {series.length > 0 && (
+        {!loading && !error && years.length > 0 && (
           <Chart
-            label="Participación histórica del estado seleccionado en elecciones intermedias"
-            height={155}
+            label={`Participación nacional y de ${codes.map((code) => name(states.find((s) => s.state_code === code)?.name ?? code)).join(", ")} en elecciones ${type === "midterm" ? "intermedias" : "presidenciales"}`}
+            height={171}
             option={{
-              color: ["#e5007e"],
+              color: palette,
               tooltip: {
                 ...chartTooltip,
                 valueFormatter: (v: number) => `${v.toFixed(1)}%`,
               },
-              grid: { left: 42, right: 12, top: 20, bottom: 28 },
+              legend: {
+                bottom: 0,
+                left: 0,
+                itemWidth: 7,
+                itemHeight: 7,
+                itemGap: 9,
+                icon: "circle",
+                textStyle: { color: "#596d8d", fontSize: 8 },
+                type: "scroll",
+              },
+              grid: { left: 30, right: 8, top: 10, bottom: 43 },
               xAxis: {
                 ...chartAxis,
                 type: "category",
-                data: series.map((r) => r.year),
+                data: years,
+                axisLabel: { color: "#596d8d", fontSize: 9 },
+                boundaryGap: false,
               },
               yAxis: {
                 ...chartAxis,
                 type: "value",
                 min: 0,
                 max: 100,
+                interval: 20,
                 axisLabel: {
                   color: "#596d8d",
+                  fontSize: 8,
                   formatter: "{value}%",
-                  fontSize: 10,
                 },
               },
               series: [
                 {
+                  name: "Nacional",
                   type: "line",
-                  data: series.map((r) =>
-                    r.participation_rate == null
-                      ? null
-                      : r.participation_rate * 100,
-                  ),
-                  symbolSize: 7,
-                  lineStyle: { width: 3 },
-                  areaStyle: { opacity: 0.06 },
+                  data: national.map((q) => {
+                    const value = q.data?.items[0]?.participation_rate;
+                    return value == null ? null : value * 100;
+                  }),
+                  symbolSize: 5,
+                  lineStyle: { width: 1.5 },
                 },
+                ...records.map((rows, i) => ({
+                  name: name(
+                    states.find((s) => s.state_code === codes[i])?.name ??
+                      codes[i],
+                  ),
+                  type: "line",
+                  data: years.map((year) => {
+                    const value = rows.find(
+                      (r) => r.year === year,
+                    )?.participation_rate;
+                    return value == null ? null : value * 100;
+                  }),
+                  symbolSize: 5,
+                  lineStyle: { width: 1.5 },
+                })),
               ],
             }}
           />
         )}
-        <Button variant="ghost" size="sm" onClick={() => onNavigate("trends")}>
-          Comparar históricos <ArrowUpRight size={14} />
-        </Button>
-      </article>
-      <article className="panel insight-card">
-        <h2>Distribución del riesgo relativo</h2>
-        <p className="muted small">Entidades federativas · 2027</p>
-        <div
-          className="risk-distribution"
-          aria-label="Distribución de estados por categoría"
+        <button
+          className="lower-detail-link"
+          onClick={() => onNavigate("trends")}
         >
-          {counts.map(({ risk, count }) => (
-            <div key={risk}>
-              <span className={`distribution-dot ${risk}`} />
-              <span>{riskLabels[risk]}</span>
-              <div className="distribution-track">
-                <span
-                  className={risk}
-                  style={{
-                    width: `${states.length ? (count / states.length) * 100 : 0}%`,
-                  }}
-                />
-              </div>
-              <strong>{count}</strong>
-            </div>
-          ))}
-        </div>
-        <p className="muted small">
-          Clasificación relativa; las bandas pueden cruzar categorías.
-        </p>
-        <Button variant="ghost" size="sm" onClick={() => onNavigate("ml")}>
-          Explorar modelos IA <ArrowUpRight size={14} />
-        </Button>
+          Comparar históricos <ArrowUpRight size={11} />
+        </button>
       </article>
-      <article className="panel insight-card scenario-preview">
-        <h2>
-          <SlidersHorizontal size={17} /> Escenarios de participación
-        </h2>
-        <p>
-          Explora cómo cambiaría la abstención ante un cambio supuesto de
-          participación.
-        </p>
-        <div className="scenario-baseline">
-          <span>{chosen ? name(chosen.name) : "Selecciona un estado"}</span>
-          <strong>{pct(chosen?.predicted)}</strong>
-          <small>Abstención estimada · Continuidad 2027</small>
+      <article
+        className="panel insight-card lower-distribution"
+        aria-labelledby="lower-risk-title"
+      >
+        <header className="lower-card-heading">
+          <ChartPie size={18} />
+          <div>
+            <h2 id="lower-risk-title">Distribución nacional del riesgo</h2>
+            <p>Porcentaje de estados por nivel de riesgo</p>
+          </div>
+        </header>
+        <div className="lower-donut-layout">
+          <div className="lower-donut">
+            <Chart
+              label={`Distribución del riesgo: ${counts.map((c) => `${riskLabels[c.risk]} ${c.count} estados`).join(", ")}`}
+              height={160}
+              option={{
+                animationDuration: 200,
+                tooltip: {
+                  trigger: "item",
+                  formatter: "{b}: {c} estados ({d}%)",
+                },
+                series: [
+                  {
+                    type: "pie",
+                    radius: ["67%", "94%"],
+                    center: ["50%", "50%"],
+                    label: { show: false },
+                    labelLine: { show: false },
+                    data: counts.map((c) => ({
+                      name: riskLabels[c.risk],
+                      value: c.count,
+                      itemStyle: { color: riskPalette[c.risk] },
+                    })),
+                  },
+                ],
+              }}
+            />
+            <div className="lower-donut-center">
+              <strong>{states.length ? "100%" : "—"}</strong>
+              <span>{states.length} estados</span>
+            </div>
+          </div>
+          <ul>
+            {counts.map(({ risk, count }) => (
+              <li key={risk}>
+                <i style={{ background: riskPalette[risk] }} />
+                <span>{riskLabels[risk]}</span>
+                <strong>
+                  {states.length ? pct(count / states.length) : "—"}
+                </strong>
+              </li>
+            ))}
+          </ul>
         </div>
-        <Button onClick={() => onNavigate("scenarios")}>
-          Comparar escenarios <ArrowUpRight size={15} />
+        <p className="lower-card-note">
+          Tres categorías del modelo · No mide municipios
+        </p>
+      </article>
+      <article
+        className="panel insight-card lower-scenarios"
+        aria-labelledby="lower-scenario-title"
+      >
+        <header className="lower-card-heading">
+          <FlaskConical size={18} />
+          <div>
+            <h2 id="lower-scenario-title">Escenarios de participación</h2>
+            <p>
+              {chosen ? name(chosen.name) : "Selecciona un estado"} ·
+              Sensibilidad del pronóstico
+            </p>
+          </div>
+        </header>
+        <select
+          aria-label="Supuesto de participación"
+          value={change}
+          onChange={(e) => setChange(Number(e.target.value))}
+        >
+          <option value={3}>Supuesto: +3 pp de participación</option>
+          <option value={5.4}>Supuesto: +5.4 pp de participación</option>
+          <option value={-3}>Supuesto: −3 pp de participación</option>
+        </select>
+        <div className="lower-scenario-pair">
+          <div>
+            <span>Continuidad</span>
+            <strong>{pct(base)}</strong>
+            <small>Participación estimada</small>
+            <span className="lower-participation-track">
+              <i style={{ width: `${(base ?? 0) * 100}%` }} />
+            </span>
+          </div>
+          <div>
+            <span>Con cambio supuesto</span>
+            <div className="lower-scenario-result">
+              <strong>{pct(simulated)}</strong>
+              <small>{pp(applied)}</small>
+            </div>
+            <small>Participación estimada</small>
+            <span className="lower-participation-track">
+              <i style={{ width: `${(simulated ?? 0) * 100}%` }} />
+            </span>
+          </div>
+        </div>
+        <Button
+          disabled={!chosen}
+          onClick={() => onNavigate("scenarios", change)}
+        >
+          Comparar escenarios <ArrowRight size={14} />
         </Button>
-        <small className="muted">
-          Simulación aritmética: no estima efectos de intervenciones.
-        </small>
+        <p className="lower-card-note">
+          Supuesto aritmético, no efecto de una intervención.
+        </p>
       </article>
     </section>
   );

@@ -11,12 +11,14 @@ import { Note, RiskBadge, Status } from "./shared";
 export function Scenarios({
   prediction,
   forecast,
+  initialChange = 3,
   loading,
   error,
   retry,
 }: {
   prediction?: Prediction;
   forecast?: Forecast;
+  initialChange?: number;
   loading: boolean;
   error: Error | null;
   retry: () => void;
@@ -32,20 +34,23 @@ export function Scenarios({
     );
   return (
     <ScenarioForm
-      key={`${prediction.state_code}-${forecast.id}`}
+      key={`${prediction.state_code}-${forecast.id}-${initialChange}`}
       prediction={prediction}
       forecast={forecast}
+      initialChange={initialChange}
     />
   );
 }
 function ScenarioForm({
   prediction: p,
   forecast,
+  initialChange,
 }: {
   prediction: Prediction;
   forecast: Forecast;
+  initialChange: number;
 }) {
-  const [input, setInput] = useState("3");
+  const [input, setInput] = useState(String(initialChange));
   const change = input.trim() === "" ? NaN : Number(input);
   const valid = Number.isFinite(change) && change >= -100 && change <= 100;
   const mutation = useMutation({

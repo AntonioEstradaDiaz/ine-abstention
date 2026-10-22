@@ -5,6 +5,7 @@ import "./globals.css";
 import "./dashboard-refresh.css";
 import "./design-top.css";
 import "./territory-metrics.css";
+import "./lower-dashboard.css";
 
 export const metadata: Metadata = {
   title: "Pulso electoral · Participación territorial",

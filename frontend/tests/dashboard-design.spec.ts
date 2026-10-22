@@ -1,5 +1,49 @@
 import { test, expect } from "@playwright/test";
 
+test("lower dashboard uses forecast values and carries the selected scenario assumption", async ({
+  page,
+  request,
+}) => {
+  const response = await request.get(
+    "/api/backend/predictions?target_year=2027&limit=100",
+  );
+  expect(response.ok()).toBeTruthy();
+  const { items } = await response.json();
+  await page.goto("/");
+  await expect(
+    page.locator(
+      ".preview-banner,.design-data-note,.observed-indicators,.global-filters",
+    ),
+  ).toHaveCount(0);
+  await expect(page.locator('[data-name="Indicador electoral"]')).toHaveCount(
+    4,
+  );
+  const lower = page.getByRole("region", {
+    name: "Resumen del análisis territorial",
+    exact: true,
+  });
+  await expect(lower.locator(":scope > article")).toHaveCount(4);
+  const base =
+    1 -
+    items.find((p: { state_code: string }) => p.state_code === "17").predicted;
+  await expect(
+    lower.locator(".lower-scenario-pair > div").first().locator("strong"),
+  ).toHaveText(`${(base * 100).toFixed(1)}%`);
+  await lower.getByLabel("Supuesto de participación").selectOption("-3");
+  await expect(lower.locator(".lower-scenario-result strong")).toHaveText(
+    `${(Math.max(0, base - 0.03) * 100).toFixed(1)}%`,
+  );
+  await lower
+    .getByRole("button", { name: "Comparar escenarios", exact: true })
+    .click();
+  await expect(
+    page.getByRole("spinbutton", {
+      name: "Cambio hipotético en participación",
+      exact: true,
+    }),
+  ).toHaveValue("-3");
+});
+
 test("territorial metrics follow Guerrero and Baja California, including the historical view", async ({
   page,
   request,
@@ -17,7 +61,6 @@ test("territorial metrics follow Guerrero and Baja California, including the his
   const rate = (v: number) =>
     `${(v * 100).toLocaleString("es-MX", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}%`;
   await page.goto("/");
-  await page.getByRole("button", { name: "Filtros", exact: true }).click();
   const panel = page.getByRole("complementary", {
     name: "Detalle del territorio",
     exact: true,
@@ -33,6 +76,7 @@ test("territorial metrics follow Guerrero and Baja California, including the his
       (r: { state_code?: string; official_code: string }) =>
         (r.state_code || r.official_code) === code,
     );
+    await page.getByRole("button", { name: "Filtros", exact: true }).click();
     await page
       .getByLabel("Territorio seleccionado", { exact: true })
       .selectOption(code);

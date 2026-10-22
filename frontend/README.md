@@ -11,7 +11,7 @@ El resumen incorpora ranking estatal seleccionable, tendencia de participación 
 (solo elecciones intermedias), distribución de las categorías y acceso al simulador. Consume
 los mismos contratos de la API y el modo de vista previa explícito. La cabecera reproduce el JSX,
 los estilos y 19 SVG originales del ZIP, incluidos los valores ilustrativos de sus cuatro tarjetas;
-una nota visible distingue estos ejemplos de los indicadores calculados, consultables debajo.
+la metodología y el pie de página identifican esos ejemplos del diseño.
 No se atribuyen esas cifras al modelo ni se inventan efectos de intervenciones. Los niveles
 territoriales sin homologación siguen deshabilitados. El tema de gráficas también se adaptó a
 las superficies claras. La captura temporal de Figma se retiró del layout de la web.
@@ -23,6 +23,13 @@ histórico elegido. Las variaciones comparan elecciones del mismo tipo. La incer
 expresa como banda, no como una confianza inventada. Los factores muestran contexto disponible
 y aclaran qué variables no están integradas. El nivel disponible es estatal: no se presentan
 datos municipales como si fueran del estado ni viceversa.
+
+La fila inferior reproduce las cuatro tarjetas de la propuesta: ranking con barras, comparación
+histórica de tres entidades y el nacional ponderado, anillo de distribución y comparación de
+escenarios. Conserva las tres categorías estatales disponibles, sin inventar municipios o una
+categoría crítica. La tendencia separa intermedias y presidenciales. El cambio aritmético elegido
+se transfiere al simulador completo. La franja de vista previa, el bloque territorial permanente,
+la nota superior y el desplegable de indicadores calculados se eliminaron; Filtros abre un diálogo.
 
 Frontend del prototipo INE Abstention. Cinco secciones conectadas a FastAPI:
 
