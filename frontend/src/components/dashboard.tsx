@@ -307,18 +307,6 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
                       </div>
                     </div>
                   </div>
-                  <div className="map-filters electoral-map-context">
-                    <h3>
-                      {historical
-                        ? `Abstención observada · ${year}`
-                        : "Riesgo de abstención · 2027"}
-                    </h3>
-                    <span>
-                      {historical
-                        ? "Tasas observadas"
-                        : "Modelo · baseline_last"}
-                    </span>
-                  </div>
                   <Status
                     loading={mapQuery.isPending}
                     error={mapQuery.error}

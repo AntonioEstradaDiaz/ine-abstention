@@ -399,3 +399,10 @@
     width: 100%;
   }
 }
+
+.electoral-map-panel .electoral-map-settings {
+  gap: 12px;
+}
+.electoral-map-panel .segmented {
+  gap: 10px;
+}
