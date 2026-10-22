@@ -1041,3 +1041,39 @@ button {
   width: auto;
   max-height: 100%;
 }
+
+/* Compact primary metrics, with less space between title and values. */
+.design-top
+  [data-name="Indicadores clave"]
+  > [data-name="Indicador electoral"] {
+  min-height: 132px;
+  padding: 14px;
+  grid-template-columns: 44px minmax(0, 1fr);
+  gap: 12px;
+}
+.design-top
+  [data-name="Indicador electoral"]
+  > [data-name="Símbolo del indicador"] {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+}
+.design-top
+  [data-name="Indicador electoral"]
+  > [data-name="Datos del indicador"] {
+  grid-template-rows: 32px 28px 16px 18px;
+  gap: 2px;
+}
+.design-top [data-name="Datos del indicador"] > p:nth-child(2) {
+  font-size: 24px;
+  line-height: 28px;
+}
+.design-top [data-name="Datos del indicador"] > p:nth-child(3) {
+  line-height: 16px;
+}
+.design-top [data-name="Indicador electoral"] > [data-name="Evolución"] {
+  right: 14px;
+  bottom: 34px;
+  width: 44px;
+  height: 30px;
+}
