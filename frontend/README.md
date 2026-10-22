@@ -121,3 +121,9 @@ Para regenerar la copia, desde la raíz ejecuta `python scripts/build_web_previe
 Nueva sección con los seis estimadores entrenados del laboratorio: comparación temporal, pronóstico de la entidad seleccionada, síntesis automática basada en datos e importancia interna de variables. Los escenarios sobre cada pronóstico se calculan localmente y no se guardan; se pueden exportar junto con sus supuestos y la corrida utilizada.
 
 El informe procede de `data/samples/ml_laboratory.json` y se regenera desde la raíz con `uv run python scripts/train_web_ml.py` tras instalar el grupo `ml`. El modo conectado consulta `/api/v1/ml/laboratory`; la vista previa sirve la misma corrida materializada. Los modelos no se entrenan desde el navegador ni requieren claves de un proveedor de IA.
+
+## Mapa 3D
+
+El mapa abre con perspectiva y polígonos estatales extruidos. La altura es proporcional a la tasa de abstención (escala visual exagerada, no relieve terrestre); el color conserva el riesgo relativo. Los controles 2D/3D, giro, brújula y encuadre de todo México no cambian datos, selección ni filtros. Los históricos usan la tasa observada del año seleccionado.
+
+La representación usa la geometría INEGI existente y MapLibre, sin proveedores, claves o descargas cartográficas adicionales. Solo se actualizan los 32 estados de entidades al cambiar datos. Las transiciones de cámara respetan la preferencia de movimiento reducido. El selector y la tabla siguen disponibles como alternativa al mapa.

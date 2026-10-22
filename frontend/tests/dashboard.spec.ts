@@ -28,6 +28,11 @@ test("dashboard uses live backend data, maps and historical periods", async ({
   await expect(
     page.getByText("Mapa no disponible.", { exact: false }),
   ).toHaveCount(0);
+  // Las coordenadas de la prueba corresponden a la vista plana, sin perspectiva.
+  await page.getByRole("button", { name: "2D", exact: true }).click();
+  await expect(
+    page.locator('[data-map-mode="2d"][data-camera-moving="false"]'),
+  ).toBeVisible();
   // Project an interior point of Baja California using the map's initial Mercator fit.
   const canvas = page.locator(".maplibregl-canvas");
   const box = (await canvas.boundingBox())!;
