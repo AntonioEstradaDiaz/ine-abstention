@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   Activity,
+  BrainCircuit,
   AlertTriangle,
   ArrowUpRight,
   ChevronRight,
@@ -25,9 +26,17 @@ import { TerritoryMap, type MapDatum } from "./territory-map";
 import { Trends } from "./trends";
 import { PredictionsView } from "./predictions";
 import { Scenarios } from "./scenarios";
+import { MLLaboratoryView } from "./ml-laboratory";
 
-type View = "map" | "trends" | "predictions" | "scenarios";
+type View = "map" | "trends" | "predictions" | "scenarios" | "ml";
 const sections = [
+  {
+    id: "ml" as const,
+    label: "Análisis IA",
+    icon: BrainCircuit,
+    subtitle:
+      "Compara modelos entrenados y explora escenarios con evidencia temporal.",
+  },
   {
     id: "map" as const,
     label: "Mapa de riesgo",
@@ -657,6 +666,7 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
               retry={() => void predictions.refetch()}
             />
           )}
+          {view === "ml" && <MLLaboratoryView selected={selected} />}
           <footer className="page-footer">
             <span>Datos: INE · Geografía: INEGI</span>
             <span>

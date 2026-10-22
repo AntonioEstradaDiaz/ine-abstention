@@ -1,7 +1,8 @@
 # Dashboard Pulso electoral
 
-Frontend del prototipo INE Abstention. Cuatro secciones conectadas a FastAPI:
+Frontend del prototipo INE Abstention. Cinco secciones conectadas a FastAPI:
 
+- **Análisis IA:** modelos entrenados, evaluación temporal, explicaciones de variables y escenarios locales sobre los pronósticos.
 - **Mapa de riesgo:** coropleta estatal real, selector territorial, filtros de riesgo, referencia histórica
   por elección, detalle, búsqueda y exportación CSV de las filas visibles.
 - **Tendencias:** participación/abstención de hasta tres entidades; elecciones intermedias y presidenciales
@@ -114,3 +115,9 @@ El modo usa los CSV de `data/samples/` empaquetados en `src/lib/preview-data.jso
 Mapa, búsqueda, CSV, tendencias, predicciones y cálculo aritmético de escenarios funcionan sin FastAPI. Los escenarios locales no se guardan.
 La selección de vista previa es explícita mediante `PULSO_PREVIEW=1`, solo en el servidor. `npm run dev` mantiene el proxy real y sus errores de conexión; no hay fallback automático.
 Para regenerar la copia, desde la raíz ejecuta `python scripts/build_web_preview.py`. El script verifica bandas y categorías contra la calibración del backend. Los identificadores `preview-*` no son corridas persistidas. La fecha de la copia identifica el empaquetado, no el entrenamiento original.
+
+## Análisis IA
+
+Nueva sección con los seis estimadores entrenados del laboratorio: comparación temporal, pronóstico de la entidad seleccionada, síntesis automática basada en datos e importancia interna de variables. Los escenarios sobre cada pronóstico se calculan localmente y no se guardan; se pueden exportar junto con sus supuestos y la corrida utilizada.
+
+El informe procede de `data/samples/ml_laboratory.json` y se regenera desde la raíz con `uv run python scripts/train_web_ml.py` tras instalar el grupo `ml`. El modo conectado consulta `/api/v1/ml/laboratory`; la vista previa sirve la misma corrida materializada. Los modelos no se entrenan desde el navegador ni requieren claves de un proveedor de IA.

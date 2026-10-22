@@ -1,4 +1,5 @@
 import snapshot from "./preview-data.json";
+import laboratory from "../../../data/samples/ml_laboratory.json";
 import type { Indicator, Predictions, Risk, ScenarioRates } from "./types";
 
 const predictions = snapshot.predictions as Predictions;
@@ -22,6 +23,8 @@ export function previewResponse(
 ) {
   const year = Number(query.get("year") ?? 2021);
   switch (resource) {
+    case "ml/laboratory":
+      return json(laboratory);
     case "predictions":
       return json(predictions);
     case "elections":

@@ -3,6 +3,7 @@ import { previewResponse } from "@/lib/preview";
 
 export const dynamic = "force-dynamic";
 const readPaths = new Set([
+  "ml/laboratory",
   "elections",
   "predictions",
   "statistics/territories",

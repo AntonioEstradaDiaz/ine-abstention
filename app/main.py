@@ -9,6 +9,7 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from app.api.v1.data import router as data_router
 from app.api.v1.health import router as health_router
+from app.api.v1.laboratory import router as laboratory_router
 from app.api.v1.models import router as models_router
 from app.api.v1.predictions import router as predictions_router
 from app.api.v1.simulations import router as simulations_router
@@ -43,6 +44,7 @@ app.include_router(models_router, prefix="/api/v1")
 app.include_router(predictions_router, prefix="/api/v1")
 app.include_router(simulations_router, prefix="/api/v1")
 app.include_router(territories_router, prefix="/api/v1")
+app.include_router(laboratory_router, prefix="/api/v1")
 
 
 @app.exception_handler(RequestValidationError)

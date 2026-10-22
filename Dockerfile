@@ -9,6 +9,7 @@ RUN uv sync --locked --no-dev --no-editable && useradd --create-home backend
 COPY alembic.ini ./
 COPY alembic ./alembic
 COPY scripts ./scripts
+COPY data/samples/ml_laboratory.json ./data/samples/ml_laboratory.json
 USER backend
 EXPOSE 8000
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
