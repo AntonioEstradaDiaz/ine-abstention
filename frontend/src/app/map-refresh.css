@@ -250,3 +250,152 @@
     width: 100%;
   }
 }
+
+/* Header follows the new design while retaining the existing map controls. */
+.electoral-map-panel .electoral-map-heading {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  padding: 16px 20px;
+  gap: 16px;
+  background: #fff;
+  border: 0;
+}
+.map-heading-identity {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  min-width: 0;
+}
+.map-heading-icon {
+  color: #e5007e;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.electoral-map-panel .electoral-map-heading h2 {
+  font-size: 17px;
+  line-height: 1.3;
+  font-weight: 700;
+  margin: 0;
+  color: #0d172f;
+}
+.electoral-map-panel .electoral-map-subtitle {
+  font-size: 12px;
+  line-height: 1.5;
+  color: #647a9e;
+  margin: 4px 0 0;
+}
+.electoral-map-panel .electoral-map-settings {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0;
+  flex-shrink: 0;
+  border: 1px solid #e9edf4;
+  border-radius: 11px;
+  padding: 4px;
+  background: white;
+  width: auto;
+}
+.electoral-map-panel .map-period-picker {
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+.electoral-map-panel .map-period-picker select {
+  width: 151px;
+  height: 34px;
+  min-height: 34px;
+  border: 0;
+  border-radius: 7px;
+  background-color: white;
+  box-shadow: none;
+  color: #21334e;
+  font-size: 11px;
+  padding: 6px 23px 6px 9px;
+}
+.electoral-map-panel .segmented {
+  display: flex;
+  gap: 3px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  border-radius: 8px;
+}
+.electoral-map-panel .segmented button {
+  min-height: 34px;
+  padding: 7px 12px;
+  font-size: 11px;
+  font-weight: 500;
+  border: 0;
+  border-radius: 7px;
+  background: white;
+  color: #21334e;
+  box-shadow: none;
+}
+.electoral-map-panel .segmented button[aria-pressed="true"] {
+  background: #ed008c;
+  color: white;
+  font-weight: 600;
+  box-shadow: none;
+}
+.electoral-map-panel .map-period-picker select:focus-visible,
+.electoral-map-panel .segmented button:focus-visible {
+  outline: 2px solid #c00063;
+  outline-offset: 2px;
+}
+.electoral-map-panel .electoral-map-context {
+  padding: 0 20px 8px;
+}
+@media (min-width: 901px) and (max-width: 1270px) {
+  .electoral-map-panel .electoral-map-heading {
+    flex-wrap: wrap;
+  }
+  .electoral-map-panel .electoral-map-settings {
+    margin-left: 40px;
+  }
+}
+@media (max-width: 650px) {
+  .electoral-map-panel .electoral-map-heading {
+    flex-wrap: wrap;
+    padding: 14px;
+    gap: 12px;
+  }
+  .electoral-map-panel .electoral-map-heading h2 {
+    font-size: 15px;
+  }
+  .electoral-map-panel .electoral-map-settings {
+    width: 100%;
+    margin: 0;
+    justify-content: space-between;
+  }
+  .electoral-map-panel .segmented {
+    flex: 1;
+  }
+  .electoral-map-panel .segmented button {
+    flex: 1;
+    padding: 7px 8px;
+  }
+  .electoral-map-panel .map-period-picker select {
+    width: 140px;
+    font-size: 10px;
+  }
+  .electoral-map-panel .electoral-map-subtitle {
+    font-size: 11px;
+  }
+  .electoral-map-panel .electoral-map-context {
+    padding: 0 14px 8px;
+  }
+}
+@media (max-width: 350px) {
+  .electoral-map-panel .electoral-map-settings {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .electoral-map-panel .map-period-picker {
+    width: 100%;
+  }
+  .electoral-map-panel .map-period-picker select {
+    width: 100%;
+  }
+}

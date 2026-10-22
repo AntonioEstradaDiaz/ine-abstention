@@ -256,16 +256,18 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
                   aria-labelledby="map-title"
                 >
                   <div className="panel-heading electoral-map-heading">
-                    <div>
-                      <h2 id="map-title">
-                        <Map size={18} /> Mapa de riesgo de abstención
-                      </h2>
-                      <p className="electoral-map-subtitle">
-                        Selecciona un estado para ver sus indicadores.
-                      </p>
-                      <p className="electoral-map-description">
-                        Explora el riesgo y la participación por estado.
-                      </p>
+                    <div className="map-heading-identity">
+                      <Map
+                        className="map-heading-icon"
+                        size={26}
+                        aria-hidden="true"
+                      />
+                      <div>
+                        <h2 id="map-title">Mapa de riesgo de abstención</h2>
+                        <p className="electoral-map-subtitle">
+                          Selecciona un estado para ver sus indicadores.
+                        </p>
+                      </div>
                     </div>
                     <div className="electoral-map-settings">
                       <label className="map-period-picker">
