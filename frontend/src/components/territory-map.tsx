@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { Map as MapLibreMap } from "maplibre-gl";
 import type { FeatureCollection } from "geojson";
@@ -10,6 +10,9 @@ import {
   RotateCw,
   Plus,
   Minus,
+  SlidersHorizontal,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { pct, riskColors, riskLabels } from "@/lib/utils";
@@ -75,6 +78,8 @@ export function TerritoryMap({
     null,
   );
   const [expanded, setExpanded] = useState(false);
+  const [controlsOpen, setControlsOpen] = useState(false);
+  const controlsId = useId();
   const selectedRow = rows.find((r) => r.state_code === selected);
   const titleCase = (name: string) =>
     name
@@ -441,6 +446,7 @@ export function TerritoryMap({
   return (
     <div
       className="map-wrap"
+      data-controls-open={controlsOpen}
       data-map-ready={ready && !mapError}
       data-map-mode={threeD ? "3d" : "2d"}
       data-camera-moving={moving}
@@ -494,7 +500,20 @@ export function TerritoryMap({
           <span className="map-selection-stem" />
         </div>
       )}
+      <Button
+        variant="outline"
+        className="map-controls-toggle"
+        aria-expanded={controlsOpen}
+        aria-controls={controlsId}
+        onClick={() => setControlsOpen((open) => !open)}
+      >
+        <SlidersHorizontal size={15} />
+        {controlsOpen ? "Ocultar controles" : "Ajustar mapa"}
+        {controlsOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+      </Button>
       <div
+        id={controlsId}
+        hidden={!controlsOpen}
         className="map-navigation-toolbar"
         role="group"
         aria-label="Controles del mapa"
