@@ -3,7 +3,14 @@ import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { Map as MapLibreMap } from "maplibre-gl";
 import type { FeatureCollection } from "geojson";
-import { LocateFixed, MapPin, RotateCcw, RotateCw } from "lucide-react";
+import {
+  LocateFixed,
+  MapPin,
+  RotateCcw,
+  RotateCw,
+  Plus,
+  Minus,
+} from "lucide-react";
 import { Button } from "./ui/button";
 import { pct, riskColors, riskLabels } from "@/lib/utils";
 import { createMapSelection } from "@/lib/map-selection-layer";
@@ -195,13 +202,6 @@ export function TerritoryMap({
             },
           });
           mapRef.current = instance;
-          instance.addControl(
-            new maplibre.NavigationControl({
-              showCompass: true,
-              visualizePitch: true,
-            }),
-            "bottom-left",
-          );
           const full = new maplibre.FullscreenControl({
             container:
               container.current.closest<HTMLElement>(".electoral-map-panel") ??
@@ -495,83 +495,120 @@ export function TerritoryMap({
         </div>
       )}
       <div
-        className="map-view-controls"
+        className="map-navigation-toolbar"
         role="group"
-        aria-label="Vista del mapa"
+        aria-label="Controles del mapa"
       >
-        <Button
-          size="sm"
-          variant="outline"
-          aria-pressed={!threeD}
-          onClick={() => setThreeD(false)}
-          disabled={!loaded}
+        <div
+          className="map-view-controls"
+          role="group"
+          aria-label="Vista del mapa"
         >
-          2D
-        </Button>
-        <Button
-          size="sm"
-          variant="outline"
-          aria-pressed={threeD}
-          onClick={() => setThreeD(true)}
-          disabled={!loaded}
-        >
-          3D
-        </Button>
-      </div>
-      <Button
-        variant="outline"
-        className="map-restore"
-        aria-label="Ver todo México"
-        disabled={!loaded}
-        onClick={() => {
-          if (mapRef.current)
-            frameMexico(mapRef.current, threeD, motionDuration());
-        }}
-      >
-        <LocateFixed size={18} /> Restablecer vista
-      </Button>
-      {threeD && (
-        <>
-          <div
-            className="map-orbit-controls"
-            role="group"
-            aria-label="Orientación del mapa 3D"
+          <Button
+            size="sm"
+            variant="outline"
+            aria-pressed={!threeD}
+            onClick={() => setThreeD(false)}
+            disabled={!loaded}
           >
-            <Button
-              variant="outline"
-              size="icon"
-              disabled={!loaded}
-              aria-label="Girar mapa a la izquierda"
-              onClick={() => {
-                const map = mapRef.current;
-                if (map)
-                  map.easeTo({
-                    bearing: map.getBearing() - 20,
-                    duration: motionDuration(),
-                  });
-              }}
+            2D
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            aria-pressed={threeD}
+            onClick={() => setThreeD(true)}
+            disabled={!loaded}
+          >
+            3D
+          </Button>
+        </div>
+        <div
+          className="map-zoom-controls"
+          role="group"
+          aria-label="Zoom del mapa"
+        >
+          <Button
+            variant="outline"
+            size="icon"
+            aria-label="Acercar"
+            title="Acercar"
+            disabled={!loaded}
+            onClick={() =>
+              mapRef.current?.zoomIn({ duration: motionDuration() })
+            }
+          >
+            <Plus size={17} />
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            aria-label="Alejar"
+            title="Alejar"
+            disabled={!loaded}
+            onClick={() =>
+              mapRef.current?.zoomOut({ duration: motionDuration() })
+            }
+          >
+            <Minus size={17} />
+          </Button>
+        </div>
+        <Button
+          variant="outline"
+          className="map-restore"
+          title="Restablecer vista de México"
+          aria-label="Ver todo México"
+          disabled={!loaded}
+          onClick={() => {
+            if (mapRef.current)
+              frameMexico(mapRef.current, threeD, motionDuration());
+          }}
+        >
+          <LocateFixed size={18} /> Restablecer vista
+        </Button>
+        {threeD && (
+          <>
+            <div
+              className="map-orbit-controls"
+              role="group"
+              aria-label="Orientación del mapa 3D"
             >
-              <RotateCcw size={15} />
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              disabled={!loaded}
-              aria-label="Girar mapa a la derecha"
-              onClick={() => {
-                const map = mapRef.current;
-                if (map)
-                  map.easeTo({
-                    bearing: map.getBearing() + 20,
-                    duration: motionDuration(),
-                  });
-              }}
-            >
-              <RotateCw size={15} />
-            </Button>
-          </div>
-        </>
-      )}
+              <Button
+                variant="outline"
+                size="icon"
+                disabled={!loaded}
+                aria-label="Girar mapa a la izquierda"
+                onClick={() => {
+                  const map = mapRef.current;
+                  if (map)
+                    map.easeTo({
+                      bearing: map.getBearing() - 20,
+                      duration: motionDuration(),
+                    });
+                }}
+              >
+                <RotateCcw size={15} />
+              </Button>
+              <Button
+                variant="outline"
+                size="icon"
+                disabled={!loaded}
+                aria-label="Girar mapa a la derecha"
+                onClick={() => {
+                  const map = mapRef.current;
+                  if (map)
+                    map.easeTo({
+                      bearing: map.getBearing() + 20,
+                      duration: motionDuration(),
+                    });
+                }}
+              >
+                <RotateCw size={15} />
+              </Button>
+            </div>
+          </>
+        )}
+      </div>
       <div className="compact-map-legend" aria-label="Leyenda del mapa">
         {historical ? (
           <>
