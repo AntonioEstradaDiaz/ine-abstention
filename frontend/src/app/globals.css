@@ -2317,3 +2317,16 @@ tbody tr:last-child td {
 .sidebar-footer:has([data-connected="false"]) > .status-indicator {
   background: var(--orange);
 }
+
+.preview-banner {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 14px 18px;
+  margin-bottom: 24px;
+  border: 1px solid #674a8c;
+  border-radius: 10px;
+  background: #221d36;
+  color: #d8c4f1;
+  font-size: 13px;
+}

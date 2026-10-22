@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { previewResponse } from "@/lib/preview";
 
 export const dynamic = "force-dynamic";
 const readPaths = new Set([
@@ -65,6 +66,9 @@ async function proxy(
     } catch {
       return NextResponse.json({ detail: "JSON inválido." }, { status: 400 });
     }
+  }
+  if (process.env.PULSO_PREVIEW === "1") {
+    return previewResponse(resource, req.nextUrl.searchParams, body);
   }
   try {
     const base = process.env.BACKEND_URL || "http://127.0.0.1:8001";

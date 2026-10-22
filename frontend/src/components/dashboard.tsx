@@ -58,7 +58,7 @@ const titleCase = (name: string) =>
     .toLocaleLowerCase("es-MX")
     .replace(/(^|\s)\S/g, (c) => c.toLocaleUpperCase("es-MX"));
 
-export function Dashboard() {
+export function Dashboard({ preview = false }: { preview?: boolean }) {
   const [view, setView] = useState<View>("map");
   const [selected, setSelected] = useState("17");
   const [year, setYear] = useState(2021);
@@ -179,6 +179,8 @@ export function Dashboard() {
               key={s.id}
               type="button"
               className={`nav-item ${view === s.id ? "active" : ""}`}
+              aria-label={s.label}
+              title={s.label}
               aria-current={view === s.id ? "page" : undefined}
               onClick={() => setView(s.id)}
             >
@@ -200,7 +202,9 @@ export function Dashboard() {
             <span className="status-indicator" />
             <span role="status" data-connected={predictions.isSuccess}>
               {predictions.isSuccess
-                ? "Backend conectado"
+                ? preview
+                  ? "Vista previa local"
+                  : "Backend conectado"
                 : predictions.isError
                   ? "Backend sin conexión"
                   : "Conectando…"}
@@ -240,6 +244,15 @@ export function Dashboard() {
               Prototipo experimental
             </span>
           </div>
+          {preview && (
+            <div className="preview-banner" role="status">
+              <strong>Vista previa interactiva</strong>
+              <span>
+                Datos de muestra del repositorio · Sin conexión a la base de
+                datos. Los escenarios no se guardan.
+              </span>
+            </div>
+          )}
           <div className="global-filters">
             <label>
               <span>

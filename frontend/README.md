@@ -106,3 +106,11 @@ cobertura del 90%. El escenario modifica una identidad aritmética, no el efecto
 La API usa estado y pronóstico estatal 2027. Niveles municipales/distritales/seccionales están deshabilitados
 con explicación. El frontend no añade nuevas migraciones, modifica modelos ni consulta directamente Supabase.
 Pendientes de producto y producción: [hoja de ruta](../docs/project-status.md).
+
+## Vista previa sin base de datos
+
+Ejecuta `npm ci` y `npm run preview` en `frontend/`. Abre http://127.0.0.1:3000.
+El modo usa los CSV de `data/samples/` empaquetados en `src/lib/preview-data.json`; el banner identifica la copia local.
+Mapa, búsqueda, CSV, tendencias, predicciones y cálculo aritmético de escenarios funcionan sin FastAPI. Los escenarios locales no se guardan.
+La selección de vista previa es explícita mediante `PULSO_PREVIEW=1`, solo en el servidor. `npm run dev` mantiene el proxy real y sus errores de conexión; no hay fallback automático.
+Para regenerar la copia, desde la raíz ejecuta `python scripts/build_web_preview.py`. El script verifica bandas y categorías contra la calibración del backend. Los identificadores `preview-*` no son corridas persistidas. La fecha de la copia identifica el empaquetado, no el entrenamiento original.
