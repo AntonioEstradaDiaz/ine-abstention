@@ -16,7 +16,6 @@ const imgPoblacion = "/design-top/9c63f.svg";
 const imgRoute = "/design-top/aed99.svg";
 const imgSearch = "/design-top/9128a.svg";
 const imgSimboloDelIndicador = "/design-top/d19fd.svg";
-const imgSimboloIne = "/design-top/3183c.svg";
 const imgSlidersHorizontal = "/design-top/d692b.svg";
 const imgTrianguloDeAlerta = "/design-top/b08fb.svg";
 type View = "map" | "trends" | "ml" | "predictions" | "scenarios";
@@ -58,37 +57,13 @@ export function DesignTop({
           data-node-id="10:12476"
           data-name="Instituto Nacional Electoral"
         >
-          <div
-            className="content-stretch flex gap-[7px] items-center overflow-clip relative shrink-0"
-            data-node-id="10:12477"
-            data-name="Logotipo INE"
-          >
-            <div
-              className="h-[34px] relative shrink-0 w-[39px]"
-              data-node-id="10:12478"
-              data-name="Símbolo INE"
-            >
-              <img
-                alt=""
-                className="absolute block inset-0 max-w-none size-full"
-                src={imgSimboloIne}
-              />
-            </div>
-            <p
-              className="[word-break:break-word] font-['Roboto:Black'] font-black leading-[normal] relative shrink-0 text-[#070b12] text-[34px] whitespace-nowrap"
-              data-node-id="10:12479"
-              style={{ fontVariationSettings: '"wdth" 100' }}
-            >
-              INE
-            </p>
-          </div>
-          <p
-            className="[word-break:break-word] font-['Roboto:Bold'] font-bold leading-[normal] relative shrink-0 text-[#070b12] text-[10px] whitespace-nowrap"
-            data-node-id="10:12480"
-            style={{ fontVariationSettings: '"wdth" 100' }}
-          >
-            Instituto Nacional Electoral
-          </p>
+          <img
+            src="/design-top/logo-ine.png"
+            alt="INE · Instituto Nacional Electoral"
+            className="ine-brand-logo"
+            width={2172}
+            height={724}
+          />
         </div>
         <div
           className="content-stretch flex gap-[17px] items-center overflow-clip relative shrink-0"

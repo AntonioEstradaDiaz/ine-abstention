@@ -1143,3 +1143,27 @@ button {
     gap: 8px;
   }
 }
+
+.design-top [data-name="Instituto Nacional Electoral"] {
+  width: 185px;
+  min-width: 0;
+  overflow: visible;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+.design-top .ine-brand-logo {
+  display: block;
+  width: 175px;
+  height: auto;
+  max-width: 100%;
+  object-fit: contain;
+}
+@media (max-width: 640px) {
+  .design-top [data-name="Instituto Nacional Electoral"] {
+    width: 145px;
+  }
+  .design-top .ine-brand-logo {
+    width: 145px;
+  }
+}
