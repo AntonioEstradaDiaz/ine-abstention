@@ -52,7 +52,7 @@ export function PredictionsView({
       },
       legend: {
         bottom: 0,
-        textStyle: { color: "#A7B5C6", fontSize: 11 },
+        textStyle: { color: "#596D8D", fontSize: 11 },
         itemGap: 22,
         icon: "circle",
         itemWidth: 8,
@@ -65,7 +65,7 @@ export function PredictionsView({
         min: observations[0]?.year ?? 2009,
         max: 2028,
         interval: 3,
-        axisLabel: { color: "#A7B5C6", formatter: (v: number) => String(v) },
+        axisLabel: { color: "#596D8D", formatter: (v: number) => String(v) },
         splitLine: { show: false },
       },
       yAxis: {
@@ -74,7 +74,7 @@ export function PredictionsView({
         min: 0,
         max: 100,
         interval: 25,
-        axisLabel: { color: "#A7B5C6", formatter: "{value}%", fontSize: 11 },
+        axisLabel: { color: "#596D8D", formatter: "{value}%", fontSize: 11 },
       },
       series: [
         {
@@ -92,7 +92,7 @@ export function PredictionsView({
           name: "Estimado · 2027",
           type: "line",
           symbolSize: 10,
-          itemStyle: { color: "#B78AE9" },
+          itemStyle: { color: "#C4006B" },
           lineStyle: { width: 2, type: "dashed" },
           data:
             p && last
@@ -110,7 +110,7 @@ export function PredictionsView({
             silent: true,
             itemStyle: {
               color: "rgba(165,109,226,0.20)",
-              borderColor: "#A56DE2",
+              borderColor: "#C4006B",
               borderWidth: 1,
             },
             data: p

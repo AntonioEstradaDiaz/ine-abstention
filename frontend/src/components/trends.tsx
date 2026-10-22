@@ -8,7 +8,7 @@ import { pct, pp, number } from "@/lib/utils";
 import { Chart, chartAxis, chartTooltip } from "./chart";
 import { Note, SourceLink, Status } from "./shared";
 
-const colors = ["#B78AE9", "#58BFA2", "#E9BD54"];
+const colors = ["#C4006B", "#58BFA2", "#E9BD54"];
 export function Trends({
   selected,
   states,
@@ -61,7 +61,7 @@ export function Trends({
       },
       legend: {
         bottom: 0,
-        textStyle: { color: "#A7B5C6", fontSize: 11 },
+        textStyle: { color: "#596D8D", fontSize: 11 },
         icon: "circle",
         itemWidth: 8,
         itemHeight: 8,
@@ -80,7 +80,7 @@ export function Trends({
         min: 0,
         max: 100,
         interval: 25,
-        axisLabel: { color: "#A7B5C6", formatter: "{value}%", fontSize: 11 },
+        axisLabel: { color: "#596D8D", formatter: "{value}%", fontSize: 11 },
       },
       series: histories.map((h, idx) => ({
         name:

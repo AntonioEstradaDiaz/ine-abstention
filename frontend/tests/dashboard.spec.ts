@@ -13,8 +13,10 @@ test("dashboard uses live backend data, maps and historical periods", async ({
   const predictions = await direct.json();
   expect(predictions.items).toHaveLength(32);
   await page.goto("/");
+  await page.getByRole("button", { name: "Filtros", exact: true }).click();
+  await page.locator(".observed-indicators > summary").click();
   await expect(
-    page.getByRole("heading", { name: "Panorama territorial" }),
+    page.getByRole("heading", { name: "Riesgo de Abstención Electoral" }),
   ).toBeVisible();
   await expect(
     page.getByText("Backend conectado", { exact: true }),
@@ -67,9 +69,9 @@ test("dashboard uses live backend data, maps and historical periods", async ({
   const selected = predictions.items.find(
     (p: { state_code: string }) => p.state_code === "02",
   );
-  await expect(page.locator(".detail-rate > strong")).toHaveText(
-    `${(selected.predicted * 100).toFixed(1)}%`,
-  );
+  await expect(
+    page.locator(".territory-gauge > .detail-rate-value"),
+  ).toHaveText(`${(selected.predicted * 100).toFixed(1)}%`);
   await page.getByRole("button", { name: "Histórico", exact: true }).click();
   await page.getByLabel("Año histórico", { exact: true }).selectOption("2024");
   await expect(
@@ -99,13 +101,17 @@ test("trends compare only matching elections and retain territorial selection", 
   page,
 }) => {
   await page.goto("/");
+  await page.getByRole("button", { name: "Filtros", exact: true }).click();
+  await page.locator(".observed-indicators > summary").click();
   await expect(
     page.getByText("Backend conectado", { exact: true }),
   ).toBeVisible();
   await page
     .getByLabel("Territorio seleccionado", { exact: true })
     .selectOption("02");
-  await page.getByRole("button", { name: "Tendencias", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Comparar históricos", exact: true })
+    .click();
   await expect(page.locator("tbody tr")).toHaveCount(3);
   await expect(page.locator("tbody")).toContainText("2021");
   await expect(page.locator("tbody")).not.toContainText("2024");
@@ -153,6 +159,8 @@ test("simulator persists real API results, clears stale outputs, clips and reset
   request,
 }) => {
   await page.goto("/");
+  await page.getByRole("button", { name: "Filtros", exact: true }).click();
+  await page.locator(".observed-indicators > summary").click();
   await expect(
     page.getByText("Backend conectado", { exact: true }),
   ).toBeVisible();
@@ -237,6 +245,8 @@ test("offline and empty states never substitute invented values", async ({
     }),
   );
   await page.goto("/");
+  await page.getByRole("button", { name: "Filtros", exact: true }).click();
+  await page.locator(".observed-indicators > summary").click();
   await expect(
     page.getByText("Backend sin conexión", { exact: true }),
   ).toBeVisible();
@@ -266,6 +276,8 @@ test("mobile layout, keyboard dialog and reduced motion remain usable", async ({
   await page.setViewportSize({ width: 390, height: 844 });
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
+  await page.getByRole("button", { name: "Filtros", exact: true }).click();
+  await page.locator(".observed-indicators > summary").click();
   await expect(page.locator("tbody tr")).toHaveCount(32);
   await expect(page.locator('[data-map-ready="true"]')).toBeVisible({
     timeout: 45_000,

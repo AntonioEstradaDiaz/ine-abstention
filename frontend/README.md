@@ -1,5 +1,29 @@
 # Dashboard Pulso electoral
 
+## Actualización visual del dashboard
+
+Adaptación de la propuesta `Riesgo De Abstención Electoral.zip`: tema claro con acento magenta,
+navegación superior, cuatro indicadores y mapa 3D con detalle territorial al costado. A 850 px el
+detalle pasa debajo del mapa; en teléfonos los indicadores se organizan en dos columnas y la
+navegación y las tablas tienen desplazamiento propio. La página conserva sus cinco secciones.
+
+El resumen incorpora ranking estatal seleccionable, tendencia de participación del territorio
+(solo elecciones intermedias), distribución de las categorías y acceso al simulador. Consume
+los mismos contratos de la API y el modo de vista previa explícito. La cabecera reproduce el JSX,
+los estilos y 19 SVG originales del ZIP, incluidos los valores ilustrativos de sus cuatro tarjetas;
+una nota visible distingue estos ejemplos de los indicadores calculados, consultables debajo.
+No se atribuyen esas cifras al modelo ni se inventan efectos de intervenciones. Los niveles
+territoriales sin homologación siguen deshabilitados. El tema de gráficas también se adaptó a
+las superficies claras. La captura temporal de Figma se retiró del layout de la web.
+
+El panel derecho sigue el territorio seleccionado en el mapa o en los controles. Incluye
+Resumen, Histórico, Factores y Recomendaciones con navegación de teclado. El medidor representa
+abstención (observada o estimada según la vista); participación y conteos corresponden al año
+histórico elegido. Las variaciones comparan elecciones del mismo tipo. La incertidumbre se
+expresa como banda, no como una confianza inventada. Los factores muestran contexto disponible
+y aclaran qué variables no están integradas. El nivel disponible es estatal: no se presentan
+datos municipales como si fueran del estado ni viceversa.
+
 Frontend del prototipo INE Abstention. Cinco secciones conectadas a FastAPI:
 
 - **Análisis IA:** modelos entrenados, evaluación temporal, explicaciones de variables y escenarios locales sobre los pronósticos.

@@ -90,14 +90,14 @@ function Laboratory({
         type: "value",
         min: 0,
         max: 100,
-        axisLabel: { color: "#A7B5C6", formatter: "{value}%" },
+        axisLabel: { color: "#596D8D", formatter: "{value}%" },
       },
       yAxis: {
         ...chartAxis,
         type: "category",
         inverse: true,
         data: report.models.map((m) => m.label),
-        axisLabel: { color: "#C7D2E2", width: 145, overflow: "truncate" },
+        axisLabel: { color: "#475B76", width: 145, overflow: "truncate" },
         splitLine: { show: false },
       },
       series: [
@@ -109,14 +109,14 @@ function Laboratory({
               (m.forecasts.find((f) => f.state_code === selected)?.predicted ??
                 0) * 100,
             itemStyle: {
-              color: m.name === modelName ? "#B78AE9" : "#3C526F",
+              color: m.name === modelName ? "#C4006B" : "#3C526F",
               borderRadius: [0, 4, 4, 0],
             },
           })),
           label: {
             show: true,
             position: "right",
-            color: "#E6EDF6",
+            color: "#34445D",
             formatter: (p: { value: number }) => `${p.value.toFixed(1)}%`,
           },
         },

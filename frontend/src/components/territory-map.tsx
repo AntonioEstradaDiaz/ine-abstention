@@ -229,6 +229,10 @@ export function TerritoryMap({
           instance.on("moveend", () => {
             if (!cancelled) setMoving(false);
           });
+          instance.on("resize", () => {
+            if (!cancelled && instance)
+              frameMexico(instance, modeRef.current, 0);
+          });
           instance.on("load", () => {
             if (!instance || cancelled) return;
             instance.addSource("states", {

@@ -5,7 +5,6 @@ import {
   Activity,
   BrainCircuit,
   AlertTriangle,
-  ArrowUpRight,
   ChevronRight,
   CircleHelp,
   Download,
@@ -21,12 +20,15 @@ import { api } from "@/lib/api";
 import { pct, riskLabels } from "@/lib/utils";
 import type { Risk } from "@/lib/types";
 import { Button } from "./ui/button";
-import { Methodology, Note, RiskBadge, SourceLink, Status } from "./shared";
+import { Methodology, RiskBadge, Status } from "./shared";
 import { TerritoryMap, type MapDatum } from "./territory-map";
 import { Trends } from "./trends";
 import { PredictionsView } from "./predictions";
 import { Scenarios } from "./scenarios";
 import { MLLaboratoryView } from "./ml-laboratory";
+import { DashboardInsights } from "./dashboard-insights";
+import { DesignTop } from "./design-top";
+import { TerritoryMetrics } from "./territory-metrics";
 
 type View = "map" | "trends" | "predictions" | "scenarios" | "ml";
 const sections = [
@@ -70,7 +72,8 @@ const titleCase = (name: string) =>
 export function Dashboard({ preview = false }: { preview?: boolean }) {
   const [view, setView] = useState<View>("map");
   const [selected, setSelected] = useState("17");
-  const [year, setYear] = useState(2021);
+  const [year, setYear] = useState(2024);
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const [historical, setHistorical] = useState(false);
   const [filter, setFilter] = useState<Risk | "all">("all");
   const [search, setSearch] = useState("");
@@ -172,79 +175,41 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
       <a className="skip-link" href="#main">
         Ir al contenido
       </a>
-      <aside className="sidebar">
-        <a href="/" className="brand" aria-label="Pulso electoral, inicio">
-          <span className="brand-mark">
-            <Activity size={23} strokeWidth={1.7} />
-          </span>
-          <span>
-            Pulso<span className="brand-sub">INTELIGENCIA ELECTORAL</span>
-          </span>
-        </a>
-        <div className="sidebar-caption">ESPACIO DE ANÁLISIS</div>
-        <nav aria-label="Secciones del dashboard">
-          {sections.map((s) => (
-            <button
-              key={s.id}
-              type="button"
-              className={`nav-item ${view === s.id ? "active" : ""}`}
-              aria-label={s.label}
-              title={s.label}
-              aria-current={view === s.id ? "page" : undefined}
-              onClick={() => setView(s.id)}
-            >
-              <s.icon size={19} strokeWidth={1.5} />
-              <span>{s.label}</span>
-              {view === s.id && <span className="nav-active-dot" />}
-            </button>
-          ))}
-        </nav>
-        <div className="sidebar-bottom">
-          <div className="prototype">
-            <FlaskConical size={18} />
-            <div>
-              <strong>Exploración, con contexto</strong>
-              <p>Datos oficiales. Estimaciones experimentales.</p>
-            </div>
-          </div>
-          <div className="sidebar-footer">
-            <span className="status-indicator" />
-            <span role="status" data-connected={predictions.isSuccess}>
-              {predictions.isSuccess
-                ? preview
-                  ? "Vista previa local"
-                  : "Backend conectado"
-                : predictions.isError
-                  ? "Backend sin conexión"
-                  : "Conectando…"}
-            </span>
-            <span>v0.1</span>
-          </div>
-        </div>
-      </aside>
+      <DesignTop
+        view={view}
+        search={search}
+        year={year}
+        elections={elections.data ?? [{ id: 2024, year: 2024 }]}
+        filtersOpen={filtersOpen}
+        onNavigate={setView}
+        onSearch={setSearch}
+        onYear={setYear}
+        onFilters={() => setFiltersOpen((v) => !v)}
+        onExport={download}
+        onData={() => {
+          setView("map");
+          requestAnimationFrame(() =>
+            document
+              .getElementById("table-title")
+              ?.scrollIntoView({ behavior: "smooth", block: "start" }),
+          );
+        }}
+      />
       <div className="workspace">
-        <header className="topbar">
-          <div className="breadcrumb">
-            Análisis territorial
-            <ChevronRight size={14} />
-            <strong>{currentSection.label}</strong>
-          </div>
-          <div className="topbar-actions">
-            <span className="data-badge">
-              <span />
-              Datos abiertos del INE
-            </span>
-            <Methodology sources={sources.data?.items} />
-          </div>
-        </header>
         <main id="main" tabIndex={-1}>
-          <div className="page-heading">
+          <div className={view === "map" ? "sr-only" : "page-heading"}>
             <div>
               <div className="eyebrow">
                 PARTICIPACIÓN · ABSTENCIÓN · TERRITORIO
               </div>
               <h1>
-                {view === "map" ? "Panorama territorial" : currentSection.label}
+                {view === "map" ? (
+                  <>
+                    Riesgo de <span>Abstención Electoral</span>
+                  </>
+                ) : (
+                  currentSection.label
+                )}
               </h1>
               <p>{currentSection.subtitle}</p>
             </div>
@@ -262,7 +227,11 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
               </span>
             </div>
           )}
-          <div className="global-filters">
+          <div
+            className="global-filters"
+            id="dashboard-filters"
+            hidden={view === "map" && !filtersOpen}
+          >
             <label>
               <span>
                 <MapPin size={14} />
@@ -300,52 +269,72 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
               <span className="tiny-dot" />
               Estimación 2027 · Elección intermedia
             </div>
+            <Methodology sources={sources.data?.items} />
           </div>
           {view === "map" && (
             <>
-              <div className="kpi-grid">
-                <div className="kpi">
-                  <div className="kpi-label">
-                    Abstención histórica <span>{year}</span>
+              <p className="design-data-note">
+                Los cuatro indicadores superiores conservan los valores
+                ilustrativos del diseño. Los datos y pronósticos disponibles se
+                consultan a continuación.
+              </p>
+              <details className="observed-indicators">
+                <summary>
+                  Indicadores calculados · Datos del repositorio
+                </summary>
+                <div className="kpi-grid">
+                  <div className="kpi">
+                    <div className="kpi-label">
+                      Abstención histórica <span>{year}</span>
+                    </div>
+                    <strong>{pct(national?.abstention_rate)}</strong>
+                    <div className="kpi-description">
+                      Nacional · ponderada por SV + NV
+                    </div>
+                    {summary.isError && (
+                      <button
+                        className="text-link"
+                        onClick={() => void summary.refetch()}
+                      >
+                        Reintentar indicador
+                      </button>
+                    )}
                   </div>
-                  <strong>{pct(national?.abstention_rate)}</strong>
-                  <div className="kpi-description">
-                    Nacional · ponderada por SV + NV
+                  <div className="kpi">
+                    <div className="kpi-label">
+                      Abstención estimada <span>2027</span>
+                    </div>
+                    <strong className="purple-text">{pct(mean)}</strong>
+                    <div className="kpi-description">
+                      Media simple de los 32 estados
+                    </div>
                   </div>
-                  {summary.isError && (
-                    <button
-                      className="text-link"
-                      onClick={() => void summary.refetch()}
-                    >
-                      Reintentar indicador
-                    </button>
-                  )}
+                  <div className="kpi">
+                    <div className="kpi-label">
+                      Estados con riesgo alto <span>2027</span>
+                    </div>
+                    <strong>
+                      {highCount == null ? "—" : highCount}
+                      <small> / {items?.length ?? "—"}</small>
+                      <span className="kpi-spark">
+                        <AlertTriangle size={22} />
+                      </span>
+                    </strong>
+                    <div className="kpi-description">
+                      Categoría relativa · con incertidumbre
+                    </div>
+                  </div>
+                  <div className="kpi">
+                    <div className="kpi-label">
+                      Participación observada <span>{year}</span>
+                    </div>
+                    <strong>{pct(national?.participation_rate)}</strong>
+                    <div className="kpi-description">
+                      Nacional · ponderada por SV + NV
+                    </div>
+                  </div>
                 </div>
-                <div className="kpi">
-                  <div className="kpi-label">
-                    Abstención estimada <span>2027</span>
-                  </div>
-                  <strong className="purple-text">{pct(mean)}</strong>
-                  <div className="kpi-description">
-                    Media simple de los 32 estados
-                  </div>
-                </div>
-                <div className="kpi">
-                  <div className="kpi-label">
-                    Estados con riesgo alto <span>2027</span>
-                  </div>
-                  <strong>
-                    {highCount == null ? "—" : highCount}
-                    <small> / {items?.length ?? "—"}</small>
-                    <span className="kpi-spark">
-                      <AlertTriangle size={22} />
-                    </span>
-                  </strong>
-                  <div className="kpi-description">
-                    Categoría relativa · con incertidumbre
-                  </div>
-                </div>
-              </div>
+              </details>
               <div className="map-detail-grid electoral-map-layout">
                 <section
                   className="panel map-panel electoral-map-panel"
@@ -493,95 +482,25 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
                     </div>
                   </div>
                 </section>
-                <details className="map-profile-details panel">
-                  <summary>
-                    Detalle del territorio ·{" "}
-                    {chosen ? titleCase(chosen.name) : "Selecciona un estado"}
-                  </summary>
-                  <aside
-                    className="panel territory-detail"
-                    aria-label="Detalle del territorio"
-                  >
-                    {chosen ? (
-                      <>
-                        <div className="detail-overline">
-                          <MapPin size={16} />
-                          <span>PERFIL TERRITORIAL</span>
-                          <span className="state-code">
-                            {chosen.state_code}
-                          </span>
-                        </div>
-                        <h2>{titleCase(chosen.name)}</h2>
-                        <p className="muted small">
-                          Entidad federativa · México
-                        </p>
-                        <div className="detail-rate">
-                          <span>Abstención estimada · 2027</span>
-                          <strong>{pct(chosen.predicted)}</strong>
-                          <RiskBadge risk={chosen.risk_level} />
-                        </div>
-                        <div
-                          className="complement-bar"
-                          aria-label={`Participación estimada ${pct(1 - chosen.predicted)}`}
-                        >
-                          <span
-                            style={{
-                              width: `${(1 - chosen.predicted) * 100}%`,
-                            }}
-                          />
-                        </div>
-                        <div className="bar-labels">
-                          <span>
-                            <i />
-                            Participación
-                          </span>
-                          <strong>{pct(1 - chosen.predicted)}</strong>
-                        </div>
-                        <div className="detail-facts">
-                          <div>
-                            <span>Banda de referencia</span>
-                            <strong>
-                              {pct(chosen.lower)} – {pct(chosen.upper)}
-                            </strong>
-                          </div>
-                          <div>
-                            <span>Abstención observada · {year}</span>
-                            <strong>{pct(actual?.abstention_rate)}</strong>
-                          </div>
-                          <div>
-                            <span>Sin especificar · {year}</span>
-                            <strong>{pct(actual?.unspecified_rate)}</strong>
-                          </div>
-                        </div>
-                        <Note>
-                          {chosen.uncertainty.classification_uncertain
-                            ? "La banda cruza categorías de riesgo. Interpreta el semáforo con cautela."
-                            : "La banda es una referencia empírica; no garantiza cobertura futura."}
-                        </Note>
-                        <Button
-                          variant="outline"
-                          className="full-width"
-                          onClick={() => setView("predictions")}
-                        >
-                          Explorar predicción
-                          <ArrowUpRight size={15} />
-                        </Button>
-                        <SourceLink
-                          id={chosen.explanation.source_id}
-                          sources={sources.data?.items}
-                          label="Fuente del modelo · INE 2021"
-                        />
-                      </>
-                    ) : (
-                      <Status
-                        loading={predictions.isPending}
-                        error={predictions.error}
-                        retry={() => void predictions.refetch()}
-                      />
-                    )}
-                  </aside>
-                </details>
+                <TerritoryMetrics
+                  prediction={chosen}
+                  actual={actual}
+                  selected={selected}
+                  year={year}
+                  historical={historical}
+                  loading={predictions.isPending}
+                  error={predictions.error}
+                  retry={() => void predictions.refetch()}
+                  sources={sources.data?.items}
+                  onExplore={() => setView("predictions")}
+                />
               </div>
+              <DashboardInsights
+                states={items ?? []}
+                selected={selected}
+                onSelect={setSelected}
+                onNavigate={setView}
+              />
               <section
                 className="panel territory-table"
                 aria-labelledby="table-title"
@@ -725,6 +644,15 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
           )}
           {view === "ml" && <MLLaboratoryView selected={selected} />}
           <footer className="page-footer">
+            <span role="status" data-connected={predictions.isSuccess}>
+              {predictions.isSuccess
+                ? preview
+                  ? "Vista previa local"
+                  : "Backend conectado"
+                : predictions.isError
+                  ? "Backend sin conexión"
+                  : "Conectando…"}
+            </span>
             <span>Datos: INE · Geografía: INEGI</span>
             <span>
               Tasas con participación conocida · Modelo sin validación operativa

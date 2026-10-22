@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { Providers } from "@/components/providers";
 import "maplibre-gl/dist/maplibre-gl.css";
 import "./globals.css";
+import "./dashboard-refresh.css";
+import "./design-top.css";
+import "./territory-metrics.css";
 
 export const metadata: Metadata = {
   title: "Pulso electoral · Participación territorial",
