@@ -3,9 +3,10 @@ import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { Map as MapLibreMap } from "maplibre-gl";
 import type { FeatureCollection } from "geojson";
-import { Expand, MapPin, RotateCcw, RotateCw } from "lucide-react";
+import { LocateFixed, MapPin, RotateCcw, RotateCw } from "lucide-react";
 import { Button } from "./ui/button";
-import { pct, riskColors } from "@/lib/utils";
+import { pct, riskColors, riskLabels } from "@/lib/utils";
+import { createMapSelection } from "@/lib/map-selection-layer";
 import type { Risk } from "@/lib/types";
 
 export interface MapDatum {
@@ -19,10 +20,28 @@ const MEXICO_BOUNDS: [[number, number], [number, number]] = [
   [-86, 33],
 ];
 function frameMexico(map: MapLibreMap, threeD: boolean, duration: number) {
-  map.fitBounds(MEXICO_BOUNDS, {
-    padding: threeD ? { top: 60, bottom: 55, left: 30, right: 30 } : 35,
-    pitch: threeD ? 52 : 0,
-    bearing: threeD ? -18 : 0,
+  if (!threeD) {
+    map.fitBounds(MEXICO_BOUNDS, {
+      padding: 35,
+      pitch: 0,
+      bearing: 0,
+      duration,
+    });
+    return;
+  }
+  const camera = map.cameraForBounds(MEXICO_BOUNDS, {
+    padding: { top: 38, bottom: 48, left: 22, right: 22 },
+    bearing: -12,
+  });
+  if (!camera) return;
+  const element = map.getContainer();
+  // Compensate for the foreshortening of a pitched camera, especially in a wide viewport.
+  const lift = element.clientWidth / element.clientHeight > 2 ? 0.65 : 0.18;
+  map.easeTo({
+    ...camera,
+    zoom: (camera.zoom ?? map.getZoom()) + lift,
+    pitch: 42,
+    bearing: -12,
     duration,
   });
 }
@@ -45,7 +64,16 @@ export function TerritoryMap({
   const container = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
   const selectRef = useRef(onSelect);
-  const rowsRef = useRef(rows);
+  const calloutRef = useRef<HTMLDivElement>(null);
+  const selectionLayer = useRef<ReturnType<typeof createMapSelection> | null>(
+    null,
+  );
+  const [expanded, setExpanded] = useState(false);
+  const selectedRow = rows.find((r) => r.state_code === selected);
+  const titleCase = (name: string) =>
+    name
+      .toLocaleLowerCase("es-MX")
+      .replace(/(^|\s)\S/g, (c) => c.toLocaleUpperCase("es-MX"));
   const [threeD, setThreeD] = useState(true);
   const modeRef = useRef(true);
   const initialFrame = useRef(true);
@@ -66,10 +94,55 @@ export function TerritoryMap({
     selectRef.current = onSelect;
   }, [onSelect]);
   useEffect(() => {
-    rowsRef.current = rows;
-  }, [rows]);
+    if (!expanded) return;
+    const original = document.body.style.overflow;
+    const panel = container.current?.closest<HTMLElement>(
+      ".electoral-map-panel",
+    );
+    const role = panel?.getAttribute("role");
+    const previousFocus =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
+    document.body.style.overflow = "hidden";
+    panel?.setAttribute("role", "dialog");
+    panel?.setAttribute("aria-modal", "true");
+    const keys = (event: KeyboardEvent) => {
+      if (event.key === "Escape")
+        container.current
+          ?.querySelector<HTMLButtonElement>(".maplibregl-ctrl-shrink")
+          ?.click();
+      if (event.key === "Tab" && panel) {
+        const controls = [
+          ...panel.querySelectorAll<HTMLElement>(
+            "button:not(:disabled), select:not(:disabled), a[href], [tabindex='0']",
+          ),
+        ].filter((el) => el.getClientRects().length > 0);
+        const first = controls[0],
+          last = controls.at(-1);
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last?.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first?.focus();
+        }
+      }
+    };
+    document.addEventListener("keydown", keys);
+    return () => {
+      document.body.style.overflow = original;
+      document.removeEventListener("keydown", keys);
+      if (role) panel?.setAttribute("role", role);
+      else panel?.removeAttribute("role");
+      panel?.removeAttribute("aria-modal");
+      if (previousFocus?.isConnected)
+        previousFocus.focus({ preventScroll: true });
+    };
+  }, [expanded]);
   useEffect(() => {
     if (!container.current || !geo.data) return;
+    const mapPanel = container.current.closest(".electoral-map-panel");
     let cancelled = false;
     let instance: MapLibreMap | undefined;
     setLoaded(false);
@@ -87,24 +160,27 @@ export function TerritoryMap({
               version: 8,
               light: {
                 anchor: "viewport",
-                color: "#EDF0FF",
-                intensity: 0.65,
-                position: [1.5, 210, 38],
+                color: "#FFF4DF",
+                intensity: 0.72,
+                position: [1.5, 210, 32],
               },
               sources: {},
               layers: [
                 {
                   id: "ocean",
                   type: "background",
-                  paint: { "background-color": "#101b2b" },
+                  paint: {
+                    "background-color": "#0D1D30",
+                    "background-opacity": 0,
+                  },
                 },
               ],
             },
             center: [-102, 24],
             zoom: 3.5,
             attributionControl: false,
-            pitch: modeRef.current ? 52 : 0,
-            bearing: modeRef.current ? -18 : 0,
+            pitch: modeRef.current ? 42 : 0,
+            bearing: modeRef.current ? -12 : 0,
             maxPitch: 65,
             dragRotate: true,
             pitchWithRotate: true,
@@ -113,6 +189,8 @@ export function TerritoryMap({
               "NavigationControl.ZoomIn": "Acercar",
               "NavigationControl.ZoomOut": "Alejar",
               "NavigationControl.ResetBearing": "Orientar al norte",
+              "FullscreenControl.Enter": "Ampliar mapa",
+              "FullscreenControl.Exit": "Reducir mapa",
             },
           });
           mapRef.current = instance;
@@ -121,8 +199,29 @@ export function TerritoryMap({
               showCompass: true,
               visualizePitch: true,
             }),
-            "bottom-left",
+            "bottom-right",
           );
+          const full = new maplibre.FullscreenControl({
+            container:
+              container.current.closest<HTMLElement>(".electoral-map-panel") ??
+              container.current,
+            pseudo: true,
+          });
+          full.on("fullscreenstart", () => {
+            setExpanded(true);
+            requestAnimationFrame(() => {
+              if (!cancelled && instance)
+                frameMexico(instance, modeRef.current, 0);
+            });
+          });
+          full.on("fullscreenend", () => {
+            setExpanded(false);
+            requestAnimationFrame(() => {
+              if (!cancelled && instance)
+                frameMexico(instance, modeRef.current, 0);
+            });
+          });
+          instance.addControl(full, "top-right");
           frameMexico(instance, modeRef.current, 0);
           instance.on("movestart", () => {
             if (!cancelled) setMoving(true);
@@ -190,6 +289,23 @@ export function TerritoryMap({
               filter: ["==", ["get", "cvegeo"], ""],
               paint: { "line-color": "#F1F5F9", "line-width": 2.5 },
             });
+            selectionLayer.current = createMapSelection((x, y, visible) => {
+              const callout = calloutRef.current;
+              const element = container.current;
+              if (!callout || !element) return;
+              callout.style.left = `${x}px`;
+              callout.style.top = `${y}px`;
+              callout.dataset.visible = String(visible);
+              callout.dataset.align =
+                x < 130
+                  ? "left"
+                  : x > element.clientWidth - 130
+                    ? "right"
+                    : "center";
+              callout.dataset.below = String(y < 175);
+              callout.setAttribute("aria-hidden", String(!visible));
+            });
+            instance.addLayer(selectionLayer.current.layer);
             instance.on(
               "click",
               ["states-fill", "states-extrusion"],
@@ -198,27 +314,11 @@ export function TerritoryMap({
                 if (typeof code === "string") selectRef.current(code);
               },
             );
-            const popup = new maplibre.Popup({
-              closeButton: false,
-              closeOnClick: false,
-              offset: 12,
-            });
             instance.on(
               "mousemove",
               ["states-fill", "states-extrusion"],
-              (event) => {
-                if (!instance) return;
-                instance.getCanvas().style.cursor = "pointer";
-                const p = event.features?.[0]?.properties;
-                const row = rowsRef.current.find(
-                  (r) => r.state_code === p?.cvegeo,
-                );
-                const content = document.createElement("div");
-                content.textContent = `${row?.name || p?.nomgeo || "Estado"} · ${pct(row?.value)} de abstención`;
-                popup
-                  .setLngLat(event.lngLat)
-                  .setDOMContent(content)
-                  .addTo(instance);
+              () => {
+                if (instance) instance.getCanvas().style.cursor = "pointer";
               },
             );
             instance.on(
@@ -226,7 +326,6 @@ export function TerritoryMap({
               ["states-fill", "states-extrusion"],
               () => {
                 if (instance) instance.getCanvas().style.cursor = "";
-                popup.remove();
               },
             );
             setLoaded(true);
@@ -254,6 +353,8 @@ export function TerritoryMap({
     return () => {
       cancelled = true;
       instance?.remove();
+      mapPanel?.classList.remove("maplibregl-pseudo-fullscreen");
+      selectionLayer.current = null;
       mapRef.current = null;
     };
   }, [geo.data]);
@@ -284,7 +385,21 @@ export function TerritoryMap({
       );
     }
     map.setFilter("selected-border", ["==", ["get", "cvegeo"], selected]);
-  }, [loaded, geo.data, rows, selected, filter, historical]);
+    const selectedFeature = geo.data.features.find(
+      (f) => String(f.properties?.cvegeo) === selected,
+    );
+    const row = rows.find((r) => r.state_code === selected);
+    const hidden = !historical && filter !== "all" && row?.risk !== filter;
+    const altitude =
+      threeD && row?.value != null
+        ? Math.max(0, Math.min(1, row.value)) * 300_000
+        : 0;
+    selectionLayer.current?.update(
+      hidden ? undefined : selectedFeature,
+      altitude,
+    );
+    map.triggerRepaint();
+  }, [loaded, geo.data, rows, selected, filter, historical, threeD]);
   useEffect(() => {
     const map = mapRef.current;
     modeRef.current = threeD;
@@ -298,7 +413,7 @@ export function TerritoryMap({
       "case",
       ["boolean", ["feature-state", "dim"], false],
       0.12,
-      threeD ? 0.2 : 0.78,
+      threeD ? 0.04 : 0.9,
     ]);
     if (threeD) {
       map.keyboard.enableRotation();
@@ -343,9 +458,34 @@ export function TerritoryMap({
           )}
         </div>
       )}
-      <div className="map-watermark">
-        MÉXICO<span>32 entidades federativas</span>
-      </div>
+      {selectedRow && (
+        <div
+          ref={calloutRef}
+          className="map-selected-marker"
+          data-visible="false"
+          role="status"
+          aria-label="Estado seleccionado en el mapa"
+        >
+          <div className="map-selection-card">
+            <strong>{titleCase(selectedRow.name)}</strong>
+            {selectedRow.risk && (
+              <div className={`map-selection-risk ${selectedRow.risk}`}>
+                <span /> Riesgo{" "}
+                {riskLabels[selectedRow.risk].toLocaleLowerCase("es-MX")}
+              </div>
+            )}
+            <p>
+              Abstención: <b>{pct(selectedRow.value)}</b>
+            </p>
+            <small>
+              {historical
+                ? "Datos históricos observados"
+                : "Estimación 2027 · experimental"}
+            </small>
+          </div>
+          <span className="map-selection-stem" />
+        </div>
+      )}
       <div
         className="map-view-controls"
         role="group"
@@ -369,20 +509,19 @@ export function TerritoryMap({
         >
           3D
         </Button>
-        <Button
-          variant="outline"
-          size="icon"
-          className="map-reset"
-          aria-label="Ver todo México"
-          disabled={!loaded}
-          onClick={() => {
-            if (mapRef.current)
-              frameMexico(mapRef.current, threeD, motionDuration());
-          }}
-        >
-          <Expand size={16} />
-        </Button>
       </div>
+      <Button
+        variant="outline"
+        className="map-restore"
+        aria-label="Ver todo México"
+        disabled={!loaded}
+        onClick={() => {
+          if (mapRef.current)
+            frameMexico(mapRef.current, threeD, motionDuration());
+        }}
+      >
+        <LocateFixed size={18} /> Restablecer vista
+      </Button>
       {threeD && (
         <>
           <div
@@ -422,9 +561,6 @@ export function TerritoryMap({
             >
               <RotateCw size={15} />
             </Button>
-          </div>
-          <div className="map-height-caption">
-            Altura = abstención · Escala visual exagerada
           </div>
         </>
       )}

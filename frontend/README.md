@@ -127,3 +127,9 @@ El informe procede de `data/samples/ml_laboratory.json` y se regenera desde la r
 El mapa abre con perspectiva y polígonos estatales extruidos. La altura es proporcional a la tasa de abstención (escala visual exagerada, no relieve terrestre); el color conserva el riesgo relativo. Los controles 2D/3D, giro, brújula y encuadre de todo México no cambian datos, selección ni filtros. Los históricos usan la tasa observada del año seleccionado.
 
 La representación usa la geometría INEGI existente y MapLibre, sin proveedores, claves o descargas cartográficas adicionales. Solo se actualizan los 32 estados de entidades al cambiar datos. Las transiciones de cámara respetan la preferencia de movimiento reducido. El selector y la tabla siguen disponibles como alternativa al mapa.
+
+## Composición del mapa electoral
+
+El mapa ocupa el ancho completo y usa la referencia visual aportada: tonos verde/amarillo/coral, volumen sombreado, tarjeta del estado seleccionado y leyenda de color y altura. El contorno blanco y el conector de la tarjeta se proyectan a la misma elevación que el estado mediante una capa Mercator personalizada de MapLibre; no son una imagen superpuesta.
+
+La vista ampliada incluye los controles y la leyenda, permite salir con Escape y mantiene el foco de teclado dentro del mapa. El detalle completo de la entidad se conserva en un panel desplegable debajo. La tarjeta muestra datos reales de la aplicación, sin copiar los porcentajes ilustrativos de la referencia.

@@ -346,55 +346,66 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
                   </div>
                 </div>
               </div>
-              <div className="map-detail-grid">
+              <div className="map-detail-grid electoral-map-layout">
                 <section
-                  className="panel map-panel"
+                  className="panel map-panel electoral-map-panel"
                   aria-labelledby="map-title"
                 >
-                  <div className="panel-heading">
+                  <div className="panel-heading electoral-map-heading">
                     <div>
-                      <h2 id="map-title">
-                        {historical
-                          ? `Abstención observada · ${year}`
-                          : "Riesgo de abstención · 2027"}
-                      </h2>
-                      <p>Selecciona un estado para explorar su perfil.</p>
+                      <h2 id="map-title">Mapa electoral</h2>
+                      <p className="electoral-map-subtitle">
+                        México · 32 entidades federativas
+                      </p>
+                      <p className="electoral-map-description">
+                        Explora el riesgo y la participación por estado.
+                      </p>
                     </div>
-                    <div className="segmented" aria-label="Contenido del mapa">
-                      <button
-                        aria-pressed={!historical}
-                        onClick={() => setHistorical(false)}
+                    <div className="electoral-map-settings">
+                      <label className="map-period-picker">
+                        <span>Referencia histórica</span>
+                        <select
+                          aria-label="Año histórico"
+                          value={year}
+                          onChange={(e) => setYear(Number(e.target.value))}
+                          disabled={!elections.data}
+                        >
+                          {elections.data?.map((e) => (
+                            <option key={e.id} value={e.year}>
+                              {e.year} ·{" "}
+                              {e.election_type === "midterm"
+                                ? "Intermedia"
+                                : "Presidencial"}
+                            </option>
+                          )) ?? <option value="2021">2021</option>}
+                        </select>
+                      </label>
+                      <div
+                        className="segmented"
+                        aria-label="Contenido del mapa"
                       >
-                        Estimación
-                      </button>
-                      <button
-                        aria-pressed={historical}
-                        onClick={() => setHistorical(true)}
-                      >
-                        Histórico
-                      </button>
+                        <button
+                          aria-pressed={!historical}
+                          onClick={() => setHistorical(false)}
+                        >
+                          Estimación
+                        </button>
+                        <button
+                          aria-pressed={historical}
+                          onClick={() => setHistorical(true)}
+                        >
+                          Histórico
+                        </button>
+                      </div>
                     </div>
                   </div>
-                  <div className="map-filters">
-                    <label className="inline-label">
-                      Referencia histórica
-                      <select
-                        aria-label="Año histórico"
-                        value={year}
-                        onChange={(e) => setYear(Number(e.target.value))}
-                        disabled={!elections.data}
-                      >
-                        {elections.data?.map((e) => (
-                          <option key={e.id} value={e.year}>
-                            {e.year} ·{" "}
-                            {e.election_type === "midterm"
-                              ? "Intermedia"
-                              : "Presidencial"}
-                          </option>
-                        )) ?? <option value="2021">2021</option>}
-                      </select>
-                    </label>
-                    <span className="small muted">
+                  <div className="map-filters electoral-map-context">
+                    <h3>
+                      {historical
+                        ? `Abstención observada · ${year}`
+                        : "Riesgo de abstención · 2027"}
+                    </h3>
+                    <span>
                       {historical
                         ? "Tasas observadas"
                         : "Modelo · baseline_last"}
@@ -415,115 +426,161 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
                       historical={historical}
                     />
                   )}
-                  <div className="map-legend">
-                    {historical ? (
-                      <>
-                        <span>Menor abstención</span>
-                        <span className="gradient-legend" />
-                        <span>Mayor abstención</span>
-                      </>
-                    ) : (
-                      <>
-                        <span className="legend-title">Riesgo relativo</span>
-                        {(["low", "medium", "high"] as Risk[]).map((r) => (
-                          <button
-                            key={r}
-                            className={`legend-item ${filter === r ? "is-filtered" : ""}`}
-                            aria-pressed={filter === r}
-                            onClick={() => setFilter(filter === r ? "all" : r)}
-                          >
-                            <span className={`legend-dot ${r}`} />
-                            {riskLabels[r]}
-                          </button>
-                        ))}
-                        {filter !== "all" && (
-                          <button
-                            className="text-link"
-                            onClick={() => setFilter("all")}
-                          >
-                            Ver todos
-                          </button>
-                        )}
-                      </>
-                    )}
-                  </div>
-                </section>
-                <aside
-                  className="panel territory-detail"
-                  aria-label="Detalle del territorio"
-                >
-                  {chosen ? (
-                    <>
-                      <div className="detail-overline">
-                        <MapPin size={16} />
-                        <span>PERFIL TERRITORIAL</span>
-                        <span className="state-code">{chosen.state_code}</span>
+                  <div className="map-legend electoral-map-legend">
+                    <div className="electoral-color-legend">
+                      <div className="electoral-legend-heading">
+                        <strong>Color</strong> ·{" "}
+                        {historical
+                          ? "Abstención observada"
+                          : "Riesgo relativo"}
                       </div>
-                      <h2>{titleCase(chosen.name)}</h2>
-                      <p className="muted small">Entidad federativa · México</p>
-                      <div className="detail-rate">
-                        <span>Abstención estimada · 2027</span>
-                        <strong>{pct(chosen.predicted)}</strong>
-                        <RiskBadge risk={chosen.risk_level} />
+                      <div className="electoral-legend-items">
+                        {historical ? (
+                          <>
+                            <span>Menor abstención</span>
+                            <span className="gradient-legend" />
+                            <span>Mayor abstención</span>
+                          </>
+                        ) : (
+                          <>
+                            <span className="legend-title">
+                              Riesgo relativo
+                            </span>
+                            {(["low", "medium", "high"] as Risk[]).map((r) => (
+                              <button
+                                key={r}
+                                className={`legend-item ${filter === r ? "is-filtered" : ""}`}
+                                aria-pressed={filter === r}
+                                onClick={() =>
+                                  setFilter(filter === r ? "all" : r)
+                                }
+                              >
+                                <span className={`legend-dot ${r}`} />
+                                {riskLabels[r]}
+                              </button>
+                            ))}
+                            {filter !== "all" && (
+                              <button
+                                className="text-link"
+                                onClick={() => setFilter("all")}
+                              >
+                                Ver todos
+                              </button>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    </div>
+                    <div className="electoral-height-legend">
+                      <div className="electoral-legend-heading">
+                        <strong>Altura</strong> · Abstención (%)
                       </div>
                       <div
-                        className="complement-bar"
-                        aria-label={`Participación estimada ${pct(1 - chosen.predicted)}`}
+                        className="electoral-height-cubes"
+                        aria-hidden="true"
                       >
-                        <span
-                          style={{ width: `${(1 - chosen.predicted) * 100}%` }}
+                        {[8, 15, 23, 31, 41].map((h) => (
+                          <span key={h} style={{ height: h }} />
+                        ))}
+                      </div>
+                      <div className="electoral-height-labels">
+                        <span>Menor</span>
+                        <span>Mayor</span>
+                      </div>
+                      <small>
+                        Escala visual exagerada · No representa relieve
+                      </small>
+                    </div>
+                  </div>
+                </section>
+                <details className="map-profile-details panel">
+                  <summary>
+                    Detalle del territorio ·{" "}
+                    {chosen ? titleCase(chosen.name) : "Selecciona un estado"}
+                  </summary>
+                  <aside
+                    className="panel territory-detail"
+                    aria-label="Detalle del territorio"
+                  >
+                    {chosen ? (
+                      <>
+                        <div className="detail-overline">
+                          <MapPin size={16} />
+                          <span>PERFIL TERRITORIAL</span>
+                          <span className="state-code">
+                            {chosen.state_code}
+                          </span>
+                        </div>
+                        <h2>{titleCase(chosen.name)}</h2>
+                        <p className="muted small">
+                          Entidad federativa · México
+                        </p>
+                        <div className="detail-rate">
+                          <span>Abstención estimada · 2027</span>
+                          <strong>{pct(chosen.predicted)}</strong>
+                          <RiskBadge risk={chosen.risk_level} />
+                        </div>
+                        <div
+                          className="complement-bar"
+                          aria-label={`Participación estimada ${pct(1 - chosen.predicted)}`}
+                        >
+                          <span
+                            style={{
+                              width: `${(1 - chosen.predicted) * 100}%`,
+                            }}
+                          />
+                        </div>
+                        <div className="bar-labels">
+                          <span>
+                            <i />
+                            Participación
+                          </span>
+                          <strong>{pct(1 - chosen.predicted)}</strong>
+                        </div>
+                        <div className="detail-facts">
+                          <div>
+                            <span>Banda de referencia</span>
+                            <strong>
+                              {pct(chosen.lower)} – {pct(chosen.upper)}
+                            </strong>
+                          </div>
+                          <div>
+                            <span>Abstención observada · {year}</span>
+                            <strong>{pct(actual?.abstention_rate)}</strong>
+                          </div>
+                          <div>
+                            <span>Sin especificar · {year}</span>
+                            <strong>{pct(actual?.unspecified_rate)}</strong>
+                          </div>
+                        </div>
+                        <Note>
+                          {chosen.uncertainty.classification_uncertain
+                            ? "La banda cruza categorías de riesgo. Interpreta el semáforo con cautela."
+                            : "La banda es una referencia empírica; no garantiza cobertura futura."}
+                        </Note>
+                        <Button
+                          variant="outline"
+                          className="full-width"
+                          onClick={() => setView("predictions")}
+                        >
+                          Explorar predicción
+                          <ArrowUpRight size={15} />
+                        </Button>
+                        <SourceLink
+                          id={chosen.explanation.source_id}
+                          sources={sources.data?.items}
+                          label="Fuente del modelo · INE 2021"
                         />
-                      </div>
-                      <div className="bar-labels">
-                        <span>
-                          <i />
-                          Participación
-                        </span>
-                        <strong>{pct(1 - chosen.predicted)}</strong>
-                      </div>
-                      <div className="detail-facts">
-                        <div>
-                          <span>Banda de referencia</span>
-                          <strong>
-                            {pct(chosen.lower)} – {pct(chosen.upper)}
-                          </strong>
-                        </div>
-                        <div>
-                          <span>Abstención observada · {year}</span>
-                          <strong>{pct(actual?.abstention_rate)}</strong>
-                        </div>
-                        <div>
-                          <span>Sin especificar · {year}</span>
-                          <strong>{pct(actual?.unspecified_rate)}</strong>
-                        </div>
-                      </div>
-                      <Note>
-                        {chosen.uncertainty.classification_uncertain
-                          ? "La banda cruza categorías de riesgo. Interpreta el semáforo con cautela."
-                          : "La banda es una referencia empírica; no garantiza cobertura futura."}
-                      </Note>
-                      <Button
-                        variant="outline"
-                        className="full-width"
-                        onClick={() => setView("predictions")}
-                      >
-                        Explorar predicción
-                        <ArrowUpRight size={15} />
-                      </Button>
-                      <SourceLink
-                        id={chosen.explanation.source_id}
-                        sources={sources.data?.items}
-                        label="Fuente del modelo · INE 2021"
+                      </>
+                    ) : (
+                      <Status
+                        loading={predictions.isPending}
+                        error={predictions.error}
+                        retry={() => void predictions.refetch()}
                       />
-                    </>
-                  ) : (
-                    <Status
-                      loading={predictions.isPending}
-                      error={predictions.error}
-                      retry={() => void predictions.refetch()}
-                    />
-                  )}
-                </aside>
+                    )}
+                  </aside>
+                </details>
               </div>
               <section
                 className="panel territory-table"

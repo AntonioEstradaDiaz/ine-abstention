@@ -16,7 +16,7 @@ export const number = (v: number | null | undefined) =>
   v == null ? "—" : v.toLocaleString("es-MX");
 export const riskLabels = { low: "Bajo", medium: "Medio", high: "Alto" };
 export const riskColors = {
-  low: "#38A879",
-  medium: "#E9BD54",
-  high: "#ED8750",
+  low: "#35C99C",
+  medium: "#F3CE51",
+  high: "#FF956E",
 };
