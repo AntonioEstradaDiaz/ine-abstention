@@ -1077,3 +1077,69 @@ button {
   width: 44px;
   height: 30px;
 }
+
+/* Keep search and filters inside the same horizontal margins as the cards. */
+.design-top [data-name="Encabezado y búsqueda"] {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 480px);
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  height: auto;
+  min-height: 57px;
+  padding-inline: 0;
+  box-sizing: border-box;
+}
+.design-top [data-name="Título del panel"] {
+  width: auto;
+  min-width: 0;
+  max-width: 100%;
+  flex-shrink: 1;
+}
+.design-top [data-name="Título del panel"] > p {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+.design-top [data-name="Herramientas de búsqueda"] {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  overflow: visible;
+  box-sizing: border-box;
+}
+.design-top [data-name="Buscar territorio"] {
+  flex: 1 1 0;
+  width: auto;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.design-top [data-name="Filtros"] {
+  flex: 0 0 96px;
+  width: 96px;
+  min-width: 0;
+  box-sizing: border-box;
+}
+@media (max-width: 1100px) {
+  .design-top [data-name="Encabezado y búsqueda"] {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+  }
+}
+@media (max-width: 480px) {
+  .design-top [data-name="Herramientas de búsqueda"] {
+    gap: 8px;
+  }
+  .design-top [data-name="Filtros"] {
+    flex-basis: 84px;
+    width: 84px;
+  }
+  .design-top [data-name="Buscar territorio"] {
+    padding-inline: 10px;
+    gap: 8px;
+  }
+}
