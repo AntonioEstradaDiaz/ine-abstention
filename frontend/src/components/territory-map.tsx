@@ -22,7 +22,7 @@ const MEXICO_BOUNDS: [[number, number], [number, number]] = [
 function frameMexico(map: MapLibreMap, threeD: boolean, duration: number) {
   if (!threeD) {
     map.fitBounds(MEXICO_BOUNDS, {
-      padding: 35,
+      padding: { top: 40, bottom: 82, left: 35, right: 35 },
       pitch: 0,
       bearing: 0,
       duration,
@@ -30,16 +30,13 @@ function frameMexico(map: MapLibreMap, threeD: boolean, duration: number) {
     return;
   }
   const camera = map.cameraForBounds(MEXICO_BOUNDS, {
-    padding: { top: 38, bottom: 48, left: 22, right: 22 },
+    padding: { top: 35, bottom: 90, left: 30, right: 30 },
     bearing: -12,
   });
   if (!camera) return;
-  const element = map.getContainer();
-  // Compensate for the foreshortening of a pitched camera, especially in a wide viewport.
-  const lift = element.clientWidth / element.clientHeight > 2 ? 0.65 : 0.18;
   map.easeTo({
     ...camera,
-    zoom: (camera.zoom ?? map.getZoom()) + lift,
+    zoom: camera.zoom ?? map.getZoom(),
     pitch: 42,
     bearing: -12,
     duration,
@@ -54,12 +51,14 @@ export function TerritoryMap({
   onSelect,
   filter,
   historical,
+  onFilter,
 }: {
   rows: MapDatum[];
   selected: string;
   onSelect: (code: string) => void;
   filter: Risk | "all";
   historical: boolean;
+  onFilter: (risk: Risk | "all") => void;
 }) {
   const container = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
@@ -145,6 +144,8 @@ export function TerritoryMap({
     const mapPanel = container.current.closest(".electoral-map-panel");
     let cancelled = false;
     let instance: MapLibreMap | undefined;
+    const resize = new ResizeObserver(() => instance?.resize());
+    resize.observe(container.current);
     setLoaded(false);
     initialFrame.current = true;
     setReady(false);
@@ -199,7 +200,7 @@ export function TerritoryMap({
               showCompass: true,
               visualizePitch: true,
             }),
-            "bottom-right",
+            "bottom-left",
           );
           const full = new maplibre.FullscreenControl({
             container:
@@ -356,6 +357,7 @@ export function TerritoryMap({
       .catch(() => setMapError(true));
     return () => {
       cancelled = true;
+      resize.disconnect();
       instance?.remove();
       mapPanel?.classList.remove("maplibregl-pseudo-fullscreen");
       selectionLayer.current = null;
@@ -374,7 +376,9 @@ export function TerritoryMap({
         historical && v != null
           ? `hsl(269, 36%, ${27 + v * 38}%)`
           : row?.risk
-            ? riskColors[row.risk]
+            ? v != null && v >= 0.65
+              ? "#c00063"
+              : riskColors[row.risk]
             : "#29384B";
       map.setFeatureState(
         { source: "states", id },
@@ -445,14 +449,14 @@ export function TerritoryMap({
         ref={container}
         className="territory-map"
         role="region"
-        aria-label="Mapa interactivo de los 32 estados. También puedes seleccionar un territorio en la lista."
+        aria-label="Mapa interactivo de los 32 estados. También puedes seleccionar un territorio desde Filtros."
       />
       {(!ready || geo.isError || mapError) && (
         <div className="map-status" role="status">
           <MapPin size={24} />
           <span>
             {geo.isError || mapError
-              ? "Mapa no disponible. Usa la lista de estados para explorar los datos."
+              ? "Mapa no disponible. Usa Filtros para seleccionar un estado."
               : "Cargando cartografía oficial…"}
           </span>
           {geo.isError && (
@@ -567,6 +571,39 @@ export function TerritoryMap({
             </Button>
           </div>
         </>
+      )}
+      <div className="compact-map-legend" aria-label="Leyenda del mapa">
+        {historical ? (
+          <>
+            <strong>Abstención</strong>
+            <span>Menor</span>
+            <span className="gradient-legend" />
+            <span>Mayor</span>
+          </>
+        ) : (
+          <>
+            <strong>Nivel de riesgo:</strong>
+            {(["low", "medium", "high"] as Risk[]).map((r) => (
+              <button
+                key={r}
+                aria-pressed={filter === r}
+                onClick={() => onFilter(filter === r ? "all" : r)}
+              >
+                <i style={{ background: riskColors[r] }} />
+                {riskLabels[r]}
+              </button>
+            ))}
+            <span title="Referencia visual: abstención estimada desde 65%. El modelo conserva sus tres categorías originales.">
+              <i style={{ background: "#c00063" }} />
+              Crítico ≥65%
+            </span>
+          </>
+        )}
+      </div>
+      {threeD && (
+        <div className="compact-height-key">
+          Altura: abstención (%) · escala exagerada
+        </div>
       )}
       <div className="map-attribution">
         <a

@@ -5,20 +5,15 @@ import * as Dialog from "@radix-ui/react-dialog";
 import {
   Activity,
   BrainCircuit,
-  ChevronRight,
-  CircleHelp,
-  Download,
   FlaskConical,
   Map,
-  Search,
   SlidersHorizontal,
   TrendingUp,
 } from "lucide-react";
 import { api } from "@/lib/api";
-import { pct, riskLabels } from "@/lib/utils";
 import type { Risk } from "@/lib/types";
 import { Button } from "./ui/button";
-import { Methodology, RiskBadge, Status } from "./shared";
+import { Methodology, Status } from "./shared";
 import { TerritoryMap, type MapDatum } from "./territory-map";
 import { Trends } from "./trends";
 import { PredictionsView } from "./predictions";
@@ -176,14 +171,7 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
         onYear={setYear}
         onFilters={() => setFiltersOpen((v) => !v)}
         onExport={download}
-        onData={() => {
-          setView("map");
-          requestAnimationFrame(() =>
-            document
-              .getElementById("table-title")
-              ?.scrollIntoView({ behavior: "smooth", block: "start" }),
-          );
-        }}
+        onData={() => setFiltersOpen(true)}
       />
       <div className="workspace">
         <main id="main" tabIndex={-1}>
@@ -269,9 +257,11 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
                 >
                   <div className="panel-heading electoral-map-heading">
                     <div>
-                      <h2 id="map-title">Mapa electoral</h2>
+                      <h2 id="map-title">
+                        <Map size={18} /> Mapa de riesgo de abstención
+                      </h2>
                       <p className="electoral-map-subtitle">
-                        México · 32 entidades federativas
+                        Selecciona un estado para ver sus indicadores.
                       </p>
                       <p className="electoral-map-description">
                         Explora el riesgo y la participación por estado.
@@ -340,74 +330,9 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
                       onSelect={setSelected}
                       filter={filter}
                       historical={historical}
+                      onFilter={setFilter}
                     />
                   )}
-                  <div className="map-legend electoral-map-legend">
-                    <div className="electoral-color-legend">
-                      <div className="electoral-legend-heading">
-                        <strong>Color</strong> ·{" "}
-                        {historical
-                          ? "Abstención observada"
-                          : "Riesgo relativo"}
-                      </div>
-                      <div className="electoral-legend-items">
-                        {historical ? (
-                          <>
-                            <span>Menor abstención</span>
-                            <span className="gradient-legend" />
-                            <span>Mayor abstención</span>
-                          </>
-                        ) : (
-                          <>
-                            <span className="legend-title">
-                              Riesgo relativo
-                            </span>
-                            {(["low", "medium", "high"] as Risk[]).map((r) => (
-                              <button
-                                key={r}
-                                className={`legend-item ${filter === r ? "is-filtered" : ""}`}
-                                aria-pressed={filter === r}
-                                onClick={() =>
-                                  setFilter(filter === r ? "all" : r)
-                                }
-                              >
-                                <span className={`legend-dot ${r}`} />
-                                {riskLabels[r]}
-                              </button>
-                            ))}
-                            {filter !== "all" && (
-                              <button
-                                className="text-link"
-                                onClick={() => setFilter("all")}
-                              >
-                                Ver todos
-                              </button>
-                            )}
-                          </>
-                        )}
-                      </div>
-                    </div>
-                    <div className="electoral-height-legend">
-                      <div className="electoral-legend-heading">
-                        <strong>Altura</strong> · Abstención (%)
-                      </div>
-                      <div
-                        className="electoral-height-cubes"
-                        aria-hidden="true"
-                      >
-                        {[8, 15, 23, 31, 41].map((h) => (
-                          <span key={h} style={{ height: h }} />
-                        ))}
-                      </div>
-                      <div className="electoral-height-labels">
-                        <span>Menor</span>
-                        <span>Mayor</span>
-                      </div>
-                      <small>
-                        Escala visual exagerada · No representa relieve
-                      </small>
-                    </div>
-                  </div>
                 </section>
                 <TerritoryMetrics
                   prediction={chosen}
@@ -430,130 +355,8 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
                   if (change != null) setScenarioChange(change);
                   setView(next);
                 }}
-                onShowAll={() => {
-                  setSearch("");
-                  setFilter("all");
-                  setHistorical(false);
-                  requestAnimationFrame(() =>
-                    document
-                      .getElementById("table-title")
-                      ?.scrollIntoView({ behavior: "smooth", block: "start" }),
-                  );
-                }}
+                onShowAll={() => setFiltersOpen(true)}
               />
-              <section
-                className="panel territory-table"
-                aria-labelledby="table-title"
-              >
-                <div className="panel-heading">
-                  <div>
-                    <h2 id="table-title">Los datos, estado por estado</h2>
-                    <p>
-                      {filtered.length} entidades visibles ·{" "}
-                      {historical ? `Observado ${year}` : "Estimación 2027"} ·
-                      Tasas sobre SV + NV
-                    </p>
-                  </div>
-                  <div className="table-actions">
-                    <label className="search-field">
-                      <Search size={16} />
-                      <input
-                        aria-label="Buscar estado en la tabla"
-                        placeholder="Buscar estado…"
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                      />
-                    </label>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      disabled={!filtered.length}
-                      onClick={download}
-                    >
-                      <Download size={15} />
-                      CSV
-                    </Button>
-                  </div>
-                </div>
-                <div className="table-scroll">
-                  <table>
-                    <caption className="sr-only">
-                      Alternativa accesible al mapa. Selecciona un estado para
-                      ver su detalle.
-                    </caption>
-                    <thead>
-                      <tr>
-                        <th>Entidad federativa</th>
-                        <th>Participación</th>
-                        <th>Abstención</th>
-                        <th>
-                          {historical
-                            ? "Sin especificar"
-                            : "Banda de referencia"}
-                        </th>
-                        {!historical && <th>Riesgo relativo</th>}
-                        <th>
-                          <span className="sr-only">Seleccionar</span>
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filtered.map((r) => {
-                        const pred = items?.find(
-                          (p) => p.state_code === r.state_code,
-                        );
-                        const obs = indicators.data?.items.find(
-                          (p) =>
-                            (p.state_code || p.official_code) === r.state_code,
-                        );
-                        return (
-                          <tr
-                            key={r.state_code}
-                            className={
-                              selected === r.state_code ? "selected-row" : ""
-                            }
-                          >
-                            <td>
-                              <button
-                                className="state-button"
-                                onClick={() => setSelected(r.state_code)}
-                                aria-pressed={selected === r.state_code}
-                              >
-                                <span className="table-code">
-                                  {r.state_code}
-                                </span>
-                                {titleCase(r.name)}
-                              </button>
-                            </td>
-                            <td>{r.value == null ? "—" : pct(1 - r.value)}</td>
-                            <td className="value-cell">{pct(r.value)}</td>
-                            <td>
-                              {historical
-                                ? pct(obs?.unspecified_rate)
-                                : `${pct(pred?.lower)} – ${pct(pred?.upper)}`}
-                            </td>
-                            {!historical && (
-                              <td>{r.risk && <RiskBadge risk={r.risk} />}</td>
-                            )}
-                            <td>
-                              <ChevronRight size={14} className="muted" />
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                  {mapQuery.isSuccess && filtered.length === 0 && (
-                    <Status empty />
-                  )}
-                </div>
-                <div className="table-footer">
-                  <CircleHelp size={14} />
-                  {historical
-                    ? "NS se excluye de las tasas de participación y abstención."
-                    : "La categoría usa la estimación puntual. La banda puede abarcar varias categorías."}
-                </div>
-              </section>
             </>
           )}
           {view === "trends" && (

@@ -18,6 +18,7 @@ test("lower dashboard uses forecast values and carries the selected scenario ass
   await expect(page.locator('[data-name="Indicador electoral"]')).toHaveCount(
     4,
   );
+  await expect(page.locator(".territory-table")).toHaveCount(0);
   const lower = page.getByRole("region", {
     name: "Resumen del análisis territorial",
     exact: true,

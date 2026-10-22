@@ -1,0 +1,252 @@
+.map-detail-grid.electoral-map-layout {
+  align-items: stretch;
+  grid-template-columns: minmax(0, 1.9fr) minmax(320px, 1fr);
+  gap: 12px;
+}
+.electoral-map-panel {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 0;
+  border: 1px solid #e7ecf1;
+  border-radius: 13px;
+}
+.electoral-map-panel .electoral-map-heading {
+  padding: 12px 14px;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.electoral-map-panel .electoral-map-heading h2 {
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  letter-spacing: 0;
+}
+.electoral-map-heading h2 svg {
+  color: #e5007e;
+  flex-shrink: 0;
+}
+.electoral-map-panel .electoral-map-subtitle {
+  font-size: 10px;
+  margin: 4px 0 0;
+}
+.electoral-map-panel .electoral-map-context {
+  padding: 0 14px 8px;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.electoral-map-panel .electoral-map-context h3,
+.electoral-map-panel .electoral-map-context > span {
+  font-size: 10px;
+}
+.electoral-map-panel .electoral-map-settings {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.electoral-map-panel .map-period-picker > span {
+  display: none;
+}
+.electoral-map-panel .map-period-picker select {
+  min-height: 28px;
+  width: 150px;
+  font-size: 10px;
+  padding: 4px 22px 4px 8px;
+}
+.electoral-map-panel .segmented button {
+  font-size: 10px;
+  padding: 5px 7px;
+}
+.electoral-map-panel .map-wrap,
+.electoral-map-panel .map-wrap[data-map-mode="3d"] {
+  flex: 1;
+  height: auto;
+  min-height: 300px;
+  margin: 0;
+  width: 100%;
+  border-radius: 0;
+  background: linear-gradient(145deg, #f2fbff, #dff3ff);
+}
+.electoral-map-panel .territory-map {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  width: 100%;
+}
+.electoral-map-panel .maplibregl-ctrl-bottom-left {
+  left: 10px;
+  bottom: 68px;
+}
+.electoral-map-panel .maplibregl-ctrl-bottom-left .maplibregl-ctrl {
+  margin: 0;
+}
+.electoral-map-panel .maplibregl-ctrl-group {
+  border: 0;
+  box-shadow: 0 1px 5px #19395615;
+  background: white;
+}
+.electoral-map-panel .maplibregl-ctrl-group button {
+  width: 30px;
+  height: 30px;
+}
+.electoral-map-panel .map-view-controls {
+  top: 10px;
+  right: 50px;
+  padding: 2px;
+  border: 0;
+  box-shadow: 0 1px 5px #19395615;
+}
+.electoral-map-panel .map-view-controls .button {
+  height: 28px;
+  min-height: 28px;
+  width: 34px;
+  font-size: 11px;
+}
+.electoral-map-panel .map-view-controls .button[aria-pressed="true"] {
+  background: #ed008c;
+  color: white;
+  border-color: #ed008c;
+}
+.electoral-map-panel .maplibregl-ctrl-top-right {
+  top: 10px;
+  right: 10px;
+}
+.electoral-map-panel .maplibregl-ctrl-top-right .maplibregl-ctrl {
+  margin: 0;
+}
+.electoral-map-panel .map-restore {
+  bottom: 68px;
+  right: 10px;
+  background: white;
+  color: #334863;
+  padding: 6px 9px;
+  height: 30px;
+  min-height: 30px;
+  font-size: 10px;
+  border: 0;
+  box-shadow: 0 1px 5px #19395615;
+}
+.electoral-map-panel .map-orbit-controls {
+  left: 50px;
+  bottom: 68px;
+  right: auto;
+  gap: 3px;
+}
+.electoral-map-panel .map-orbit-controls .button {
+  width: 28px;
+  height: 28px;
+  min-height: 28px;
+  padding: 5px;
+  background: white;
+}
+.compact-map-legend {
+  position: absolute;
+  left: 10px;
+  bottom: 25px;
+  max-width: calc(100% - 20px);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 9px;
+  background: white;
+  border-radius: 7px;
+  padding: 8px 10px;
+  color: #21334b;
+  font-size: 10px;
+  z-index: 3;
+}
+.compact-map-legend button,
+.compact-map-legend > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  white-space: nowrap;
+}
+.compact-map-legend button {
+  background: none;
+  border: 0;
+  color: inherit;
+  padding: 0;
+  cursor: pointer;
+}
+.compact-map-legend button[aria-pressed="true"] {
+  outline: 2px solid #ed008c;
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+.compact-map-legend i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.compact-height-key {
+  position: absolute;
+  bottom: 7px;
+  left: 10px;
+  color: #596d8d;
+  font-size: 9px;
+  z-index: 2;
+}
+.electoral-map-panel .map-attribution {
+  bottom: 7px;
+  right: 8px;
+  font-size: 8px;
+}
+.electoral-map-panel .map-selection-card {
+  padding: 8px 10px;
+  min-width: 140px;
+  max-width: 180px;
+}
+.electoral-map-panel .map-selection-card strong {
+  font-size: 13px;
+}
+.electoral-map-panel .map-selection-card p,
+.electoral-map-panel .map-selection-risk {
+  font-size: 11px;
+}
+.electoral-map-panel.maplibregl-pseudo-fullscreen .map-wrap {
+  flex: 1;
+  height: auto;
+  min-height: 0;
+}
+@media (max-width: 900px) {
+  .map-detail-grid.electoral-map-layout {
+    grid-template-columns: 1fr;
+  }
+  .electoral-map-panel .map-wrap,
+  .electoral-map-panel .map-wrap[data-map-mode="3d"] {
+    flex: auto;
+    height: 380px;
+  }
+}
+@media (max-width: 480px) {
+  .electoral-map-panel .map-wrap,
+  .electoral-map-panel .map-wrap[data-map-mode="3d"] {
+    height: 330px;
+  }
+  .compact-map-legend {
+    font-size: 9px;
+    gap: 7px;
+    padding: 7px;
+  }
+  .compact-map-legend button,
+  .compact-map-legend > span {
+    font-size: 9px;
+  }
+  .compact-height-key {
+    bottom: 16px;
+    font-size: 8px;
+  }
+  .electoral-map-panel .map-attribution {
+    bottom: 3px;
+  }
+  .electoral-map-panel .electoral-map-settings {
+    width: 100%;
+  }
+}

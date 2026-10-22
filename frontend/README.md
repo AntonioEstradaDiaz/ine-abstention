@@ -164,3 +164,5 @@ La representación usa la geometría INEGI existente y MapLibre, sin proveedores
 El mapa ocupa el ancho completo y usa la referencia visual aportada: tonos verde/amarillo/coral, volumen sombreado, tarjeta del estado seleccionado y leyenda de color y altura. El contorno blanco y el conector de la tarjeta se proyectan a la misma elevación que el estado mediante una capa Mercator personalizada de MapLibre; no son una imagen superpuesta.
 
 La vista ampliada incluye los controles y la leyenda, permite salir con Escape y mantiene el foco de teclado dentro del mapa. El detalle completo de la entidad se conserva en un panel desplegable debajo. La tarjeta muestra datos reales de la aplicación, sin copiar los porcentajes ilustrativos de la referencia.
+
+El mapa principal comparte altura con el panel territorial en escritorio y se apila en móvil. La leyenda y los controles están integrados en el mapa; la altura solo se muestra en 3D. Crítico (desde 65% de abstención estimada) es una referencia visual explícita, no una cuarta categoría del modelo. La tabla estatal se retiró de la pantalla principal; la selección sigue disponible en Filtros y la exportación en Reportes.
