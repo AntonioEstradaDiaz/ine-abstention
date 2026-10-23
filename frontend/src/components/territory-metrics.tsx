@@ -8,15 +8,13 @@ import {
   Users,
   TrendingUp,
   CircleHelp,
-  ArrowUpRight,
   ShieldCheck,
   Database,
 } from "lucide-react";
 import { api } from "@/lib/api";
 import type { Indicator, Prediction, Source } from "@/lib/types";
 import { number, pct, pp } from "@/lib/utils";
-import { RiskBadge, SourceLink, Status } from "./shared";
-import { Button } from "./ui/button";
+import { RiskBadge, Status } from "./shared";
 
 const tabs = ["Resumen", "Histórico", "Factores", "Recomendaciones"] as const;
 type Tab = (typeof tabs)[number];
@@ -29,8 +27,6 @@ export function TerritoryMetrics({
   loading,
   error,
   retry,
-  sources,
-  onExplore,
 }: {
   prediction?: Prediction;
   actual?: Indicator;
@@ -260,11 +256,6 @@ export function TerritoryMetrics({
               </div>
               <h3>Indicadores de contexto</h3>
               {contextRows}
-              <p className="territory-metrics-footnote">
-                Contexto histórico, no contribuciones causales. El semáforo
-                corresponde al pronóstico estatal 2027; la banda no garantiza
-                cobertura futura.
-              </p>
             </>
           )}
           {tab === "Histórico" && (
@@ -344,13 +335,6 @@ export function TerritoryMetrics({
                       </div>
                     ))}
                   </div>
-                  <div className="territory-inline-note">
-                    <CircleHelp size={14} />
-                    <p>
-                      Se comparan elecciones del mismo tipo. Los registros sin
-                      especificar se mantienen separados.
-                    </p>
-                  </div>
                 </>
               )}
               {history.isSuccess && !comparable.length && (
@@ -403,23 +387,6 @@ export function TerritoryMetrics({
                   importancia de variables.
                 </p>
               </div>
-              <div className="territory-coverage">
-                <span>Variables aún sin estimación</span>
-                <div>
-                  <span>Sociodemografía</span>
-                  <span>Economía</span>
-                  <span>Accesibilidad</span>
-                  <span>Conectividad</span>
-                </div>
-              </div>
-              <Button
-                className="territory-panel-action"
-                variant="outline"
-                size="sm"
-                onClick={onExplore}
-              >
-                Ver modelo y evaluación <ArrowUpRight size={14} />
-              </Button>
             </section>
           )}
           {tab === "Recomendaciones" && (
@@ -486,21 +453,8 @@ export function TerritoryMetrics({
                   <TrendingUp size={16} />
                 </li>
               </ol>
-              <Button
-                className="territory-panel-action"
-                variant="outline"
-                size="sm"
-                onClick={onExplore}
-              >
-                Explorar predicción <ArrowUpRight size={14} />
-              </Button>
             </section>
           )}
-          <SourceLink
-            id={historical ? actual?.source_id : p.explanation.source_id}
-            sources={sources}
-            label={`Fuente · INE ${historical ? year : p.explanation.reference_year}`}
-          />
         </div>
       )}
     </aside>
