@@ -3,7 +3,6 @@ import { ElectoralKpis } from "./electoral-kpis";
 import { DashboardSelect } from "./ui/dashboard-select";
 const imgBell = "/design-top/7872e.svg";
 const imgCalendarDays = "/design-top/b20a3.svg";
-const imgChevronDown = "/design-top/426cc.svg";
 const imgClipboardList = "/design-top/e1ab8.svg";
 const imgFileText = "/design-top/18de6.svg";
 const imgMap = "/design-top/0a096.svg";
@@ -270,17 +269,6 @@ export function DesignTop({
                 ))}
               </DashboardSelect>
             </p>
-            <div
-              className="relative shrink-0 size-[15px]"
-              data-node-id="10:13406"
-              data-name="chevron-down"
-            >
-              <img
-                alt=""
-                className="absolute block inset-0 max-w-none size-full"
-                src={imgChevronDown}
-              />
-            </div>
           </div>
           <div
             className="content-stretch flex h-[30px] items-center relative shrink-0 w-[24px]"
