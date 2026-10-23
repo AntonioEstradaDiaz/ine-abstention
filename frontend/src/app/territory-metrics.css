@@ -889,8 +889,34 @@
   }
 }
 
-.territory-metrics-body[data-tab="Factores"] .territory-tab-view {gap:10px}
-.territory-metrics-body[data-tab="Factores"] .territory-model-card {padding:13px}
-.territory-metrics-body[data-tab="Factores"] .territory-model-card>div {margin:9px 0}
-.territory-metrics-body[data-tab="Factores"] .territory-context-rows {min-height:120px}
-@media(max-width:400px){.territory-metrics-body[data-tab="Histórico"] .territory-tab-view{gap:12px}}
+.territory-metrics-body[data-tab="Factores"] .territory-tab-view {
+  gap: 10px;
+}
+.territory-metrics-body[data-tab="Factores"] .territory-model-card {
+  padding: 13px;
+}
+.territory-metrics-body[data-tab="Factores"] .territory-model-card > div {
+  margin: 9px 0;
+}
+.territory-metrics-body[data-tab="Factores"] .territory-context-rows {
+  min-height: 120px;
+}
+@media (max-width: 400px) {
+  .territory-metrics-body[data-tab="Histórico"] .territory-tab-view {
+    gap: 12px;
+  }
+}
+
+/* Leave breathing room below the historical process card in both election types. */
+.territory-metrics .territory-metrics-body[data-tab="Histórico"] {
+  padding-bottom: 34px;
+}
+.territory-metrics-body[data-tab="Histórico"] .territory-tab-view {
+  min-height: 0;
+}
+
+.territory-metrics-body[data-tab="Histórico"] .territory-tab-view {gap:14px}
+.territory-metrics-body[data-tab="Histórico"] .territory-history-highlights>div {padding-block:12px}
+.territory-metrics-body[data-tab="Histórico"] .territory-history-series {padding:13px}
+.territory-metrics-body[data-tab="Histórico"] .territory-history-row {margin-top:8px}
+@media(max-width:400px){.territory-metrics-body[data-tab="Histórico"] .territory-tab-view{gap:10px}}
