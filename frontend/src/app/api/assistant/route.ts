@@ -1,0 +1,174 @@
+import { NextRequest, NextResponse } from "next/server";
+import snapshot from "@/lib/preview-data.json";
+import {
+  buildAssistantContext,
+  systemPrompt,
+  validMessages,
+  type AssistantReply,
+  type AssistantStatus,
+} from "@/lib/assistant";
+import type { Indicator, ModelMetrics, Page, Predictions } from "@/lib/types";
+
+export const dynamic = "force-dynamic";
+// The model is not chosen yet: any model installed in Ollama can be used.
+const ollamaUrl = () => process.env.OLLAMA_URL || "http://127.0.0.1:11434";
+const detail = (message: string, status: number) =>
+  NextResponse.json({ detail: message }, { status });
+
+async function installedModels(): Promise<string[] | null> {
+  try {
+    const response = await fetch(new URL("/api/tags", ollamaUrl()), {
+      cache: "no-store",
+      signal: AbortSignal.timeout(2_500),
+    });
+    if (!response.ok) return null;
+    const data = (await response.json()) as { models?: { name: string }[] };
+    return (data.models ?? []).map((m) => m.name).sort();
+  } catch {
+    return null;
+  }
+}
+
+// OLLAMA_MODEL wins when installed; otherwise the first installed model.
+const defaultModel = (models: string[]) => {
+  const configured = process.env.OLLAMA_MODEL;
+  return configured && models.includes(configured)
+    ? configured
+    : (models[0] ?? null);
+};
+
+export async function GET() {
+  const models = await installedModels();
+  const status: AssistantStatus = {
+    reachable: models != null,
+    models: models ?? [],
+    defaultModel: models ? defaultModel(models) : null,
+  };
+  return NextResponse.json(status, {
+    headers: { "Cache-Control": "no-store" },
+  });
+}
+
+async function backend<T>(path: string): Promise<T> {
+  const base = process.env.BACKEND_URL || "http://127.0.0.1:8001";
+  const response = await fetch(new URL(`/api/v1/${path}`, base), {
+    headers: { Accept: "application/json" },
+    cache: "no-store",
+    signal: AbortSignal.timeout(15_000),
+  });
+  if (!response.ok) throw new Error(`Backend ${response.status}`);
+  return (await response.json()) as T;
+}
+
+// INE facts are read on the server, never trusted from the browser.
+async function ineData(stateCode: string) {
+  if (process.env.PULSO_PREVIEW === "1")
+    return {
+      predictions: snapshot.predictions as Predictions,
+      history: (snapshot.history as Indicator[]).filter(
+        (r) => r.state_code === stateCode,
+      ),
+      metrics: snapshot.metrics as ModelMetrics,
+    };
+  const predictions = await backend<Predictions>(
+    "predictions?target_year=2027&limit=100",
+  );
+  const [history, metrics] = await Promise.all([
+    backend<Page<Indicator>>(
+      `participation/history?territory_type=state&state_code=${stateCode}&limit=100`,
+    ),
+    backend<ModelMetrics>(
+      `models/metrics?run_id=${encodeURIComponent(predictions.forecast.provenance.model_run_id)}`,
+    ).catch(() => null),
+  ]);
+  return { predictions, history: history.items, metrics };
+}
+
+export async function POST(req: NextRequest) {
+  const origin = req.headers.get("origin");
+  if (origin) {
+    try {
+      if (new URL(origin).host !== req.headers.get("host"))
+        return detail("Origen no permitido.", 403);
+    } catch {
+      return detail("Origen no permitido.", 403);
+    }
+  }
+  if (!req.headers.get("content-type")?.startsWith("application/json"))
+    return detail("Se requiere application/json.", 415);
+  const raw = await req.text();
+  if (Buffer.byteLength(raw) > 32_768)
+    return new NextResponse(null, { status: 413 });
+  let body: { state_code?: unknown; model?: unknown; messages?: unknown };
+  try {
+    body = JSON.parse(raw);
+  } catch {
+    return detail("JSON inválido.", 400);
+  }
+  const messages = validMessages(body.messages);
+  const stateCode =
+    typeof body.state_code === "string" && /^\d{2}$/.test(body.state_code)
+      ? body.state_code
+      : null;
+  if (!messages || !stateCode) return detail("Solicitud inválida.", 400);
+
+  const models = await installedModels();
+  if (!models) return detail("Ollama sin conexión.", 503);
+  const model =
+    typeof body.model === "string" && models.includes(body.model)
+      ? body.model
+      : defaultModel(models);
+  if (!model) return detail("No hay un modelo de Ollama disponible.", 503);
+
+  let data: Awaited<ReturnType<typeof ineData>>;
+  try {
+    data = await ineData(stateCode);
+  } catch {
+    return detail("No se pudieron consultar los datos del INE.", 503);
+  }
+  const prediction = data.predictions.items.find(
+    (p) => p.state_code === stateCode,
+  );
+  if (!prediction) return detail("Entidad sin estimación.", 404);
+  const selected = data.metrics?.models.find(
+    (m) => m.status === "development_selected",
+  );
+  const context = buildAssistantContext({
+    prediction,
+    states: data.predictions.items,
+    history: data.history,
+    thresholds: data.predictions.forecast.calibration.risk.thresholds,
+    model:
+      selected?.model_name ?? data.predictions.forecast.provenance.model_name,
+    maePP: selected?.metrics.holdout_2024.mae_pp ?? null,
+  });
+  try {
+    const response = await fetch(new URL("/api/chat", ollamaUrl()), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model,
+        stream: false,
+        options: { temperature: 0.2 },
+        messages: [
+          { role: "system", content: systemPrompt(context) },
+          ...messages,
+        ],
+      }),
+      cache: "no-store",
+      signal: AbortSignal.timeout(120_000),
+    });
+    if (!response.ok) return detail("Ollama no pudo responder.", 502);
+    const result = (await response.json()) as {
+      message?: { content?: string };
+    };
+    const answer = result.message?.content?.trim();
+    if (!answer) return detail("Ollama devolvió una respuesta vacía.", 502);
+    const reply: AssistantReply = { answer, model };
+    return NextResponse.json(reply, {
+      headers: { "Cache-Control": "no-store" },
+    });
+  } catch {
+    return detail("Ollama tardó demasiado o no está disponible.", 504);
+  }
+}

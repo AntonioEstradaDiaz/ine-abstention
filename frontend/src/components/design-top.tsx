@@ -13,9 +13,15 @@ const imgRoute = "/design-top/aed99.svg";
 const imgSearch = "/design-top/9128a.svg";
 const imgSlidersHorizontal = "/design-top/d692b.svg";
 type View =
-  "map" | "trends" | "ml" | "predictions" | "scenarios" | "laboratory";
+  "map" | "trends" | "ml" | "predictions" | "scenarios" | "laboratory" | "reports" | "data";
+export interface PageHeading {
+  lead: string;
+  highlight: string;
+  subtitle: string;
+}
 interface Props {
   view: View;
+  heading?: PageHeading;
   search: string;
   year: number;
   elections: Array<{ id: number; year: number }>;
@@ -24,11 +30,11 @@ interface Props {
   onSearch: (value: string) => void;
   onYear: (value: number) => void;
   onFilters: () => void;
-  onData: () => void;
-  onExport: () => void;
+  onSearchSubmit: () => void;
 }
 export function DesignTop({
   view,
+  heading,
   search,
   year,
   elections,
@@ -37,8 +43,7 @@ export function DesignTop({
   onSearch,
   onYear,
   onFilters,
-  onData,
-  onExport,
+  onSearchSubmit,
 }: Props) {
   return (
     <div className="design-top">
@@ -182,7 +187,8 @@ export function DesignTop({
           <button
             type="button"
             aria-label="Reportes"
-            onClick={() => onExport()}
+            aria-current={view === "reports" ? "page" : undefined}
+            onClick={() => onNavigate("reports")}
             className="bg-white border-0 border-solid border-white content-stretch flex gap-[13px] h-[41px] items-center overflow-clip px-[13px] relative rounded-[9px] shrink-0"
             data-node-id="10:12494"
             data-name="Sección"
@@ -209,7 +215,8 @@ export function DesignTop({
           <button
             type="button"
             aria-label="Datos"
-            onClick={() => onData()}
+            aria-current={view === "data" ? "page" : undefined}
+            onClick={() => onNavigate("data")}
             className="bg-white border-0 border-solid border-white content-stretch flex gap-[13px] h-[41px] items-center overflow-clip px-[13px] relative rounded-[9px] shrink-0"
             data-node-id="10:12497"
             data-name="Sección"
@@ -327,7 +334,7 @@ export function DesignTop({
         className="content-stretch flex flex-col gap-[13px] items-start overflow-clip pb-[27px] pt-[23px] px-[40px] relative shrink-0 w-full"
         data-node-id="10:12511"
         data-name="Panel electoral"
-        hidden={view !== "map"}
+        hidden={!heading}
       >
         <div
           className="content-stretch flex flex-col gap-[15px] h-[182px] items-start relative shrink-0 w-full"
@@ -349,9 +356,9 @@ export function DesignTop({
                 data-node-id="10:12515"
                 style={{ fontVariationSettings: '"wdth" 100' }}
               >
-                <span className="leading-[normal]">{`Riesgo de `}</span>
+                <span className="leading-[normal]">{`${heading?.lead} `}</span>
                 <span className="leading-[normal] text-[#e5007e]">
-                  Abstención Electoral
+                  {heading?.highlight}
                 </span>
               </p>
               <p
@@ -359,8 +366,7 @@ export function DesignTop({
                 data-node-id="10:12516"
                 style={{ fontVariationSettings: '"wdth" 100' }}
               >
-                Análisis territorial y predicción de escenarios para fortalecer
-                la participación ciudadana.
+                {heading?.subtitle}
               </p>
             </div>
             <div
@@ -389,7 +395,8 @@ export function DesignTop({
                   className="min-w-0 flex-1 bg-transparent font-['Roboto:Regular'] text-[12px] text-[#0d172f] outline-none placeholder:text-[#596d8d]"
                   onChange={(event) => onSearch(event.target.value)}
                   onKeyDown={(event) => {
-                    if (event.key === "Enter" && search.trim()) onData();
+                    if (event.key === "Enter" && search.trim())
+                      onSearchSubmit();
                   }}
                   placeholder="Buscar estado, municipio o sección..."
                   value={search}
@@ -424,7 +431,7 @@ export function DesignTop({
               </button>
             </div>
           </div>
-          <ElectoralKpis />
+          {view === "map" && <ElectoralKpis />}
         </div>
       </div>
     </div>

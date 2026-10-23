@@ -1,15 +1,33 @@
 "use client";
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowRight, GitBranch, Target } from "lucide-react";
+import {
+  ArrowRight,
+  ChartSpline,
+  GitBranch,
+  Gauge,
+  History,
+  MapPin,
+  ShieldAlert,
+  Target,
+  TrendingDown,
+  Trophy,
+  Users,
+} from "lucide-react";
 import { api } from "@/lib/api";
+import { buildAssistantContext } from "@/lib/assistant";
 import type { Forecast, Prediction, Source } from "@/lib/types";
-import { number, pct, pp } from "@/lib/utils";
+import { number, pct, pp, riskLabels } from "@/lib/utils";
+import { AiAssistant } from "./ai-assistant";
 import { Chart, chartAxis, chartTooltip } from "./chart";
+import { PageKpis } from "./page-kpis";
+import { SectionCard } from "./section-card";
 import { Note, RiskBadge, SourceLink, Status } from "./shared";
 
+const ppAbs = (v: number | null | undefined) => pp(v).replace("+", "");
 export function PredictionsView({
   prediction: p,
+  states,
   forecast,
   sources,
   loading,
@@ -17,6 +35,7 @@ export function PredictionsView({
   retry,
 }: {
   prediction?: Prediction;
+  states: Prediction[];
   forecast?: Forecast;
   sources?: Source[];
   loading: boolean;
@@ -41,6 +60,20 @@ export function PredictionsView({
     history.data?.items
       .filter((r) => r.election_type === forecast?.election_type)
       .sort((a, b) => a.year - b.year) ?? [];
+  const assistantContext = useMemo(
+    () =>
+      p && forecast && history.data
+        ? buildAssistantContext({
+            prediction: p,
+            states,
+            history: history.data.items,
+            thresholds: forecast.calibration.risk.thresholds,
+            model: model?.model_name ?? forecast.provenance.model_name,
+            maePP: model?.metrics.holdout_2024.mae_pp ?? null,
+          })
+        : null,
+    [p, states, forecast, history.data, model],
+  );
   const option = useMemo(() => {
     const last = observations.at(-1);
     return {
@@ -52,13 +85,14 @@ export function PredictionsView({
       },
       legend: {
         bottom: 0,
+        left: 0,
         textStyle: { color: "#596D8D", fontSize: 11 },
-        itemGap: 22,
+        itemGap: 18,
         icon: "circle",
         itemWidth: 8,
         itemHeight: 8,
       },
-      grid: { left: 48, right: 35, top: 30, bottom: 60 },
+      grid: { left: 44, right: 24, top: 24, bottom: 48 },
       xAxis: {
         ...chartAxis,
         type: "value",
@@ -81,8 +115,22 @@ export function PredictionsView({
           name: "Observado · intermedias",
           type: "line",
           symbolSize: 8,
-          itemStyle: { color: "#91A6C4" },
+          smooth: 0.25,
+          itemStyle: { color: "#83909f" },
           lineStyle: { width: 2 },
+          areaStyle: {
+            color: {
+              type: "linear",
+              x: 0,
+              y: 0,
+              x2: 0,
+              y2: 1,
+              colorStops: [
+                { offset: 0, color: "rgba(131,144,159,0.18)" },
+                { offset: 1, color: "rgba(131,144,159,0)" },
+              ],
+            },
+          },
           data: observations.map((r) => [
             r.year,
             r.abstention_rate == null ? null : r.abstention_rate * 100,
@@ -92,7 +140,7 @@ export function PredictionsView({
           name: "Estimado · 2027",
           type: "line",
           symbolSize: 10,
-          itemStyle: { color: "#C4006B" },
+          itemStyle: { color: "#e5007e" },
           lineStyle: { width: 2, type: "dashed" },
           data:
             p && last
@@ -109,15 +157,15 @@ export function PredictionsView({
           markArea: {
             silent: true,
             itemStyle: {
-              color: "rgba(165,109,226,0.20)",
-              borderColor: "#C4006B",
+              color: "rgba(229,0,126,0.10)",
+              borderColor: "#f5a9d1",
               borderWidth: 1,
             },
             data: p
               ? [
                   [
-                    { xAxis: 2026.5, yAxis: p.lower * 100 },
-                    { xAxis: 2027.5, yAxis: p.upper * 100 },
+                    { xAxis: 2026.4, yAxis: p.lower * 100 },
+                    { xAxis: 2027.6, yAxis: p.upper * 100 },
                   ],
                 ]
               : [],
@@ -136,17 +184,110 @@ export function PredictionsView({
       />
     );
   const thresholds = forecast.calibration.risk.thresholds;
+  const context = p.explanation.context_only;
+  const ranked = [...states].sort((a, b) => b.predicted - a.predicted);
+  const rank = ranked.findIndex((s) => s.state_code === p.state_code) + 1;
+  const counts = (["low", "medium", "high"] as const).map(
+    (risk) => states.filter((s) => s.risk_level === risk).length,
+  );
+  const vsMean = (p.predicted - context.historical_mean_abstention) * 100;
+  const contextRows = [
+    {
+      icon: History,
+      label: "Media de abstención comparable",
+      value: pct(context.historical_mean_abstention),
+      bar: context.historical_mean_abstention,
+    },
+    {
+      icon: TrendingDown,
+      label: "Tendencia descriptiva",
+      value: `${pp(context.abstention_trend_pp_per_year)} / año`,
+      bar: Math.min(1, Math.abs(context.abstention_trend_pp_per_year) / 2),
+    },
+    {
+      icon: Users,
+      label: "Brecha previa vs. nacional",
+      value: pp(context.previous_gap_vs_national_pp),
+      bar: Math.min(1, Math.abs(context.previous_gap_vs_national_pp) / 15),
+    },
+    {
+      icon: ShieldAlert,
+      label: "Sin especificar en la referencia",
+      value: pct(p.explanation.reference_unspecified_rate),
+      bar: p.explanation.reference_unspecified_rate,
+    },
+  ];
   return (
-    <>
-      <div className="prediction-grid">
-        <section className="panel">
-          <div className="panel-heading">
-            <div>
-              <h2>Del registro histórico al escenario futuro</h2>
-              <p>{p.name} · Abstención · Elecciones intermedias</p>
-            </div>
-            <span className="tag-purple">2027 estimado</span>
-          </div>
+    <div className="section-page predictions-page">
+      <PageKpis
+        label="Indicadores de la predicción"
+        items={[
+          {
+            title: "Abstención estimada 2027",
+            value: pct(p.predicted),
+            reference: `Riesgo ${riskLabels[p.risk_level].toLowerCase()}`,
+            icon: Target,
+            change: {
+              value: pp(Number(vsMean.toFixed(2))),
+              label: "vs. media",
+              down: vsMean < 0,
+            },
+            chart: {
+              kind: "line",
+              values: [
+                ...observations
+                  .filter((r) => r.abstention_rate != null)
+                  .map((r) => r.abstention_rate!),
+                p.predicted,
+              ],
+            },
+          },
+          {
+            title: "Banda de referencia",
+            value: ppAbs(Number(((p.upper - p.lower) * 100).toFixed(1))),
+            reference: `${pct(p.lower)} – ${pct(p.upper)}`,
+            icon: Gauge,
+            chart: {
+              kind: "band",
+              lower: p.lower,
+              upper: p.upper,
+              value: p.predicted,
+            },
+          },
+          {
+            title: "Entidades en riesgo alto",
+            value: String(counts[2]),
+            reference: `${pct(counts[2] / Math.max(states.length, 1))} del total`,
+            icon: ShieldAlert,
+            chart: { kind: "bars", values: counts },
+          },
+          {
+            title: "Posición nacional",
+            value: rank ? `${rank}°` : "—",
+            reference: `de ${states.length} entidades`,
+            icon: Trophy,
+            chart: {
+              kind: "dots",
+              filled: states.length - rank + 1,
+              total: states.length,
+            },
+          },
+        ]}
+      />
+      <div className="predictions-main">
+        <SectionCard
+          id="forecast-chart-title"
+          icon={ChartSpline}
+          title="Del registro histórico al escenario 2027"
+          subtitle={`${p.name} · Abstención · Elecciones intermedias`}
+          actions={
+            <>
+              <span className="section-tag">2027 estimado</span>
+              <RiskBadge risk={p.risk_level} />
+            </>
+          }
+          className="forecast-chart-card"
+        >
           <Status
             loading={history.isPending}
             error={history.error}
@@ -157,183 +298,210 @@ export function PredictionsView({
             <Chart
               option={option}
               label={`Abstención de ${p.name}. Línea continua observada; línea discontinua estimada para 2027 con banda de referencia.`}
-              height={340}
+              height={440}
             />
           )}
-          <div className="panel-note">
-            <Note>
-              La franja de 2027 representa una banda empírica, no una
-              probabilidad ni una garantía de cobertura. El trazo discontinuo
-              identifica el futuro.
-            </Note>
+          <div className="forecast-strip">
+            <div>
+              <span>Abstención estimada</span>
+              <strong className="pink">{pct(p.predicted)}</strong>
+              <small>Elección intermedia 2027</small>
+            </div>
+            <div>
+              <span>Banda de referencia</span>
+              <strong>
+                {pct(p.lower)} – {pct(p.upper)}
+              </strong>
+              <span className="forecast-band-track" aria-hidden="true">
+                <i
+                  style={{
+                    left: `${p.lower * 100}%`,
+                    width: `${(p.upper - p.lower) * 100}%`,
+                  }}
+                />
+                <b style={{ left: `${p.predicted * 100}%` }} />
+              </span>
+            </div>
+            <div>
+              <span>Participación complementaria</span>
+              <strong>{pct(1 - p.predicted)}</strong>
+              <small>Sobre SV + NV</small>
+            </div>
           </div>
-        </section>
-        <aside className="panel forecast-card">
-          <span className="eyebrow">ESTIMACIÓN TERRITORIAL · 2027</span>
-          <h2>{p.name}</h2>
-          <strong className="forecast-value">{pct(p.predicted)}</strong>
-          <span className="muted">abstención estimada</span>
-          <RiskBadge risk={p.risk_level} />
-          <div className="band-display">
-            <span>Banda de referencia</span>
+          <p className="section-card-note">
+            La franja de 2027 es una banda empírica, no una probabilidad ni una
+            garantía de cobertura. El trazo discontinuo identifica el futuro.
+          </p>
+        </SectionCard>
+        <AiAssistant context={assistantContext} />
+      </div>
+      <div className="section-grid-4">
+        <section
+          className="section-card forecast-card"
+          aria-labelledby="forecast-territory-title"
+        >
+          <header className="section-card-heading">
+            <MapPin className="section-card-icon" aria-hidden="true" />
+            <div>
+              <span className="section-eyebrow">Estimación territorial</span>
+              <h2 id="forecast-territory-title">{p.name}</h2>
+            </div>
+          </header>
+          <div className="forecast-gauge">
+            <svg viewBox="0 0 180 112" aria-hidden="true">
+              <path
+                d="M 18 94 A 72 72 0 0 1 162 94"
+                pathLength="100"
+                className="forecast-gauge-track"
+              />
+              <path
+                d="M 18 94 A 72 72 0 0 1 162 94"
+                pathLength="100"
+                className="forecast-gauge-value"
+                strokeDasharray={`${p.predicted * 100} 100`}
+              />
+            </svg>
+            <strong className="forecast-value">{pct(p.predicted)}</strong>
+            <span>abstención estimada</span>
+          </div>
+          <div className="forecast-risk">
+            <span>Nivel de riesgo</span>
+            <RiskBadge risk={p.risk_level} />
+          </div>
+          <div className="forecast-risk">
+            <span>Posibles en la banda</span>
             <strong>
-              {pct(p.lower)} – {pct(p.upper)}
+              {p.uncertainty.risk_levels_possible
+                .map((r) => riskLabels[r])
+                .join(" · ")}
             </strong>
           </div>
-          <p className="small muted">
-            Participación complementaria:{" "}
-            <strong>{pct(1 - p.predicted)}</strong>
-          </p>
           <Note>
             {p.uncertainty.classification_uncertain
-              ? `La banda incluye riesgo ${p.uncertainty.risk_levels_possible.map((r) => ({ low: "bajo", medium: "medio", high: "alto" })[r]).join(", ")}.`
+              ? `La banda incluye riesgo ${p.uncertainty.risk_levels_possible.map((r) => riskLabels[r].toLowerCase()).join(", ")}.`
               : "La categoría es estable dentro de esta banda de referencia."}
           </Note>
-        </aside>
-      </div>
-      <section className="panel">
-        <div className="panel-heading">
-          <div>
-            <h2>Qué sostiene esta estimación</h2>
-            <p>
-              Identidad exacta del baseline; las variables contextuales no son
-              efectos causales.
-            </p>
+        </section>
+        <SectionCard
+          id="explanation-title"
+          icon={GitBranch}
+          title="Qué sostiene esta estimación"
+          subtitle={`Última elección del mismo tipo · ${p.explanation.reference_year}`}
+        >
+          <div className="formula">
+            <span>NV / (SV + NV)</span>
+            <ArrowRight size={18} />
+            <strong>{pct(p.predicted)}</strong>
           </div>
-          <GitBranch size={20} className="purple-text" />
-        </div>
-        <div className="explanation-grid">
-          <div>
-            <span className="eyebrow">VARIABLE UTILIZADA</span>
-            <h3>
-              Última elección del mismo tipo · {p.explanation.reference_year}
-            </h3>
-            <div className="formula">
-              <span>NV / (SV + NV)</span>
-              <ArrowRight size={20} />
-              <strong>{pct(p.predicted)}</strong>
-            </div>
-            <p className="small muted">
-              {number(p.explanation.nonvoter_count)} no votantes /{" "}
-              {number(p.explanation.voter_count + p.explanation.nonvoter_count)}{" "}
-              personas con participación conocida.
-            </p>
-            <SourceLink id={p.explanation.source_id} sources={sources} />
-          </div>
-          <div className="context-facts">
-            <h3>Contexto histórico</h3>
+          <dl className="section-facts">
             <div>
-              <span>Media de abstención comparable</span>
-              <strong>
-                {pct(p.explanation.context_only.historical_mean_abstention)}
-              </strong>
+              <dt>No votantes (NV)</dt>
+              <dd>{number(p.explanation.nonvoter_count)}</dd>
             </div>
             <div>
-              <span>Tendencia descriptiva</span>
-              <strong>
-                {pp(p.explanation.context_only.abstention_trend_pp_per_year)} /
-                año
-              </strong>
+              <dt>Participación conocida</dt>
+              <dd>
+                {number(
+                  p.explanation.voter_count + p.explanation.nonvoter_count,
+                )}
+              </dd>
             </div>
-            <div>
-              <span>Elecciones del mismo tipo</span>
-              <strong>
-                {p.explanation.context_only.same_type_history_count}
-              </strong>
-            </div>
-            <p className="small muted">
-              Estas variables describen el territorio; no contribuyen a la
-              fórmula de este modelo.
-            </p>
-          </div>
-        </div>
-      </section>
-      <section className="panel">
-        <div className="panel-heading">
-          <div>
-            <h2>Modelo y validación temporal</h2>
-            <p>
-              Selección con desarrollo 2018/2021; prueba final 2024 sin cambiar
-              la selección.
-            </p>
-          </div>
-          <Target size={19} className="muted" />
-        </div>
-        <Status
-          loading={metrics.isPending}
-          error={metrics.error}
-          retry={() => void metrics.refetch()}
-        />
-        {model && (
-          <>
-            <div className="model-stats">
-              <div>
-                <span>Modelo seleccionado</span>
-                <strong>{model.model_name}</strong>
-                <small>{model.version}</small>
+          </dl>
+          <SourceLink id={p.explanation.source_id} sources={sources} />
+          <p className="section-card-note">
+            Identidad exacta del baseline; no es un efecto causal.
+          </p>
+        </SectionCard>
+        <SectionCard
+          id="context-title"
+          icon={History}
+          title="Contexto histórico"
+          subtitle="Describe el territorio; no entra en la fórmula"
+        >
+          <ul className="section-bars">
+            {contextRows.map((row) => (
+              <li key={row.label}>
+                <row.icon aria-hidden="true" />
+                <span>{row.label}</span>
+                <i aria-hidden="true">
+                  <b style={{ width: `${Math.max(2, row.bar * 100)}%` }} />
+                </i>
+                <strong>{row.value}</strong>
+              </li>
+            ))}
+          </ul>
+          <p className="section-card-note">
+            {context.same_type_history_count} elecciones comparables en el
+            histórico.
+          </p>
+        </SectionCard>
+        <SectionCard
+          id="validation-title"
+          icon={Target}
+          title="Modelo y validación temporal"
+          subtitle="Desarrollo 2018/2021 · prueba final 2024"
+        >
+          <Status
+            loading={metrics.isPending}
+            error={metrics.error}
+            retry={() => void metrics.refetch()}
+          />
+          {model && (
+            <>
+              <div className="model-stats">
+                <div>
+                  <span>Modelo seleccionado</span>
+                  <strong>{model.model_name}</strong>
+                </div>
+                <div>
+                  <span>MAE · 2024</span>
+                  <strong>{ppAbs(model.metrics.holdout_2024.mae_pp)}</strong>
+                </div>
               </div>
-              <div>
-                <span>Error absoluto medio · 2024</span>
-                <strong>
-                  {pp(model.metrics.holdout_2024.mae_pp).replace("+", "")}
-                </strong>
-                <small>Prueba temporal · 32 estados</small>
-              </div>
-              <div>
-                <span>Generado</span>
-                <strong>
-                  {new Date(forecast.created_at).toLocaleDateString("es-MX", {
-                    day: "2-digit",
-                    month: "short",
-                    year: "numeric",
-                    timeZone: "UTC",
-                  })}
-                </strong>
-                <small>Corrida {forecast.id}</small>
-              </div>
-            </div>
-            <div className="table-scroll">
-              <table>
+              <table className="section-table compact">
                 <thead>
                   <tr>
                     <th>Modelo</th>
-                    <th>Estado</th>
                     <th>MAE desarrollo</th>
                     <th>MAE prueba 2024</th>
                   </tr>
                 </thead>
                 <tbody>
                   {metrics.data?.models.map((m) => (
-                    <tr key={m.version}>
+                    <tr
+                      key={m.version}
+                      aria-current={
+                        m.status === "development_selected" ? "true" : undefined
+                      }
+                    >
                       <td>{m.model_name}</td>
-                      <td>
-                        {m.status === "development_selected"
-                          ? "Seleccionado"
-                          : "Candidato"}
-                      </td>
-                      <td>
-                        {pp(m.metrics.development.mae_pp).replace("+", "")}
-                      </td>
-                      <td>
-                        {pp(m.metrics.holdout_2024.mae_pp).replace("+", "")}
-                      </td>
+                      <td>{ppAbs(m.metrics.development.mae_pp)}</td>
+                      <td>{ppAbs(m.metrics.holdout_2024.mae_pp)}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-            </div>
-          </>
-        )}
-        <div className="panel-note">
-          <Note>
-            Semáforo relativo: bajo &lt; {pct(thresholds[0])}; medio desde{" "}
-            {pct(thresholds[0])} hasta menos de {pct(thresholds[1])}; alto desde{" "}
-            {pct(thresholds[1])}. Soporte limitado: un bloque electoral de
-            calibración, sin cobertura garantizada. No es un estándar oficial
-            del INE.
-          </Note>
-        </div>
-      </section>
-    </>
+            </>
+          )}
+          <p className="section-card-note">
+            Generado el{" "}
+            {new Date(forecast.created_at).toLocaleDateString("es-MX", {
+              day: "2-digit",
+              month: "short",
+              year: "numeric",
+              timeZone: "UTC",
+            })}{" "}
+            · corrida {forecast.id}
+          </p>
+        </SectionCard>
+      </div>
+      <Note>
+        Semáforo relativo: bajo &lt; {pct(thresholds[0])}; medio desde{" "}
+        {pct(thresholds[0])} hasta menos de {pct(thresholds[1])}; alto desde{" "}
+        {pct(thresholds[1])}. Soporte limitado: un bloque electoral de
+        calibración, sin cobertura garantizada. No es un estándar oficial del
+        INE.
+      </Note>
+    </div>
   );
 }

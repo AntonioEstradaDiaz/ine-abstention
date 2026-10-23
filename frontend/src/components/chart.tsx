@@ -1,13 +1,15 @@
 "use client";
 import { useEffect, useRef } from "react";
 import * as echarts from "echarts/core";
-import { LineChart, BarChart, PieChart } from "echarts/charts";
+import { LineChart, BarChart, PieChart, HeatmapChart } from "echarts/charts";
 import {
   GridComponent,
   TooltipComponent,
   LegendComponent,
   AriaComponent,
   MarkAreaComponent,
+  MarkLineComponent,
+  VisualMapComponent,
 } from "echarts/components";
 import { SVGRenderer } from "echarts/renderers";
 import type { EChartsCoreOption } from "echarts/core";
@@ -16,11 +18,14 @@ echarts.use([
   LineChart,
   BarChart,
   PieChart,
+  HeatmapChart,
   GridComponent,
   TooltipComponent,
   LegendComponent,
   AriaComponent,
   MarkAreaComponent,
+  MarkLineComponent,
+  VisualMapComponent,
   SVGRenderer,
 ]);
 export function Chart({

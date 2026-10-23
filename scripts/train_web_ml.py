@@ -11,7 +11,8 @@ from app.ml.laboratory import build_laboratory  # noqa: E402
 if __name__ == "__main__":
     report = build_laboratory(ROOT)
     print(
-        f"ML run: {report['run_id']}; selected on development: {report['protocol']['selected_model']}"
+        f"ML run: {report['run_id']}; "
+        f"selected on development: {report['protocol']['selected_model']}"
     )
     for model in report["models"]:
         print(
