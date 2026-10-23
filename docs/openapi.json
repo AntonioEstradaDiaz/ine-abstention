@@ -1386,6 +1386,27 @@
           }
         }
       }
+    },
+    "/api/v1/ml/laboratory": {
+      "get": {
+        "tags": [
+          "machine-learning"
+        ],
+        "summary": "Laboratory",
+        "operationId": "laboratory_api_v1_ml_laboratory_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LaboratoryReport"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -2096,6 +2117,273 @@
           "source_id"
         ],
         "title": "HistoryRead"
+      },
+      "LaboratoryForecast": {
+        "properties": {
+          "state_code": {
+            "type": "string",
+            "pattern": "^(0[1-9]|[12][0-9]|3[0-2])$",
+            "title": "State Code"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "predicted": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Predicted"
+          },
+          "lower": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Lower"
+          },
+          "upper": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Upper"
+          },
+          "risk_level": {
+            "type": "string",
+            "enum": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "title": "Risk Level"
+          },
+          "baseline_prediction": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Baseline Prediction"
+          },
+          "delta_vs_baseline_pp": {
+            "type": "number",
+            "title": "Delta Vs Baseline Pp"
+          },
+          "uncertainty": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Uncertainty"
+          },
+          "features": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "type": "object",
+            "title": "Features"
+          },
+          "feature_source_years": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Feature Source Years"
+          }
+        },
+        "additionalProperties": true,
+        "type": "object",
+        "required": [
+          "state_code",
+          "name",
+          "predicted",
+          "lower",
+          "upper",
+          "risk_level",
+          "baseline_prediction",
+          "delta_vs_baseline_pp",
+          "uncertainty",
+          "features",
+          "feature_source_years"
+        ],
+        "title": "LaboratoryForecast"
+      },
+      "LaboratoryModel": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "ml",
+              "baseline"
+            ],
+            "title": "Kind"
+          },
+          "development_mae_pp": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Development Mae Pp"
+          },
+          "holdout_mae_pp": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Holdout Mae Pp"
+          },
+          "holdout_rmse_pp": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Holdout Rmse Pp"
+          },
+          "selected_on_development": {
+            "type": "boolean",
+            "title": "Selected On Development"
+          },
+          "preferred_ml": {
+            "type": "boolean",
+            "title": "Preferred Ml"
+          },
+          "calibration": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Calibration"
+          },
+          "important_features": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Important Features"
+          },
+          "forecasts": {
+            "items": {
+              "$ref": "#/components/schemas/LaboratoryForecast"
+            },
+            "type": "array",
+            "maxItems": 32,
+            "minItems": 32,
+            "title": "Forecasts"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "label",
+          "kind",
+          "development_mae_pp",
+          "holdout_mae_pp",
+          "holdout_rmse_pp",
+          "selected_on_development",
+          "preferred_ml",
+          "calibration",
+          "important_features",
+          "forecasts"
+        ],
+        "title": "LaboratoryModel"
+      },
+      "LaboratoryReport": {
+        "properties": {
+          "version": {
+            "type": "string",
+            "const": "state-ml-laboratory-v1",
+            "title": "Version"
+          },
+          "run_id": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{20}$",
+            "title": "Run Id"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          },
+          "target_year": {
+            "type": "integer",
+            "title": "Target Year"
+          },
+          "as_of_year": {
+            "type": "integer",
+            "title": "As Of Year"
+          },
+          "dataset_fingerprint": {
+            "type": "string",
+            "title": "Dataset Fingerprint"
+          },
+          "implementation_fingerprint": {
+            "type": "string",
+            "title": "Implementation Fingerprint"
+          },
+          "package_versions": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Package Versions"
+          },
+          "data": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Data"
+          },
+          "protocol": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Protocol"
+          },
+          "folds": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Folds"
+          },
+          "models": {
+            "items": {
+              "$ref": "#/components/schemas/LaboratoryModel"
+            },
+            "type": "array",
+            "maxItems": 6,
+            "minItems": 6,
+            "title": "Models"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Limitations"
+          }
+        },
+        "type": "object",
+        "required": [
+          "version",
+          "run_id",
+          "created_at",
+          "target_year",
+          "as_of_year",
+          "dataset_fingerprint",
+          "implementation_fingerprint",
+          "package_versions",
+          "data",
+          "protocol",
+          "folds",
+          "models",
+          "limitations"
+        ],
+        "title": "LaboratoryReport"
       },
       "ModelMetrics": {
         "properties": {

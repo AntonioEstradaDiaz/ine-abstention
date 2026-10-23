@@ -4,7 +4,7 @@ Dashboard y API para explorar participación y abstención electoral en México,
 y construir escenarios hipotéticos con datos oficiales del INE. El objetivo es apoyar la exploración
 territorial con evidencia y supuestos visibles; no recomendar intervenciones ni afirmar efectos causales.
 
-**Estado:** prototipo funcional, con backend de fases 1–7 y frontend de cuatro secciones.
+**Estado:** prototipo funcional, con backend de fases 1–7 y frontend de cinco secciones.
 La estimación futura disponible es estatal, para las elecciones intermedias de 2027.
 No es un producto oficial del INE ni está validado para decisiones operativas.
 
@@ -17,7 +17,7 @@ No es un producto oficial del INE ni está validado para decisiones operativas.
 | Modelos | Dos referencias históricas y cuatro candidatos; desarrollo temporal 2018/2021 y prueba final 2024. |
 | Riesgo | 32 predicciones estatales, tres categorías relativas, bandas empíricas y explicación del baseline. |
 | Simulador | Escenarios aritméticos persistidos, cambios de participación en puntos porcentuales y límites 0–100%. |
-| Dashboard | Mapa de riesgo, Tendencias, Predicciones y Escenarios; API real, búsqueda, CSV y diseño adaptable. |
+| Dashboard | Mapa, Tendencias, Predicciones, Escenarios y Análisis IA; API, búsqueda, exportación y diseño adaptable. |
 | Cartografía | Polígonos de los 32 estados del servicio oficial INEGI, con procedencia y checksum. Son referencia geoestadística. |
 
 El dashboard conserva el territorio al cambiar de sección. El mapa permite elegir estados y alternar
@@ -28,6 +28,28 @@ el backend, guarda el resultado y evita mostrar resultados anteriores como si co
 ![Dashboard territorial conectado al backend, con cartografía oficial INEGI](docs/screenshots/dashboard.png)
 
 [Ver el simulador](docs/screenshots/scenario.png) · [Ver la versión móvil](docs/screenshots/mobile.png)
+
+## Laboratorio de machine learning e IA
+
+La sección **Análisis IA** compara Ridge, Random Forest, XGBoost y LightGBM con dos referencias históricas. Los seis estimadores se entrenan con los agregados estatales 2009–2024: 192 observaciones y 128 ejemplos supervisados. Esta corrida usa la muestra CSV, sin desgloses demográficos; sus métricas no sustituyen las del experimento original con variables adicionales.
+
+- Desarrollo con elecciones completas 2018/2021; prueba reservada 2024. El entrenamiento de cada corte solo usa elecciones anteriores.
+- Pronósticos materializados para los 32 estados en 2027, bandas empíricas específicas de cada modelo y su importancia interna global cuando el algoritmo la ofrece.
+- Síntesis automática basada en tasas y errores medidos. No se usa un servicio generativo externo.
+- Escenarios locales de sensibilidad: trasladan el pronóstico ML y su banda por un cambio supuesto de participación; no reentrenan el estimador ni estiman efectos de intervenciones. Se invalidan si cambia el modelo, la entidad o el supuesto. Exportación CSV de pronósticos y JSON de escenarios.
+
+Para reproducir el entrenamiento desde la raíz:
+
+```powershell
+uv sync --group ml --group dev --locked
+uv run python scripts/train_web_ml.py
+```
+
+Los pesos, el protocolo y los errores por corte se conservan en `artifacts/models/<run_id>/` (ignorado por Git). El informe materializado se guarda en `data/samples/ml_laboratory.json` e incluye checksums, versiones de paquetes y trazabilidad de variables. La API sirve **GET /api/v1/ml/laboratory** sin cargar pesos, entrenar por petición o consultar la base de datos. El contenedor incluye solo el informe JSON.
+
+En `frontend/`, `npm run preview` permite abrir el laboratorio sin FastAPI. `npm run dev` consulta la API real mediante el proxy habitual. Se conserva la referencia `baseline_last` elegida en desarrollo; el mejor candidato ML puede explorarse sin promocionarlo a producción. Las bandas usan únicamente errores intermedios de 2021, un bloque de calibración con soporte limitado.
+
+Validación: `uv run pytest tests/unit tests/ml -q`, `npm run typecheck` y `npm run build` en el frontend.
 
 ## Cómo funciona
 

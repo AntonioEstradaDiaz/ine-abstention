@@ -8,6 +8,7 @@ import type {
   Source,
   Summary,
 } from "./types";
+import type { MLLaboratory } from "./ml-types";
 
 export class ApiError extends Error {
   constructor(
@@ -45,6 +46,8 @@ async function request<T>(
   return data as T;
 }
 export const api = {
+  laboratory: (signal?: AbortSignal) =>
+    request<MLLaboratory>("ml/laboratory", signal),
   elections: (signal?: AbortSignal) => request<Election[]>("elections", signal),
   predictions: (signal?: AbortSignal) =>
     request<Predictions>("predictions?target_year=2027&limit=100", signal),

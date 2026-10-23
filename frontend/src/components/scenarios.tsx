@@ -11,12 +11,14 @@ import { Note, RiskBadge, Status } from "./shared";
 export function Scenarios({
   prediction,
   forecast,
+  initialChange = 3,
   loading,
   error,
   retry,
 }: {
   prediction?: Prediction;
   forecast?: Forecast;
+  initialChange?: number;
   loading: boolean;
   error: Error | null;
   retry: () => void;
@@ -32,20 +34,23 @@ export function Scenarios({
     );
   return (
     <ScenarioForm
-      key={`${prediction.state_code}-${forecast.id}`}
+      key={`${prediction.state_code}-${forecast.id}-${initialChange}`}
       prediction={prediction}
       forecast={forecast}
+      initialChange={initialChange}
     />
   );
 }
 function ScenarioForm({
   prediction: p,
   forecast,
+  initialChange,
 }: {
   prediction: Prediction;
   forecast: Forecast;
+  initialChange: number;
 }) {
-  const [input, setInput] = useState("3");
+  const [input, setInput] = useState(String(initialChange));
   const change = input.trim() === "" ? NaN : Number(input);
   const valid = Number.isFinite(change) && change >= -100 && change <= 100;
   const mutation = useMutation({
@@ -168,14 +173,18 @@ function ScenarioForm({
               <h2>Base vs. escenario</h2>
               <p>
                 {result
-                  ? "Resultado calculado y guardado por la API"
+                  ? forecast.provenance.mode === "preview"
+                    ? "Resultado local · no se guarda"
+                    : "Resultado calculado y guardado por la API"
                   : "Ejecuta el escenario para comparar resultados"}
               </p>
             </div>
             {result && (
               <span className="saved-label">
                 <Check size={14} />
-                Guardado
+                {forecast.provenance.mode === "preview"
+                  ? "Calculado localmente"
+                  : "Guardado"}
               </span>
             )}
           </div>
@@ -248,7 +257,7 @@ function ScenarioForm({
                 <div className="scenario-placeholder">
                   {mutation.data
                     ? "Los parámetros cambiaron. Calcula de nuevo para actualizar el resultado."
-                    : "El resultado aparecerá aquí al consultar el backend."}
+                    : "El resultado aparecerá aquí al calcular el escenario."}
                 </div>
               )}
               {result && (
@@ -264,7 +273,9 @@ function ScenarioForm({
                     sin cambios.
                   </Note>
                   <p className="small muted simulation-id">
-                    Identificador reproducible
+                    {forecast.provenance.mode === "preview"
+                      ? "Escenario local · no guardado"
+                      : "Identificador reproducible"}
                     <br />
                     <code>{mutation.data!.id}</code>
                   </p>

@@ -1,0 +1,114 @@
+.dashboard-select-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  max-width: 100%;
+  min-width: 0;
+  text-align: left;
+  cursor: pointer;
+  border: 1px solid #e4eaf2;
+  border-radius: 9px;
+  background: #fff;
+  color: #21334e;
+  padding: 8px 11px;
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 1.4;
+  box-shadow: none;
+}
+.dashboard-select-trigger > span:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+.dashboard-select-chevron {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: #6c7d95;
+}
+.dashboard-select-trigger:hover {
+  border-color: #ef9bc8;
+  background: #fffafd;
+}
+.dashboard-select-trigger:focus-visible,
+.dashboard-select-trigger[data-state="open"] {
+  outline: 2px solid #ed008c;
+  outline-offset: 2px;
+}
+.dashboard-select-trigger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.dashboard-select-menu {
+  z-index: 10000;
+  max-height: min(360px, var(--radix-select-content-available-height));
+  min-width: var(--radix-select-trigger-width);
+  max-width: calc(100vw - 24px);
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid #f0dbe6;
+  border-radius: 12px;
+  box-shadow: 0 12px 36px #243e5826;
+  padding: 5px;
+  color: #21334e;
+  font-family: inherit;
+  animation: select-appear 0.12s ease-out;
+}
+.dashboard-select-option {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 38px;
+  padding: 9px 32px 9px 11px;
+  font-size: 12px;
+  line-height: 1.4;
+  border-radius: 7px;
+  outline: none;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+  user-select: none;
+}
+.dashboard-select-option[data-highlighted] {
+  background: #fce7f2;
+  color: #b80062;
+}
+.dashboard-select-option[data-state="checked"] {
+  background: #ed008c;
+  color: #fff;
+  font-weight: 600;
+}
+.dashboard-select-option[data-disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.dashboard-select-check {
+  position: absolute;
+  right: 10px;
+  display: flex;
+}
+.dashboard-select-scroll {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 22px;
+  color: #c00063;
+  background: #fff;
+}
+@keyframes select-appear {
+  from {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-select-menu {
+    animation: none;
+  }
+}

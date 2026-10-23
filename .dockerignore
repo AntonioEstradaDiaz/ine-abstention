@@ -11,6 +11,9 @@ tmp
 __pycache__
 .pytest_cache
 .ruff_cache
-data
+data/*
+!data/samples/
+data/samples/*
+!data/samples/ml_laboratory.json
 artifacts
 frontend

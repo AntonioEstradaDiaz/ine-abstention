@@ -1,0 +1,1169 @@
+/* Estilos originales de la cabecera del ZIP suministrado. */
+
+@font-face {
+  font-family: "Inter:Bold";
+  src: url("https://static.figma.com/font/Inter_1") format("woff2");
+  font-style: normal;
+  font-weight: 700;
+}
+
+@font-face {
+  font-family: "Inter:Regular";
+  src: url("https://static.figma.com/font/Inter_1") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: "Noto Sans Math:Regular";
+  src: url("https://static.figma.com/font/NotoSansMath-Regular_1")
+    format("woff2");
+  font-style: normal;
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: "Noto Sans Symbols2:Regular";
+  src: url("https://static.figma.com/font/NotoSansSymbols2-Regular_5")
+    format("woff2");
+  font-style: normal;
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: "Noto Sans Symbols:Bold";
+  src: url("https://static.figma.com/font/NotoSansSymbols-VF_2") format("woff2");
+  font-style: normal;
+  font-weight: 700;
+}
+
+@font-face {
+  font-family: "Noto Sans:Bold";
+  src: url("https://static.figma.com/font/NotoSans-VF_3") format("woff2");
+  font-style: normal;
+  font-weight: 700;
+}
+
+@font-face {
+  font-family: "Roboto:Black";
+  src: url("https://static.figma.com/font/Roboto_wdth_wght__3") format("woff2");
+  font-style: normal;
+  font-weight: 900;
+}
+
+@font-face {
+  font-family: "Roboto:Bold";
+  src: url("https://static.figma.com/font/Roboto_wdth_wght__3") format("woff2");
+  font-style: normal;
+  font-weight: 700;
+}
+
+@font-face {
+  font-family: "Roboto:Italic";
+  src: url("https://static.figma.com/font/Roboto-Italic_wdth_wght__3")
+    format("woff2");
+  font-style: italic;
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: "Roboto:Regular";
+  src: url("https://static.figma.com/font/Roboto_wdth_wght__3") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    min-height: 100%;
+  }
+
+  body {
+    background: #f5f7f9;
+    overflow-x: auto;
+  }
+}
+
+.dashboard-canvas {
+  min-width: 0;
+}
+
+.risk-gauge-value,
+.risk-gauge-label {
+  position: absolute;
+  z-index: 3;
+  text-align: center;
+}
+
+.risk-gauge-visual {
+  position: absolute;
+  inset: 0;
+}
+
+.risk-gauge-svg {
+  position: absolute;
+  top: 8px;
+  left: 7px;
+  width: 180px;
+  height: 112px;
+  overflow: visible;
+}
+
+.risk-gauge-track,
+.risk-gauge-progress {
+  fill: none;
+  stroke-width: 20;
+  stroke-linecap: round;
+}
+
+.risk-gauge-track {
+  stroke: #f6d9e8;
+}
+
+.risk-gauge-progress {
+  stroke: #e5007e;
+  stroke-dasharray: 82 100;
+}
+
+.risk-gauge-value {
+  top: 49px;
+  left: 35px;
+  width: 124px;
+  font-size: 36px;
+  line-height: 1;
+}
+
+.risk-gauge-label {
+  top: 87px;
+  left: 47px;
+  width: 100px;
+  font-size: 12px;
+  line-height: 14px;
+  letter-spacing: 0;
+}
+
+[data-name="Indicadores clave"] {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 12px;
+}
+
+[data-name="Indicadores clave"] > [data-name="Indicador electoral"] {
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr) 84px;
+  align-items: start;
+  gap: 16px;
+  width: 100%;
+  min-width: 0;
+  height: 110px;
+  overflow: hidden;
+  padding: 16px 14px 12px 22px;
+}
+
+[data-name="Indicador electoral"] > [data-name="Símbolo del indicador"] {
+  grid-column: 1;
+}
+
+[data-name="Indicador electoral"] > [data-name="Datos del indicador"] {
+  grid-column: 2;
+  width: 100%;
+  min-width: 0;
+}
+
+[data-name="Datos del indicador"] > p:first-child {
+  width: calc(100% + 94px);
+  max-width: none;
+  white-space: nowrap;
+}
+
+[data-name="Indicador electoral"] > [data-name="Evolución"] {
+  position: relative;
+  inset: auto;
+  grid-column: 3;
+  align-self: end;
+  width: 84px;
+  height: 57px;
+}
+
+[data-name="Escenarios de intervención"] {
+  align-self: start;
+  justify-self: end;
+  width: 100%;
+  max-width: 380px;
+  height: auto;
+  min-height: 262px;
+  overflow: visible;
+  box-shadow: 0 6px 18px rgb(13 23 47 / 6%);
+}
+
+[data-name="Escenarios de intervención"] > [data-name="Encabezado"] {
+  width: 100%;
+}
+
+[data-name="Escenarios de intervención"] [data-name="Título y subtítulo"] {
+  min-width: 0;
+  white-space: normal;
+}
+
+[data-name="Escenarios de intervención"] [data-name="Título y subtítulo"] p {
+  width: 100%;
+}
+
+[data-name="Tipo de estrategia"] {
+  min-height: 32px;
+}
+
+[data-name="Comparación de escenarios"] {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  overflow: visible;
+}
+
+[data-name="Comparación de escenarios"] > [data-name="Escenario"] {
+  width: 100%;
+  min-width: 0;
+}
+
+[data-name="Comparación de escenarios"] [data-name="Resultado"] {
+  gap: 6px;
+}
+
+[data-name="Comparar escenarios"] {
+  margin-top: auto;
+}
+
+[data-name="Sección"],
+[data-name="Opción territorial"],
+[data-name="Pestaña"],
+[data-name="Selector de proceso electoral"],
+[data-name="Notificaciones"],
+[data-name="Perfil"] {
+  cursor: pointer;
+}
+
+[data-name="Sección"],
+[data-name="Opción territorial"],
+[data-name="Pestaña"],
+button {
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    transform 160ms ease;
+}
+
+[data-name="Sección"]:hover,
+[data-name="Selector de proceso electoral"]:hover,
+[data-name="Notificaciones"]:hover,
+[data-name="Perfil"]:hover {
+  transform: translateY(-1px);
+}
+
+@media (min-width: 1181px) {
+  .dashboard-canvas {
+    min-width: 1440px;
+  }
+}
+
+@media (max-width: 1180px) {
+  body {
+    overflow-x: hidden;
+  }
+
+  [data-name="Navegación principal"] {
+    padding-inline: 20px;
+  }
+
+  [data-name="Navegación principal"] > [data-name="Secciones"] {
+    display: none;
+  }
+
+  [data-name="Panel electoral"] {
+    width: 100%;
+    max-width: 100%;
+    overflow: visible;
+    padding: 20px;
+  }
+
+  [data-name="Resumen electoral"],
+  [data-name="Encabezado y búsqueda"],
+  [data-name="Análisis territorial"],
+  [data-name="Indicadores y escenarios"] {
+    height: auto;
+    max-width: 100%;
+    overflow: visible;
+  }
+
+  [data-name="Encabezado y búsqueda"] {
+    flex-wrap: wrap;
+    gap: 14px;
+    padding-inline: 0;
+  }
+
+  [data-name="Título del panel"] {
+    width: 100%;
+  }
+
+  [data-name="Herramientas de búsqueda"] {
+    width: 100%;
+  }
+
+  [data-name="Buscar territorio"] {
+    flex: 1;
+    width: auto;
+  }
+
+  [data-name="Indicadores clave"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  [data-name="Indicadores clave"] > [data-name="Indicador electoral"] {
+    min-width: 0;
+  }
+
+  [data-name="Análisis territorial"] {
+    display: block;
+  }
+
+  [data-name="Mapa de riesgo de abstención"] {
+    display: none;
+  }
+
+  [data-name="Detalle del municipio"] {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    min-height: 436px;
+    overflow: visible;
+  }
+
+  [data-name="Municipio seleccionado"] {
+    height: auto;
+    min-height: 74px;
+    overflow: visible;
+    padding: 12px 16px;
+  }
+
+  [data-name="Territorio"] {
+    overflow: visible;
+    white-space: normal;
+  }
+
+  [data-name="Territorio"] > p:first-child {
+    max-width: 100%;
+    white-space: normal;
+    font-size: 18px;
+    line-height: 22px;
+  }
+
+  [data-name="Pestañas de detalle"] {
+    height: 45px;
+    justify-content: flex-start;
+    gap: 20px;
+    overflow-x: auto;
+    padding-inline: 20px;
+    scrollbar-width: none;
+  }
+
+  [data-name="Pestañas de detalle"]::-webkit-scrollbar {
+    display: none;
+  }
+
+  [data-name="Pestañas de detalle"] > [data-name="Pestaña"] {
+    height: 45px;
+    padding-inline: 0;
+  }
+
+  [data-name="Indicadores municipales"] {
+    display: grid;
+    grid-template-columns: 194px minmax(0, 1fr);
+    height: auto;
+    min-height: 166px;
+    overflow: visible;
+    padding: 12px 16px;
+  }
+
+  [data-name="Índice de riesgo"] {
+    justify-self: center;
+  }
+
+  [data-name="Principales factores de riesgo"] {
+    overflow: visible;
+    padding: 12px 24px 18px;
+  }
+
+  [data-name="Factor de riesgo"] {
+    display: grid;
+    grid-template-columns: 22px minmax(140px, 1fr) minmax(90px, 123px) 35px;
+    gap: 14px;
+    overflow: visible;
+  }
+
+  [data-name="Indicadores y escenarios"] {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  [data-name="Indicadores y escenarios"] > div {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  [data-name="Escenarios de intervención"] {
+    max-width: none;
+  }
+}
+
+@media (max-width: 640px) {
+  [data-name="Navegación principal"] {
+    height: 62px;
+    padding-inline: 14px;
+  }
+
+  [data-name="Proceso y perfil"] > [data-name="Selector de proceso electoral"],
+  [data-name="Proceso y perfil"] > [data-name="Notificaciones"] {
+    display: none;
+  }
+
+  [data-name="Panel electoral"] {
+    padding: 16px 12px 24px;
+  }
+
+  [data-name="Título del panel"] > p:first-child {
+    font-size: 27px;
+  }
+
+  [data-name="Herramientas de búsqueda"] {
+    gap: 8px;
+  }
+
+  [data-name="Filtros"] {
+    width: 96px;
+  }
+
+  [data-name="Indicadores clave"] > [data-name="Indicador electoral"] {
+    min-width: 0;
+  }
+
+  [data-name="Indicadores clave"] {
+    grid-template-columns: 1fr;
+  }
+
+  [data-name="Municipio seleccionado"] {
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr) auto;
+    gap: 14px;
+  }
+
+  [data-name="Municipio seleccionado"] > [data-name="Ubicación"] {
+    width: 48px;
+    height: 48px;
+  }
+
+  [data-name="Estado de riesgo"] {
+    align-self: center;
+  }
+
+  [data-name="Indicadores municipales"] {
+    grid-template-columns: 194px minmax(230px, 1fr);
+    overflow-x: auto;
+  }
+
+  [data-name="Principales factores de riesgo"] {
+    padding-inline: 20px;
+  }
+
+  [data-name="Factor de riesgo"] {
+    grid-template-columns: 22px minmax(125px, 1fr) minmax(72px, 123px) 35px;
+    gap: 10px;
+  }
+
+  [data-name="Indicadores y escenarios"] {
+    grid-template-columns: 1fr;
+  }
+
+  [data-name="Escenarios de intervención"] {
+    justify-self: stretch;
+  }
+}
+
+@media (max-width: 360px) {
+  [data-name="Escenarios de intervención"] {
+    padding-inline: 10px;
+  }
+
+  [data-name="Comparación de escenarios"] {
+    gap: 8px;
+  }
+
+  [data-name="Comparación de escenarios"] > [data-name="Escenario"] {
+    padding-inline: 9px;
+  }
+
+  [data-name="Comparación de escenarios"]
+    [data-name="Resultado"]
+    > p:last-child {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  [data-name="Detalle del municipio"] {
+    min-height: 0;
+  }
+
+  [data-name="Municipio seleccionado"] {
+    grid-template-columns: 34px minmax(0, 1fr) auto;
+    min-height: 54px;
+    gap: 9px;
+    padding: 8px 12px;
+  }
+
+  [data-name="Municipio seleccionado"] > [data-name="Ubicación"] {
+    width: 34px;
+    height: 34px;
+  }
+
+  [data-name="Municipio seleccionado"]
+    > [data-name="Ubicación"]
+    [data-name="map-pin"] {
+    width: 19px;
+    height: 19px;
+  }
+
+  [data-name="Territorio"] {
+    gap: 2px;
+  }
+
+  [data-name="Territorio"] > p:first-child {
+    font-size: 12px;
+    line-height: 15px;
+  }
+
+  [data-name="Territorio"] > p:last-child {
+    font-size: 10px;
+    line-height: 13px;
+  }
+
+  [data-name="Estado de riesgo"] {
+    grid-column: auto;
+    justify-self: end;
+    margin-left: 0;
+    gap: 6px;
+    padding: 8px 10px;
+  }
+
+  [data-name="Estado de riesgo"] > div {
+    width: 12px;
+    height: 12px;
+  }
+
+  [data-name="Estado de riesgo"] > p {
+    font-size: 10px;
+  }
+
+  [data-name="Pestañas de detalle"] {
+    height: 36px;
+    gap: 28px;
+    padding-inline: 16px;
+  }
+
+  [data-name="Pestañas de detalle"] > [data-name="Pestaña"] {
+    height: 36px;
+  }
+
+  [data-name="Pestañas de detalle"] p {
+    font-size: 10px;
+  }
+
+  [data-name="Indicadores municipales"] {
+    grid-template-columns: minmax(132px, 42%) minmax(0, 1fr);
+    gap: 8px;
+    min-height: 130px;
+    overflow: hidden;
+    padding: 10px 12px 6px;
+  }
+
+  [data-name="Índice de riesgo"] {
+    justify-self: start;
+    transform: scale(0.76);
+    transform-origin: top left;
+  }
+
+  [data-name="Participación y modelo"] {
+    width: 100%;
+    gap: 5px;
+  }
+
+  [data-name="Resultados"] {
+    gap: 6px;
+    overflow: visible;
+    white-space: normal;
+  }
+
+  [data-name="Resultados"] > div {
+    height: 68px;
+    gap: 3px;
+    overflow: hidden;
+    padding: 8px;
+    white-space: normal;
+  }
+
+  [data-name="Resultados"] > div > p:first-child,
+  [data-name="Resultados"] > div > p:last-child {
+    font-size: 9px;
+    white-space: normal;
+  }
+
+  [data-name="Resultados"] > div > p:nth-child(2) {
+    font-size: 16px;
+  }
+
+  [data-name="Confianza del modelo"] {
+    height: 49px;
+    gap: 3px;
+    padding: 6px 8px;
+  }
+
+  [data-name="Confianza del modelo"] > p {
+    font-size: 9px;
+  }
+
+  [data-name="Confianza del modelo"] [data-name="Resultado"] > p {
+    font-size: 16px;
+  }
+
+  [data-name="Confianza del modelo"] [data-name="Confianza"] {
+    width: 91%;
+  }
+
+  [data-name="Principales factores de riesgo"] {
+    gap: 7px;
+    padding: 8px 18px 14px;
+  }
+
+  [data-name="Principales factores de riesgo"] > p {
+    font-size: 12px;
+  }
+
+  [data-name="Factor de riesgo"] {
+    grid-template-columns: 22px minmax(0, 1fr) minmax(64px, 90px) 30px;
+    gap: 8px;
+  }
+
+  [data-name="Factor de riesgo"] > p {
+    font-size: 10px;
+  }
+
+  [data-name="Factor de riesgo"] > [data-name="Magnitud"] {
+    width: 100%;
+    height: 8px;
+  }
+
+  [data-name="Factor de riesgo"] > [data-name="Magnitud"] > div {
+    height: 8px;
+  }
+
+  [data-name="Tendencia de participación"] [data-name="Guía horizontal"] {
+    width: 100%;
+  }
+
+  [data-name="Entidades con mayor riesgo"],
+  [data-name="Tendencia de participación"],
+  [data-name="Distribución nacional del riesgo"],
+  [data-name="Escenarios de intervención"] {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  [aria-live="polite"] {
+    right: 12px;
+    left: 12px;
+    max-width: none;
+  }
+}
+
+@media (max-width: 360px) {
+  [data-name="Indicadores clave"] > [data-name="Indicador electoral"] {
+    grid-template-columns: 52px minmax(0, 1fr) 72px;
+    gap: 10px;
+    padding-inline: 14px 12px;
+  }
+
+  [data-name="Indicador electoral"] > [data-name="Símbolo del indicador"] {
+    width: 52px;
+    height: 52px;
+  }
+
+  [data-name="Indicador electoral"] > [data-name="Evolución"] {
+    width: 72px;
+  }
+
+  [data-name="Datos del indicador"] > p:first-child {
+    width: calc(100% + 78px);
+    font-size: 12px;
+  }
+
+  [data-name="Datos del indicador"] [data-name="Variación"] p {
+    font-size: 12px;
+  }
+
+  [data-name="Municipio seleccionado"] {
+    grid-template-columns: 30px minmax(0, 1fr) auto;
+    gap: 7px;
+    padding-inline: 10px;
+  }
+
+  [data-name="Municipio seleccionado"] > [data-name="Ubicación"] {
+    width: 30px;
+    height: 30px;
+  }
+
+  [data-name="Territorio"] > p:first-child {
+    font-size: 11px;
+  }
+
+  [data-name="Estado de riesgo"] {
+    gap: 4px;
+    padding: 7px 8px;
+  }
+
+  [data-name="Estado de riesgo"] > p {
+    font-size: 9px;
+  }
+
+  [data-name="Pestañas de detalle"] {
+    justify-content: space-between;
+    gap: 10px;
+    padding-inline: 10px;
+  }
+
+  [data-name="Pestañas de detalle"] p {
+    font-size: 9px;
+  }
+
+  [data-name="Indicadores municipales"] {
+    grid-template-columns: 126px minmax(0, 1fr);
+    padding-inline: 8px;
+  }
+
+  [data-name="Índice de riesgo"] {
+    transform: scale(0.65);
+  }
+
+  [data-name="Resultados"] > div {
+    height: 72px;
+    padding-inline: 6px;
+  }
+
+  [data-node-id="10:13147"] > span:last-child {
+    display: none;
+  }
+
+  [data-name="Principales factores de riesgo"] {
+    padding-inline: 12px;
+  }
+
+  [data-name="Factor de riesgo"] {
+    grid-template-columns: 20px minmax(0, 1fr) minmax(54px, 72px) 25px;
+    gap: 6px;
+  }
+
+  [data-name="Factor de riesgo"] > p {
+    font-size: 9px;
+  }
+}
+/* Mantener la cabecera del archivo suministrado aislada del tema de la aplicación. */
+.design-top {
+  width: 100%;
+  background: #f5f7f9;
+  font-family: "Roboto:Regular", Roboto, Arial, sans-serif;
+}
+.design-top p {
+  margin: 0;
+  letter-spacing: normal;
+}
+.design-top [hidden],
+.global-filters[hidden] {
+  display: none !important;
+}
+.design-top button {
+  font: inherit;
+  text-align: inherit;
+}
+.design-top [data-name="Sección"] {
+  flex-shrink: 0;
+}
+.design-top
+  [data-name="Selector de proceso electoral"]
+  :is(select, .dashboard-select-trigger) {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  min-height: 0;
+  width: 100%;
+  font-size: 12px;
+  font-family: "Roboto:Regular", Arial, sans-serif;
+}
+.design-top [data-name="Selector de proceso electoral"] p {
+  min-width: 0;
+  flex: 1;
+}
+.design-top [data-name="Perfil"],
+.design-top [data-name="Notificaciones"] {
+  cursor: default;
+}
+.design-top [data-name="Indicador electoral"] p {
+  line-height: normal;
+}
+.design-data-note {
+  font-size: 11px;
+  color: #596d8d;
+  margin: 0 0 12px;
+  line-height: 1.5;
+}
+.observed-indicators {
+  margin-bottom: 18px;
+}
+.observed-indicators > summary {
+  font-size: 12px;
+  color: #596d8d;
+  cursor: pointer;
+  padding: 10px 0;
+}
+.observed-indicators .kpi-grid {
+  margin-top: 10px;
+}
+.design-top [data-name="Panel electoral"] {
+  padding-bottom: 0;
+}
+.design-top [data-name="Resumen electoral"] {
+  height: auto;
+  min-height: 182px;
+}
+.design-top [data-name="Navegación principal"] {
+  border-bottom: 1px solid #f2f3f5;
+}
+.design-top [data-name="Sección"] p {
+  line-height: normal;
+}
+.design-top button:focus-visible {
+  outline: 2px solid #e5007e;
+  outline-offset: 3px;
+}
+@media (max-width: 1180px) {
+  .design-top [data-name="Navegación principal"] {
+    height: auto;
+    min-height: 68px;
+  }
+  .design-top [data-name="Resumen electoral"] {
+    min-height: 0;
+  }
+}
+@media (max-width: 640px) {
+  .design-top [data-name="Encabezado y búsqueda"] {
+    height: auto;
+  }
+  .design-top [data-name="Navegación principal"] {
+    overflow: visible;
+  }
+  .design-top [data-name="Proceso y perfil"] {
+    flex-shrink: 1;
+    min-width: 0;
+  }
+  .design-top [data-name="Selector de proceso electoral"] {
+    min-width: 0;
+  }
+  .design-top [data-name="Título del panel"] p:first-child {
+    font-size: 25px;
+  }
+  .design-top [data-name="Resumen electoral"] {
+    gap: 14px;
+  }
+}
+.design-top input {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none;
+  padding: 0;
+  min-height: 0;
+  border-radius: 0;
+}
+.design-top
+  [data-name="Selector de proceso electoral"]
+  :is(select, .dashboard-select-trigger) {
+  appearance: none;
+}
+.design-top [data-name="Buscar territorio"] {
+  background: #fff;
+}
+.design-top [data-name="Filtros"] {
+  text-align: center;
+}
+.design-top [data-name="Sección"][aria-current="page"] {
+  background: #fce7f2;
+  border-bottom: 3px solid #e5007e;
+}
+.design-top [data-name="Sección"]:not([aria-current="page"]) {
+  background: #fff;
+  border-bottom: 0;
+}
+.design-top [data-name="Sección"][aria-current="page"] p {
+  color: #e5007e;
+}
+.design-top [data-name="Sección"]:not([aria-current="page"]) p {
+  color: #101016;
+}
+
+/* Equal metric cards: title, value, reference and change use shared rows. */
+.design-top [data-name="Indicadores clave"] {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 12px;
+  width: 100%;
+}
+.design-top
+  [data-name="Indicadores clave"]
+  > [data-name="Indicador electoral"] {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr);
+  align-items: start;
+  gap: 14px;
+  height: auto;
+  min-height: 176px;
+  min-width: 0;
+  padding: 16px;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+.design-top
+  [data-name="Indicador electoral"]
+  > [data-name="Símbolo del indicador"] {
+  width: 48px;
+  height: 48px;
+  margin: 0;
+  border-radius: 14px;
+}
+.design-top
+  [data-name="Indicador electoral"]
+  > [data-name="Datos del indicador"] {
+  display: grid;
+  grid-template-rows: 48px 30px 18px 22px;
+  gap: 4px;
+  width: 100%;
+  height: auto;
+  min-width: 0;
+  align-items: center;
+}
+.design-top [data-name="Datos del indicador"] > p {
+  position: static;
+  inset: auto;
+  width: auto;
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: normal;
+  margin: 0;
+}
+.design-top [data-name="Datos del indicador"] > p:first-child {
+  align-self: start;
+  font-size: 13px;
+  line-height: 16px;
+  font-weight: 400;
+}
+.design-top [data-name="Datos del indicador"] > p:nth-child(2) {
+  font-size: 25px;
+  line-height: 30px;
+  font-weight: 700;
+  padding-right: 54px;
+  white-space: nowrap;
+}
+.design-top [data-name="Datos del indicador"] > p:nth-child(3) {
+  font-size: 12px;
+  line-height: 18px;
+  padding-right: 54px;
+}
+.design-top [data-name="Datos del indicador"] > [data-name="Variación"] {
+  position: static;
+  inset: auto;
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  overflow: visible;
+  min-width: 0;
+  width: 100%;
+  height: auto;
+}
+.design-top [data-name="Datos del indicador"] > [data-name="Variación"] > p {
+  position: static;
+  font-size: 12px;
+  line-height: 18px;
+  white-space: normal;
+  min-width: 0;
+  flex-shrink: 1;
+  overflow-wrap: break-word;
+}
+.design-top [data-name="Indicador electoral"] > [data-name="Evolución"] {
+  position: absolute;
+  right: 16px;
+  bottom: 46px;
+  width: 48px;
+  height: 36px;
+  opacity: 0.85;
+  pointer-events: none;
+}
+@media (max-width: 1199px) {
+  .design-top [data-name="Indicadores clave"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 600px) {
+  .design-top [data-name="Indicadores clave"] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .design-top
+    [data-name="Indicadores clave"]
+    > [data-name="Indicador electoral"] {
+    min-height: 176px;
+  }
+}
+
+.design-top [data-name="Indicador electoral"] > [data-name="Evolución"] {
+  gap: 2px;
+}
+.design-top [data-name="Evolución"] > [data-name="Barra de tendencia"] {
+  flex: 1;
+  min-width: 0;
+  width: auto;
+  max-height: 100%;
+}
+
+/* Compact primary metrics, with less space between title and values. */
+.design-top
+  [data-name="Indicadores clave"]
+  > [data-name="Indicador electoral"] {
+  min-height: 132px;
+  padding: 14px;
+  grid-template-columns: 44px minmax(0, 1fr);
+  gap: 12px;
+}
+.design-top
+  [data-name="Indicador electoral"]
+  > [data-name="Símbolo del indicador"] {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+}
+.design-top
+  [data-name="Indicador electoral"]
+  > [data-name="Datos del indicador"] {
+  grid-template-rows: 32px 28px 16px 18px;
+  gap: 2px;
+}
+.design-top [data-name="Datos del indicador"] > p:nth-child(2) {
+  font-size: 24px;
+  line-height: 28px;
+}
+.design-top [data-name="Datos del indicador"] > p:nth-child(3) {
+  line-height: 16px;
+}
+.design-top [data-name="Indicador electoral"] > [data-name="Evolución"] {
+  right: 14px;
+  bottom: 34px;
+  width: 44px;
+  height: 30px;
+}
+
+/* Keep search and filters inside the same horizontal margins as the cards. */
+.design-top [data-name="Encabezado y búsqueda"] {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 480px);
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  height: auto;
+  min-height: 57px;
+  padding-inline: 0;
+  box-sizing: border-box;
+}
+.design-top [data-name="Título del panel"] {
+  width: auto;
+  min-width: 0;
+  max-width: 100%;
+  flex-shrink: 1;
+}
+.design-top [data-name="Título del panel"] > p {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+.design-top [data-name="Herramientas de búsqueda"] {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  overflow: visible;
+  box-sizing: border-box;
+}
+.design-top [data-name="Buscar territorio"] {
+  flex: 1 1 0;
+  width: auto;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.design-top [data-name="Filtros"] {
+  flex: 0 0 96px;
+  width: 96px;
+  min-width: 0;
+  box-sizing: border-box;
+}
+@media (max-width: 1100px) {
+  .design-top [data-name="Encabezado y búsqueda"] {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+  }
+}
+@media (max-width: 480px) {
+  .design-top [data-name="Herramientas de búsqueda"] {
+    gap: 8px;
+  }
+  .design-top [data-name="Filtros"] {
+    flex-basis: 84px;
+    width: 84px;
+  }
+  .design-top [data-name="Buscar territorio"] {
+    padding-inline: 10px;
+    gap: 8px;
+  }
+}
+
+.design-top [data-name="Instituto Nacional Electoral"] {
+  width: 185px;
+  min-width: 0;
+  overflow: visible;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+.design-top .ine-brand-logo {
+  display: block;
+  width: 175px;
+  height: auto;
+  max-width: 100%;
+  object-fit: contain;
+}
+@media (max-width: 640px) {
+  .design-top [data-name="Instituto Nacional Electoral"] {
+    width: 145px;
+  }
+  .design-top .ine-brand-logo {
+    width: 145px;
+  }
+}

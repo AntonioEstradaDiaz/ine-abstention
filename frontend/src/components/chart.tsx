@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef } from "react";
 import * as echarts from "echarts/core";
-import { LineChart, BarChart } from "echarts/charts";
+import { LineChart, BarChart, PieChart } from "echarts/charts";
 import {
   GridComponent,
   TooltipComponent,
@@ -15,6 +15,7 @@ import type { EChartsCoreOption } from "echarts/core";
 echarts.use([
   LineChart,
   BarChart,
+  PieChart,
   GridComponent,
   TooltipComponent,
   LegendComponent,
@@ -41,9 +42,15 @@ export function Chart({
     chart.setOption({
       animation: !reduced,
       animationDuration: 250,
-      textStyle: { fontFamily: "inherit", color: "#A7B5C6" },
+      textStyle: { fontFamily: "inherit", color: "#596D8D" },
       aria: { enabled: true },
       ...option,
+      tooltip: {
+        ...(option.tooltip as object),
+        confine: true,
+        extraCssText:
+          "max-width:100%;white-space:normal;overflow-wrap:anywhere;box-sizing:border-box;border-radius:9px;box-shadow:0 4px 16px #243e581a;",
+      },
     });
     const observer = new ResizeObserver(() => chart.resize());
     observer.observe(ref.current);
@@ -61,13 +68,13 @@ export function Chart({
 export const chartAxis = {
   axisLine: { show: false },
   axisTick: { show: false },
-  axisLabel: { color: "#A7B5C6", fontSize: 11 },
-  splitLine: { lineStyle: { color: "#253247", type: "dashed" } },
+  axisLabel: { color: "#596D8D", fontSize: 11 },
+  splitLine: { lineStyle: { color: "#E3E8EF", type: "dashed" } },
 };
 export const chartTooltip = {
   trigger: "axis",
-  backgroundColor: "#172535",
-  borderColor: "#435269",
-  textStyle: { color: "#F1F5F9", fontSize: 12 },
+  backgroundColor: "#FFFFFF",
+  borderColor: "#DCE2EB",
+  textStyle: { color: "#0D172F", fontSize: 12 },
   confine: true,
 };

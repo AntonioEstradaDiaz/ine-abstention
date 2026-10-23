@@ -1,4 +1,21 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
+
+async function chooseTerritory(page: Page, code: string) {
+  await page
+    .getByRole("button", { name: "Filtros", exact: true })
+    .isVisible()
+    .then(async (visible) => {
+      await page
+        .getByRole("button", {
+          name: visible ? "Filtros" : "Cambiar territorio",
+          exact: true,
+        })
+        .click();
+    });
+  await page
+    .getByLabel("Territorio seleccionado", { exact: true })
+    .selectOption(code);
+}
 
 test("dashboard uses live backend data, maps and historical periods", async ({
   page,
@@ -14,7 +31,7 @@ test("dashboard uses live backend data, maps and historical periods", async ({
   expect(predictions.items).toHaveLength(32);
   await page.goto("/");
   await expect(
-    page.getByRole("heading", { name: "Panorama territorial" }),
+    page.getByRole("heading", { name: "Riesgo de Abstención Electoral" }),
   ).toBeVisible();
   await expect(
     page.getByText("Backend conectado", { exact: true }),
@@ -28,6 +45,11 @@ test("dashboard uses live backend data, maps and historical periods", async ({
   await expect(
     page.getByText("Mapa no disponible.", { exact: false }),
   ).toHaveCount(0);
+  // Las coordenadas de la prueba corresponden a la vista plana, sin perspectiva.
+  await page.getByRole("button", { name: "2D", exact: true }).click();
+  await expect(
+    page.locator('[data-map-mode="2d"][data-camera-moving="false"]'),
+  ).toBeVisible();
   // Project an interior point of Baja California using the map's initial Mercator fit.
   const canvas = page.locator(".maplibregl-canvas");
   const box = (await canvas.boundingBox())!;
@@ -47,37 +69,40 @@ test("dashboard uses live backend data, maps and historical periods", async ({
       y: box.height / 2 + (mercatorY(30.5) - (top + bottom) / 2) * scale,
     },
   });
-  await expect(
-    page.getByLabel("Territorio seleccionado", { exact: true }),
-  ).toHaveValue("02");
+  await expect(page.locator(".territory-metrics")).toHaveAttribute(
+    "data-territory-code",
+    "02",
+  );
   await expect(
     page.getByRole("button", { name: "Acercar", exact: true }),
   ).toBeVisible();
-  await page
-    .getByLabel("Territorio seleccionado", { exact: true })
-    .selectOption("02");
+  await chooseTerritory(page, "02");
   await expect(page.locator(".territory-detail h2")).toHaveText(
     "Baja California",
   );
   const selected = predictions.items.find(
     (p: { state_code: string }) => p.state_code === "02",
   );
-  await expect(page.locator(".detail-rate > strong")).toHaveText(
-    `${(selected.predicted * 100).toFixed(1)}%`,
-  );
+  await expect(
+    page.locator(".territory-gauge > .detail-rate-value"),
+  ).toHaveText(`${(selected.predicted * 100).toFixed(1)}%`);
   await page.getByRole("button", { name: "Histórico", exact: true }).click();
   await page.getByLabel("Año histórico", { exact: true }).selectOption("2024");
   await expect(
     page.getByRole("heading", { name: "Abstención observada · 2024" }),
   ).toBeVisible();
-  const national = await (
+  const observed = await (
     await request.get(
-      "http://127.0.0.1:8001/api/v1/statistics/summary?year=2024",
+      "http://127.0.0.1:8001/api/v1/statistics/territories?year=2024&territory_type=state&limit=100",
     )
   ).json();
+  const observedState = observed.items.find(
+    (r: { state_code?: string; official_code: string }) =>
+      (r.state_code || r.official_code) === "02",
+  );
   await expect(
-    page.locator(".kpi").first().locator(":scope > strong"),
-  ).toHaveText(`${(national.items[0].abstention_rate * 100).toFixed(1)}%`);
+    page.locator(".territory-gauge > .detail-rate-value"),
+  ).toHaveText(`${(observedState.abstention_rate * 100).toFixed(1)}%`);
   await page.getByLabel("Buscar estado en la tabla").fill("Baja");
   await expect(page.locator("tbody tr")).toHaveCount(2);
   const download = page.waitForEvent("download");
@@ -97,10 +122,10 @@ test("trends compare only matching elections and retain territorial selection", 
   await expect(
     page.getByText("Backend conectado", { exact: true }),
   ).toBeVisible();
+  await chooseTerritory(page, "02");
   await page
-    .getByLabel("Territorio seleccionado", { exact: true })
-    .selectOption("02");
-  await page.getByRole("button", { name: "Tendencias", exact: true }).click();
+    .getByRole("button", { name: "Comparar históricos", exact: true })
+    .click();
   await expect(page.locator("tbody tr")).toHaveCount(3);
   await expect(page.locator("tbody")).toContainText("2021");
   await expect(page.locator("tbody")).not.toContainText("2024");
@@ -129,9 +154,10 @@ test("trends compare only matching elections and retain territorial selection", 
     fullPage: true,
   });
   await page.getByRole("button", { name: "Predicciones", exact: true }).click();
-  await expect(
-    page.getByLabel("Territorio seleccionado", { exact: true }),
-  ).toHaveValue("02");
+  await expect(page.locator(".territory-metrics")).toHaveAttribute(
+    "data-territory-code",
+    "02",
+  );
   await expect(page.locator(".forecast-card h2")).toHaveText("BAJA CALIFORNIA");
   await expect(
     page.getByText("MAE prueba 2024", { exact: true }),
@@ -211,9 +237,7 @@ test("simulator persists real API results, clears stale outputs, clips and reset
   await expect(
     page.getByRole("button", { name: "Calcular escenario", exact: true }),
   ).toBeDisabled();
-  await page
-    .getByLabel("Territorio seleccionado", { exact: true })
-    .selectOption("31");
+  await chooseTerritory(page, "31");
   await expect(
     page.getByLabel("Cambio hipotético en participación", { exact: true }),
   ).toHaveValue("3");
@@ -236,8 +260,10 @@ test("offline and empty states never substitute invented values", async ({
     page.getByText("Backend sin conexión", { exact: true }),
   ).toBeVisible();
   await expect(
-    page.locator(".kpi").nth(1).locator(":scope > strong"),
-  ).toHaveText("—");
+    page
+      .locator(".territory-metrics")
+      .getByRole("heading", { name: "Selecciona un estado", exact: true }),
+  ).toBeVisible();
   await expect(
     page.getByRole("button", { name: "Reintentar", exact: true }).first(),
   ).toBeVisible();

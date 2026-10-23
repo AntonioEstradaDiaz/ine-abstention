@@ -1,0 +1,15 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="84" height="57" viewBox="0 0 84 57" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Evoluci&#195;&#179;n" clip-path="url(#clip0_0_584)">
+<path id="&#195;&#129;rea de tendencia" d="M0 54.8667C16 35.6667 20 27.1333 33 30.3333C46 35.6667 50 41 61 29.2667L84 9V57H0V54.8667Z" fill="url(#paint0_linear_0_584)"/>
+<path id="Courbe de tendance" d="M0 57C16 36.907 20 27.9767 33 31.3256C46 36.907 50 42.4884 61 30.2093L84 9" stroke-width="1.4" stroke="#E5007E"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_0_584" x1="0" y1="9" x2="0" y2="57" gradientUnits="userSpaceOnUse">
+<stop stop-color="#F9B0D6"/>
+<stop offset="1" stop-color="#FDF2F8"/>
+</linearGradient>
+<clipPath id="clip0_0_584">
+<rect width="84" height="57" fill="white"/>
+</clipPath>
+</defs>
+</svg>

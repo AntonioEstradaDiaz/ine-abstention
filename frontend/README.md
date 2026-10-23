@@ -1,7 +1,39 @@
 # Dashboard Pulso electoral
 
-Frontend del prototipo INE Abstention. Cuatro secciones conectadas a FastAPI:
+## Actualización visual del dashboard
 
+Adaptación de la propuesta `Riesgo De Abstención Electoral.zip`: tema claro con acento magenta,
+navegación superior, cuatro indicadores y mapa 3D con detalle territorial al costado. A 850 px el
+detalle pasa debajo del mapa; en teléfonos los indicadores se organizan en dos columnas y la
+navegación y las tablas tienen desplazamiento propio. La página conserva sus cinco secciones.
+
+El resumen incorpora ranking estatal seleccionable, tendencia de participación del territorio
+(solo elecciones intermedias), distribución de las categorías y acceso al simulador. Consume
+los mismos contratos de la API y el modo de vista previa explícito. La cabecera reproduce el JSX,
+los estilos y 19 SVG originales del ZIP, incluidos los valores ilustrativos de sus cuatro tarjetas;
+la metodología y el pie de página identifican esos ejemplos del diseño.
+No se atribuyen esas cifras al modelo ni se inventan efectos de intervenciones. Los niveles
+territoriales sin homologación siguen deshabilitados. El tema de gráficas también se adaptó a
+las superficies claras. La captura temporal de Figma se retiró del layout de la web.
+
+El panel derecho sigue el territorio seleccionado en el mapa o en los controles. Incluye
+Resumen, Histórico, Factores y Recomendaciones con navegación de teclado. El medidor representa
+abstención (observada o estimada según la vista); participación y conteos corresponden al año
+histórico elegido. Las variaciones comparan elecciones del mismo tipo. La incertidumbre se
+expresa como banda, no como una confianza inventada. Los factores muestran contexto disponible
+y aclaran qué variables no están integradas. El nivel disponible es estatal: no se presentan
+datos municipales como si fueran del estado ni viceversa.
+
+La fila inferior reproduce las cuatro tarjetas de la propuesta: ranking con barras, comparación
+histórica de tres entidades y el nacional ponderado, anillo de distribución y comparación de
+escenarios. Conserva las tres categorías estatales disponibles, sin inventar municipios o una
+categoría crítica. La tendencia separa intermedias y presidenciales. El cambio aritmético elegido
+se transfiere al simulador completo. La franja de vista previa, el bloque territorial permanente,
+la nota superior y el desplegable de indicadores calculados se eliminaron; Filtros abre un diálogo.
+
+Frontend del prototipo INE Abstention. Cinco secciones conectadas a FastAPI:
+
+- **Análisis IA:** modelos entrenados, evaluación temporal, explicaciones de variables y escenarios locales sobre los pronósticos.
 - **Mapa de riesgo:** coropleta estatal real, selector territorial, filtros de riesgo, referencia histórica
   por elección, detalle, búsqueda y exportación CSV de las filas visibles.
 - **Tendencias:** participación/abstención de hasta tres entidades; elecciones intermedias y presidenciales
@@ -106,3 +138,31 @@ cobertura del 90%. El escenario modifica una identidad aritmética, no el efecto
 La API usa estado y pronóstico estatal 2027. Niveles municipales/distritales/seccionales están deshabilitados
 con explicación. El frontend no añade nuevas migraciones, modifica modelos ni consulta directamente Supabase.
 Pendientes de producto y producción: [hoja de ruta](../docs/project-status.md).
+
+## Vista previa sin base de datos
+
+Ejecuta `npm ci` y `npm run preview` en `frontend/`. Abre http://127.0.0.1:3000.
+El modo usa los CSV de `data/samples/` empaquetados en `src/lib/preview-data.json`; el banner identifica la copia local.
+Mapa, búsqueda, CSV, tendencias, predicciones y cálculo aritmético de escenarios funcionan sin FastAPI. Los escenarios locales no se guardan.
+La selección de vista previa es explícita mediante `PULSO_PREVIEW=1`, solo en el servidor. `npm run dev` mantiene el proxy real y sus errores de conexión; no hay fallback automático.
+Para regenerar la copia, desde la raíz ejecuta `python scripts/build_web_preview.py`. El script verifica bandas y categorías contra la calibración del backend. Los identificadores `preview-*` no son corridas persistidas. La fecha de la copia identifica el empaquetado, no el entrenamiento original.
+
+## Análisis IA
+
+Nueva sección con los seis estimadores entrenados del laboratorio: comparación temporal, pronóstico de la entidad seleccionada, síntesis automática basada en datos e importancia interna de variables. Los escenarios sobre cada pronóstico se calculan localmente y no se guardan; se pueden exportar junto con sus supuestos y la corrida utilizada.
+
+El informe procede de `data/samples/ml_laboratory.json` y se regenera desde la raíz con `uv run python scripts/train_web_ml.py` tras instalar el grupo `ml`. El modo conectado consulta `/api/v1/ml/laboratory`; la vista previa sirve la misma corrida materializada. Los modelos no se entrenan desde el navegador ni requieren claves de un proveedor de IA.
+
+## Mapa 3D
+
+El mapa abre con perspectiva y polígonos estatales extruidos. La altura es proporcional a la tasa de abstención (escala visual exagerada, no relieve terrestre); el color conserva el riesgo relativo. Los controles 2D/3D, giro, brújula y encuadre de todo México no cambian datos, selección ni filtros. Los históricos usan la tasa observada del año seleccionado.
+
+La representación usa la geometría INEGI existente y MapLibre, sin proveedores, claves o descargas cartográficas adicionales. Solo se actualizan los 32 estados de entidades al cambiar datos. Las transiciones de cámara respetan la preferencia de movimiento reducido. El selector y la tabla siguen disponibles como alternativa al mapa.
+
+## Composición del mapa electoral
+
+El mapa ocupa el ancho completo y usa la referencia visual aportada: tonos verde/amarillo/coral, volumen sombreado, tarjeta del estado seleccionado y leyenda de color y altura. El contorno blanco y el conector de la tarjeta se proyectan a la misma elevación que el estado mediante una capa Mercator personalizada de MapLibre; no son una imagen superpuesta.
+
+La vista ampliada incluye los controles y la leyenda, permite salir con Escape y mantiene el foco de teclado dentro del mapa. El detalle completo de la entidad se conserva en un panel desplegable debajo. La tarjeta muestra datos reales de la aplicación, sin copiar los porcentajes ilustrativos de la referencia.
+
+El mapa principal comparte altura con el panel territorial en escritorio y se apila en móvil. La leyenda y los controles están integrados en el mapa; la altura solo se muestra en 3D. Crítico (desde 65% de abstención estimada) es una referencia visual explícita, no una cuarta categoría del modelo. La tabla estatal se retiró de la pantalla principal; la selección sigue disponible en Filtros y la exportación en Reportes.
