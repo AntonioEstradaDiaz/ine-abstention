@@ -13,25 +13,6 @@
 .analysis-mode .page-footer {
   display: none;
 }
-.analysis-mode .design-top [data-name="Navegación principal"] {
-  height: 62px;
-  min-height: 62px;
-  padding-inline: 40px;
-  box-shadow: 0 3px 14px #21375805;
-}
-.analysis-mode .design-top [data-name="Sección"] > div {
-  display: none;
-}
-.analysis-mode .design-top [data-name="Sección"] p {
-  font-size: 14px;
-}
-.analysis-mode .design-top [data-name="Sección"] {
-  padding-inline: 21px;
-  height: 46px;
-}
-.analysis-mode .ine-brand-logo {
-  width: 145px;
-}
 .analysis-screen {
   font-family: Arial, Helvetica, sans-serif;
   color: #07143c;
@@ -202,6 +183,7 @@
   white-space: nowrap;
 }
 .analysis-kpi strong {
+  font-family: "Roboto:Regular", Roboto, Arial, sans-serif;
   font-size: 32px;
   line-height: 1.05;
   color: #06143d;
@@ -750,10 +732,6 @@
   .analysis-mode main {
     padding: 18px 12px 10px;
   }
-  .analysis-mode .design-top [data-name="Navegación principal"] {
-    padding-inline: 12px;
-    height: auto;
-  }
   .analysis-heading {
     flex-wrap: wrap;
     gap: 12px;
@@ -865,31 +843,6 @@
   }
 }
 
-.analysis-mode .design-top [data-name="Navegación principal"] {
-  display: grid;
-  grid-template-columns: 185px minmax(0, 1fr) auto;
-  gap: 26px;
-}
-.analysis-mode .design-top [data-name="Secciones"] {
-  justify-self: start;
-  gap: 12px;
-  min-width: 0;
-}
-.analysis-mode .design-top [data-name="Selector de proceso electoral"] {
-  width: 200px;
-}
-.analysis-mode
-  .design-top
-  [data-name="Selector de proceso electoral"]
-  > [data-name="calendar-days"] {
-  display: none;
-}
-.analysis-mode
-  .design-top
-  [data-name="Selector de proceso electoral"]
-  .dashboard-select-trigger {
-  font-size: 14px;
-}
 .analysis-breadcrumb {
   height: 18px;
   line-height: 18px;
@@ -942,31 +895,8 @@
   border-bottom: 1px solid #d8e2ee;
   transform: rotate(45deg);
 }
-@media (max-width: 1180px) {
-  .analysis-mode .design-top [data-name="Navegación principal"] {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px 16px;
-    height: auto;
-    padding-block: 8px;
-  }
-  .analysis-mode .design-top [data-name="Secciones"] {
-    order: 3;
-    width: 100%;
-    justify-content: center;
-  }
-  .analysis-mode .design-top [data-name="Proceso y perfil"] {
-    margin-left: auto;
-  }
-}
+
 @media (max-width: 600px) {
-  .analysis-mode .design-top [data-name="Secciones"] {
-    justify-content: flex-start;
-    overflow-x: auto;
-  }
-  .analysis-mode .design-top [data-name="Sección"] {
-    padding-inline: 13px;
-  }
   .analysis-reading p {
     font-size: 11px;
   }
