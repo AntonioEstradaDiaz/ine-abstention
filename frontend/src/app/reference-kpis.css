@@ -292,3 +292,103 @@
     grid-template-columns: repeat(4, minmax(310px, 1fr));
   }
 }
+
+/* Give every icon a generous, equal tile and reserve space for bold titles. */
+.design-top .reference-kpis > .reference-kpi[data-name="Indicador electoral"] {
+  min-height: 136px;
+  gap: 14px;
+}
+.reference-kpi-icon {
+  flex: 0 0 58px;
+  width: 58px;
+  height: 58px;
+  border-radius: 15px;
+}
+.reference-kpi-icon img {
+  width: 34px;
+  height: 34px;
+}
+.reference-kpi-icon-dots img {
+  width: 100%;
+  height: 100%;
+}
+.design-top .reference-kpi-body > .reference-kpi-title {
+  font-weight: 700;
+  font-size: 13px;
+  line-height: 18px;
+  min-height: 40px;
+  margin: 0 0 3px;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+.reference-kpi-details {
+  grid-template-columns: minmax(64px, 1fr) 66px minmax(42px, 0.8fr);
+  gap: 8px;
+}
+@media (min-width: 1800px) {
+  .reference-kpi-icon {
+    flex-basis: 64px;
+    width: 64px;
+    height: 64px;
+  }
+  .reference-kpi-icon img {
+    width: 38px;
+    height: 38px;
+  }
+  .reference-kpi-icon-dots img {
+    width: 100%;
+    height: 100%;
+  }
+  .design-top .reference-kpi-body > .reference-kpi-title {
+    font-size: 15px;
+  }
+  .reference-kpi-details {
+    grid-template-columns: minmax(86px, 1fr) 94px minmax(90px, 1fr);
+    gap: 13px;
+  }
+}
+@media (max-width: 1399px) {
+  .design-top
+    .reference-kpis
+    > .reference-kpi[data-name="Indicador electoral"] {
+    display: grid;
+    grid-template-columns: 52px minmax(0, 1fr);
+    grid-template-rows: 52px auto;
+    gap: 10px;
+    min-height: 150px;
+  }
+  .reference-kpi-icon {
+    grid-column: 1;
+    grid-row: 1;
+    flex-basis: 52px;
+    width: 52px;
+    height: 52px;
+    border-radius: 13px;
+  }
+  .reference-kpi-icon img {
+    width: 30px;
+    height: 30px;
+  }
+  .reference-kpi-icon-dots img {
+    width: 100%;
+    height: 100%;
+  }
+  .reference-kpi-body {
+    display: contents;
+  }
+  .design-top .reference-kpi-body > .reference-kpi-title {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: center;
+    min-height: 0;
+    margin: 0;
+    font-size: 12px;
+    line-height: 16px;
+  }
+  .reference-kpi-details {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    grid-template-columns: minmax(64px, 1fr) 66px minmax(42px, 0.8fr);
+    gap: 8px;
+  }
+}
