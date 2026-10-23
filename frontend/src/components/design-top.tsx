@@ -12,7 +12,8 @@ const imgPersonStanding = "/design-top/bffeb.svg";
 const imgRoute = "/design-top/aed99.svg";
 const imgSearch = "/design-top/9128a.svg";
 const imgSlidersHorizontal = "/design-top/d692b.svg";
-type View = "map" | "trends" | "ml" | "predictions" | "scenarios";
+type View =
+  "map" | "trends" | "ml" | "predictions" | "scenarios" | "laboratory";
 interface Props {
   view: View;
   search: string;
@@ -95,7 +96,9 @@ export function DesignTop({
           <button
             type="button"
             aria-label="Análisis IA"
-            aria-current={view === "ml" ? "page" : undefined}
+            aria-current={
+              view === "ml" || view === "laboratory" ? "page" : undefined
+            }
             onClick={() => onNavigate("ml")}
             className="bg-white border-0 border-solid border-white content-stretch flex gap-[13px] h-[41px] items-center overflow-clip px-[13px] relative rounded-[9px] shrink-0"
             data-node-id="10:12485"
