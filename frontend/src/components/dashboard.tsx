@@ -1,4 +1,5 @@
 "use client";
+import { AnalysisView } from "./analysis-view";
 import { DashboardSelect } from "./ui/dashboard-select";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -29,8 +30,14 @@ import { DataSources } from "./data-sources";
 import { TerritoryMetrics } from "./territory-metrics";
 
 type View =
-  "map" | "trends" | "predictions" | "scenarios" | "ml" | "reports" | "data";
+  "map" | "trends" | "predictions" | "scenarios" | "ml" | "laboratory" | "reports" | "data";
 const sections = [
+  {
+    id: "laboratory" as const,
+    label: "Laboratorio de modelos",
+    icon: BrainCircuit,
+    subtitle: "Compara modelos entrenados y escenarios con evidencia temporal.",
+  },
   {
     id: "ml" as const,
     label: "Análisis IA",
@@ -163,7 +170,7 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
   const mapQuery = historical ? indicators : predictions;
   const forecast = predictions.data?.forecast;
   return (
-    <div className="app-shell">
+    <div className={`app-shell ${view === "ml" ? "analysis-mode" : ""}`}>
       <a className="skip-link" href="#main">
         Ir al contenido
       </a>
@@ -385,7 +392,10 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
               retry={() => void predictions.refetch()}
             />
           )}
-          {view === "ml" && <MLLaboratoryView selected={selected} />}
+          {view === "ml" && (
+            <AnalysisView onLaboratory={() => setView("laboratory")} />
+          )}
+          {view === "laboratory" && <MLLaboratoryView selected={selected} />}
           {view === "reports" && (
             <Reports
               states={items ?? []}
