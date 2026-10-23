@@ -31,17 +31,54 @@ categoría crítica. La tendencia separa intermedias y presidenciales. El cambio
 se transfiere al simulador completo. La franja de vista previa, el bloque territorial permanente,
 la nota superior y el desplegable de indicadores calculados se eliminaron; Filtros abre un diálogo.
 
-Frontend del prototipo INE Abstention. Cinco secciones conectadas a FastAPI:
+Frontend del prototipo INE Abstention. Siete secciones conectadas a FastAPI:
 
 - **Análisis IA:** modelos entrenados, evaluación temporal, explicaciones de variables y escenarios locales sobre los pronósticos.
 - **Mapa de riesgo:** coropleta estatal real, selector territorial, filtros de riesgo, referencia histórica
-  por elección, detalle, búsqueda y exportación CSV de las filas visibles.
+  por elección y detalle. La exportación vive en Reportes.
 - **Tendencias:** participación/abstención de hasta tres entidades; elecciones intermedias y presidenciales
   separadas, tabla con conteos y enlaces a las fuentes del backend.
-- **Predicciones:** histórico frente a 2027, banda empírica, explicación exacta del baseline y comparación
-  de modelos con métricas temporales reales.
+- **Predicciones:** histórico frente a 2027, banda empírica, explicación exacta del baseline, comparación
+  de modelos con métricas temporales reales y asistente IA con Ollama.
 - **Escenarios:** formulario y deslizador en puntos porcentuales, cálculo explícito mediante POST,
   resultados persistidos, límites, incertidumbre y reinicio. Cambiar parámetros o territorio invalida la salida anterior.
+- **Reportes:** vista previa y descarga CSV/JSON de cuatro reportes territoriales.
+- **Datos:** cobertura histórica, fuentes oficiales, diccionario de variables y procedencia.
+
+## Predicciones, Escenarios, Reportes y Datos
+
+Estas cuatro secciones toman el diseño del Mapa como referencia: misma cabecera (título con acento
+magenta, buscador y Filtros), fila de cuatro tarjetas con icono, valor, variación y minigráfica, y
+tarjetas blancas con icono magenta, título y subtítulo. Las cifras de sus tarjetas son reales
+(predicciones, histórico y métricas de la API), no valores ilustrativos. Análisis IA y Tendencias
+conservan su diseño anterior.
+
+- **Predicciones:** histórico frente a 2027 con banda, asistente IA, estimación territorial con medidor,
+  fórmula del baseline, contexto histórico en barras y validación temporal de los modelos.
+- **Escenarios:** supuestos rápidos, campo y deslizador, medidores base/escenario, tabla comparativa,
+  curva aritmética de sensibilidad (−20 a +20 pp) y supuestos explícitos.
+- **Reportes:** cuatro reportes (estimación 2027, histórico observado del año elegido, ficha territorial
+  y distribución del riesgo) con vista previa, filtro por el buscador superior y descarga CSV o JSON.
+- **Datos:** mapa de calor de abstención por entidad y elección, fuentes oficiales del INE,
+  diccionario de variables y procedencia de los datos.
+
+### Asistente IA con Ollama
+
+El asistente de Predicciones explica las cifras con un modelo local de Ollama. El modelo todavía no
+está definido: la ruta `/api/assistant` lista los modelos instalados y la interfaz permite elegir uno.
+`OLLAMA_MODEL` fija el predeterminado; si no existe, se usa el primero instalado.
+
+```dotenv
+OLLAMA_URL=http://127.0.0.1:11434
+OLLAMA_MODEL=llama3.2
+```
+
+El servidor de Next.js consulta los datos del INE (predicción, histórico y métricas del modelo) en la
+API o en la copia de vista previa y los pasa a Ollama como contexto; nunca toma cifras del navegador.
+La instrucción del sistema prohíbe inventar cifras, atribuir causas o recomendar intervenciones.
+Las preguntas se limitan a 12 mensajes de 1,500 caracteres y la ruta rechaza orígenes ajenos.
+Si Ollama no responde, la interfaz lo indica y muestra una lectura automática calculada con reglas
+sobre los mismos datos, marcada como «Lectura automática · sin Ollama».
 
 ## Ejecutar
 
