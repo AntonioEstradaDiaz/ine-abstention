@@ -6,6 +6,8 @@ import * as Dialog from "@radix-ui/react-dialog";
 import {
   Activity,
   BrainCircuit,
+  ClipboardList,
+  FileText,
   FlaskConical,
   Map,
   SlidersHorizontal,
@@ -21,10 +23,13 @@ import { PredictionsView } from "./predictions";
 import { Scenarios } from "./scenarios";
 import { MLLaboratoryView } from "./ml-laboratory";
 import { DashboardInsights } from "./dashboard-insights";
-import { DesignTop } from "./design-top";
+import { DesignTop, type PageHeading } from "./design-top";
+import { Reports } from "./reports";
+import { DataSources } from "./data-sources";
 import { TerritoryMetrics } from "./territory-metrics";
 
-type View = "map" | "trends" | "predictions" | "scenarios" | "ml";
+type View =
+  "map" | "trends" | "predictions" | "scenarios" | "ml" | "reports" | "data";
 const sections = [
   {
     id: "ml" as const,
@@ -57,7 +62,52 @@ const sections = [
     icon: SlidersHorizontal,
     subtitle: "Explora cambios hipotéticos en la participación territorial.",
   },
+  {
+    id: "reports" as const,
+    label: "Reportes",
+    icon: FileText,
+    subtitle: "Consulta y descarga reportes con datos oficiales del INE.",
+  },
+  {
+    id: "data" as const,
+    label: "Datos",
+    icon: ClipboardList,
+    subtitle: "Fuentes, cobertura y procedencia de la información.",
+  },
 ];
+// Sections that share the map's header design; Análisis IA and Tendencias keep theirs.
+const headings: Partial<Record<View, PageHeading>> = {
+  map: {
+    lead: "Riesgo de",
+    highlight: "Abstención Electoral",
+    subtitle:
+      "Análisis territorial y predicción de escenarios para fortalecer la participación ciudadana.",
+  },
+  predictions: {
+    lead: "Predicciones de",
+    highlight: "Abstención 2027",
+    subtitle:
+      "Estimaciones transparentes por entidad, con sus límites a la vista y un asistente de IA que las explica.",
+  },
+  scenarios: {
+    lead: "Escenarios de",
+    highlight: "Participación",
+    subtitle:
+      "Explora cambios hipotéticos en la participación y compáralos con la estimación base.",
+  },
+  reports: {
+    lead: "Reportes y",
+    highlight: "Exportaciones",
+    subtitle:
+      "Consulta, filtra y descarga reportes territoriales con datos oficiales del INE.",
+  },
+  data: {
+    lead: "Datos y",
+    highlight: "Fuentes Oficiales",
+    subtitle:
+      "Cobertura histórica, procedencia y definiciones de los datos que alimentan el tablero.",
+  },
+};
 const titleCase = (name: string) =>
   name
     .toLocaleLowerCase("es-MX")
@@ -109,53 +159,9 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
           })),
     [historical, indicators.data, items],
   );
-  const filtered = rows.filter(
-    (r) =>
-      (historical || filter === "all" || r.risk === filter) &&
-      titleCase(r.name)
-        .normalize("NFD")
-        .replace(/\p{Diacritic}/gu, "")
-        .toLowerCase()
-        .includes(
-          search
-            .normalize("NFD")
-            .replace(/\p{Diacritic}/gu, "")
-            .toLowerCase(),
-        ),
-  );
   const currentSection = sections.find((s) => s.id === view)!;
   const mapQuery = historical ? indicators : predictions;
   const forecast = predictions.data?.forecast;
-  const download = () => {
-    const lines = [
-      "clave,estado,periodo,tipo,abstencion,riesgo,limite_inferior,limite_superior",
-    ];
-    for (const row of filtered) {
-      const p = items?.find((r) => r.state_code === row.state_code);
-      lines.push(
-        [
-          row.state_code,
-          `"${row.name.replaceAll('"', '""')}"`,
-          historical ? year : 2027,
-          historical ? "observado" : "estimado",
-          row.value ?? "",
-          historical ? "" : row.risk,
-          historical ? "" : p?.lower,
-          historical ? "" : p?.upper,
-        ].join(","),
-      );
-    }
-    const url = URL.createObjectURL(
-      new Blob(["\uFEFF" + lines.join("\r\n")], {
-        type: "text/csv;charset=utf-8",
-      }),
-    );
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `pulso-${historical ? year : 2027}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
   return (
     <div className="app-shell">
       <a className="skip-link" href="#main">
@@ -163,6 +169,7 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
       </a>
       <DesignTop
         view={view}
+        heading={headings[view]}
         search={search}
         year={year}
         elections={elections.data ?? [{ id: 2024, year: 2024 }]}
@@ -171,20 +178,20 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
         onSearch={setSearch}
         onYear={setYear}
         onFilters={() => setFiltersOpen((v) => !v)}
-        onExport={download}
-        onData={() => setFiltersOpen(true)}
+        onSearchSubmit={() => setFiltersOpen(true)}
       />
       <div className="workspace">
         <main id="main" tabIndex={-1}>
-          <div className={view === "map" ? "sr-only" : "page-heading"}>
+          <div className={headings[view] ? "sr-only" : "page-heading"}>
             <div>
               <div className="eyebrow">
                 PARTICIPACIÓN · ABSTENCIÓN · TERRITORIO
               </div>
               <h1>
-                {view === "map" ? (
+                {headings[view] ? (
                   <>
-                    Riesgo de <span>Abstención Electoral</span>
+                    {headings[view].lead}{" "}
+                    <span>{headings[view].highlight}</span>
                   </>
                 ) : (
                   currentSection.label
@@ -193,7 +200,7 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
               <p>{currentSection.subtitle}</p>
             </div>
             <Button
-              hidden={view === "map"}
+              hidden={!!headings[view]}
               variant="outline"
               size="sm"
               onClick={() => setFiltersOpen(true)}
@@ -360,6 +367,7 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
           {view === "predictions" && (
             <PredictionsView
               prediction={chosen}
+              states={items ?? []}
               forecast={forecast}
               sources={sources.data?.items}
               loading={predictions.isPending}
@@ -378,9 +386,36 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
             />
           )}
           {view === "ml" && <MLLaboratoryView selected={selected} />}
+          {view === "reports" && (
+            <Reports
+              states={items ?? []}
+              forecast={forecast}
+              indicators={indicators.data?.items}
+              elections={elections.data ?? []}
+              selected={selected}
+              year={year}
+              search={search}
+              loading={predictions.isPending}
+              error={predictions.error}
+              retry={() => void predictions.refetch()}
+            />
+          )}
+          {view === "data" && (
+            <DataSources
+              elections={elections.data ?? []}
+              sources={sources.data?.items}
+              states={items ?? []}
+              forecast={forecast}
+              search={search}
+              selected={selected}
+              preview={preview}
+            />
+          )}
           <footer className="page-footer">
             <Methodology sources={sources.data?.items} />
-            <span>Tarjetas superiores: valores del diseño</span>
+            {view === "map" && (
+              <span>Tarjetas superiores: valores del diseño</span>
+            )}
             <span role="status" data-connected={predictions.isSuccess}>
               {predictions.isSuccess
                 ? preview
