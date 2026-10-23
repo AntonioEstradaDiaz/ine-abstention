@@ -274,11 +274,10 @@ export function AnalysisView({ onLaboratory }: { onLaboratory: () => void }) {
           <option value="national">Comparar: Nacional</option>
           <option value="none">Sin comparación</option>
         </DashboardSelect>
-        <button className="analysis-reset" onClick={reset}>
+        <button type="button" className="analysis-reset" onClick={reset} aria-label="Restablecer preferencias del análisis" title="Restablecer preferencias">
           <span>
             <RotateCw size={17} />
           </span>
-          <u>Restablecer</u>
         </button>
         </div>
       </div>
