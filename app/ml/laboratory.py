@@ -236,13 +236,18 @@ def materialize(snapshot: dict, report: dict, directory: Path, target_year=2027)
         ],
         "models": models,
         "limitations": [
-            "Muestra de agregados estatales: sin desgloses demográficos ni variables de seguridad o campañas.",
+            "Muestra de agregados estatales: sin desgloses demográficos "
+            "ni variables de seguridad o campañas.",
             "32 estados y solo seis elecciones; los estados comparten choques electorales.",
             "Selección con 2018/2021; 2024 se reserva para evaluación, no para elegir el modelo.",
-            "Las bandas usan errores de la intermedia 2021: un solo bloque de calibración, sin cobertura garantizada.",
-            "Validación retrospectiva por año electoral; fechas históricas de publicación no verificadas.",
-            "La importancia describe el ajuste del modelo, no efectos causales ni recomendaciones de intervención.",
-            "Los escenarios trasladan tasas y bandas con un supuesto; no predicen efectos de campañas o políticas.",
+            "Las bandas usan errores de la intermedia 2021: un solo bloque de calibración, "
+            "sin cobertura garantizada.",
+            "Validación retrospectiva por año electoral; "
+            "fechas históricas de publicación no verificadas.",
+            "La importancia describe el ajuste del modelo, "
+            "no efectos causales ni recomendaciones de intervención.",
+            "Los escenarios trasladan tasas y bandas con un supuesto; "
+            "no predicen efectos de campañas o políticas.",
         ],
     }
 

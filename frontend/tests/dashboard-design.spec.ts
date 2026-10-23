@@ -30,7 +30,15 @@ test("lower dashboard uses forecast values and carries the selected scenario ass
   await expect(
     lower.locator(".lower-scenario-pair > div").first().locator("strong"),
   ).toHaveText(`${(base * 100).toFixed(1)}%`);
-  await lower.getByLabel("Supuesto de participación").selectOption("-3");
+  await lower
+    .getByRole("combobox", { name: "Supuesto de participación" })
+    .click();
+  await page
+    .getByRole("option", {
+      name: "Supuesto: −3 pp de participación",
+      exact: true,
+    })
+    .click();
   await expect(lower.locator(".lower-scenario-result strong")).toHaveText(
     `${(Math.max(0, base - 0.03) * 100).toFixed(1)}%`,
   );
@@ -79,8 +87,9 @@ test("territorial metrics follow Guerrero and Baja California, including the his
     );
     await page.getByRole("button", { name: "Filtros", exact: true }).click();
     await page
-      .getByLabel("Territorio seleccionado", { exact: true })
-      .selectOption(code);
+      .getByRole("combobox", { name: "Territorio seleccionado", exact: true })
+      .click();
+    await page.getByRole("option", { name, exact: true }).click();
     await expect(panel).toHaveAttribute("data-territory-code", code);
     await expect(
       panel.getByRole("heading", { name, exact: true }),
@@ -96,10 +105,26 @@ test("territorial metrics follow Guerrero and Baja California, including the his
     ).toHaveText(actual.nonvoter_count.toLocaleString("es-MX"));
   }
   await panel.getByRole("tab", { name: "Histórico", exact: true }).click();
-  await expect(panel.locator("tbody tr")).toHaveCount(6);
+  await expect(panel.locator(".territory-history-row")).toHaveCount(3);
+  await expect(panel.locator(".territory-history-series")).toContainText(
+    "2021",
+  );
+  await expect(panel.locator(".territory-history-series")).not.toContainText(
+    "2024",
+  );
+  await panel
+    .getByRole("button", { name: "Presidenciales", exact: true })
+    .click();
+  await expect(panel.locator(".territory-history-row")).toHaveCount(3);
+  await expect(panel.locator(".territory-history-series")).toContainText(
+    "2024",
+  );
+  await expect(panel.locator(".territory-history-series")).not.toContainText(
+    "2021",
+  );
   await panel.getByRole("tab", { name: "Factores", exact: true }).click();
   await expect(panel.getByRole("tabpanel")).toContainText(
-    "no son importancias de variables",
+    "no representan causas ni importancia de variables",
   );
   await panel
     .getByRole("tab", { name: "Recomendaciones", exact: true })
@@ -133,7 +158,10 @@ test("ZIP header assets and four cards fit phone, tablet and desktop widths", as
         () => document.documentElement.scrollWidth <= innerWidth,
       ),
     ).toBeTruthy();
-    for (const img of await page.locator(".design-top img").all()) {
+    await expect(
+      page.getByRole("img", { name: "INE · Instituto Nacional Electoral" }),
+    ).toBeVisible();
+    for (const img of await page.locator(".design-top img:visible").all()) {
       await expect(img).toBeVisible();
       expect(
         await img.evaluate(

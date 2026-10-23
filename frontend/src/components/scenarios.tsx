@@ -110,7 +110,7 @@ function ScenarioForm({
                 type="number"
                 min={-100}
                 max={100}
-                step="0.5"
+                step="any"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
               />
@@ -122,7 +122,7 @@ function ScenarioForm({
               type="range"
               min={-100}
               max={100}
-              step="0.5"
+              step="0.1"
               value={valid ? change : 0}
               onChange={(e) => setInput(e.target.value)}
             />

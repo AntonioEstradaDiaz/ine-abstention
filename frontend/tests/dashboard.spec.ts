@@ -1,5 +1,10 @@
 import { test, expect, type Page } from "@playwright/test";
 
+async function chooseOption(page: Page, label: string, name: string) {
+  await page.getByRole("combobox", { name: label, exact: true }).click();
+  await page.getByRole("option", { name, exact: true }).click();
+}
+
 async function chooseTerritory(page: Page, code: string) {
   await page
     .getByRole("button", { name: "Filtros", exact: true })
@@ -12,9 +17,16 @@ async function chooseTerritory(page: Page, code: string) {
         })
         .click();
     });
-  await page
-    .getByLabel("Territorio seleccionado", { exact: true })
-    .selectOption(code);
+  const names: Record<string, string> = {
+    "02": "Baja California",
+    "31": "Yucatan",
+  };
+  await chooseOption(page, "Territorio seleccionado", names[code]);
+  const close = page.getByRole("button", {
+    name: "Cerrar filtros",
+    exact: true,
+  });
+  if (await close.isVisible()) await close.click();
 }
 
 test("dashboard uses live backend data, maps and historical periods", async ({
@@ -36,7 +48,9 @@ test("dashboard uses live backend data, maps and historical periods", async ({
   await expect(
     page.getByText("Backend conectado", { exact: true }),
   ).toBeVisible();
-  await expect(page.locator("tbody tr")).toHaveCount(32);
+  await expect(page.locator('[data-name="Indicador electoral"]')).toHaveCount(
+    4,
+  );
   await expect(page.locator(".maplibregl-canvas")).toBeVisible();
   await expect(page.locator('[data-map-ready="true"]')).toBeVisible({
     timeout: 45_000,
@@ -46,6 +60,7 @@ test("dashboard uses live backend data, maps and historical periods", async ({
     page.getByText("Mapa no disponible.", { exact: false }),
   ).toHaveCount(0);
   // Las coordenadas de la prueba corresponden a la vista plana, sin perspectiva.
+  await page.getByRole("button", { name: "Ajustar mapa", exact: true }).click();
   await page.getByRole("button", { name: "2D", exact: true }).click();
   await expect(
     page.locator('[data-map-mode="2d"][data-camera-moving="false"]'),
@@ -61,12 +76,12 @@ test("dashboard uses live backend data, maps and historical periods", async ({
     bottom = mercatorY(14);
   const scale = Math.min(
     (box.width - 70) / (32.5 / 360),
-    (box.height - 70) / (bottom - top),
+    (box.height - 122) / (bottom - top),
   );
   await canvas.click({
     position: {
       x: box.width / 2 + ((-115.5 + 102.25) / 360) * scale,
-      y: box.height / 2 + (mercatorY(30.5) - (top + bottom) / 2) * scale,
+      y: box.height / 2 - 21 + (mercatorY(30.5) - (top + bottom) / 2) * scale,
     },
   });
   await expect(page.locator(".territory-metrics")).toHaveAttribute(
@@ -77,20 +92,20 @@ test("dashboard uses live backend data, maps and historical periods", async ({
     page.getByRole("button", { name: "Acercar", exact: true }),
   ).toBeVisible();
   await chooseTerritory(page, "02");
-  await expect(page.locator(".territory-detail h2")).toHaveText(
+  await expect(page.locator(".territory-metrics h2")).toHaveText(
     "Baja California",
   );
   const selected = predictions.items.find(
     (p: { state_code: string }) => p.state_code === "02",
   );
   await expect(
-    page.locator(".territory-gauge > .detail-rate-value"),
+    page.locator(".territory-metrics .detail-rate-value"),
   ).toHaveText(`${(selected.predicted * 100).toFixed(1)}%`);
   await page.getByRole("button", { name: "Histórico", exact: true }).click();
-  await page.getByLabel("Año histórico", { exact: true }).selectOption("2024");
+  await chooseOption(page, "Año histórico", "2024 · Presidencial");
   await expect(
-    page.getByRole("heading", { name: "Abstención observada · 2024" }),
-  ).toBeVisible();
+    page.getByRole("button", { name: "Histórico", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
   const observed = await (
     await request.get(
       "http://127.0.0.1:8001/api/v1/statistics/territories?year=2024&territory_type=state&limit=100",
@@ -101,13 +116,20 @@ test("dashboard uses live backend data, maps and historical periods", async ({
       (r.state_code || r.official_code) === "02",
   );
   await expect(
-    page.locator(".territory-gauge > .detail-rate-value"),
+    page.locator(".territory-metrics .detail-rate-value"),
   ).toHaveText(`${(observedState.abstention_rate * 100).toFixed(1)}%`);
-  await page.getByLabel("Buscar estado en la tabla").fill("Baja");
-  await expect(page.locator("tbody tr")).toHaveCount(2);
+  await page.getByLabel("Buscar territorio", { exact: true }).fill("Baja");
   const download = page.waitForEvent("download");
-  await page.getByRole("button", { name: "CSV", exact: true }).click();
-  expect((await download).suggestedFilename()).toBe("pulso-2024.csv");
+  await page.getByRole("button", { name: "Reportes", exact: true }).click();
+  const file = await download;
+  expect(file.suggestedFilename()).toBe("pulso-2024.csv");
+  const stream = await file.createReadStream();
+  const chunks: Buffer[] = [];
+  for await (const chunk of stream!) chunks.push(Buffer.from(chunk));
+  const csv = Buffer.concat(chunks).toString("utf8");
+  expect(csv.trim().split(/\r?\n/)).toHaveLength(3);
+  expect(csv).toContain("BAJA CALIFORNIA");
+  expect(csv).not.toContain("MORELOS");
   await page.screenshot({
     path: "test-results/map-desktop.png",
     fullPage: true,
@@ -129,15 +151,13 @@ test("trends compare only matching elections and retain territorial selection", 
   await expect(page.locator("tbody tr")).toHaveCount(3);
   await expect(page.locator("tbody")).toContainText("2021");
   await expect(page.locator("tbody")).not.toContainText("2024");
-  await page.getByLabel("Añadir estado a la comparación").selectOption("17");
-  await page.getByLabel("Añadir estado a la comparación").selectOption("31");
+  await chooseOption(page, "Añadir estado a la comparación", "MORELOS");
+  await chooseOption(page, "Añadir estado a la comparación", "YUCATAN");
   await expect(
     page.getByLabel("Añadir estado a la comparación"),
   ).toBeDisabled();
   await expect(page.locator("tbody tr")).toHaveCount(9);
-  await page
-    .getByLabel("Tipo de elección", { exact: true })
-    .selectOption("presidential");
+  await chooseOption(page, "Tipo de elección", "Presidencial");
   await expect(page.locator("tbody")).toContainText("2024");
   await expect(page.locator("tbody")).not.toContainText("2021");
   await page
@@ -154,10 +174,6 @@ test("trends compare only matching elections and retain territorial selection", 
     fullPage: true,
   });
   await page.getByRole("button", { name: "Predicciones", exact: true }).click();
-  await expect(page.locator(".territory-metrics")).toHaveAttribute(
-    "data-territory-code",
-    "02",
-  );
   await expect(page.locator(".forecast-card h2")).toHaveText("BAJA CALIFORNIA");
   await expect(
     page.getByText("MAE prueba 2024", { exact: true }),
@@ -275,7 +291,12 @@ test("offline and empty states never substitute invented values", async ({
   await expect(
     page.getByText("Backend conectado", { exact: true }),
   ).toBeVisible();
-  await page.getByLabel("Buscar estado en la tabla").fill("sin-coincidencias");
+  await page.route("**/api/backend/predictions?**", async (route) => {
+    const response = await route.fetch();
+    const data = await response.json();
+    await route.fulfill({ response, json: { ...data, items: [], total: 0 } });
+  });
+  await page.reload();
   await expect(
     page.getByText("No hay datos para esta selección.", { exact: true }),
   ).toBeVisible();
@@ -287,7 +308,9 @@ test("mobile layout, keyboard dialog and reduced motion remain usable", async ({
   await page.setViewportSize({ width: 390, height: 844 });
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
-  await expect(page.locator("tbody tr")).toHaveCount(32);
+  await expect(page.locator('[data-name="Indicador electoral"]')).toHaveCount(
+    4,
+  );
   await expect(page.locator('[data-map-ready="true"]')).toBeVisible({
     timeout: 45_000,
   });
@@ -310,11 +333,30 @@ test("mobile layout, keyboard dialog and reduced motion remain usable", async ({
     path: "test-results/map-mobile.png",
     fullPage: true,
   });
-  await page.getByRole("button", { name: "Escenarios", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Comparar escenarios", exact: true })
+    .click();
+  const input = page.getByRole("spinbutton", {
+    name: "Cambio hipotético en participación",
+    exact: true,
+  });
+  await expect(input).toHaveValue("5.4");
+  expect(
+    await input.evaluate((node: HTMLInputElement) => node.checkValidity()),
+  ).toBe(true);
+  const savedResponse = page.waitForResponse(
+    (response) =>
+      response.url().includes("/api/backend/simulations") &&
+      response.request().method() === "POST",
+  );
   await page
     .getByRole("button", { name: "Calcular escenario", exact: true })
     .click();
   await expect(page.getByText("Guardado", { exact: true })).toBeVisible();
+  const saved = await (await savedResponse).json();
+  expect(saved.result.states[0].applied_participation_change_pp).toBeCloseTo(
+    5.4,
+  );
   expect(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= innerWidth,
