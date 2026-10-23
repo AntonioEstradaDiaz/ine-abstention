@@ -356,3 +356,341 @@
     gap: 5px;
   }
 }
+
+/* Stable, shared height with the map; tab content scrolls within its card. */
+.map-detail-grid.electoral-map-layout {
+  height: 560px;
+  align-items: stretch;
+}
+.map-detail-grid.electoral-map-layout > .electoral-map-panel {
+  height: 100%;
+  min-height: 0;
+}
+.map-detail-grid.electoral-map-layout > .territory-metrics {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+.territory-metrics-heading,
+.territory-metrics-tabs {
+  flex-shrink: 0;
+}
+.territory-metrics .territory-metrics-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #f1b8d6 transparent;
+}
+.territory-tab-view {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  min-width: 0;
+}
+.territory-section-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.territory-section-heading h3 {
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.4;
+  margin: 0;
+  color: #0d172f;
+}
+.territory-section-heading p {
+  font-size: 10px;
+  color: #74839d;
+  line-height: 1.6;
+  margin: 4px 0 0;
+}
+.territory-soft-icon {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  color: #df007b;
+  background: #fff0f7;
+}
+.territory-type-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: #f7f8fb;
+  border: 1px solid #eef0f5;
+  border-radius: 10px;
+}
+.territory-type-tabs button {
+  flex: 1;
+  padding: 8px 6px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  font-size: 10px;
+  color: #65758f;
+  cursor: pointer;
+}
+.territory-type-tabs button[aria-pressed="true"] {
+  background: white;
+  color: #c00063;
+  box-shadow: 0 1px 5px #243e580d;
+  font-weight: 600;
+}
+.territory-history-highlights {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+}
+.territory-history-highlights > div {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 12px;
+  border: 1px solid #edf0f5;
+  border-radius: 10px;
+  min-width: 0;
+}
+.territory-history-highlights span {
+  font-size: 10px;
+  color: #74839d;
+}
+.territory-history-highlights strong {
+  font-size: 22px;
+  line-height: 1.2;
+  color: #0d172f;
+}
+.territory-history-highlights strong.territory-pink-value {
+  color: #c00063;
+  font-size: 19px;
+}
+.territory-history-highlights small {
+  font-size: 8px;
+  color: #8b98ad;
+  line-height: 1.5;
+}
+.territory-history-series {
+  padding: 12px;
+  border: 1px solid #edf0f5;
+  border-radius: 11px;
+  background: #fff;
+}
+.territory-series-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 2px;
+}
+.territory-series-heading h4 {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 600;
+  color: #21334e;
+}
+.territory-series-heading > span {
+  font-size: 8px;
+  color: #8b98ad;
+  white-space: nowrap;
+}
+.territory-history-row {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr) 42px;
+  align-items: start;
+  gap: 10px;
+  margin-top: 17px;
+}
+.territory-year {
+  font-size: 10px;
+  color: #526681;
+  font-weight: 600;
+}
+.territory-history-bar {
+  height: 7px;
+  background: #f6e9f1;
+  border-radius: 5px;
+  margin-top: 3px;
+  overflow: hidden;
+}
+.territory-history-bar i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #f5a5ce, #df007b);
+  border-radius: 5px;
+}
+.territory-history-row small {
+  display: block;
+  font-size: 8px;
+  color: #8b98ad;
+  margin-top: 5px;
+}
+.territory-history-row strong {
+  font-size: 11px;
+  color: #21334e;
+  text-align: right;
+}
+.territory-inline-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 11px;
+  border-radius: 9px;
+  background: #faf8fc;
+  color: #b9005e;
+}
+.territory-inline-note > svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.territory-inline-note p {
+  margin: 0;
+  font-size: 9px;
+  line-height: 1.7;
+  color: #73829b;
+}
+.territory-model-card {
+  padding: 13px;
+  border: 1px solid #f7dbe9;
+  background: linear-gradient(130deg, #fff7fb, #fff);
+  border-radius: 11px;
+}
+.territory-model-label {
+  font-size: 9px;
+  color: #bb377c;
+}
+.territory-model-card > div {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  margin: 9px 0;
+}
+.territory-model-card strong {
+  font-size: 27px;
+  color: #c00063;
+  letter-spacing: -0.5px;
+}
+.territory-model-card > div > span {
+  font-size: 9px;
+  line-height: 1.7;
+  color: #74839d;
+}
+.territory-model-card b {
+  font-weight: 500;
+  color: #4a5e7b;
+}
+.territory-model-card p {
+  margin: 0;
+  font-size: 9px;
+  line-height: 1.7;
+  color: #74839d;
+}
+.territory-coverage > span {
+  font-size: 9px;
+  color: #74839d;
+}
+.territory-coverage > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 7px;
+}
+.territory-coverage > div > span {
+  font-size: 8px;
+  color: #7d899e;
+  background: #f6f7fa;
+  border: 1px solid #edf0f5;
+  border-radius: 6px;
+  padding: 5px 7px;
+}
+.territory-metrics .territory-panel-action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  border: 1px solid #f1cee2;
+  border-radius: 8px;
+  background: #fff;
+  color: #c00063;
+  font-size: 10px;
+  padding: 9px 11px;
+  min-height: 34px;
+  margin: 0;
+}
+.territory-advice-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin: 0;
+  padding: 0;
+}
+.territory-advice-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 12px 10px;
+  border: 1px solid #edf0f5;
+  border-radius: 10px;
+  background: #fff;
+}
+.territory-advice-list li > span {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background: #fff0f7;
+  color: #c00063;
+  font-size: 9px;
+  font-weight: 700;
+}
+.territory-advice-list li > div {
+  flex: 1;
+  min-width: 0;
+}
+.territory-advice-list h4 {
+  margin: 0;
+  font-size: 11px;
+  color: #21334e;
+  font-weight: 600;
+  line-height: 1.5;
+}
+.territory-advice-list p {
+  margin: 4px 0 0;
+  font-size: 9px;
+  line-height: 1.7;
+  color: #74839d;
+}
+.territory-advice-list li > svg {
+  flex-shrink: 0;
+  color: #df007b;
+  margin-top: 4px;
+}
+.territory-tab-view button:focus-visible {
+  outline: 2px solid #df007b;
+  outline-offset: 2px;
+}
+@media (max-width: 900px) {
+  .map-detail-grid.electoral-map-layout {
+    height: auto;
+  }
+  .map-detail-grid.electoral-map-layout > .electoral-map-panel,
+  .map-detail-grid.electoral-map-layout > .territory-metrics {
+    height: 560px;
+  }
+  .map-detail-grid.electoral-map-layout > .electoral-map-panel .map-wrap {
+    height: auto;
+    flex: 1;
+    min-height: 0;
+  }
+}
+
+.map-detail-grid.electoral-map-layout>.territory-metrics {align-items:stretch}
+.territory-metrics>.territory-metrics-heading,.territory-metrics>.territory-metrics-tabs,.territory-metrics>.territory-metrics-body {width:100%;box-sizing:border-box}

@@ -8,6 +8,9 @@ import {
   Users,
   TrendingUp,
   CircleHelp,
+  ArrowUpRight,
+  ShieldCheck,
+  Database,
 } from "lucide-react";
 import { api } from "@/lib/api";
 import type { Indicator, Prediction, Source } from "@/lib/types";
@@ -42,6 +45,9 @@ export function TerritoryMetrics({
 }) {
   const [tab, setTab] = useState<Tab>("Resumen");
   const id = useId();
+  const [historyType, setHistoryType] = useState<"midterm" | "presidential">(
+    "midterm",
+  );
   const history = useQuery({
     queryKey: ["history", selected],
     queryFn: ({ signal }) => api.history(selected, signal),
@@ -50,6 +56,15 @@ export function TerritoryMetrics({
   const records = (history.data?.items ?? [])
     .slice()
     .sort((a, b) => a.year - b.year);
+  const comparable = records.filter(
+    (record) => record.election_type === historyType,
+  );
+  const latest = comparable.at(-1);
+  const prior = comparable.at(-2);
+  const historicalChange =
+    latest?.participation_rate != null && prior?.participation_rate != null
+      ? (latest.participation_rate - prior.participation_rate) * 100
+      : null;
   const current = records.find((r) => r.year === year);
   const previous = current
     ? records
@@ -180,6 +195,7 @@ export function TerritoryMetrics({
         <Status loading={loading} error={error} retry={retry} />
       ) : (
         <div
+          key={`${selected}-${tab}`}
           id={`${id}-panel`}
           role="tabpanel"
           aria-labelledby={`${id}-tab-${tabs.indexOf(tab)}`}
@@ -252,91 +268,233 @@ export function TerritoryMetrics({
             </>
           )}
           {tab === "Histórico" && (
-            <>
-              <h3>Participación histórica</h3>
-              <p className="territory-metrics-footnote">
-                Compara elecciones del mismo tipo. NS se conserva por separado.
-              </p>
+            <section
+              className="territory-tab-view"
+              aria-label="Evolución histórica del territorio"
+            >
+              <div className="territory-section-heading">
+                <div>
+                  <h3>Evolución de la participación</h3>
+                  <p>Una mirada a los procesos anteriores de {name}.</p>
+                </div>
+                <span className="territory-soft-icon">
+                  <History size={17} />
+                </span>
+              </div>
+              <div
+                className="territory-type-tabs"
+                role="group"
+                aria-label="Tipo de elección histórica"
+              >
+                <button
+                  aria-pressed={historyType === "midterm"}
+                  onClick={() => setHistoryType("midterm")}
+                >
+                  Intermedias
+                </button>
+                <button
+                  aria-pressed={historyType === "presidential"}
+                  onClick={() => setHistoryType("presidential")}
+                >
+                  Presidenciales
+                </button>
+              </div>
               <Status
                 loading={history.isPending}
                 error={history.error}
                 retry={() => void history.refetch()}
               />
-              <div className="territory-history">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Año / elección</th>
-                      <th>Participación</th>
-                      <th>Abstención</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {records.map((r) => (
-                      <tr key={r.year}>
-                        <td>
-                          {r.year}
+              {latest && (
+                <>
+                  <div className="territory-history-highlights">
+                    <div>
+                      <span>Participación · {latest.year}</span>
+                      <strong>{pct(latest.participation_rate)}</strong>
+                      <small>Último proceso del mismo tipo</small>
+                    </div>
+                    <div>
+                      <span>Cambio frente a {prior?.year ?? "—"}</span>
+                      <strong className="territory-pink-value">
+                        {pp(historicalChange)}
+                      </strong>
+                      <small>Puntos porcentuales</small>
+                    </div>
+                  </div>
+                  <div className="territory-history-series">
+                    <div className="territory-series-heading">
+                      <h4>Participación por proceso</h4>
+                      <span>{comparable.length} elecciones</span>
+                    </div>
+                    {comparable.map((record) => (
+                      <div className="territory-history-row" key={record.year}>
+                        <span className="territory-year">{record.year}</span>
+                        <div>
+                          <div className="territory-history-bar">
+                            <i
+                              style={{
+                                width: `${(record.participation_rate ?? 0) * 100}%`,
+                              }}
+                            />
+                          </div>
                           <small>
-                            {r.election_type === "midterm"
-                              ? "Intermedia"
-                              : "Presidencial"}
+                            Abstención {pct(record.abstention_rate)}
                           </small>
-                        </td>
-                        <td>{pct(r.participation_rate)}</td>
-                        <td>{pct(r.abstention_rate)}</td>
-                      </tr>
+                        </div>
+                        <strong>{pct(record.participation_rate)}</strong>
+                      </div>
                     ))}
-                  </tbody>
-                </table>
-              </div>
-            </>
+                  </div>
+                  <div className="territory-inline-note">
+                    <CircleHelp size={14} />
+                    <p>
+                      Se comparan elecciones del mismo tipo. Los registros sin
+                      especificar se mantienen separados.
+                    </p>
+                  </div>
+                </>
+              )}
+              {history.isSuccess && !comparable.length && (
+                <p className="territory-metrics-footnote">
+                  No hay registros disponibles para este tipo de elección.
+                </p>
+              )}
+            </section>
           )}
           {tab === "Factores" && (
-            <>
-              <h3>Qué utiliza este pronóstico</h3>
-              <p className="territory-metrics-footnote">
-                La referencia baseline_last repite la abstención de la última
-                elección del mismo tipo ({p.explanation.reference_year}). Los
-                indicadores siguientes describen el contexto y no son
-                importancias de variables.
-              </p>
+            <section
+              className="territory-tab-view"
+              aria-label="Factores y contexto del pronóstico"
+            >
+              <div className="territory-section-heading">
+                <div>
+                  <h3>Detrás del pronóstico</h3>
+                  <p>Referencia utilizada y señales del territorio.</p>
+                </div>
+                <span className="territory-soft-icon">
+                  <Database size={17} />
+                </span>
+              </div>
+              <div className="territory-model-card">
+                <span className="territory-model-label">
+                  Referencia del modelo
+                </span>
+                <div>
+                  <strong>{pct(p.predicted)}</strong>
+                  <span>
+                    Abstención de la última intermedia
+                    <br />
+                    <b>{p.explanation.reference_year} · baseline_last</b>
+                  </span>
+                </div>
+                <p>
+                  La estimación repite el último resultado de una elección del
+                  mismo tipo.
+                </p>
+              </div>
+              <div className="territory-series-heading">
+                <h4>Señales de contexto</h4>
+                <span>Datos históricos</span>
+              </div>
               {contextRows}
-              <p className="territory-metrics-footnote">
-                Características sociodemográficas, condiciones socioeconómicas,
-                accesibilidad y conectividad: sin contribución estimada en este
-                modelo.
-              </p>
-              <Button variant="outline" size="sm" onClick={onExplore}>
-                Ver modelo y evaluación
+              <div className="territory-inline-note">
+                <ShieldCheck size={15} />
+                <p>
+                  Estas señales describen el contexto; no representan causas ni
+                  importancia de variables.
+                </p>
+              </div>
+              <div className="territory-coverage">
+                <span>Variables aún sin estimación</span>
+                <div>
+                  <span>Sociodemografía</span>
+                  <span>Economía</span>
+                  <span>Accesibilidad</span>
+                  <span>Conectividad</span>
+                </div>
+              </div>
+              <Button
+                className="territory-panel-action"
+                variant="outline"
+                size="sm"
+                onClick={onExplore}
+              >
+                Ver modelo y evaluación <ArrowUpRight size={14} />
               </Button>
-            </>
+            </section>
           )}
           {tab === "Recomendaciones" && (
-            <>
-              <h3>Claves para interpretar los datos</h3>
-              <ul className="territory-reading-tips">
+            <section
+              className="territory-tab-view"
+              aria-label="Recomendaciones de lectura del territorio"
+            >
+              <div className="territory-section-heading">
+                <div>
+                  <h3>Lectura informada</h3>
+                  <p>Cuatro claves para interpretar los datos de {name}.</p>
+                </div>
+                <span className="territory-soft-icon">
+                  <ShieldCheck size={17} />
+                </span>
+              </div>
+              <ol className="territory-advice-list">
                 <li>
-                  Contrasta {name} con elecciones del mismo tipo y revisa los
-                  registros sin especificar.
+                  <span>01</span>
+                  <div>
+                    <h4>Compara procesos equivalentes</h4>
+                    <p>
+                      Revisa elecciones del mismo tipo y los registros sin
+                      especificar.
+                    </p>
+                  </div>
+                  <History size={16} />
                 </li>
                 <li>
-                  Considera la banda completa ({pct(p.lower)} – {pct(p.upper)}),
-                  además de la estimación puntual.
+                  <span>02</span>
+                  <div>
+                    <h4>Considera todo el intervalo</h4>
+                    <p>
+                      La banda va de{" "}
+                      <b>
+                        {pct(p.lower)} a {pct(p.upper)}
+                      </b>
+                      . Analízala junto a la estimación puntual.
+                    </p>
+                  </div>
+                  <ChartNoAxesCombined size={16} />
                 </li>
                 <li>
-                  {p.uncertainty.classification_uncertain
-                    ? "La banda cruza categorías: la clasificación de riesgo es incierta."
-                    : "El semáforo es una categoría relativa, no un estándar oficial del INE."}
+                  <span>03</span>
+                  <div>
+                    <h4>Interpreta el nivel de riesgo</h4>
+                    <p>
+                      {p.uncertainty.classification_uncertain
+                        ? "La banda cruza categorías; la clasificación es incierta."
+                        : "El semáforo expresa una categoría relativa, no un estándar oficial del INE."}
+                    </p>
+                  </div>
+                  <CircleHelp size={16} />
                 </li>
                 <li>
-                  Los escenarios representan supuestos aritméticos; no prueban
-                  efectos de intervenciones.
+                  <span>04</span>
+                  <div>
+                    <h4>Explora escenarios con cautela</h4>
+                    <p>
+                      Los cambios son supuestos aritméticos; no prueban efectos
+                      de intervenciones.
+                    </p>
+                  </div>
+                  <TrendingUp size={16} />
                 </li>
-              </ul>
-              <Button variant="outline" size="sm" onClick={onExplore}>
-                Explorar predicción
+              </ol>
+              <Button
+                className="territory-panel-action"
+                variant="outline"
+                size="sm"
+                onClick={onExplore}
+              >
+                Explorar predicción <ArrowUpRight size={14} />
               </Button>
-            </>
+            </section>
           )}
           <SourceLink
             id={historical ? actual?.source_id : p.explanation.source_id}
