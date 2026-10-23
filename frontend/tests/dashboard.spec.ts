@@ -118,22 +118,37 @@ test("dashboard uses live backend data, maps and historical periods", async ({
   await expect(
     page.locator(".territory-metrics .detail-rate-value"),
   ).toHaveText(`${(observedState.abstention_rate * 100).toFixed(1)}%`);
+  await page.screenshot({
+    path: "test-results/map-desktop.png",
+    fullPage: true,
+  });
   await page.getByLabel("Buscar territorio", { exact: true }).fill("Baja");
-  const download = page.waitForEvent("download");
   await page.getByRole("button", { name: "Reportes", exact: true }).click();
+  await page.getByRole("radio", { name: /Histórico observado 2024/ }).click();
+  await expect(page.locator(".section-table tbody tr")).toHaveCount(2);
+  const download = page.waitForEvent("download");
+  await page
+    .getByRole("button", { name: "Descargar CSV", exact: true })
+    .click();
   const file = await download;
-  expect(file.suggestedFilename()).toBe("pulso-2024.csv");
+  expect(file.suggestedFilename()).toBe("pulso-observado-2024.csv");
   const stream = await file.createReadStream();
   const chunks: Buffer[] = [];
   for await (const chunk of stream!) chunks.push(Buffer.from(chunk));
   const csv = Buffer.concat(chunks).toString("utf8");
   expect(csv.trim().split(/\r?\n/)).toHaveLength(3);
-  expect(csv).toContain("BAJA CALIFORNIA");
-  expect(csv).not.toContain("MORELOS");
-  await page.screenshot({
-    path: "test-results/map-desktop.png",
-    fullPage: true,
-  });
+  expect(csv).toContain("Baja California");
+  expect(csv).not.toContain("Morelos");
+  const exportedState = csv
+    .split(/\r?\n/)
+    .map((row) => row.split(","))
+    .find((row) => row[0] === "02");
+  expect(exportedState?.slice(2, 6)).toEqual([
+    String(observedState.nominal_list),
+    String(observedState.voter_count),
+    String(observedState.nonvoter_count),
+    String(observedState.unspecified_count),
+  ]);
   expect(failures).toEqual([]);
 });
 
