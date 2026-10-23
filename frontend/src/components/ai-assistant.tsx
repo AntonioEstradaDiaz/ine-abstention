@@ -50,7 +50,7 @@ async function ask(body: {
   const data = await response.json().catch(() => null);
   if (!response.ok)
     throw new Error(
-      typeof data?.detail === "string" ? data.detail : "Ollama no respondió.",
+      typeof data?.detail === "string" ? data.detail : "El asistente no respondió.",
     );
   return data as AssistantReply;
 }
@@ -136,10 +136,10 @@ export function AiAssistant({ context }: { context: AssistantContext | null }) {
   const connection = status.isPending
     ? { label: "Comprobando…", tone: "pending" }
     : online
-      ? { label: "Ollama conectado", tone: "online" }
+      ? { label: status.data?.provider === "groq" ? "Groq configurado" : status.data?.provider === "gemini" ? "Gemini configurado" : "Ollama conectado", tone: "online" }
       : status.data?.reachable
         ? { label: "Sin modelo instalado", tone: "offline" }
-        : { label: "Ollama sin conexión", tone: "offline" };
+        : { label: status.data?.provider === "groq" ? "Groq sin configurar" : status.data?.provider === "gemini" ? "Gemini sin configurar" : "Ollama sin conexión", tone: "offline" };
   return (
     <section className="section-card ai-assistant" aria-labelledby="ai-title">
       <header className="section-card-heading ai-assistant-heading">
@@ -162,10 +162,10 @@ export function AiAssistant({ context }: { context: AssistantContext | null }) {
       <div className="ai-assistant-config">
         <label>
           <Cpu aria-hidden="true" />
-          <span>Modelo Ollama</span>
+          <span>Modelo de IA</span>
           {models.length ? (
             <DashboardSelect
-              aria-label="Modelo de Ollama"
+              aria-label="Modelo de IA"
               value={model ?? ""}
               onChange={(e) => setChosenModel(e.target.value)}
             >
@@ -193,9 +193,9 @@ export function AiAssistant({ context }: { context: AssistantContext | null }) {
       </div>
       {!status.isPending && !online && (
         <p className="ai-offline-notice">
-          <strong>Ollama no está conectado.</strong> Las respuestas son lecturas
+          <strong>El asistente no está conectado.</strong> Las respuestas son lecturas
           automáticas calculadas con reglas sobre los mismos datos. Configura{" "}
-          <code>OLLAMA_URL</code> y <code>OLLAMA_MODEL</code> para activar el
+          <code>{status.data?.provider === "gemini" ? "GEMINI_API_KEY" : status.data?.provider === "ollama" ? "OLLAMA_URL" : "GROQ_API_KEY"}</code> en el servidor para activar el
           modelo.
         </p>
       )}
@@ -231,8 +231,8 @@ export function AiAssistant({ context }: { context: AssistantContext | null }) {
               {entry.role === "assistant" && (
                 <small>
                   {entry.source === "ollama"
-                    ? `Ollama · ${entry.model}`
-                    : "Lectura automática · sin Ollama"}
+                    ? `IA · ${entry.model}`
+                    : "Lectura automática · sin modelo de IA"}
                 </small>
               )}
             </div>

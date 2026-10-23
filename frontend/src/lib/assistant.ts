@@ -7,6 +7,7 @@ export interface AssistantMessage {
   content: string;
 }
 export interface AssistantStatus {
+  provider?: "gemini" | "ollama" | "groq";
   reachable: boolean;
   models: string[];
   defaultModel: string | null;

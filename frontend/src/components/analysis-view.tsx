@@ -61,6 +61,7 @@ export function AnalysisView({ onLaboratory }: { onLaboratory: () => void }) {
   const [search, setSearch] = useState("");
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
+  const [asking, setAsking] = useState(false);
   const data = demo[territory];
   const [from, to] = period.split("-").map(Number);
   const indices = years
@@ -274,11 +275,10 @@ export function AnalysisView({ onLaboratory }: { onLaboratory: () => void }) {
           <option value="national">Comparar: Nacional</option>
           <option value="none">Sin comparación</option>
         </DashboardSelect>
-        <button className="analysis-reset" onClick={reset}>
+        <button type="button" className="analysis-reset" onClick={reset} aria-label="Restablecer preferencias del análisis" title="Restablecer preferencias">
           <span>
             <RotateCw size={17} />
           </span>
-          <u>Restablecer</u>
         </button>
         </div>
       </div>
@@ -566,16 +566,29 @@ export function AnalysisView({ onLaboratory }: { onLaboratory: () => void }) {
               <Dialog.Content className="dialog-content analysis-question">
                 <Dialog.Title>Explora esta lectura</Dialog.Title>
                 <Dialog.Description>
-                  Resumen ilustrativo calculado con los datos de demostración de
-                  esta pantalla.
+                  El asistente consulta el histórico estatal y el pronóstico del servidor. Las tarjetas ilustrativas pueden diferir de esos datos.
                 </Dialog.Description>
                 <p>{summary}</p>
                 <form
-                  onSubmit={(e) => {
+                  onSubmit={async (e) => {
                     e.preventDefault();
-                    setAnswer(
-                      `En esta muestra, ${rows[0]?.name ?? territory} presenta ${percent(rows[0]?.value ?? participation)} de participación. ${summary} Estos datos son ilustrativos; no permiten concluir causas ni efectos de intervenciones.`,
-                    );
+                    if (asking) return;
+                    setAsking(true);
+                    setAnswer("");
+                    try {
+                      const state = stateCatalog.find((entry) => entry.name === territory);
+                      if (!state) throw new Error("No se encontró el código del estado.");
+                      const response = await fetch("/api/assistant", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ state_code: state.code, messages: [{ role: "user", content: `Periodo seleccionado: ${from}–${to}. ${question}` }] }),
+                      });
+                      const reply = await response.json();
+                      if (!response.ok) throw new Error(reply.detail ?? "No se pudo consultar la IA.");
+                      setAnswer(reply.answer);
+                    } catch (error) {
+                      setAnswer(error instanceof Error ? error.message : "No se pudo consultar la IA.");
+                    } finally { setAsking(false); }
                   }}
                 >
                   <label>
@@ -587,8 +600,8 @@ export function AnalysisView({ onLaboratory }: { onLaboratory: () => void }) {
                       required
                     />
                   </label>
-                  <button type="submit" className="analysis-export">
-                    Consultar la muestra
+                  <button type="submit" className="analysis-export" disabled={asking}>
+                    {asking ? "Consultando…" : "Consultar a la IA"}
                   </button>
                 </form>
                 {answer && <p role="status">{answer}</p>}

@@ -10,7 +10,11 @@ import {
 import type { Indicator, ModelMetrics, Page, Predictions } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
-// The model is not chosen yet: any model installed in Ollama can be used.
+import { generateGroqReply } from "@/lib/groq";
+import { generateGeminiReply } from "@/lib/gemini";
+const provider = () => process.env.AI_PROVIDER === "ollama" ? "ollama" : process.env.AI_PROVIDER === "gemini" ? "gemini" : "groq";
+const groqModel = () => process.env.GROQ_MODEL || "qwen/qwen3.8-27b";
+const geminiModel = () => process.env.GEMINI_MODEL || "gemini-2.5-flash";
 const ollamaUrl = () => process.env.OLLAMA_URL || "http://127.0.0.1:11434";
 const detail = (message: string, status: number) =>
   NextResponse.json({ detail: message }, { status });
@@ -38,8 +42,15 @@ const defaultModel = (models: string[]) => {
 };
 
 export async function GET() {
+  if (provider() === "groq") {
+    return NextResponse.json({ provider: "groq", reachable: !!process.env.GROQ_API_KEY, models: [groqModel()], defaultModel: groqModel() }, { headers: { "Cache-Control": "no-store" } });
+  }
+  if (provider() === "gemini") {
+    return NextResponse.json({ provider: "gemini", reachable: !!process.env.GEMINI_API_KEY, models: [geminiModel()], defaultModel: geminiModel() }, { headers: { "Cache-Control": "no-store" } });
+  }
   const models = await installedModels();
   const status: AssistantStatus = {
+    provider: "ollama",
     reachable: models != null,
     models: models ?? [],
     defaultModel: models ? defaultModel(models) : null,
@@ -112,13 +123,20 @@ export async function POST(req: NextRequest) {
       : null;
   if (!messages || !stateCode) return detail("Solicitud inválida.", 400);
 
-  const models = await installedModels();
-  if (!models) return detail("Ollama sin conexión.", 503);
-  const model =
-    typeof body.model === "string" && models.includes(body.model)
-      ? body.model
-      : defaultModel(models);
-  if (!model) return detail("No hay un modelo de Ollama disponible.", 503);
+  let model: string;
+  if (provider() === "groq") {
+    if (!process.env.GROQ_API_KEY) return detail("Falta configurar GROQ_API_KEY en el servidor.", 503);
+    model = groqModel();
+  } else if (provider() === "gemini") {
+    if (!process.env.GEMINI_API_KEY) return detail("Falta configurar GEMINI_API_KEY en el servidor.", 503);
+    model = geminiModel();
+  } else {
+    const models = await installedModels();
+    if (!models) return detail("Ollama sin conexión.", 503);
+    const selectedModel = typeof body.model === "string" && models.includes(body.model) ? body.model : defaultModel(models);
+    if (!selectedModel) return detail("No hay un modelo de Ollama disponible.", 503);
+    model = selectedModel;
+  }
 
   let data: Awaited<ReturnType<typeof ineData>>;
   try {
@@ -142,6 +160,22 @@ export async function POST(req: NextRequest) {
       selected?.model_name ?? data.predictions.forecast.provenance.model_name,
     maePP: selected?.metrics.holdout_2024.mae_pp ?? null,
   });
+  if (provider() === "groq") {
+    try {
+      const answer = await generateGroqReply({ apiKey: process.env.GROQ_API_KEY!, model, system: systemPrompt(context), messages });
+      return NextResponse.json({ answer, model }, { headers: { "Cache-Control": "no-store" } });
+    } catch (error) {
+      return detail(error instanceof Error ? error.message : "Groq no está disponible.", 502);
+    }
+  }
+  if (provider() === "gemini") {
+    try {
+      const answer = await generateGeminiReply({ apiKey: process.env.GEMINI_API_KEY!, model, system: systemPrompt(context), messages });
+      return NextResponse.json({ answer, model }, { headers: { "Cache-Control": "no-store" } });
+    } catch (error) {
+      return detail(error instanceof Error ? error.message : "Gemini no está disponible.", 502);
+    }
+  }
   try {
     const response = await fetch(new URL("/api/chat", ollamaUrl()), {
       method: "POST",
