@@ -1,4 +1,7 @@
-import json, urllib.request, urllib.error, math
+import json
+import math
+import urllib.error
+import urllib.request
 
 base = "http://127.0.0.1:3000/api/backend/"
 
