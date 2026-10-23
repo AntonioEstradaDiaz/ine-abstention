@@ -100,25 +100,26 @@ jobs:
         run: |
           npm ci --no-audit --no-fund
           npx playwright install --with-deps chromium
-      - name: Test ML scenarios and build
+      - name: Test frontend units (ML, Groq, Gemini) and build
         working-directory: frontend
         run: |
-          npm run test:ml
+          npm run test:unit
           npm run build
           npm run typecheck
       - name: Start frontend and run all browser tests
         working-directory: frontend
         run: |
-          mkdir -p test-results
-          npm start > test-results/frontend.log 2>&1 &
-          echo "$!" > test-results/frontend.pid
-          trap 'kill "$(cat test-results/frontend.pid)" 2>/dev/null || true' EXIT
+          mkdir -p ../tmp
+          npm start > ../tmp/frontend.log 2>&1 &
+          FRONTEND_PID=$!
+          trap 'kill "$FRONTEND_PID" 2>/dev/null || true' EXIT
           curl --fail --silent --output /dev/null --retry 30 --retry-connrefused --retry-delay 2 http://127.0.0.1:3000
           npm run test:e2e
       - name: Capture service logs
         if: always()
         run: |
           mkdir -p frontend/test-results
+          if [ -f tmp/frontend.log ]; then cp tmp/frontend.log frontend/test-results/frontend.log; fi
           docker compose --env-file .env.docker.example logs --no-color > frontend/test-results/backend.log 2>&1
       - name: Upload browser results, screenshots and traces
         if: always()

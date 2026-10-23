@@ -9,8 +9,9 @@ fijadas a commits concretos.
 
 - **Backend:** Ruff, pruebas unitarias, ML y todas las familias de integración,
   con advertencias como errores; también comprueba la API real mediante HTTP.
-- **Frontend:** pruebas de escenarios ML, compilación, TypeScript y todas las
-  pruebas Playwright contra la API real. Las pruebas del asistente simulan Ollama.
+- **Frontend:** pruebas unitarias de escenarios ML, Groq y Gemini, compilación,
+  TypeScript y todas las pruebas Playwright contra la API real. Las pruebas
+  del asistente simulan Groq, Gemini y Ollama, sin utilizar claves reales.
 
 Cada job crea su propio PostgreSQL/PostGIS con Docker Compose, aplica las
 migraciones y restaura agregados oficiales. No utiliza Supabase, credenciales
@@ -18,6 +19,12 @@ de producción ni secretos de GitHub. Los permisos del token son de lectura.
 Al finalizar se retiran los servicios y volúmenes del runner temporal.
 Los resultados y logs se conservan como artefactos durante siete días;
 Playwright añade capturas y trazas de las pruebas fallidas.
+
+`main` exige pull request y los checks `Backend (unit, ML, integration)` y
+`Frontend (ML, types, build, browser)` emitidos por GitHub Actions. La rama del PR
+debe estar al día con `main`. La protección también se aplica a administradores;
+no exige una aprobación humana adicional. Si cambian los nombres de esos jobs,
+deben actualizarse también los checks obligatorios en la configuración de GitHub.
 
 ## Datos y modelos reproducibles
 
