@@ -48,7 +48,7 @@ const years = [2018, 2021, 2024];
 const percent = (n: number) => `${n.toFixed(1)}%`;
 const points = (n: number) => `${n > 0 ? "+" : ""}${n.toFixed(1)} pp`;
 export function AnalysisView({ onLaboratory }: { onLaboratory: () => void }) {
-  const [filtersOpen, setFiltersOpen] = useState(true);
+  const [stateQuery, setStateQuery] = useState("");
   const [territory, setTerritory] = useState<Territory>("Guerrero");
   const [period, setPeriod] = useState("2018-2024");
   const [level, setLevel] = useState("municipality");
@@ -205,18 +205,36 @@ export function AnalysisView({ onLaboratory }: { onLaboratory: () => void }) {
         role="group"
         aria-label="Filtros del análisis"
       >
-        <button
-          type="button"
-          className="analysis-filter-icon"
-          aria-label={filtersOpen ? "Ocultar filtros del análisis" : "Mostrar filtros del análisis"}
-          aria-expanded={filtersOpen}
-          aria-controls="analysis-filter-options"
-          title={filtersOpen ? "Ocultar filtros" : "Mostrar filtros"}
-          onClick={() => setFiltersOpen((open) => !open)}
-        >
-          <SlidersHorizontal size={19} aria-hidden="true" />
-        </button>
-        <div id="analysis-filter-options" className="analysis-filter-options" hidden={!filtersOpen}>
+        <Dialog.Root onOpenChange={() => setStateQuery("")}>
+          <Dialog.Trigger asChild>
+            <button type="button" className="analysis-filter-icon" aria-label="Buscar estado para el análisis" title="Buscar estado">
+              <SlidersHorizontal size={19} aria-hidden="true" />
+            </button>
+          </Dialog.Trigger>
+          <Dialog.Portal>
+            <Dialog.Overlay className="dialog-overlay" />
+            <Dialog.Content className="dialog-content analysis-question analysis-state-search">
+              <Dialog.Title>Buscar estado</Dialog.Title>
+              <Dialog.Description>Selecciona un estado para actualizar las métricas, la gráfica y el detalle municipal. Esta muestra contiene tres estados con datos ilustrativos.</Dialog.Description>
+              <label htmlFor="analysis-state-query">Nombre del estado</label>
+              <input id="analysis-state-query" placeholder="Escribe un estado…" value={stateQuery} onChange={(event) => setStateQuery(event.target.value)} autoComplete="off" />
+              <div className="analysis-state-results" aria-live="polite">
+                {(Object.keys(demo) as Territory[]).filter((name) => name.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase().includes(stateQuery.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase().trim())).map((name) => (
+                  <Dialog.Close asChild key={name}>
+                    <button type="button" className="analysis-state-result" onClick={() => { setTerritory(name); setSearch(""); setAnswer(""); }}>
+                      <MapPin size={20} aria-hidden="true" />
+                      <span><strong>{name}</strong><small>{demo[name].count} municipios · Datos ilustrativos</small></span>
+                      <span className="analysis-state-action">{territory === name ? "Actual" : "Seleccionar"}</span>
+                    </button>
+                  </Dialog.Close>
+                ))}
+                {!(Object.keys(demo)).some((name) => name.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase().includes(stateQuery.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase().trim())) && <p role="status">No hay datos para ese estado en esta muestra. Prueba Guerrero, Morelos o Baja California.</p>}
+              </div>
+              <Dialog.Close asChild><button className="analysis-dialog-close" aria-label="Cerrar búsqueda de estados"><X size={20} /></button></Dialog.Close>
+            </Dialog.Content>
+          </Dialog.Portal>
+        </Dialog.Root>
+        <div className="analysis-filter-options">
         <DashboardSelect
           aria-label="Territorio del análisis"
           value={territory}
@@ -260,7 +278,6 @@ export function AnalysisView({ onLaboratory }: { onLaboratory: () => void }) {
           <u>Restablecer</u>
         </button>
         </div>
-        {!filtersOpen && <span className="analysis-filter-summary">{territory} · {period.replace("-", " – ")} · Filtros ocultos</span>}
       </div>
       <div className="analysis-kpis">
         {kpis.map(({ label, value, icon: Icon, trend }) => (

@@ -901,7 +901,15 @@
 }
 
 .analysis-filter-options { display: contents; }
-.analysis-filter-options[hidden] { display: none; }
 .analysis-filter-icon { background: #fff; }
-.analysis-filter-icon:hover, .analysis-filter-icon[aria-expanded="false"] { background: #fff0f8; border-color: #ed008c; color: #ed008c; }
+.analysis-filter-icon:hover { background: #fff0f8; border-color: #ed008c; color: #ed008c; }
 .analysis-filter-summary { color: #53668d; font-size: 12px; line-height: 1.5; min-width: 0; }
+
+.analysis-state-search label { display: block; font-size: 13px; color: #33476c; margin: 18px 0 8px; }
+.analysis-state-results { display: grid; gap: 8px; margin-top: 16px; max-height: min(320px, 45vh); overflow-y: auto; }
+.analysis-state-result { display: flex; align-items: center; gap: 12px; width: 100%; border: 1px solid #e6edf6; border-radius: 10px; background: #fff; padding: 14px; color: #ed008c; text-align: left; }
+.analysis-state-result:hover { background: #fff0f8; border-color: #f8aad7; }
+.analysis-state-result > span:first-of-type { display: grid; gap: 4px; color: #07143c; }
+.analysis-state-result strong { font-size: 14px; }
+.analysis-state-result small { font-size: 11px; color: #607195; }
+.analysis-state-action { margin-left: auto; font-size: 11px; }
