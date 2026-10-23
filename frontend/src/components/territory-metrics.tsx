@@ -196,6 +196,7 @@ export function TerritoryMetrics({
           role="tabpanel"
           aria-labelledby={`${id}-tab-${tabs.indexOf(tab)}`}
           className="territory-metrics-body"
+          data-tab={tab}
           tabIndex={0}
         >
           {tab === "Resumen" && (
