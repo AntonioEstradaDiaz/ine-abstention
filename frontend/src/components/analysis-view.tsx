@@ -20,7 +20,10 @@ import {
 } from "lucide-react";
 import { DashboardSelect } from "./ui/dashboard-select";
 import { Chart, chartTooltip } from "./chart";
-const demo = {
+import stateCatalog from "@/lib/analysis-states.json";
+type AnalysisData = { rates: number[]; count: number | null; names: string[]; values: number[]; changes: number[] };
+const demo: Record<string, AnalysisData> = {
+  ...Object.fromEntries(stateCatalog.map((state) => [state.name, { rates: state.rates, count: null, names: [], values: [], changes: [] }])),
   Guerrero: {
     rates: [58.4, 54, 60.8],
     count: 85,
@@ -174,7 +177,7 @@ export function AnalysisView({ onLaboratory }: { onLaboratory: () => void }) {
     },
     {
       label: level === "municipality" ? "Municipios" : "Entidades",
-      value: level === "municipality" ? String(data.count) : "1",
+      value: level === "municipality" ? (data.count === null ? "—" : String(data.count)) : "1",
       icon: MapPin,
       trend: "bars",
     },
@@ -215,20 +218,20 @@ export function AnalysisView({ onLaboratory }: { onLaboratory: () => void }) {
             <Dialog.Overlay className="dialog-overlay" />
             <Dialog.Content className="dialog-content analysis-question analysis-state-search">
               <Dialog.Title>Buscar estado</Dialog.Title>
-              <Dialog.Description>Selecciona un estado para actualizar las métricas, la gráfica y el detalle municipal. Esta muestra contiene tres estados con datos ilustrativos.</Dialog.Description>
+              <Dialog.Description>Selecciona un estado para actualizar las métricas, la gráfica y el detalle municipal. Busca entre las 32 entidades federativas. Las cifras municipales se muestran solo cuando están disponibles.</Dialog.Description>
               <label htmlFor="analysis-state-query">Nombre del estado</label>
               <input id="analysis-state-query" placeholder="Escribe un estado…" value={stateQuery} onChange={(event) => setStateQuery(event.target.value)} autoComplete="off" />
               <div className="analysis-state-results" aria-live="polite">
                 {(Object.keys(demo) as Territory[]).filter((name) => name.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase().includes(stateQuery.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase().trim())).map((name) => (
                   <Dialog.Close asChild key={name}>
-                    <button type="button" className="analysis-state-result" onClick={() => { setTerritory(name); setSearch(""); setAnswer(""); }}>
+                    <button type="button" className="analysis-state-result" onClick={() => { setTerritory(name); if (demo[name].count === null) setLevel("state"); setSearch(""); setAnswer(""); }}>
                       <MapPin size={20} aria-hidden="true" />
-                      <span><strong>{name}</strong><small>{demo[name].count} municipios · Datos ilustrativos</small></span>
+                      <span><strong>{name}</strong><small>{demo[name].count === null ? "Datos estatales disponibles" : `${demo[name].count} municipios · Datos ilustrativos`}</small></span>
                       <span className="analysis-state-action">{territory === name ? "Actual" : "Seleccionar"}</span>
                     </button>
                   </Dialog.Close>
                 ))}
-                {!(Object.keys(demo)).some((name) => name.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase().includes(stateQuery.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase().trim())) && <p role="status">No hay datos para ese estado en esta muestra. Prueba Guerrero, Morelos o Baja California.</p>}
+                {!(Object.keys(demo)).some((name) => name.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase().includes(stateQuery.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase().trim())) && <p role="status">No encontramos ese estado. Revisa el nombre o prueba con otro término.</p>}
               </div>
               <Dialog.Close asChild><button className="analysis-dialog-close" aria-label="Cerrar búsqueda de estados"><X size={20} /></button></Dialog.Close>
             </Dialog.Content>
@@ -238,7 +241,7 @@ export function AnalysisView({ onLaboratory }: { onLaboratory: () => void }) {
         <DashboardSelect
           aria-label="Territorio del análisis"
           value={territory}
-          onChange={(e) => setTerritory(e.target.value as Territory)}
+          onChange={(e) => { setTerritory(e.target.value as Territory); if (demo[e.target.value].count === null) setLevel("state"); setSearch(""); }}
         >
           {Object.keys(demo).map((name) => (
             <option key={name} value={name}>
@@ -392,9 +395,9 @@ export function AnalysisView({ onLaboratory }: { onLaboratory: () => void }) {
                 },
                 yAxis: {
                   type: "value",
-                  min: metric === "participation" ? 40 : 25,
-                  max: metric === "participation" ? 70 : 65,
-                  interval: 10,
+                  min: 0,
+                  max: 100,
+                  interval: 20,
                   axisLabel: {
                     formatter: "{value}%",
                     color: "#52688a",
@@ -490,8 +493,8 @@ export function AnalysisView({ onLaboratory }: { onLaboratory: () => void }) {
                   25 +
                     (1 -
                       (chartValues.at(-1)! -
-                        (metric === "participation" ? 40 : 25)) /
-                        (metric === "participation" ? 30 : 40)) *
+                        0) /
+                        100) *
                       188 -
                     70,
                 ),
@@ -700,13 +703,13 @@ export function AnalysisView({ onLaboratory }: { onLaboratory: () => void }) {
             </table>
             {!rows.length && (
               <p className="analysis-empty">
-                No hay municipios que coincidan con la búsqueda.
+                {data.count === null ? "No hay desglose municipal disponible para este estado. Selecciona Nivel: Estado para consultar sus estadísticas." : "No hay municipios que coincidan con la búsqueda."}
               </p>
             )}
           </div>
           <footer>
             <span>
-              {rows.length} de {level === "municipality" ? data.count : 1}{" "}
+              {rows.length} de {level === "municipality" ? (data.count ?? "—") : 1}{" "}
               {level === "municipality" ? "municipios" : "entidades"}
               <span className="analysis-sample-note">
                 {" "}
