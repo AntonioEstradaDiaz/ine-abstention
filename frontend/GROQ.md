@@ -14,3 +14,27 @@ El modelo explica los datos estatales y los pronósticos que el servidor consult
 Los errores de autenticación, modelo, cuota o conexión no exponen respuestas internas ni claves. Gemini y Ollama siguen disponibles si se seleccionan explícitamente con `AI_PROVIDER`.
 
 Pruebas sin API real: `node --experimental-strip-types --test tests/groq.test.mts tests/gemini.test.mts`.
+
+## Despliegue temporal en Vercel (Antonio)
+
+1. Importar `AntonioEstradaDiaz/ine-abstention` desde la cuenta propietaria del repositorio.
+2. Elegir la rama `feat/dashboard-riesgo-abstencion`, que incluye la integración. Si se despliega `main`, primero integrar esta rama en ella.
+3. Framework: **Next.js**. Root Directory: **frontend**. Mantener el build `npm run build` y la salida predeterminada de Next.js.
+4. En Environment Variables agregar, para el entorno que se vaya a desplegar:
+
+```env
+AI_PROVIDER=groq
+GROQ_API_KEY=CLAVE_PRIVADA_DE_GROQ
+GROQ_MODEL=qwen/qwen3.8-27b
+PULSO_PREVIEW=1
+```
+
+`CLAVE_PRIVADA_DE_GROQ` es un marcador: Antonio debe sustituirlo por una clave válida en Vercel, nunca en un archivo del repositorio. Puede crear una clave propia desde su cuenta de Groq. No necesita claves de Gemini ni Ollama.
+
+5. Desplegar; si se agregaron variables después del primer despliegue, hacer **Redeploy**.
+6. Abrir el enlace público, seleccionar Yucatán en Análisis y usar **Preguntar a la IA**. También probar el asistente de Predicciones. Una respuesta de Groq debe mostrarse con datos del estado; «configurado» por sí solo no confirma una respuesta real.
+7. Para los evaluadores, compartir la URL de producción accesible sin iniciar sesión y comprobarla en una ventana privada.
+
+Esta demo sirve los datos y pronósticos de la instantánea del repositorio. `PULSO_PREVIEW=1` evita depender de localhost o de una base de datos externa; no es una conexión al backend real. Para usar el backend desplegado, quitar esta variable y establecer `BACKEND_URL` con su URL pública.
+
+Al finalizar la evaluación, eliminar el despliegue y revocar la clave temporal. GitHub Pages no ejecuta esta API de Next.js.
