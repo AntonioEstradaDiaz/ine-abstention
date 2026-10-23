@@ -111,7 +111,7 @@
   flex-shrink: 0;
   color: #23365e;
 }
-.analysis-filters > .dashboard-select-trigger {
+.analysis-filter-options > .dashboard-select-trigger {
   height: 40px;
   min-width: 0;
   width: calc(17% + 5px);
@@ -121,7 +121,7 @@
   border-color: #dce5f2;
   flex-shrink: 1;
 }
-.analysis-filters > .dashboard-select-trigger:nth-of-type(1) {
+.analysis-filter-options > .dashboard-select-trigger:nth-of-type(1) {
   width: 15%;
 }
 .analysis-reset {
@@ -666,7 +666,7 @@
     gap: 9px;
     padding-inline: 10px;
   }
-  .analysis-filters > .dashboard-select-trigger {
+  .analysis-filter-options > .dashboard-select-trigger {
     font-size: 12px;
     padding: 8px;
   }
@@ -704,14 +704,12 @@
   .analysis-filters {
     flex-wrap: wrap;
   }
-  .analysis-filters > .dashboard-select-trigger,
-  .analysis-filters > .dashboard-select-trigger:nth-of-type(1) {
+  .analysis-filter-options > .dashboard-select-trigger,
+  .analysis-filter-options > .dashboard-select-trigger:nth-of-type(1) {
     width: calc(50% - 7px);
     flex: 1 1 calc(40% - 7px);
   }
-  .analysis-filter-icon {
-    display: none;
-  }
+
   .analysis-reset {
     margin-left: auto;
   }
@@ -827,8 +825,8 @@
   .analysis-sample-note {
     display: none;
   }
-  .analysis-filters > .dashboard-select-trigger,
-  .analysis-filters > .dashboard-select-trigger:nth-of-type(1) {
+  .analysis-filter-options > .dashboard-select-trigger,
+  .analysis-filter-options > .dashboard-select-trigger:nth-of-type(1) {
     font-size: 11px;
   }
   .analysis-reset {
@@ -901,3 +899,9 @@
     font-size: 11px;
   }
 }
+
+.analysis-filter-options { display: contents; }
+.analysis-filter-options[hidden] { display: none; }
+.analysis-filter-icon { background: #fff; }
+.analysis-filter-icon:hover, .analysis-filter-icon[aria-expanded="false"] { background: #fff0f8; border-color: #ed008c; color: #ed008c; }
+.analysis-filter-summary { color: #53668d; font-size: 12px; line-height: 1.5; min-width: 0; }

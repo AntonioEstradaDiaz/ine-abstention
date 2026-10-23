@@ -48,6 +48,7 @@ const years = [2018, 2021, 2024];
 const percent = (n: number) => `${n.toFixed(1)}%`;
 const points = (n: number) => `${n > 0 ? "+" : ""}${n.toFixed(1)} pp`;
 export function AnalysisView({ onLaboratory }: { onLaboratory: () => void }) {
+  const [filtersOpen, setFiltersOpen] = useState(true);
   const [territory, setTerritory] = useState<Territory>("Guerrero");
   const [period, setPeriod] = useState("2018-2024");
   const [level, setLevel] = useState("municipality");
@@ -204,9 +205,18 @@ export function AnalysisView({ onLaboratory }: { onLaboratory: () => void }) {
         role="group"
         aria-label="Filtros del análisis"
       >
-        <span className="analysis-filter-icon" aria-hidden="true">
-          <SlidersHorizontal size={19} />
-        </span>
+        <button
+          type="button"
+          className="analysis-filter-icon"
+          aria-label={filtersOpen ? "Ocultar filtros del análisis" : "Mostrar filtros del análisis"}
+          aria-expanded={filtersOpen}
+          aria-controls="analysis-filter-options"
+          title={filtersOpen ? "Ocultar filtros" : "Mostrar filtros"}
+          onClick={() => setFiltersOpen((open) => !open)}
+        >
+          <SlidersHorizontal size={19} aria-hidden="true" />
+        </button>
+        <div id="analysis-filter-options" className="analysis-filter-options" hidden={!filtersOpen}>
         <DashboardSelect
           aria-label="Territorio del análisis"
           value={territory}
@@ -249,6 +259,8 @@ export function AnalysisView({ onLaboratory }: { onLaboratory: () => void }) {
           </span>
           <u>Restablecer</u>
         </button>
+        </div>
+        {!filtersOpen && <span className="analysis-filter-summary">{territory} · {period.replace("-", " – ")} · Filtros ocultos</span>}
       </div>
       <div className="analysis-kpis">
         {kpis.map(({ label, value, icon: Icon, trend }) => (
