@@ -34,6 +34,24 @@ usa una muestra ilustrativa identificada como no oficial; no habilita series mun
 Reportes ofrece configuración y vista previa del documento; la generación de PDF/PowerPoint/Excel
 y los envíos programados todavía no están implementados.
 
+## Acceso y revisión de Supabase Auth
+
+El frontend incorpora login, registro, recuperación y cierre de sesión con Supabase Auth.
+El proyecto real es `ine-abstention` (`npzgdyyzdcsdadtfxhmr`): correo y registro habilitados,
+confirmación de correo obligatoria y acceso anónimo deshabilitado. El frontend local ya tiene
+la URL y clave publicable reales en un archivo ignorado por Git.
+
+La prueba real todavía está incompleta. Se intentaron dos cuentas ficticias,
+`pulso.qa.20261025.1@example.com` y `pulso.qa.20261025.2@example.com`, pero Supabase rechazó
+ambos registros; **no son usuarios creados**. Faltan el acceso administrativo para provisionarlas
+y la validación de Site URL, redirecciones, SMTP y plantillas. Los correos ficticios no permiten
+verificar recepción de confirmaciones o recuperación. Los detalles y resultados comprobados
+están en [la guía de Auth](frontend/AUTH.md#revisión-del-proyecto-real), sin contraseñas ni claves.
+
+Se verificaron contra el servicio real los rechazos de acceso anónimo y enlaces inválidos.
+La creación administrativa de las cuentas de prueba y la aceptación de los casos válidos
+requieren una sesión autenticada en el panel de Supabase.
+
 ## Laboratorio de machine learning e IA
 
 La sección **Laboratorio de modelos** compara Ridge, Random Forest, XGBoost y LightGBM con dos referencias históricas. Los seis estimadores se entrenan con los agregados estatales 2009–2024: 192 observaciones y 128 ejemplos supervisados. Esta corrida usa la muestra CSV, sin desgloses demográficos; sus métricas no sustituyen las del experimento original con variables adicionales.

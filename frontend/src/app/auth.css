@@ -213,8 +213,10 @@
   color: #5b6680;
   cursor: pointer;
 }
-.auth-input button:hover {
-  background: #fff0f8;
+@media (hover: hover) {
+  .auth-input button:hover {
+    background: #fff0f8;
+  }
 }
 .auth-input button svg {
   width: 20px;
@@ -259,8 +261,10 @@
   font-size: 15px;
   text-decoration: none;
 }
-.auth-options a:hover {
-  text-decoration: underline;
+@media (hover: hover) {
+  .auth-options a:hover {
+    text-decoration: underline;
+  }
 }
 .auth-panel form > label.auth-consent {
   font-size: 14px;
@@ -286,17 +290,31 @@
   font-size: 18px;
   font-weight: 500;
   cursor: pointer;
-  transition:
-    transform 0.15s,
-    box-shadow 0.15s;
+  transition: box-shadow 150ms ease-out;
 }
 .auth-primary svg {
   width: 22px;
   height: 22px;
 }
-.auth-primary:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 16px 26px #e5007e40;
+@media (hover: hover) {
+  .auth-primary:hover:not(:disabled) {
+    box-shadow: 0 16px 26px #e5007e40;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .auth-primary {
+    transition:
+      transform 150ms ease-out,
+      box-shadow 150ms ease-out;
+  }
+  @media (hover: hover) {
+    .auth-primary:hover:not(:disabled) {
+      transform: translateY(-1px);
+    }
+  }
+  .auth-primary:active:not(:disabled) {
+    transform: scale(0.96);
+  }
 }
 .auth-primary:disabled {
   opacity: 0.55;
@@ -366,8 +384,10 @@
   color: #4a5876;
   cursor: pointer;
 }
-.auth-panel footer button:hover {
-  color: #e5007e;
+@media (hover: hover) {
+  .auth-panel footer button:hover {
+    color: #e5007e;
+  }
 }
 .auth-notice {
   display: flex;
