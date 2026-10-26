@@ -26,11 +26,18 @@ import { MLLaboratoryView } from "./ml-laboratory";
 import { DashboardInsights } from "./dashboard-insights";
 import { DesignTop, type PageHeading } from "./design-top";
 import { Reports } from "./reports";
-import { DataSources } from "./data-sources";
+import { DataHeaderStats, DataSources } from "./data-sources";
 import { TerritoryMetrics } from "./territory-metrics";
 
 type View =
-  "map" | "trends" | "predictions" | "scenarios" | "ml" | "laboratory" | "reports" | "data";
+  | "map"
+  | "trends"
+  | "predictions"
+  | "scenarios"
+  | "ml"
+  | "laboratory"
+  | "reports"
+  | "data";
 const sections = [
   {
     id: "laboratory" as const,
@@ -104,15 +111,15 @@ const headings: Partial<Record<View, PageHeading>> = {
   },
   reports: {
     lead: "Reportes y",
-    highlight: "Exportaciones",
+    highlight: "Documentos",
     subtitle:
-      "Consulta, filtra y descarga reportes territoriales con datos oficiales del INE.",
+      "Genera, personaliza y descarga reportes sobre la abstención electoral con información confiable y actualizada.",
   },
   data: {
-    lead: "Datos y",
-    highlight: "Fuentes Oficiales",
+    lead: "Gestión de",
+    highlight: "Datos",
     subtitle:
-      "Cobertura histórica, procedencia y definiciones de los datos que alimentan el tablero.",
+      "Consulta, explora y administra la información utilizada en los análisis y modelos de abstención electoral.",
   },
 };
 const titleCase = (name: string) =>
@@ -177,6 +184,15 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
       <DesignTop
         view={view}
         heading={headings[view]}
+        aside={
+          view === "data" ? (
+            <DataHeaderStats
+              forecast={forecast}
+              sources={sources.data?.items}
+              states={items?.length ?? 0}
+            />
+          ) : view === "reports" ? null : undefined
+        }
         search={search}
         year={year}
         elections={elections.data ?? [{ id: 2024, year: 2024 }]}
@@ -400,11 +416,9 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
             <Reports
               states={items ?? []}
               forecast={forecast}
-              indicators={indicators.data?.items}
               elections={elections.data ?? []}
               selected={selected}
               year={year}
-              search={search}
               loading={predictions.isPending}
               error={predictions.error}
               retry={() => void predictions.refetch()}
@@ -417,6 +431,8 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
               states={items ?? []}
               forecast={forecast}
               search={search}
+              onSearch={setSearch}
+              year={year}
               selected={selected}
               preview={preview}
             />

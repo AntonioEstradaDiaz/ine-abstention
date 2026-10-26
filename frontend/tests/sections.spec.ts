@@ -20,18 +20,18 @@ test("redesigned sections share the map header and four live metric cards", asyn
   page,
 }) => {
   await offlineAssistant(page);
-  for (const [section, title] of [
-    ["Predicciones", "Predicciones de Abstención 2027"],
-    ["Escenarios", "Escenarios de Participación"],
-    ["Reportes", "Reportes y Exportaciones"],
-    ["Datos", "Datos y Fuentes Oficiales"],
+  for (const [section, title, cards] of [
+    ["Predicciones", "Predicciones de Abstención 2027", ".page-kpi"],
+    ["Escenarios", "Escenarios de Participación", ".page-kpi"],
+    ["Reportes", "Reportes y Documentos", ".report-kpis > div"],
+    ["Datos", "Gestión de Datos", ".page-kpi"],
   ]) {
     await open(page, section);
     await expect(
       page.getByRole("button", { name: section, exact: true }),
     ).toHaveAttribute("aria-current", "page");
     await expect(page.getByRole("heading", { name: title })).toBeAttached();
-    await expect(page.locator(".page-kpi")).toHaveCount(4);
+    await expect(page.locator(cards)).toHaveCount(4);
     await expect(page.locator('[data-name="Indicador electoral"]')).toHaveCount(
       0,
     );
@@ -118,30 +118,48 @@ for (const { provider, connection, initialModel, chosenModel } of [
   });
 }
 
-test("reports preview the selected table and download it filtered", async ({
+test("reports preview the chosen state on the shared republic map", async ({
   page,
 }) => {
   await open(page, "Reportes");
-  await page.getByLabel("Buscar territorio").fill("baja");
-  const rows = page.locator(".section-table tbody tr");
-  await expect(rows).toHaveCount(2);
-  const download = page.waitForEvent("download");
   await page
-    .getByRole("button", { name: "Descargar CSV", exact: true })
+    .getByRole("combobox", { name: "Entidad del reporte", exact: true })
     .click();
-  expect((await download).suggestedFilename()).toBe(
-    "pulso-estimacion-2027.csv",
-  );
-  await page.getByRole("radio", { name: /Distribución del riesgo/ }).click();
-  await expect(rows).toHaveCount(3);
+  await page
+    .getByRole("option", { name: "Baja California", exact: true })
+    .click();
+  await expect(page.locator(".report-state")).toHaveText("Baja California");
+  await expect(
+    page.getByRole("img", { name: /Mapa de Baja California/ }),
+  ).toBeVisible();
+  await expect(page.locator(".report-findings li")).toHaveCount(4);
+  await page
+    .getByRole("button", { name: "Generar reporte", exact: true })
+    .click();
+  await expect(page.locator(".report-recent tbody tr")).toHaveCount(1);
 });
 
-test("data section lists official sources and the coverage heatmap", async ({
+test("data explorer filters, downloads and labels the illustrative municipal level", async ({
   page,
 }) => {
   await open(page, "Datos");
-  await expect(page.locator(".data-source-list li")).not.toHaveCount(0);
-  await expect(
-    page.getByRole("img", { name: /Mapa de calor de abstención observada/ }),
-  ).toBeVisible();
+  await expect(page.locator(".data-header-stats li")).toHaveCount(3);
+  const rows = page.locator(".data-table tbody tr");
+  await expect(rows).toHaveCount(10);
+  await page.getByLabel("Buscar en los datos").fill("baja");
+  await expect(rows).toHaveCount(2);
+  await page.getByRole("button", { name: /Descargar datos/ }).click();
+  const download = page.waitForEvent("download");
+  await page.getByRole("menuitem", { name: /CSV/ }).click();
+  const file = await download;
+  expect(file.suggestedFilename()).toBe("pulso-datos-estatal-2024.csv");
+  await page.getByLabel("Buscar en los datos").fill("");
+  await page.getByRole("radio", { name: /Municipal/ }).check();
+  await page
+    .getByRole("button", { name: "Aplicar filtros", exact: true })
+    .click();
+  await expect(page.locator(".data-illustrative")).toContainText(
+    "Datos ilustrativos",
+  );
+  await expect(rows).toHaveCount(5);
 });
