@@ -161,40 +161,13 @@ export function AuthScreen({
           className="auth-card"
           aria-label="Acceso al dashboard"
         >
-          <aside className="auth-art" aria-label="Inteligencia electoral">
-            <div className="auth-logo">
-              <img
-                src="/auth/ine-logo.png"
-                alt="INE · Instituto Nacional Electoral"
-              />
-            </div>
-            <div className="auth-visual">
-              <img
-                className="auth-illustration"
-                src="/auth/account-illustration-wide.png"
-                alt="Ilustración de una mujer con una tableta junto a un teléfono con acceso seguro al dashboard"
-              />
-            </div>
-            <div className="auth-art-caption">
-              <h2>
-                {register ? (
-                  <>
-                    Tu cuenta, <em>tu acceso</em>
-                  </>
-                ) : (
-                  <>
-                    Tu información,
-                    <br />
-                    <em>en un solo lugar</em>
-                  </>
-                )}
-              </h2>
-              <p>
-                {register
-                  ? "Regístrate y comienza a explorar tu dashboard."
-                  : "Accede a tu dashboard de forma sencilla y segura."}
-              </p>
-            </div>
+          <aside className="auth-reference" aria-label="Bienvenida del INE">
+            <img
+              src="/auth/welcome-reference.png"
+              alt="INE, Instituto Nacional Electoral. Tu información, en un solo lugar. Accede a tu dashboard de forma sencilla y segura."
+              width={663}
+              height={666}
+            />
           </aside>
           <div className="auth-panel">
             <header>
