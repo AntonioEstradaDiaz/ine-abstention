@@ -2,6 +2,70 @@
 
 Las pantallas `/login`, `/registro`, `/recuperar` y `/reset-password` usan usuarios reales de Supabase Auth. No hay usuarios ni contraseñas de demostración, ni credenciales guardadas en localStorage. El dashboard y las APIs `/api/backend/*` y `/api/assistant` requieren un usuario validado por Supabase. Sin configuración, el acceso queda cerrado y se muestra un aviso.
 
+## Revisión del proyecto real
+
+Revisión realizada el 25 de octubre de 2026. Los resultados son evidencia de esa fecha;
+no representan una monitorización continua de la configuración.
+
+Proyecto revisado: `ine-abstention` (`npzgdyyzdcsdadtfxhmr`). Estos resultados corresponden al
+servicio remoto real, no a la fixture de Playwright. Son una revisión parcial: no acreditan
+el recorrido completo de registro, confirmación, login, recuperación y logout con una cuenta válida.
+
+| Comprobación | Resultado observado |
+| --- | --- |
+| Servicio Auth | `GET /auth/v1/settings`: HTTP 200. |
+| Proveedor Email | Habilitado. |
+| Registro público | Habilitado (`disable_signup=false`). |
+| Confirmación de correo | Obligatoria (`mailer_autoconfirm=false`). |
+| Acceso anónimo | Deshabilitado. |
+| Otros proveedores públicos | Deshabilitados en la respuesta consultada. |
+| Usuarios al iniciar la revisión | 0; ninguno con correo confirmado. |
+| Auditor de seguridad de Supabase | Sin hallazgos reportados; no equivale a una auditoría exhaustiva. |
+| Configuración local | `frontend/.env.local` creado con URL real y clave publicable, ignorado por Git; sin clave administrativa. |
+| Site URL, allowlist de redirecciones, SMTP y plantillas | Pendientes de consultar en el panel autenticado. |
+| Acceso administrativo | No había sesión autenticada en el panel durante la revisión; no se pudieron provisionar las cuentas ficticias mediante Auth Admin. |
+
+### Dos cuentas ficticias solicitadas
+
+El titular solicitó usar correos ficticios. Se intentó el registro público con direcciones
+reservadas de `example.com`; Supabase rechazó ambas con HTTP 400 (`Email address ... is invalid`).
+**Estas cuentas no fueron creadas y no pueden usarse para iniciar sesión.**
+
+| Correo propuesto | Estado |
+| --- | --- |
+| `pulso.qa.20261025.1@example.com` | Registro rechazado; sin usuario creado. |
+| `pulso.qa.20261025.2@example.com` | Registro rechazado; sin usuario creado. |
+
+No se escribieron contraseñas, tokens ni claves en la documentación. No se modificó el esquema
+administrado `auth`, ni se desactivó la confirmación de correo para forzar el registro.
+Para provisionar cuentas ficticias confirmadas se necesita acceso administrativo al panel
+o a la API Auth Admin; el conector disponible no expone esa operación. La sesión administrativa
+del panel está pendiente. Los correos ficticios no permiten comprobar recepción de emails.
+
+### Pruebas reales realizadas y límites
+
+- Login sin usuario válido: HTTP 400, `Invalid login credentials`.
+- Solicitud de recuperación para el correo ficticio: HTTP 200. Esta respuesta no prueba
+  que exista la cuenta ni que se haya enviado o recibido un mensaje.
+- Logout sin sesión: HTTP 401, exige un Bearer token válido.
+- Login correcto, logout de una sesión válida, confirmación de registro y cambio efectivo
+  de contraseña: **pendientes**, porque no hay cuentas de prueba válidas creadas.
+
+Los endpoints se consultaron directamente contra el proyecto real. La suite automatizada
+de navegador usa el servicio Auth local de CI y no sustituye esta aceptación remota.
+
+Con el frontend en `http://127.0.0.1:3000` conectado a Supabase real también se comprobó:
+
+- `/` sin sesión: HTTP 307 hacia `/login`.
+- `/api/backend/predictions` y `/api/assistant` sin sesión: HTTP 401.
+- `/auth/confirm` con token inválido y `/auth/callback` con código inválido:
+  HTTP 307 hacia `/login?error=confirmation`.
+- `/reset-password` sin sesión: HTTP 307 hacia `/recuperar`.
+- `/login` muestra el formulario habilitado, sin el aviso de configuración faltante.
+
+Para continuar se necesita una sesión administrativa autenticada en Supabase.
+Las contraseñas y verificaciones deben introducirse directamente en el proveedor de identidad.
+
 ## Variables de entorno
 
 En `.env.local` para desarrollo y en Vercel para cada entorno a desplegar:
