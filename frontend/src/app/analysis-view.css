@@ -459,12 +459,22 @@
 .analysis-screen table {
   width: 100%;
   min-width: 480px;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   font-size: 12px;
   table-layout: auto;
 }
 .analysis-screen thead {
+  background: transparent;
+}
+.analysis-screen thead th {
   background: #f5f7fa;
+}
+.analysis-screen thead th:first-child {
+  border-radius: 8px 0 0 8px;
+}
+.analysis-screen thead th:last-child {
+  border-radius: 0 8px 8px 0;
 }
 .analysis-screen th {
   font-weight: 400;

@@ -105,16 +105,11 @@ export function RepublicMap({
           [Infinity, Infinity, -Infinity, -Infinity],
         );
     const pad =
-      Math.max(box[2] - box[0], box[3] - box[1]) * (target ? 0.22 : 0.06);
+      Math.max(box[2] - box[0], box[3] - box[1]) * (target ? 0.08 : 0.06);
     const view = [box[0] - pad, box[1] - pad, box[2] + pad, box[3] + pad];
     const tolerance = (view[2] - view[0]) / 520;
-    const visible = all.filter(
-      (s) =>
-        s.box[2] >= view[0] &&
-        s.box[0] <= view[2] &&
-        s.box[3] >= view[1] &&
-        s.box[1] <= view[3],
-    );
+    // A focused map shows only its entity, on the same plain card background.
+    const visible = target ? [target] : all;
     return {
       viewBox: `${view[0]} ${view[1]} ${view[2] - view[0]} ${view[3] - view[1]}`,
       states: visible.map((s) => ({
@@ -134,12 +129,11 @@ export function RepublicMap({
           <g className="republic-map-states">
             {drawing.states.map((s) => {
               const risk = risks[s.code];
-              const dim = focus && s.code !== selected;
               return (
                 <path
                   key={s.code}
                   d={s.d}
-                  fill={dim ? "#dfe8f0" : risk ? riskColors[risk] : "#29384B"}
+                  fill={risk ? riskColors[risk] : "#29384B"}
                   data-selected={s.code === selected ? "true" : undefined}
                 >
                   <title>{s.name}</title>
