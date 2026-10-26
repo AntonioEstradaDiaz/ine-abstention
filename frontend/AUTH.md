@@ -1,70 +1,73 @@
 # Acceso con Supabase Auth (configuración de Antonio)
 
-Las pantallas `/login`, `/registro`, `/recuperar` y `/reset-password` usan usuarios reales de Supabase Auth. No hay usuarios ni contraseñas de demostración, ni credenciales guardadas en localStorage. El dashboard y las APIs `/api/backend/*` y `/api/assistant` requieren un usuario validado por Supabase. Sin configuración, el acceso queda cerrado y se muestra un aviso.
+Las pantallas `/login`, `/registro`, `/recuperar` y `/reset-password` usan usuarios reales de Supabase Auth. La aplicación no contiene credenciales predefinidas ni las guarda en localStorage. Las cuentas QA creadas en el proyecto real se documentan a continuación. El dashboard y las APIs `/api/backend/*` y `/api/assistant` requieren un usuario validado por Supabase. Sin configuración, el acceso queda cerrado y se muestra un aviso.
 
 ## Revisión del proyecto real
 
-Revisión realizada el 25 de octubre de 2026. Los resultados son evidencia de esa fecha;
-no representan una monitorización continua de la configuración.
+Validación realizada el **26 de octubre de 2026**, contra `ine-abstention`
+(`npzgdyyzdcsdadtfxhmr`). Se usó el frontend local `http://127.0.0.1:3000`, la API Docker
+local con datos oficiales y el servicio remoto real de Supabase Auth. Esta prueba no utilizó
+la fixture de CI ni validó un despliegue público.
 
-Proyecto revisado: `ine-abstention` (`npzgdyyzdcsdadtfxhmr`). Estos resultados corresponden al
-servicio remoto real, no a la fixture de Playwright. Son una revisión parcial: no acreditan
-el recorrido completo de registro, confirmación, login, recuperación y logout con una cuenta válida.
+### Configuración observada
 
-| Comprobación | Resultado observado |
+| Comprobación | Resultado |
 | --- | --- |
-| Servicio Auth | `GET /auth/v1/settings`: HTTP 200. |
-| Proveedor Email | Habilitado. |
-| Registro público | Habilitado (`disable_signup=false`). |
-| Confirmación de correo | Obligatoria (`mailer_autoconfirm=false`). |
+| Servicio Auth | HTTP 200 en `/auth/v1/settings`. |
+| Proveedor Email y registro público | Habilitados. |
+| Confirmación global de correo | Obligatoria; se conservó `mailer_autoconfirm=false`. |
 | Acceso anónimo | Deshabilitado. |
-| Otros proveedores públicos | Deshabilitados en la respuesta consultada. |
-| Usuarios al iniciar la revisión | 0; ninguno con correo confirmado. |
-| Auditor de seguridad de Supabase | Sin hallazgos reportados; no equivale a una auditoría exhaustiva. |
-| Configuración local | `frontend/.env.local` creado con URL real y clave publicable, ignorado por Git; sin clave administrativa. |
-| Site URL, allowlist de redirecciones, SMTP y plantillas | Pendientes de consultar en el panel autenticado. |
-| Acceso administrativo | No había sesión autenticada en el panel durante la revisión; no se pudieron provisionar las cuentas ficticias mediante Auth Admin. |
+| Site URL | `http://localhost:3000`. No equivale al origen local utilizado, `http://127.0.0.1:3000`. |
+| Redirect URLs | Lista vacía. Falta autorizar los callbacks exactos del entorno elegido. |
+| SMTP personalizado | Deshabilitado. |
+| Plantillas | Predeterminadas; el panel indica que se necesita SMTP personalizado para editarlas. |
+| Configuración local | URL real y clave publicable en `.env.local`, ignorado por Git; sin clave administrativa en el frontend. |
 
-### Dos cuentas ficticias solicitadas
+Se revisaron las URLs y SMTP sin modificarlos. Antes de publicar se debe definir el dominio,
+configurar sus callbacks y validar el correo con buzones reales controlados. La ausencia de SMTP
+personalizado y de redirecciones es una limitación adicional; el error concreto observado al
+solicitar recuperación de estas cuentas fue la validación de la dirección ficticia.
 
-El titular solicitó usar correos ficticios. Se intentó el registro público con direcciones
-reservadas de `example.com`; Supabase rechazó ambas con HTTP 400 (`Email address ... is invalid`).
-**Estas cuentas no fueron creadas y no pueden usarse para iniciar sesión.**
+### Cuentas ficticias creadas
 
-| Correo propuesto | Estado |
+Se crearon mediante **Authentication → Users → Add user → Create new user**, con confirmación
+individual activada. Ese mecanismo no envía correo de confirmación y no prueba que exista el buzón.
+No se escribieron registros directamente en el esquema administrado `auth` ni se cambió la
+política global de confirmación. Las cuentas son usuarios normales de la aplicación, sin acceso
+administrativo al panel de Supabase.
+
+| Correo | Identificador en Auth | Estado comprobado |
+| --- | --- | --- |
+| `pulso.qa.20261025.1@example.com` | `ecaa829b-f3ac-4d28-aaaa-60371b5cde22` | Confirmado; login y logout aprobados. |
+| `pulso.qa.20261025.2@example.com` | `3a84200f-6a36-4161-aba9-bcedf42d1735` | Confirmado; login y logout aprobados. |
+
+Las contraseñas aleatorias se usaron durante la prueba y no se publicaron ni se guardaron en el
+repositorio. Para reutilizar las cuentas, el administrador debe gestionar una contraseña mediante
+Auth Admin; estos buzones ficticios no permiten recuperación por correo.
+
+### Resultados del recorrido real
+
+| Flujo | Resultado y alcance |
 | --- | --- |
-| `pulso.qa.20261025.1@example.com` | Registro rechazado; sin usuario creado. |
-| `pulso.qa.20261025.2@example.com` | Registro rechazado; sin usuario creado. |
+| Creación administrativa | Ambas cuentas visibles en el panel y confirmadas mediante consulta de lectura. |
+| Login, cuenta 1 | Acceso al dashboard y carga de los 32 estados con backend conectado. |
+| Login incorrecto, cuenta 2 | Contraseña errónea rechazada con mensaje de credenciales inválidas. |
+| Login correcto, cuenta 2 | Acceso al dashboard con sesión real. |
+| Logout de ambas cuentas | Regreso a `/login`; acceso privado denegado tras logout de la primera cuenta. Consulta posterior: cero sesiones para cada usuario. |
+| Validación de registro | El formulario rechazó contraseñas distintas antes de enviar el registro. |
+| Registro público | En el intento previo del 25 de octubre, ambas direcciones fueron rechazadas con HTTP 400. No se presenta la creación Admin como registro público completo. |
+| Recuperación | El formulario mostró error; la consulta directa devolvió HTTP 400: `Email address ... is invalid`. |
+| Confirmación por email y nueva contraseña | No verificadas: no hay buzones reales ni enlace de recuperación utilizable. |
 
-No se escribieron contraseñas, tokens ni claves en la documentación. No se modificó el esquema
-administrado `auth`, ni se desactivó la confirmación de correo para forzar el registro.
-Para provisionar cuentas ficticias confirmadas se necesita acceso administrativo al panel
-o a la API Auth Admin; el conector disponible no expone esa operación. La sesión administrativa
-del panel está pendiente. Los correos ficticios no permiten comprobar recepción de emails.
+La consulta de lectura de `auth.users` comprobó correo confirmado e inicio de sesión en ambas
+cuentas. La consulta de `auth.sessions` comprobó cero sesiones restantes tras cerrar sesión.
+Esto no demuestra revocación inmediata de todos los JWT ya emitidos: el comportamiento de
+expiración de access tokens es distinto del cierre de la sesión y sus refresh tokens.
 
-### Pruebas reales realizadas y límites
-
-- Login sin usuario válido: HTTP 400, `Invalid login credentials`.
-- Solicitud de recuperación para el correo ficticio: HTTP 200. Esta respuesta no prueba
-  que exista la cuenta ni que se haya enviado o recibido un mensaje.
-- Logout sin sesión: HTTP 401, exige un Bearer token válido.
-- Login correcto, logout de una sesión válida, confirmación de registro y cambio efectivo
-  de contraseña: **pendientes**, porque no hay cuentas de prueba válidas creadas.
-
-Los endpoints se consultaron directamente contra el proyecto real. La suite automatizada
-de navegador usa el servicio Auth local de CI y no sustituye esta aceptación remota.
-
-Con el frontend en `http://127.0.0.1:3000` conectado a Supabase real también se comprobó:
-
-- `/` sin sesión: HTTP 307 hacia `/login`.
-- `/api/backend/predictions` y `/api/assistant` sin sesión: HTTP 401.
-- `/auth/confirm` con token inválido y `/auth/callback` con código inválido:
-  HTTP 307 hacia `/login?error=confirmation`.
-- `/reset-password` sin sesión: HTTP 307 hacia `/recuperar`.
-- `/login` muestra el formulario habilitado, sin el aviso de configuración faltante.
-
-Para continuar se necesita una sesión administrativa autenticada en Supabase.
-Las contraseñas y verificaciones deben introducirse directamente en el proveedor de identidad.
+También se verificaron previamente los controles sin sesión: `/` redirige a `/login`, ambas APIs
+privadas responden 401, los callbacks inválidos vuelven a `/login?error=confirmation` y
+`/reset-password` sin sesión redirige a `/recuperar`. La suite automatizada de navegador usa
+una fixture Auth local y no sustituye estas pruebas remotas.
 
 ## Variables de entorno
 

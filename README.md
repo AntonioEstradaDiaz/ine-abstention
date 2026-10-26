@@ -37,20 +37,28 @@ y los envíos programados todavía no están implementados.
 ## Acceso y revisión de Supabase Auth
 
 El frontend incorpora login, registro, recuperación y cierre de sesión con Supabase Auth.
-El proyecto real es `ine-abstention` (`npzgdyyzdcsdadtfxhmr`): correo y registro habilitados,
-confirmación de correo obligatoria y acceso anónimo deshabilitado. El frontend local ya tiene
-la URL y clave publicable reales en un archivo ignorado por Git.
+El 26 de octubre de 2026 se crearon y comprobaron dos cuentas ficticias en el proyecto real
+`ine-abstention` (`npzgdyyzdcsdadtfxhmr`), mediante Auth Admin y confirmación individual:
 
-La prueba real todavía está incompleta. Se intentaron dos cuentas ficticias,
-`pulso.qa.20261025.1@example.com` y `pulso.qa.20261025.2@example.com`, pero Supabase rechazó
-ambos registros; **no son usuarios creados**. Faltan el acceso administrativo para provisionarlas
-y la validación de Site URL, redirecciones, SMTP y plantillas. Los correos ficticios no permiten
-verificar recepción de confirmaciones o recuperación. Los detalles y resultados comprobados
-están en [la guía de Auth](frontend/AUTH.md#revisión-del-proyecto-real), sin contraseñas ni claves.
+| Usuario de prueba | Resultado |
+| --- | --- |
+| `pulso.qa.20261025.1@example.com` | Creado, confirmado; login y logout reales aprobados. |
+| `pulso.qa.20261025.2@example.com` | Creado, confirmado; login y logout reales aprobados. |
 
-Se verificaron contra el servicio real los rechazos de acceso anónimo y enlaces inválidos.
-La creación administrativa de las cuentas de prueba y la aceptación de los casos válidos
-requieren una sesión autenticada en el panel de Supabase.
+La primera cuenta cargó el dashboard con datos de los 32 estados. Se comprobó el rechazo de
+contraseña incorrecta, la validación de contraseñas distintas en registro y la denegación de la API
+privada después del logout. Ambas cuentas quedaron sin sesiones activas al terminar las pruebas.
+
+El registro público previo rechazó estas direcciones ficticias; la creación administrativa sí
+funcionó. La recuperación real devolvió HTTP 400 por dirección inválida. No se verificaron
+recepción de correo ni cambio de contraseña. La confirmación global sigue obligatoria y el acceso
+anónimo deshabilitado; no se modificaron esas políticas para crear las cuentas.
+
+Pendientes antes de una prueba de correo completa: Site URL todavía es `http://localhost:3000`,
+no hay Redirect URLs autorizadas y SMTP personalizado está deshabilitado. Se necesitan una URL
+de destino configurada y direcciones reales controladas para completar registro y recuperación.
+Los resultados, identificadores y límites están en [la guía de Auth](frontend/AUTH.md#revisión-del-proyecto-real).
+Las contraseñas, tokens y claves no se incluyen en la documentación.
 
 ## Laboratorio de machine learning e IA
 
