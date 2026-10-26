@@ -53,3 +53,80 @@ El paquete y su SHA-256 deben revisarse juntos. Los cambios de código que
 invaliden los hashes de los modelos requieren revisar su compatibilidad;
 CI conserva esa comprobación. `.gitattributes` mantiene las fuentes Python
 con saltos de línea LF para no cambiar esos hashes entre Windows y Linux.
+
+## Ejecución local en Windows
+
+Desde la raíz, usar carpetas del repositorio si el entorno restringe el acceso a la caché
+de uv o al directorio temporal del usuario:
+
+```powershell
+$env:UV_CACHE_DIR = Join-Path (Get-Location) 'tmp/uv-cache'
+uv sync --locked --group ml
+uv run --locked pytest tests/unit tests/ml -q -W error --basetemp=tmp/pytest-backend
+uv run --locked ruff check app pipelines scripts tests
+uv run --locked ruff format --check app pipelines scripts tests
+```
+
+`tmp/` está ignorado por Git. Reservar `tmp/pytest-backend` exclusivamente para pytest:
+`--basetemp` limpia su contenido al comenzar cada ejecución. No ejecutar dos sesiones sobre la misma carpeta.
+Si el entorno virtual ya está preparado, `.\.venv\Scripts\python.exe -m pytest` permite
+ejecutar las mismas opciones sin consultar la caché de uv.
+
+Un error al crear `pytest-of-<usuario>` ocurre antes de ejecutar el test y no demuestra un fallo
+de la API. No ocultarlo con skips ni desactivar validaciones; corregir la ruta de temporales.
+Las pruebas de integración necesitan PostgreSQL/PostGIS, migraciones, datos y modelos restaurados.
+Activar `RUN_INTEGRATION`, `RUN_ML_INTEGRATION`, `RUN_FORECAST_INTEGRATION` y
+`RUN_SIMULATION_INTEGRATION` con valor `1` para ejecutar todas sus familias, como hace CI.
+
+Para comprobar la base Docker local ya preparada, ejecutar en una terminal dedicada desde la raíz.
+Estas variables solo afectan esa terminal y no modifican el `.env` de Supabase:
+
+```powershell
+docker compose --env-file .env.docker.example up -d --wait api
+$env:DATABASE_URL = 'postgresql+psycopg://ine_api:ine_api_local@127.0.0.1:15432/ine_abstention'
+$env:MIGRATION_DATABASE_URL = 'postgresql+psycopg://ine_owner:ine_owner_local@127.0.0.1:15432/ine_abstention'
+$env:DATABASE_SCHEMA = 'ine'
+$env:ENVIRONMENT = 'local-demo'
+$env:RUN_INTEGRATION = '1'
+$env:RUN_ML_INTEGRATION = '1'
+$env:RUN_FORECAST_INTEGRATION = '1'
+$env:RUN_SIMULATION_INTEGRATION = '1'
+.\.venv\Scripts\python.exe -m pytest tests/integration -q -W error --basetemp=tmp/pytest-integration --junitxml=tmp/integration.xml
+.\.venv\Scripts\python.exe scripts/demo_backend.py --api-url http://127.0.0.1:8001 --output tmp/integration-http.json
+```
+
+En un clon nuevo, primero preparar el entorno y restaurar la demo según [installation.md](installation.md).
+Las pruebas de simulaciones crean registros locales persistidos; no ejecutarlas contra una base de producción.
+
+### Verificación local del 25 de octubre de 2026
+
+Con Python 3.13.4 y el entorno virtual existente, la primera ejecución terminó con **91 pruebas
+aprobadas y 18 de integración omitidas** mediante `pytest -q -W error` y una carpeta `--basetemp`
+dentro de `tmp/`. Ruff y la comprobación de formato también pasaron.
+
+Después de iniciar Docker Desktop y los servicios locales existentes, se ejecutaron las **18 pruebas
+de integración: todas aprobadas, sin omisiones**, con advertencias como errores, en 43.66 segundos.
+El recorrido HTTP contra `http://127.0.0.1:8001` también pasó sus **26 comprobaciones**.
+Se conservó el volumen existente; no fue necesario restaurar datos ni cambiar código del backend.
+Los resultados de esta ejecución quedan en `tmp/integration-review.xml` y `tmp/integration-http-review.json`
+(archivos locales ignorados por Git). PostgreSQL y la API quedaron activos y saludables.
+
+El primer intento falló al crear temporales del usuario; al cambiar de carpeta se resolvió ese
+error. El entorno aislado también bloqueó la ejecución de TestClient; la suite pasó al ejecutarse
+fuera de ese aislamiento. No se modificaron rutas, modelos ni reglas de negocio para obtener el resultado.
+
+### Verificación después de actualizar main
+
+Tras incorporar `c2e2ab3` (rediseño de Datos/Reportes, mapa compartido y fuentes locales),
+se volvió a validar el árbol con las correcciones de documentación:
+
+- Backend completo: **109 pruebas aprobadas, sin omisiones**, con `-W error`, en 45.61 segundos.
+- Ruff y formato: correctos.
+- Frontend: **9 pruebas unitarias aprobadas** y compilación de producción con TypeScript correcta.
+- Playwright contra la compilación de producción en `127.0.0.1:3001` y la API Docker en
+  `127.0.0.1:8001`: **16 pruebas aprobadas**, incluidas las nuevas pantallas de Datos y Reportes.
+- Recorrido HTTP: **26 comprobaciones aprobadas**.
+
+Los informes locales son `tmp/post-update-tests.xml`, `tmp/post-update-http.json` y
+`frontend/test-results/results.json`; están ignorados por Git. Las pruebas del asistente
+simulan los proveedores y no acreditan disponibilidad ni cuota de las API externas.

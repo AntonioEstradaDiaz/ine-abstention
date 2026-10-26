@@ -4,6 +4,11 @@ Entrega: 22 de octubre de 2026 (UTC). Entorno Windows, Node.js 24.11.0, Chromium
 Next.js 16.4.2 con Webpack y API FastAPI real en Docker local. No se cambiaron modelos, lógica estadística
 ni migraciones del backend para construir la interfaz.
 
+Este documento conserva la evidencia histórica de esa entrega, entonces con cuatro secciones.
+No describe la cobertura completa actual: hoy hay ocho secciones y asistentes Groq/Gemini/Ollama.
+El CI actual también simula respuestas de esos proveedores, además de errores de conexión;
+consultar [ci.md](ci.md) y [la guía actual del frontend](../frontend/README.md).
+
 ## Comprobaciones
 
 | Comprobación | Resultado |

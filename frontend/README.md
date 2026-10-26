@@ -5,7 +5,7 @@
 Adaptación de la propuesta `Riesgo De Abstención Electoral.zip`: tema claro con acento magenta,
 navegación superior, cuatro indicadores y mapa 3D con detalle territorial al costado. A 850 px el
 detalle pasa debajo del mapa; en teléfonos los indicadores se organizan en dos columnas y la
-navegación y las tablas tienen desplazamiento propio. La página conserva sus cinco secciones.
+navegación y las tablas tienen desplazamiento propio. La página dispone de ocho secciones.
 
 El resumen incorpora ranking estatal seleccionable, tendencia de participación del territorio
 (solo elecciones intermedias), distribución de las categorías y acceso al simulador. Consume
@@ -31,15 +31,16 @@ categoría crítica. La tendencia separa intermedias y presidenciales. El cambio
 se transfiere al simulador completo. La franja de vista previa, el bloque territorial permanente,
 la nota superior y el desplegable de indicadores calculados se eliminaron; Filtros abre un diálogo.
 
-Frontend del prototipo INE Abstention. Siete secciones conectadas a FastAPI:
+Frontend del prototipo INE Abstention. Ocho secciones conectadas a FastAPI:
 
-- **Análisis IA:** modelos entrenados, evaluación temporal, explicaciones de variables y escenarios locales sobre los pronósticos.
+- **Laboratorio de modelos:** seis estimadores, evaluación temporal y escenarios locales sobre los pronósticos materializados.
+- **Análisis IA:** exploración territorial y asistente con contexto consultado por el servidor; incluye cifras ilustrativas del diseño identificadas en la interfaz.
 - **Mapa de riesgo:** coropleta estatal real, selector territorial, filtros de riesgo, referencia histórica
   por elección y detalle. La exportación vive en Datos.
 - **Tendencias:** participación/abstención de hasta tres entidades; elecciones intermedias y presidenciales
   separadas, tabla con conteos y enlaces a las fuentes del backend.
 - **Predicciones:** histórico frente a 2027, banda empírica, explicación exacta del baseline, comparación
-  de modelos con métricas temporales reales y asistente IA con Ollama.
+  de modelos con métricas temporales reales y asistente IA con Groq, Gemini u Ollama.
 - **Escenarios:** formulario y deslizador en puntos porcentuales, cálculo explícito mediante POST,
   resultados persistidos, límites, incertidumbre y reinicio. Cambiar parámetros o territorio invalida la salida anterior.
 - **Reportes:** configuración y vista previa de reportes territoriales (diseño; aún no genera archivos).
@@ -72,23 +73,27 @@ consulta y paleta de riesgo que el mapa de la República (`src/lib/geometry.ts`,
 `src/components/republic-map.tsx`). La tipografía Roboto se sirve desde `public/fonts/roboto`
 (licencia OFL) para que todas las pantallas usen la misma letra sin depender de servicios externos.
 
-### Asistente IA con Ollama
+### Asistente IA con Groq, Gemini u Ollama
 
-El asistente de Predicciones explica las cifras con un modelo local de Ollama. El modelo todavía no
-está definido: la ruta `/api/assistant` lista los modelos instalados y la interfaz permite elegir uno.
-`OLLAMA_MODEL` fija el predeterminado; si no existe, se usa el primero instalado.
+Los asistentes de Predicciones y Análisis IA explican cifras estatales. `AI_PROVIDER` selecciona
+`groq` (predeterminado), `gemini` u `ollama`. Groq y Gemini requieren una clave privada del servidor;
+ver [Groq y despliegue en Vercel](GROQ.md) y [Gemini](GEMINI.md). El estado «configurado» solo indica
+que existe una clave; una respuesta real comprueba acceso y cuota. Para usar Ollama local:
 
 ```dotenv
+AI_PROVIDER=ollama
 OLLAMA_URL=http://127.0.0.1:11434
 OLLAMA_MODEL=llama3.2
 ```
 
 El servidor de Next.js consulta los datos del INE (predicción, histórico y métricas del modelo) en la
-API o en la copia de vista previa y los pasa a Ollama como contexto; nunca toma cifras del navegador.
+API o en la copia de vista previa y los pasa al proveedor elegido como contexto; nunca toma cifras del navegador.
 La instrucción del sistema prohíbe inventar cifras, atribuir causas o recomendar intervenciones.
 Las preguntas se limitan a 12 mensajes de 1,500 caracteres y la ruta rechaza orígenes ajenos.
-Si Ollama no responde, la interfaz lo indica y muestra una lectura automática calculada con reglas
-sobre los mismos datos, marcada como «Lectura automática · sin Ollama».
+Si el proveedor no responde, la interfaz lo indica y muestra una lectura automática calculada con reglas
+sobre los mismos datos, marcada como «Lectura automática · sin modelo de IA».
+Con Ollama, `/api/assistant` lista los modelos instalados; `OLLAMA_MODEL` fija el predeterminado
+si está instalado y, en otro caso, se usa el primero disponible. Las claves nunca llevan prefijo `NEXT_PUBLIC_`.
 
 ## Ejecutar
 
