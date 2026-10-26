@@ -18,7 +18,7 @@ Pruebas sin API real: `node --experimental-strip-types --test tests/groq.test.mt
 ## Despliegue temporal en Vercel (Antonio)
 
 1. Importar `AntonioEstradaDiaz/ine-abstention` desde la cuenta propietaria del repositorio.
-2. Elegir la rama `feat/dashboard-riesgo-abstencion`, que incluye la integración. Si se despliega `main`, primero integrar esta rama en ella.
+2. Elegir la rama `main`, que ya incluye la integración de Groq y la configuración de la demo.
 3. Framework: **Next.js**. Root Directory: **frontend**. Mantener el build `npm run build` y la salida predeterminada de Next.js.
 4. En Environment Variables agregar, para el entorno que se vaya a desplegar:
 
