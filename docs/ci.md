@@ -13,6 +13,13 @@ fijadas a commits concretos.
   TypeScript y todas las pruebas Playwright contra la API real. Las pruebas
   del asistente simulan Groq, Gemini y Ollama, sin utilizar claves reales.
 
+La rama con Supabase Auth configura el frontend de CI contra una fixture Auth local en
+`127.0.0.1:54321`, iniciada por Playwright. Una preparación de sesión utiliza el login real
+de la aplicación y guarda cookies para las pruebas del dashboard. Se prueban además acceso
+anónimo, credenciales incorrectas, cierre de sesión y cookies manipuladas. La aplicación
+mantiene sus verificaciones de usuario; CI no las desactiva. Ver [AUTH.md](../frontend/AUTH.md)
+para reproducir esta ejecución y sus límites frente a un proyecto Supabase real.
+
 Cada job crea su propio PostgreSQL/PostGIS con Docker Compose, aplica las
 migraciones y restaura agregados oficiales. No utiliza Supabase, credenciales
 de producción ni secretos de GitHub. Los permisos del token son de lectura.

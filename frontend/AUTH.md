@@ -33,4 +33,32 @@ Solo usar clave **publishable**, nunca `service_role` ni una clave secret. Estas
 - Probar contraseñas distintas en registro, enlaces expirados y correo no confirmado.
 - «Recordarme» controla cookies persistentes frente a cookies de sesión; el navegador puede restaurar cookies de sesión al restaurar ventanas según su configuración.
 
-No hay datos de prueba inventados de autenticación. Las pruebas reales de correo y sesión requieren el proyecto y el servicio de email de Antonio.
+Las pruebas de aceptación con correo real requieren el proyecto y el servicio de email de Antonio.
+
+## Pruebas de navegador sin credenciales reales
+
+Playwright inicia `tests/fixtures/auth-server.mjs`, un servicio de prueba limitado a
+`127.0.0.1:54321`. Simula únicamente login con contraseña, consulta del usuario, renovación
+y logout. No es Supabase real ni valida correos, registro, recuperación o políticas RLS.
+Sus usuarios, claves y tokens son sintéticos; nunca se usan en producción.
+
+El proyecto `setup` inicia sesión desde `/login` con los clientes Supabase de la aplicación
+y guarda cookies en `.playwright/auth/user.json` (ignorado por Git). Los tests del dashboard
+reutilizan esa sesión; los de acceso denegado usan contextos sin sesión. Se comprueba también
+que una cookie falsificada no da acceso. No existe un bypass de autenticación en el código de la app.
+
+Para reproducir CI, usar una terminal dedicada y una compilación local de prueba. No sobrescribir `.env.local`:
+
+```powershell
+$env:NEXT_PUBLIC_SUPABASE_URL = 'http://127.0.0.1:54321'
+$env:NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_ci_fixture'
+$env:NEXT_PUBLIC_APP_URL = 'http://127.0.0.1:3000'
+$env:BACKEND_URL = 'http://127.0.0.1:8001'
+npm.cmd run build
+npm.cmd start
+```
+
+En otra terminal con `FRONTEND_URL=http://127.0.0.1:3000`, ejecutar `npm.cmd run test:e2e`.
+El backend Docker debe estar preparado con datos reales. Al terminar, cerrar el servidor y
+reconstruir con las variables reales antes de desplegar: las variables `NEXT_PUBLIC_` quedan
+incluidas en el build. La fixture se inicia y detiene desde Playwright y no forma parte del despliegue.

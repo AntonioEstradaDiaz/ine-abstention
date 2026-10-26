@@ -76,6 +76,9 @@ jobs:
     env:
       BACKEND_URL: http://127.0.0.1:8001
       FRONTEND_URL: http://127.0.0.1:3000
+      NEXT_PUBLIC_APP_URL: http://127.0.0.1:3000
+      NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:54321
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: sb_publishable_ci_fixture
       CI: "true"
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -113,7 +116,7 @@ jobs:
           npm start > ../tmp/frontend.log 2>&1 &
           FRONTEND_PID=$!
           trap 'kill "$FRONTEND_PID" 2>/dev/null || true' EXIT
-          curl --fail --silent --output /dev/null --retry 30 --retry-connrefused --retry-delay 2 http://127.0.0.1:3000
+          curl --fail --silent --output /dev/null --retry 30 --retry-connrefused --retry-delay 2 http://127.0.0.1:3000/login
           npm run test:e2e
       - name: Capture service logs
         if: always()
