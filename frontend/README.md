@@ -35,15 +35,15 @@ Frontend del prototipo INE Abstention. Siete secciones conectadas a FastAPI:
 
 - **Análisis IA:** modelos entrenados, evaluación temporal, explicaciones de variables y escenarios locales sobre los pronósticos.
 - **Mapa de riesgo:** coropleta estatal real, selector territorial, filtros de riesgo, referencia histórica
-  por elección y detalle. La exportación vive en Reportes.
+  por elección y detalle. La exportación vive en Datos.
 - **Tendencias:** participación/abstención de hasta tres entidades; elecciones intermedias y presidenciales
   separadas, tabla con conteos y enlaces a las fuentes del backend.
 - **Predicciones:** histórico frente a 2027, banda empírica, explicación exacta del baseline, comparación
   de modelos con métricas temporales reales y asistente IA con Ollama.
 - **Escenarios:** formulario y deslizador en puntos porcentuales, cálculo explícito mediante POST,
   resultados persistidos, límites, incertidumbre y reinicio. Cambiar parámetros o territorio invalida la salida anterior.
-- **Reportes:** vista previa y descarga CSV/JSON de cuatro reportes territoriales.
-- **Datos:** cobertura histórica, fuentes oficiales, diccionario de variables y procedencia.
+- **Reportes:** configuración y vista previa de reportes territoriales (diseño; aún no genera archivos).
+- **Datos:** explorador con filtros, paginación y descarga CSV/JSON; detalle de variables y calidad.
 
 ## Predicciones, Escenarios, Reportes y Datos
 
@@ -57,10 +57,20 @@ conservan su diseño anterior.
   fórmula del baseline, contexto histórico en barras y validación temporal de los modelos.
 - **Escenarios:** supuestos rápidos, campo y deslizador, medidores base/escenario, tabla comparativa,
   curva aritmética de sensibilidad (−20 a +20 pp) y supuestos explícitos.
-- **Reportes:** cuatro reportes (estimación 2027, histórico observado del año elegido, ficha territorial
-  y distribución del riesgo) con vista previa, filtro por el buscador superior y descarga CSV o JSON.
-- **Datos:** mapa de calor de abstención por entidad y elección, fuentes oficiales del INE,
-  diccionario de variables y procedencia de los datos.
+- **Reportes y Documentos:** configuración (tipo, nivel, entidad, variable, comparación, secciones y
+  formato), vista previa del documento con el mapa de la entidad, cuatro indicadores, evolución
+  histórica, distribución del riesgo y hallazgos calculados con datos reales; plantillas, reportes
+  programados y recientes. Es una vista de diseño: todavía no genera PDF, PowerPoint ni Excel, ni
+  envía reportes programados.
+- **Gestión de Datos:** filtros (tipo de datos, nivel, entidad, proceso y fuente), explorador con
+  búsqueda, orden, selección de filas, paginación y descarga CSV o JSON, detalle de variable,
+  acciones rápidas y calidad de los registros. Los niveles nacional y estatal usan los conteos
+  oficiales; el municipal reutiliza la muestra ilustrativa de Análisis y se marca como tal.
+
+Los mapas estáticos (por ejemplo, el de la entidad en Reportes) usan la misma cartografía INEGI,
+consulta y paleta de riesgo que el mapa de la República (`src/lib/geometry.ts`,
+`src/components/republic-map.tsx`). La tipografía Roboto se sirve desde `public/fonts/roboto`
+(licencia OFL) para que todas las pantallas usen la misma letra sin depender de servicios externos.
 
 ### Asistente IA con Ollama
 

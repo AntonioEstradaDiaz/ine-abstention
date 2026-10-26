@@ -10,6 +10,7 @@ import "./map-refresh.css";
 import "./select-menu.css";
 import "./reference-kpis.css";
 import "./section-pages.css";
+import "./data-reports.css";
 import "./analysis-view.css";
 
 export const metadata: Metadata = {

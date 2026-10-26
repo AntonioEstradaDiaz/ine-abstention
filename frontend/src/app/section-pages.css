@@ -967,125 +967,7 @@
   color: var(--sp-muted);
 }
 
-/* Reportes. */
-.report-catalog {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 18px;
-}
-.report-option {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 6px;
-  min-width: 0;
-  padding: 18px;
-  border: 1px solid #eef1f5;
-  border-radius: 15px;
-  background: #fff;
-  text-align: left;
-  cursor: pointer;
-  transition:
-    border-color 0.15s,
-    box-shadow 0.15s;
-}
-.report-option:hover {
-  border-color: #f6d3e6;
-}
-.report-option[aria-checked="true"] {
-  border-color: var(--sp-pink);
-  box-shadow: 0 0 0 3px #e5007e14;
-}
-.report-option:focus-visible {
-  outline: 2px solid var(--sp-pink);
-  outline-offset: 2px;
-}
-.report-option-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 42px;
-  height: 42px;
-  margin-bottom: 4px;
-  border-radius: 12px;
-  background: linear-gradient(145deg, #fff2f9, #fce7f3);
-  color: var(--sp-pink);
-}
-.report-option-icon svg {
-  width: 22px;
-  height: 22px;
-  color: var(--sp-pink);
-}
-.report-option strong {
-  font-size: 14px;
-  color: var(--sp-text);
-}
-.report-option > span {
-  font-size: 12px;
-  line-height: 1.45;
-  color: var(--sp-muted);
-}
-.report-option small {
-  margin-top: auto;
-  padding-top: 6px;
-  font-size: 11px;
-  color: var(--sp-deep);
-}
-
-/* Datos. */
-.data-main {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 360px;
-  gap: 18px;
-  align-items: start;
-}
-.data-source-list {
-  display: grid;
-  gap: 8px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.data-source-list li {
-  display: grid;
-  grid-template-columns: 52px minmax(0, 1fr) 30px;
-  align-items: center;
-  gap: 10px;
-  padding: 10px;
-  border: 1px solid #f0f2f6;
-  border-radius: 10px;
-}
-.data-source-year {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 34px;
-  border-radius: 9px;
-  background: var(--sp-tint);
-  color: var(--sp-deep);
-  font-size: 12px;
-  font-weight: 700;
-}
-.data-source-list strong {
-  display: block;
-  font-size: 13px;
-}
-.data-source-list small {
-  font-size: 11px;
-  color: var(--sp-muted);
-}
-.data-source-list a {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 8px;
-  color: var(--sp-pink);
-}
-.data-source-list a:hover {
-  background: var(--sp-tint);
-}
+/* Diccionario de datos. */
 .glossary {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1113,8 +995,7 @@
   .page-kpis {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  .section-grid-4,
-  .report-catalog {
+  .section-grid-4 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -1124,7 +1005,6 @@
     height: 360px !important;
   }
   .predictions-main,
-  .data-main,
   .section-grid-2,
   .section-page .scenario-grid {
     grid-template-columns: minmax(0, 1fr);
@@ -1133,7 +1013,6 @@
 @media (max-width: 700px) {
   .page-kpis,
   .section-grid-4,
-  .report-catalog,
   .forecast-strip,
   .glossary {
     grid-template-columns: minmax(0, 1fr);
