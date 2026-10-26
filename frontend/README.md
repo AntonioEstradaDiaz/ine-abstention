@@ -119,6 +119,11 @@ Esto no sustituye autenticación ni controles de un despliegue público.
 
 ## Compilar y validar
 
+El dashboard ahora requiere sesión. Para las pruebas de navegador, compilar con las variables
+de la fixture Auth local descritas en [AUTH.md](AUTH.md#pruebas-de-navegador-sin-credenciales-reales).
+Playwright prepara la sesión y verifica también que los accesos anónimos y las cookies manipuladas
+se rechacen. No usar las variables de la fixture en un despliegue público.
+
 ```powershell
 npm.cmd run typecheck
 npm.cmd run build

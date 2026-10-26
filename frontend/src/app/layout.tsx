@@ -1,3 +1,7 @@
+import "@fontsource/nunito/400.css";
+import "@fontsource/nunito/600.css";
+import "@fontsource/nunito/700.css";
+import "@fontsource/nunito/800.css";
 import type { Metadata } from "next";
 import { Providers } from "@/components/providers";
 import "maplibre-gl/dist/maplibre-gl.css";
@@ -12,6 +16,7 @@ import "./reference-kpis.css";
 import "./section-pages.css";
 import "./data-reports.css";
 import "./analysis-view.css";
+import "./auth.css";
 
 export const metadata: Metadata = {
   title: "Pulso electoral · Participación territorial",

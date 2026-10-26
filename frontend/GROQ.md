@@ -38,3 +38,7 @@ PULSO_PREVIEW=1
 Esta demo sirve los datos y pronósticos de la instantánea del repositorio. `PULSO_PREVIEW=1` evita depender de localhost o de una base de datos externa; no es una conexión al backend real. Para usar el backend desplegado, quitar esta variable y establecer `BACKEND_URL` con su URL pública.
 
 Al finalizar la evaluación, eliminar el despliegue y revocar la clave temporal. GitHub Pages no ejecuta esta API de Next.js.
+
+## Acceso de usuarios
+
+El dashboard y la API requieren inicio de sesión. Antes de probar Groq en el despliegue, completar la configuración de Supabase Auth documentada en `AUTH.md` y crear una cuenta confirmada. Sin las variables de Supabase, el acceso permanece cerrado.
