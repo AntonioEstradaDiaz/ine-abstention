@@ -171,7 +171,7 @@ export function AuthScreen({
             <div className="auth-visual">
               <img
                 className="auth-illustration"
-                src="/auth/account-illustration-adapted.png"
+                src="/auth/account-illustration-wide.png"
                 alt="Ilustración de una mujer con una tableta junto a un teléfono con acceso seguro al dashboard"
               />
             </div>

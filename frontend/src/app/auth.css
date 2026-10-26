@@ -1087,3 +1087,13 @@
     padding: 0 26px;
   }
 }
+
+/* Landscape artwork fills its row without side gutters or touching the caption. */
+.auth-illustration { object-fit: contain; object-position: center bottom; }
+@media (min-width: 821px) {
+ .auth-art { grid-template-rows: 65px minmax(0, 1fr) auto; gap: 12px; padding-top: 28px; padding-bottom: 42px; }
+}
+@media (max-width: 820px) {
+ .auth-art { grid-template-rows: 60px auto auto; }
+ .auth-visual { height: auto; aspect-ratio: 8 / 5; }
+}
