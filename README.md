@@ -54,11 +54,19 @@ funcionó. La recuperación real devolvió HTTP 400 por dirección inválida. No
 recepción de correo ni cambio de contraseña. La confirmación global sigue obligatoria y el acceso
 anónimo deshabilitado; no se modificaron esas políticas para crear las cuentas.
 
-Pendientes antes de una prueba de correo completa: Site URL todavía es `http://localhost:3000`,
-no hay Redirect URLs autorizadas y SMTP personalizado está deshabilitado. Se necesitan una URL
-de destino configurada y direcciones reales controladas para completar registro y recuperación.
+La demo está publicada en **https://pulso-electoral-demo.vercel.app** desde el 26 de octubre de 2026.
+Supabase ya tiene ese Site URL y los callbacks de confirmación y recuperación autorizados.
+SMTP personalizado sigue deshabilitado; se necesitan direcciones reales controladas y un servicio
+de correo adecuado para completar registro y recuperación.
 Los resultados, identificadores y límites están en [la guía de Auth](frontend/AUTH.md#revisión-del-proyecto-real).
 Las contraseñas, tokens y claves no se incluyen en la documentación.
+
+En la URL publicada se verificaron login con la primera cuenta, carga de los 32 estados,
+una respuesta real de Groq (`qwen/qwen3.8-27b`), un escenario de Morelos con +3 pp de
+participación (abstención 48.1% → 45.1%; participación 51.9% → 54.9%) y logout.
+Tras cerrar sesión, ambas APIs privadas rechazaron el acceso y el dashboard volvió al login.
+Esta demo usa `PULSO_PREVIEW=1`: sirve la instantánea del repositorio y calcula escenarios sin
+guardarlos. Auth y Groq son servicios reales; no se desplegó FastAPI ni se probó persistencia remota.
 
 ## Laboratorio de machine learning e IA
 

@@ -9,7 +9,7 @@ Validación realizada el **26 de octubre de 2026**, contra `ine-abstention`
 local con datos oficiales y el servicio remoto real de Supabase Auth. Esta prueba no utilizó
 la fixture de CI ni validó un despliegue público.
 
-### Configuración observada
+### Configuración observada en la prueba local inicial
 
 | Comprobación | Resultado |
 | --- | --- |
@@ -23,9 +23,10 @@ la fixture de CI ni validó un despliegue público.
 | Plantillas | Predeterminadas; el panel indica que se necesita SMTP personalizado para editarlas. |
 | Configuración local | URL real y clave publicable en `.env.local`, ignorado por Git; sin clave administrativa en el frontend. |
 
-Se revisaron las URLs y SMTP sin modificarlos. Antes de publicar se debe definir el dominio,
-configurar sus callbacks y validar el correo con buzones reales controlados. La ausencia de SMTP
-personalizado y de redirecciones es una limitación adicional; el error concreto observado al
+En esa revisión inicial se observaron las URLs y SMTP sin modificarlos. Los cambios posteriores
+de dominio y callbacks se documentan en la sección del despliegue público. Sigue pendiente validar
+el correo con buzones reales controlados. La ausencia inicial de SMTP personalizado y de
+redirecciones era una limitación adicional; el error concreto observado al
 solicitar recuperación de estas cuentas fue la validación de la dirección ficticia.
 
 ### Cuentas ficticias creadas
@@ -68,6 +69,19 @@ También se verificaron previamente los controles sin sesión: `/` redirige a `/
 privadas responden 401, los callbacks inválidos vuelven a `/login?error=confirmation` y
 `/reset-password` sin sesión redirige a `/recuperar`. La suite automatizada de navegador usa
 una fixture Auth local y no sustituye estas pruebas remotas.
+
+## Despliegue público verificado el 26 de octubre de 2026
+
+- URL: https://pulso-electoral-demo.vercel.app.
+- Site URL de Supabase actualizado a ese origen. Redirect URLs guardadas:
+  `https://pulso-electoral-demo.vercel.app/auth/callback` y
+  `https://pulso-electoral-demo.vercel.app/auth/callback?next=/reset-password`.
+- Login real con la cuenta QA 1 y carga de los 32 estados aprobados. Logout volvió al login;
+  después, `/api/backend/predictions` y `/api/assistant` mostraron
+  `Inicia sesión para continuar.` y `/` volvió a la pantalla de acceso.
+- Se conservan confirmación global obligatoria y acceso anónimo deshabilitado.
+  SMTP personalizado continúa deshabilitado; no se validó entrega de correo ni cambio de contraseña.
+- El despliegue usa una instantánea (`PULSO_PREVIEW=1`), no el backend Docker de la prueba local.
 
 ## Variables de entorno
 

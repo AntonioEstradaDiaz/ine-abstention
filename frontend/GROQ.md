@@ -33,7 +33,7 @@ PULSO_PREVIEW=1
 
 5. Desplegar; si se agregaron variables después del primer despliegue, hacer **Redeploy**.
 6. Abrir el enlace público, seleccionar Yucatán en Análisis y usar **Preguntar a la IA**. También probar el asistente de Predicciones. Una respuesta de Groq debe mostrarse con datos del estado; «configurado» por sí solo no confirma una respuesta real.
-7. Para los evaluadores, compartir la URL de producción accesible sin iniciar sesión y comprobarla en una ventana privada.
+7. Para los evaluadores, compartir la URL de producción y proporcionar acceso mediante una cuenta confirmada de Supabase. Comprobar en una ventana privada que el login sea accesible y el dashboard permanezca protegido.
 
 Esta demo sirve los datos y pronósticos de la instantánea del repositorio. `PULSO_PREVIEW=1` evita depender de localhost o de una base de datos externa; no es una conexión al backend real. Para usar el backend desplegado, quitar esta variable y establecer `BACKEND_URL` con su URL pública.
 
@@ -42,3 +42,22 @@ Al finalizar la evaluación, eliminar el despliegue y revocar la clave temporal.
 ## Acceso de usuarios
 
 El dashboard y la API requieren inicio de sesión. Antes de probar Groq en el despliegue, completar la configuración de Supabase Auth documentada en `AUTH.md` y crear una cuenta confirmada. Sin las variables de Supabase, el acceso permanece cerrado.
+
+## Demo publicada y comprobada
+
+El 26 de octubre de 2026 se desplegó https://pulso-electoral-demo.vercel.app desde
+`main`, commit `eeaf4100dd3e22ca84e64e05693bcd63ca771346`, en Vercel Hobby.
+Proyecto `pulso-electoral-demo`, raíz `frontend`, build `npm run build`; se permite incluir
+archivos externos a la raíz para cargar el informe ML del repositorio.
+
+En Production y Preview quedaron `PULSO_PREVIEW=1`, `AI_PROVIDER=groq`,
+`GROQ_MODEL=qwen/qwen3.8-27b`, las dos variables públicas de Supabase y `GROQ_API_KEY`.
+La clave de Groq fue guardada por el propietario en las variables privadas de Vercel.
+Production también usa `NEXT_PUBLIC_APP_URL=https://pulso-electoral-demo.vercel.app`.
+Cambiar una variable requiere un nuevo despliegue; no copiar claves al repositorio.
+
+Prueba real aprobada: en Predicciones, la pregunta sobre abstención y límites de Morelos recibió
+una respuesta identificada como **IA · qwen/qwen3.8-27b**, con 48.1% y banda 33.8%–62.5%.
+No fue la lectura automática de respaldo. Login, escenario +3 pp y logout también pasaron.
+Los escenarios mostraron **Resultado local · no se guarda**, coherente con la instantánea;
+esta prueba no valida persistencia en PostgreSQL ni un backend FastAPI desplegado.
