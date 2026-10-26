@@ -1,6 +1,6 @@
 # Estado del proyecto y plan de mejora
 
-Fecha de esta entrega: 22 de octubre de 2026 (UTC). Nombre de producto: **Pulso electoral**.
+Estado revisado: 25 de octubre de 2026 (America/Mexico_City). Nombre de producto: **Pulso electoral**.
 Repositorio: `AntonioEstradaDiaz/ine-abstention`, privado. Estado: prototipo funcional local.
 
 ## Qué problema resuelve
@@ -24,7 +24,10 @@ Los CCPC son agregados de cuadernillos y tienen cobertura y registros NS que req
 | Predicción | 32 estados, 2027 intermedia; baseline_last, semáforo de tres niveles, bandas y explicación. |
 | Simulación | POST con supuestos, resultados persistidos y recuperación por identificador; límites 0–100%. |
 | Demostración backend | Docker local, restauración idempotente y recorrido HTTP documentado en fase 7. |
-| Frontend | Cuatro secciones completas, cartografía INEGI, cliente tipado, proxy, CSV, comparación y simulación real. |
+| Frontend | Ocho secciones: Laboratorio de modelos, Análisis IA, Mapa, Tendencias, Predicciones, Escenarios, Reportes y Datos; cartografía INEGI, cliente tipado, proxy y exportaciones CSV/JSON. |
+| Asistente | Groq, Gemini u Ollama, contexto estatal consultado en servidor y lectura automática cuando el proveedor no responde. |
+| Datos y Reportes | Datos descarga CSV/JSON de conteos nacionales y estatales; la muestra municipal es ilustrativa. Reportes configura y muestra documentos, sin generar archivos ni envíos programados. |
+| CI | GitHub Actions con pruebas unitarias, ML, integración, TypeScript, build y Playwright; ver ci.md. |
 | Validación frontend | TypeScript, compilación y recorrido de navegador de escritorio/móvil; evidencia en frontend-validation.md. |
 
 ## Qué no está terminado
@@ -38,7 +41,7 @@ Los CCPC son agregados de cuadernillos y tienen cobertura y registros NS que req
 - Historial, recuperación y comparación de escenarios en la interfaz; hoy el backend guarda y recupera,
   mientras el dashboard muestra la simulación recién calculada y su identificador.
 - Simulaciones simultáneas de varios estados en la interfaz, análisis demográfico y reportes PDF/XLSX.
-- CI automatizado remoto, carga/concurrencia, recuperación ante desastres y auditoría completa WCAG.
+- Pruebas de carga/concurrencia, recuperación ante desastres y auditoría completa WCAG.
 - Licencia de distribución del código acordada por su titular; conservar atribuciones de fuentes y dependencias.
 
 ## Mejoras priorizadas y criterios de aceptación
@@ -53,7 +56,7 @@ Los CCPC son agregados de cuadernillos y tienen cobertura y registros NS que req
 | P1 experiencia | Auditoría de accesibilidad | WCAG contrastado, lector de pantalla, teclado, zoom y prueba con usuarios; corregir hallazgos. |
 | P2 rendimiento | Cartografía más ligera | Derivado simplificado o teselas con procedencia, topología validada y comparación visual con el original de 28.8 MB. |
 | P2 producto | Guardados y escenarios múltiples | Recuperar por URL/ID, comparar estados y exportar supuestos, linaje y resultados juntos. |
-| P2 mantenimiento | CI y dependencias | Construcción y pruebas en cada cambio; revisión de vulnerabilidades y actualización controlada de locks. |
+| P2 mantenimiento | Mantener CI y dependencias | Conservar los checks existentes, revisar vulnerabilidades y actualizar los locks de forma controlada. |
 
 No se necesita un modelo más complejo para que el dashboard funcione. Para mejorar pronósticos se necesita
 primero evidencia temporal y calidad de variables; el baseline sigue siendo una referencia transparente.

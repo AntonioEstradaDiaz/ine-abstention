@@ -10,11 +10,10 @@ from scripts import ci_fixtures
 
 def test_shipped_fixtures_restore_with_valid_model_and_demo_hashes(tmp_path):
     ci_fixtures.restore(tmp_path)
-    report = json.loads(
-        (ci_fixtures.ROOT / "docs/phase4_metrics.json").read_text(encoding="utf-8")
-    )
-    assert verify_manifest(tmp_path / "artifacts/models" / report["run_id"])["run_id"] == (
-        report["run_id"]
+    report = json.loads((ci_fixtures.ROOT / "docs/phase4_metrics.json").read_text(encoding="utf-8"))
+    assert (
+        verify_manifest(tmp_path / "artifacts/models" / report["run_id"])["run_id"]
+        == (report["run_id"])
     )
     manifest = json.loads((tmp_path / "data/demo/manifest.json").read_text(encoding="utf-8"))
     assert ci_fixtures.sha256(tmp_path / "data/demo/snapshot.jsonl.gz") == manifest["sha256"]

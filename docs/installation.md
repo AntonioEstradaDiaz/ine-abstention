@@ -1,8 +1,26 @@
 # Instalación desde un clon nuevo
 
 El repositorio contiene código, configuraciones de ejemplo, informes y cartografía contextual.
-No contiene credenciales, ZIP originales, Parquet, pesos ML ni `data/demo/snapshot.jsonl.gz`.
-Clonar código no copia Supabase ni sus datos. Este flujo reconstruye los resultados desde fuentes oficiales.
+No contiene credenciales, ZIP originales ni Parquet. Los pesos ML congelados y la instantánea de demo
+se distribuyen comprimidos en `tests/fixtures/ci.tar.gz`, con SHA-256; no están expandidos en un clon nuevo.
+Clonar código no copia Supabase ni crea una base activa. Se puede restaurar la demo o reconstruir desde fuentes oficiales.
+
+## Demo local desde los datos congelados
+
+Con Docker Desktop activo y contenedores Linux, ejecutar desde la raíz:
+
+```powershell
+uv sync --locked --group ml
+uv run --locked python scripts/ci_fixtures.py restore
+docker compose --env-file .env.docker.example --profile demo build
+docker compose --env-file .env.docker.example --profile demo run --rm seed
+docker compose --env-file .env.docker.example up -d --wait api
+```
+
+El restaurador comprueba SHA-256 y rechaza archivos existentes con contenido distinto.
+No sobrescribir datos locales para forzar la restauración. Después iniciar el frontend según la ruta rápida.
+Para una demo sin API ni base de datos, consultar [la guía Vercel](../frontend/GROQ.md):
+`PULSO_PREVIEW=1` usa una instantánea, no un backend en vivo.
 
 ## Ruta rápida: conectar una API ya preparada
 

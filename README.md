@@ -4,7 +4,7 @@ Dashboard y API para explorar participación y abstención electoral en México,
 y construir escenarios hipotéticos con datos oficiales del INE. El objetivo es apoyar la exploración
 territorial con evidencia y supuestos visibles; no recomendar intervenciones ni afirmar efectos causales.
 
-**Estado:** prototipo funcional, con backend de fases 1–7 y frontend de cinco secciones.
+**Estado:** prototipo funcional, con backend de fases 1–7 y frontend de ocho secciones.
 La estimación futura disponible es estatal, para las elecciones intermedias de 2027.
 No es un producto oficial del INE ni está validado para decisiones operativas.
 
@@ -17,7 +17,7 @@ No es un producto oficial del INE ni está validado para decisiones operativas.
 | Modelos | Dos referencias históricas y cuatro candidatos; desarrollo temporal 2018/2021 y prueba final 2024. |
 | Riesgo | 32 predicciones estatales, tres categorías relativas, bandas empíricas y explicación del baseline. |
 | Simulador | Escenarios aritméticos persistidos, cambios de participación en puntos porcentuales y límites 0–100%. |
-| Dashboard | Mapa, Tendencias, Predicciones, Escenarios y Análisis IA; API, búsqueda, exportación y diseño adaptable. |
+| Dashboard | Laboratorio de modelos, Análisis IA, Mapa, Tendencias, Predicciones, Escenarios, Reportes y Datos; API, búsqueda, exportación y diseño adaptable. |
 | Cartografía | Polígonos de los 32 estados del servicio oficial INEGI, con procedencia y checksum. Son referencia geoestadística. |
 
 El dashboard conserva el territorio al cambiar de sección. El mapa permite elegir estados y alternar
@@ -29,13 +29,18 @@ el backend, guarda el resultado y evita mostrar resultados anteriores como si co
 
 [Ver el simulador](docs/screenshots/scenario.png) · [Ver la versión móvil](docs/screenshots/mobile.png)
 
+Datos permite filtrar y descargar CSV/JSON de registros nacionales y estatales. Su nivel municipal
+usa una muestra ilustrativa identificada como no oficial; no habilita series municipales homologadas.
+Reportes ofrece configuración y vista previa del documento; la generación de PDF/PowerPoint/Excel
+y los envíos programados todavía no están implementados.
+
 ## Laboratorio de machine learning e IA
 
-La sección **Análisis IA** compara Ridge, Random Forest, XGBoost y LightGBM con dos referencias históricas. Los seis estimadores se entrenan con los agregados estatales 2009–2024: 192 observaciones y 128 ejemplos supervisados. Esta corrida usa la muestra CSV, sin desgloses demográficos; sus métricas no sustituyen las del experimento original con variables adicionales.
+La sección **Laboratorio de modelos** compara Ridge, Random Forest, XGBoost y LightGBM con dos referencias históricas. Los seis estimadores se entrenan con los agregados estatales 2009–2024: 192 observaciones y 128 ejemplos supervisados. Esta corrida usa la muestra CSV, sin desgloses demográficos; sus métricas no sustituyen las del experimento original con variables adicionales.
 
 - Desarrollo con elecciones completas 2018/2021; prueba reservada 2024. El entrenamiento de cada corte solo usa elecciones anteriores.
 - Pronósticos materializados para los 32 estados en 2027, bandas empíricas específicas de cada modelo y su importancia interna global cuando el algoritmo la ofrece.
-- Síntesis automática basada en tasas y errores medidos. No se usa un servicio generativo externo.
+- El laboratorio genera una síntesis automática basada en tasas y errores medidos. Los asistentes de Análisis IA y Predicciones admiten Groq (predeterminado), Gemini u Ollama, configurados en el servidor; si el proveedor no está disponible, muestran una lectura automática identificada como tal.
 - Escenarios locales de sensibilidad: trasladan el pronóstico ML y su banda por un cambio supuesto de participación; no reentrenan el estimador ni estiman efectos de intervenciones. Se invalidan si cambia el modelo, la entidad o el supuesto. Exportación CSV de pronósticos y JSON de escenarios.
 
 Para reproducir el entrenamiento desde la raíz:
@@ -95,8 +100,8 @@ Abrir **http://127.0.0.1:3000**. Para la API local sobre Supabase en puerto 8000
 `frontend/.env.local` con `BACKEND_URL=http://127.0.0.1:8000`. No sobrescribir el `.env` de la raíz.
 Se utiliza Webpack de forma explícita por un fallo observado de Turbopack al iniciar procesos auxiliares en Windows.
 
-Un clon nuevo **no incluye la base, los ZIP electorales, pesos de modelos ni el paquete de restauración**.
-Se necesita una API ya preparada o reconstruir la base siguiendo [la instalación desde cero](docs/installation.md).
+Un clon nuevo **no incluye una base activa ni los ZIP electorales**. Incluye un paquete verificado de agregados y modelos congelados en `tests/fixtures/ci.tar.gz`, restaurable para la demo local y CI; no incluye todos los pesos de entrenamientos locales.
+Se puede restaurar ese paquete, conectar una API ya preparada o reconstruir la base siguiendo [la instalación desde cero](docs/installation.md).
 Las variables de ejemplo usan únicamente credenciales locales de desarrollo.
 
 ## Qué falta y cómo mejorarlo
@@ -111,7 +116,7 @@ Prioridades y criterios de aceptación en [estado y hoja de ruta](docs/project-s
    homologada. No se habilitan series municipales, distritales o seccionales por repetir códigos.
 4. **Para ampliar el producto:** escenarios multiterritoriales en la interfaz, historial de simulaciones,
    exportaciones de reportes, análisis demográfico y revisión WCAG con usuarios y tecnologías de asistencia.
-5. **Para mantenerlo:** CI, versiones y revisiones de dependencias, pruebas de carga y optimización de la capa
+5. **Para mantenerlo:** revisar dependencias y resultados del CI existente, añadir pruebas de carga y optimizar la capa
    geográfica de 28.8 MB mediante un proceso verificable. No se ha elegido una licencia de distribución del código.
 
 ## Estructura y documentación
@@ -266,11 +271,16 @@ configurar `.env.example` sin sobrescribir credenciales existentes.
 ```powershell
 uv run ruff check .
 uv run ruff format --check .
-uv run pytest
+uv run --locked --group ml pytest
 $env:RUN_INTEGRATION = '1'
-uv run pytest -m integration
-Remove-Item Env:RUN_INTEGRATION
+$env:RUN_ML_INTEGRATION = '1'
+$env:RUN_FORECAST_INTEGRATION = '1'
+$env:RUN_SIMULATION_INTEGRATION = '1'
+uv run --locked --group ml pytest -m integration
+Remove-Item Env:RUN_INTEGRATION, Env:RUN_ML_INTEGRATION, Env:RUN_FORECAST_INTEGRATION, Env:RUN_SIMULATION_INTEGRATION
 ```
+
+En Windows con permisos restringidos, consultar [la ejecución local de pruebas](docs/ci.md#ejecución-local-en-windows): usar caché de uv y temporales de pytest dentro de `tmp/`.
 
 Las pruebas de integración necesitan la base activa, las migraciones y los seis años cargados.
 Las pruebas normales
@@ -293,7 +303,7 @@ La fase 5 incorpora predicciones estatales 2027, semáforo histórico, bandas em
 en la API. Consulta [el protocolo y los límites de interpretación](docs/phase5.md).
 La fase 6 añade `POST /api/v1/simulations` y consulta de escenarios registrados mediante GET.
 Consulta [fórmulas y supuestos](docs/phase6.md) y [la demostración calculada](docs/phase6_results.md).
-Frontend, geometrías y correspondencias territoriales temporales requieren fases posteriores.
+El frontend y las geometrías estatales contextuales ya están integrados. Las correspondencias territoriales temporales siguen pendientes.
 La fase 7 añade catálogo territorial, datos de mapa con geometría ausente explícita, índice de
 consultas y demostración integral: `uv run python scripts/demo_backend.py`.
 Compose local está construido y validado: API saludable en http://127.0.0.1:8001/docs,
