@@ -1,0 +1,133 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tests-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  UV_VERSION: "0.11.15"
+  PYTHON_VERSION: "3.12"
+  DATABASE_URL: postgresql+psycopg://ine_api:ine_api_local@127.0.0.1:15432/ine_abstention
+  MIGRATION_DATABASE_URL: postgresql+psycopg://ine_owner:ine_owner_local@127.0.0.1:15432/ine_abstention
+  DATABASE_SCHEMA: ine
+  ENVIRONMENT: local-demo
+
+jobs:
+  backend:
+    name: Backend (unit, ML, integration)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      RUN_INTEGRATION: "1"
+      RUN_ML_INTEGRATION: "1"
+      RUN_FORECAST_INTEGRATION: "1"
+      RUN_SIMULATION_INTEGRATION: "1"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
+        with:
+          version: ${{ env.UV_VERSION }}
+          python-version: ${{ env.PYTHON_VERSION }}
+          enable-cache: true
+      - name: Install locked dependencies and restore verified fixtures
+        run: |
+          uv sync --locked --group ml
+          uv run --locked python scripts/ci_fixtures.py restore
+      - name: Start PostgreSQL, migrate and restore official aggregates
+        run: |
+          docker compose --env-file .env.docker.example --profile demo build
+          docker compose --env-file .env.docker.example --profile demo run --rm seed
+          docker compose --env-file .env.docker.example up -d --wait api
+      - name: Lint
+        run: uv run --locked --group ml ruff check app pipelines scripts tests
+      - name: Run all backend tests (warnings are errors)
+        run: uv run --locked --group ml pytest -q -W error --junitxml=tmp/backend-tests.xml
+      - name: Verify the running API
+        run: uv run --locked python scripts/demo_backend.py --api-url http://127.0.0.1:8001 --output tmp/http-checks.json
+      - name: Capture service logs
+        if: always()
+        run: |
+          mkdir -p tmp
+          docker compose --env-file .env.docker.example logs --no-color > tmp/backend-services.log 2>&1
+      - name: Upload backend results
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: backend-results
+          path: tmp/
+          retention-days: 7
+      - name: Stop temporary services
+        if: always()
+        run: docker compose --env-file .env.docker.example --profile demo down --volumes
+
+  frontend:
+    name: Frontend (ML, types, build, browser)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      BACKEND_URL: http://127.0.0.1:8001
+      FRONTEND_URL: http://127.0.0.1:3000
+      CI: "true"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
+        with:
+          version: ${{ env.UV_VERSION }}
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Restore verified fixtures
+        run: uv run --locked python scripts/ci_fixtures.py restore
+      - name: Start the backend with official aggregates
+        run: |
+          docker compose --env-file .env.docker.example --profile demo build
+          docker compose --env-file .env.docker.example --profile demo run --rm seed
+          docker compose --env-file .env.docker.example up -d --wait api
+      - name: Install frontend and Chromium
+        working-directory: frontend
+        run: |
+          npm ci --no-audit --no-fund
+          npx playwright install --with-deps chromium
+      - name: Test frontend units (ML, Groq, Gemini) and build
+        working-directory: frontend
+        run: |
+          npm run test:unit
+          npm run build
+          npm run typecheck
+      - name: Start frontend and run all browser tests
+        working-directory: frontend
+        run: |
+          mkdir -p ../tmp
+          npm start > ../tmp/frontend.log 2>&1 &
+          FRONTEND_PID=$!
+          trap 'kill "$FRONTEND_PID" 2>/dev/null || true' EXIT
+          curl --fail --silent --output /dev/null --retry 30 --retry-connrefused --retry-delay 2 http://127.0.0.1:3000
+          npm run test:e2e
+      - name: Capture service logs
+        if: always()
+        run: |
+          mkdir -p frontend/test-results
+          if [ -f tmp/frontend.log ]; then cp tmp/frontend.log frontend/test-results/frontend.log; fi
+          docker compose --env-file .env.docker.example logs --no-color > frontend/test-results/backend.log 2>&1
+      - name: Upload browser results, screenshots and traces
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: frontend-results
+          path: frontend/test-results/
+          retention-days: 7
+      - name: Stop temporary services
+        if: always()
+        run: docker compose --env-file .env.docker.example --profile demo down --volumes

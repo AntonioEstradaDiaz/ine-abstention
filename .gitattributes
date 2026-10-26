@@ -1,0 +1,4 @@
+# Los modelos congelados verifican hashes de los archivos fuente.
+*.py text eol=lf
+*.yml text eol=lf
+*.gz binary
