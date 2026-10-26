@@ -13,7 +13,14 @@ const imgRoute = "/design-top/aed99.svg";
 const imgSearch = "/design-top/9128a.svg";
 const imgSlidersHorizontal = "/design-top/d692b.svg";
 type View =
-  "map" | "trends" | "ml" | "predictions" | "scenarios" | "laboratory" | "reports" | "data";
+  | "map"
+  | "trends"
+  | "ml"
+  | "predictions"
+  | "scenarios"
+  | "laboratory"
+  | "reports"
+  | "data";
 export interface PageHeading {
   lead: string;
   highlight: string;
@@ -315,19 +322,26 @@ export function DesignTop({
               1
             </p>
           </div>
-          <div
-            className="bg-[#fcdded] content-stretch flex items-center justify-center overflow-clip relative rounded-[100px] shrink-0 size-[43px]"
-            data-node-id="10:12509"
-            data-name="Perfil"
-            title="Perfil ilustrativo del diseño"
-          >
-            <p
-              className="[word-break:break-word] font-['Inter:Bold'] font-bold leading-[normal] not-italic relative shrink-0 text-[#b9005e] text-[16px] whitespace-nowrap"
-              data-node-id="10:12510"
+          <form action="/api/auth/logout" method="post">
+            <button
+              type="submit"
+              className="auth-logout"
+              title="Cerrar sesión"
+              aria-label="Cerrar sesión"
             >
-              IP
-            </p>
-          </div>
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                aria-hidden="true"
+              >
+                <path d="M9 5H5v14h4M13 7l5 5-5 5M9 12h10" />
+              </svg>
+            </button>
+          </form>
         </div>
       </div>
       <div
