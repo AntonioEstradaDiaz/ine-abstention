@@ -62,3 +62,11 @@ En otra terminal con `FRONTEND_URL=http://127.0.0.1:3000`, ejecutar `npm.cmd run
 El backend Docker debe estar preparado con datos reales. Al terminar, cerrar el servidor y
 reconstruir con las variables reales antes de desplegar: las variables `NEXT_PUBLIC_` quedan
 incluidas en el build. La fixture se inicia y detiene desde Playwright y no forma parte del despliegue.
+
+## Diseño de las pantallas de acceso
+
+`/login`, `/registro`, `/recuperar` y `/reset-password` comparten `src/components/auth-screen.tsx`
+y `src/app/auth.css`. El panel izquierdo muestra el logotipo del INE, el mensaje «Tu participación
+hace la diferencia.» como texto real y la ilustración `public/auth/participacion-ciudadana.webp`
+(horizontal, se funde con el fondo del panel). En pantallas de hasta 860 px el panel queda arriba
+del formulario. Las cifras de la ilustración son decorativas: no provienen del modelo ni del INE.
