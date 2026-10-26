@@ -68,8 +68,9 @@
   min-height: 300px;
   margin: 0;
   width: 100%;
-  border-radius: 0;
-  background: linear-gradient(145deg, #f2fbff, #dff3ff);
+  border-radius: 14px;
+  overflow: hidden;
+  background: transparent;
 }
 .electoral-map-panel .territory-map {
   position: absolute;

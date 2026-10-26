@@ -13,7 +13,14 @@ const imgRoute = "/design-top/aed99.svg";
 const imgSearch = "/design-top/9128a.svg";
 const imgSlidersHorizontal = "/design-top/d692b.svg";
 type View =
-  "map" | "trends" | "ml" | "predictions" | "scenarios" | "laboratory" | "reports" | "data";
+  | "map"
+  | "trends"
+  | "ml"
+  | "predictions"
+  | "scenarios"
+  | "laboratory"
+  | "reports"
+  | "data";
 export interface PageHeading {
   lead: string;
   highlight: string;
@@ -22,6 +29,8 @@ export interface PageHeading {
 interface Props {
   view: View;
   heading?: PageHeading;
+  // Replaces the search tools beside the title; null leaves the space empty.
+  aside?: React.ReactNode;
   search: string;
   year: number;
   elections: Array<{ id: number; year: number }>;
@@ -35,6 +44,7 @@ interface Props {
 export function DesignTop({
   view,
   heading,
+  aside,
   search,
   year,
   elections,
@@ -369,67 +379,71 @@ export function DesignTop({
                 {heading?.subtitle}
               </p>
             </div>
-            <div
-              className="content-stretch flex gap-[18px] items-center overflow-clip relative shrink-0"
-              data-node-id="10:12517"
-              data-name="Herramientas de búsqueda"
-            >
+            {aside !== undefined ? (
+              aside
+            ) : (
               <div
-                className="bg-white border border-[#dce2eb] border-solid content-stretch flex gap-[15px] h-[42px] items-center overflow-clip px-[15px] relative rounded-[9px] shrink-0 w-[364px]"
-                data-node-id="10:12518"
-                data-name="Buscar territorio"
+                className="content-stretch flex gap-[18px] items-center overflow-clip relative shrink-0"
+                data-node-id="10:12517"
+                data-name="Herramientas de búsqueda"
               >
                 <div
-                  className="relative shrink-0 size-[19px]"
-                  data-node-id="10:13412"
-                  data-name="search"
+                  className="bg-white border border-[#dce2eb] border-solid content-stretch flex gap-[15px] h-[42px] items-center overflow-clip px-[15px] relative rounded-[9px] shrink-0 w-[364px]"
+                  data-node-id="10:12518"
+                  data-name="Buscar territorio"
                 >
-                  <img
-                    alt=""
-                    className="absolute block inset-0 max-w-none size-full"
-                    src={imgSearch}
+                  <div
+                    className="relative shrink-0 size-[19px]"
+                    data-node-id="10:13412"
+                    data-name="search"
+                  >
+                    <img
+                      alt=""
+                      className="absolute block inset-0 max-w-none size-full"
+                      src={imgSearch}
+                    />
+                  </div>
+                  <input
+                    aria-label="Buscar territorio"
+                    className="min-w-0 flex-1 bg-transparent font-['Roboto:Regular'] text-[12px] text-[#0d172f] outline-none placeholder:text-[#596d8d]"
+                    onChange={(event) => onSearch(event.target.value)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" && search.trim())
+                        onSearchSubmit();
+                    }}
+                    placeholder="Buscar estado, municipio o sección..."
+                    value={search}
                   />
                 </div>
-                <input
-                  aria-label="Buscar territorio"
-                  className="min-w-0 flex-1 bg-transparent font-['Roboto:Regular'] text-[12px] text-[#0d172f] outline-none placeholder:text-[#596d8d]"
-                  onChange={(event) => onSearch(event.target.value)}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter" && search.trim())
-                      onSearchSubmit();
-                  }}
-                  placeholder="Buscar estado, municipio o sección..."
-                  value={search}
-                />
+                <button
+                  className="bg-white border border-[#dce2eb] border-solid content-stretch flex gap-[10px] h-[42px] items-center justify-center overflow-clip relative rounded-[9px] shrink-0 w-[108px] cursor-pointer hover:bg-[#fdf0f7]"
+                  data-node-id="10:12521"
+                  data-name="Filtros"
+                  onClick={onFilters}
+                  aria-expanded={filtersOpen}
+                  aria-controls="dashboard-filters"
+                >
+                  <div
+                    className="relative shrink-0 size-[21px]"
+                    data-node-id="10:13415"
+                    data-name="sliders-horizontal"
+                  >
+                    <img
+                      alt=""
+                      className="absolute block inset-0 max-w-none size-full"
+                      src={imgSlidersHorizontal}
+                    />
+                  </div>
+                  <p
+                    className="[word-break:break-word] font-['Roboto:Bold'] font-bold leading-[normal] relative shrink-0 text-[#0d172f] text-[13px] whitespace-nowrap"
+                    data-node-id="10:12523"
+                    style={{ fontVariationSettings: '"wdth" 100' }}
+                  >
+                    Filtros
+                  </p>
+                </button>
               </div>
-              <button
-                className="bg-white border border-[#dce2eb] border-solid content-stretch flex gap-[10px] h-[42px] items-center justify-center overflow-clip relative rounded-[9px] shrink-0 w-[108px] cursor-pointer hover:bg-[#fdf0f7]"
-                data-node-id="10:12521"
-                data-name="Filtros"
-                onClick={onFilters}
-                aria-expanded={filtersOpen}
-                aria-controls="dashboard-filters"
-              >
-                <div
-                  className="relative shrink-0 size-[21px]"
-                  data-node-id="10:13415"
-                  data-name="sliders-horizontal"
-                >
-                  <img
-                    alt=""
-                    className="absolute block inset-0 max-w-none size-full"
-                    src={imgSlidersHorizontal}
-                  />
-                </div>
-                <p
-                  className="[word-break:break-word] font-['Roboto:Bold'] font-bold leading-[normal] relative shrink-0 text-[#0d172f] text-[13px] whitespace-nowrap"
-                  data-node-id="10:12523"
-                  style={{ fontVariationSettings: '"wdth" 100' }}
-                >
-                  Filtros
-                </p>
-              </button>
-            </div>
+            )}
           </div>
           {view === "map" && <ElectoralKpis />}
         </div>

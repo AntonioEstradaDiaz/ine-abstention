@@ -2,7 +2,6 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { Map as MapLibreMap } from "maplibre-gl";
-import type { FeatureCollection } from "geojson";
 import {
   LocateFixed,
   MapPin,
@@ -16,6 +15,7 @@ import {
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { pct, riskColors, riskLabels } from "@/lib/utils";
+import { geometryQuery } from "@/lib/geometry";
 import { createMapSelection } from "@/lib/map-selection-layer";
 import type { Risk } from "@/lib/types";
 
@@ -92,15 +92,7 @@ export function TerritoryMap({
   const [loaded, setLoaded] = useState(false);
   const [ready, setReady] = useState(false);
   const [mapError, setMapError] = useState(false);
-  const geo = useQuery({
-    queryKey: ["inegi-geometry"],
-    staleTime: Infinity,
-    queryFn: async ({ signal }) => {
-      const r = await fetch("/geo/estados.geojson", { signal });
-      if (!r.ok) throw new Error("Cartografía no disponible");
-      return (await r.json()) as FeatureCollection;
-    },
-  });
+  const geo = useQuery(geometryQuery);
   useEffect(() => {
     selectRef.current = onSelect;
   }, [onSelect]);

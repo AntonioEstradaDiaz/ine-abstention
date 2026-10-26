@@ -123,15 +123,18 @@ test("dashboard uses live backend data, maps and historical periods", async ({
     fullPage: true,
   });
   await page.getByLabel("Buscar territorio", { exact: true }).fill("Baja");
-  await page.getByRole("button", { name: "Reportes", exact: true }).click();
-  await page.getByRole("radio", { name: /Histórico observado 2024/ }).click();
-  await expect(page.locator(".section-table tbody tr")).toHaveCount(2);
-  const download = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Datos", exact: true }).click();
+  await page.getByRole("checkbox", { name: "Lista nominal" }).check();
+  await page.getByRole("checkbox", { name: "Conteos SV, NV y NS" }).check();
   await page
-    .getByRole("button", { name: "Descargar CSV", exact: true })
+    .getByRole("button", { name: "Aplicar filtros", exact: true })
     .click();
+  await expect(page.locator(".data-table tbody tr")).toHaveCount(2);
+  await page.getByRole("button", { name: /Descargar datos/ }).click();
+  const download = page.waitForEvent("download");
+  await page.getByRole("menuitem", { name: /CSV/ }).click();
   const file = await download;
-  expect(file.suggestedFilename()).toBe("pulso-observado-2024.csv");
+  expect(file.suggestedFilename()).toBe("pulso-datos-estatal-2024.csv");
   const stream = await file.createReadStream();
   const chunks: Buffer[] = [];
   for await (const chunk of stream!) chunks.push(Buffer.from(chunk));
@@ -142,8 +145,8 @@ test("dashboard uses live backend data, maps and historical periods", async ({
   const exportedState = csv
     .split(/\r?\n/)
     .map((row) => row.split(","))
-    .find((row) => row[0] === "02");
-  expect(exportedState?.slice(2, 6)).toEqual([
+    .find((row) => row[1] === "02");
+  expect(exportedState?.slice(5, 9)).toEqual([
     String(observedState.nominal_list),
     String(observedState.voter_count),
     String(observedState.nonvoter_count),
