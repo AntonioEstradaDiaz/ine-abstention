@@ -1,6 +1,6 @@
 "use client";
 import { useMemo, useState } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   ArrowRight,
   Check,
@@ -16,7 +16,7 @@ import {
   Vote,
 } from "lucide-react";
 import { api } from "@/lib/api";
-import type { Forecast, Prediction } from "@/lib/types";
+import type { Forecast, Prediction, Simulation } from "@/lib/types";
 import { pct, pp, riskLabels } from "@/lib/utils";
 import { Button } from "./ui/button";
 import { Chart, chartAxis, chartTooltip } from "./chart";
@@ -103,6 +103,12 @@ function ScenarioForm({
   initialChange: number;
 }) {
   const [input, setInput] = useState(String(initialChange));
+  const [restored, setRestored] = useState<Simulation>();
+  const client = useQueryClient();
+  const saved = useQuery({
+    queryKey: ["scenarios", p.state_code],
+    queryFn: ({ signal }) => api.scenarios(p.state_code, signal),
+  });
   const change = input.trim() === "" ? NaN : Number(input);
   const valid = Number.isFinite(change) && change >= -100 && change <= 100;
   const mutation = useMutation({
@@ -115,21 +121,27 @@ function ScenarioForm({
       delta: number;
       run: string;
     }) => api.simulate(code, delta, run),
+    onSuccess: () => {
+      setRestored(undefined);
+      void client.invalidateQueries({ queryKey: ["scenarios", p.state_code] });
+    },
   });
+  const simulation = restored ?? mutation.data;
   const matching =
     valid &&
-    mutation.data?.result.parameters.participation_change_pp === change &&
-    mutation.data?.result.states[0]?.state_code === p.state_code;
-  const result = matching ? mutation.data?.result.states[0] : undefined;
+    simulation?.result.forecast.id === forecast.id &&
+    simulation?.result.parameters.participation_change_pp === change &&
+    simulation?.result.states[0]?.state_code === p.state_code;
+  const result = matching ? simulation?.result.states[0] : undefined;
   const run = () => {
     if (valid && !mutation.isPending)
       mutation.mutate({ code: p.state_code, delta: change, run: forecast.id });
   };
   const reset = () => {
     setInput("0");
+    setRestored(undefined);
     mutation.reset();
   };
-  const preview = forecast.provenance.mode === "preview";
   // Arithmetic sensitivity curve: the same identity the API applies, shown for context.
   const sensitivity = useMemo(() => {
     const xs = Array.from({ length: 41 }, (_, i) => i - 20);
@@ -389,16 +401,14 @@ function ScenarioForm({
           title="Base vs. escenario"
           subtitle={
             result
-              ? preview
-                ? "Resultado local · no se guarda"
-                : "Resultado calculado y guardado por la API"
+              ? "Resultado guardado en tu cuenta"
               : "Ejecuta el escenario para comparar resultados"
           }
           actions={
             result && (
               <span className="saved-label">
                 <Check size={14} />
-                {preview ? "Calculado localmente" : "Guardado"}
+                Guardado
               </span>
             )
           }
@@ -481,7 +491,7 @@ function ScenarioForm({
               </table>
               {!result && (
                 <div className="scenario-placeholder">
-                  {mutation.data
+                  {simulation
                     ? "Los parámetros cambiaron. Calcula de nuevo para actualizar el resultado."
                     : "El resultado aparecerá aquí al calcular el escenario."}
                 </div>
@@ -499,10 +509,7 @@ function ScenarioForm({
                     sin cambios.
                   </Note>
                   <p className="section-card-note simulation-id">
-                    {preview
-                      ? "Escenario local · no guardado"
-                      : "Identificador reproducible"}{" "}
-                    <code>{mutation.data!.id}</code>
+                    Identificador guardado <code>{simulation!.id}</code>
                   </p>
                 </>
               )}
@@ -510,6 +517,75 @@ function ScenarioForm({
           )}
         </SectionCard>
       </div>
+      <SectionCard
+        id="saved-scenarios-title"
+        icon={ListChecks}
+        title="Mis escenarios guardados"
+        subtitle={`${p.name} · últimos 20 escenarios de tu cuenta`}
+      >
+        <Status
+          loading={saved.isPending}
+          error={saved.error}
+          retry={() => void saved.refetch()}
+        />
+        {saved.isSuccess && !saved.data.items.length && (
+          <p>Aún no tienes escenarios guardados para esta entidad.</p>
+        )}
+        {!!saved.data?.items.length && (
+          <div className="table-scroll">
+            <table className="section-table">
+              <thead>
+                <tr>
+                  <th>Escenario</th>
+                  <th>Fecha</th>
+                  <th>Abstención</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody>
+                {saved.data.items.map((item) => (
+                  <tr key={item.id}>
+                    <td>{item.name}</td>
+                    <td>
+                      {new Date(item.created_at).toLocaleString("es-MX", {
+                        timeZone: "America/Mexico_City",
+                      })}
+                    </td>
+                    <td>
+                      {pct(item.result.states[0]?.scenario.abstention_rate)}
+                    </td>
+                    <td>
+                      <Button
+                        variant="outline"
+                        disabled={
+                          mutation.isPending ||
+                          item.result.forecast.id !== forecast.id
+                        }
+                        title={
+                          item.result.forecast.id !== forecast.id
+                            ? "Pertenece a otra corrida de pronóstico"
+                            : undefined
+                        }
+                        onClick={() => {
+                          mutation.reset();
+                          setInput(
+                            String(
+                              item.result.parameters.participation_change_pp,
+                            ),
+                          );
+                          setRestored(item);
+                        }}
+                      >
+                        Recuperar escenario
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </SectionCard>
       <div className="section-grid-2">
         <SectionCard
           id="sensitivity-title"

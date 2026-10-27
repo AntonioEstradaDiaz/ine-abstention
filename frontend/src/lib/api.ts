@@ -78,4 +78,9 @@ export const api = {
       target_year: 2027,
       forecast_run_id: run,
     }),
+  scenarios: (state: string, signal?: AbortSignal) =>
+    request<{ items: Array<Simulation & { name: string }> }>(
+      `simulations?state_code=${encodeURIComponent(state)}`,
+      signal,
+    ),
 };

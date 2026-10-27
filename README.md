@@ -22,11 +22,16 @@ de recuperación. La creación y las pruebas de acceso están documentadas en [A
 
 La demo corre en Vercel Hobby con Next.js, Supabase Auth y Groq reales. Usa `PULSO_PREVIEW=1`:
 los datos y pronósticos son una instantánea versionada del repositorio. **No hay FastAPI ni
-PostgreSQL de la aplicación desplegados detrás de esta demo. Los escenarios no se guardan.**
+PostgreSQL del backend FastAPI desplegados detrás de esta demo.** Los escenarios calculados
+se guardan en Supabase, asociados al usuario autenticado, y se recuperan desde Escenarios.
 
 La implementación completa del backend sí existe en este repositorio y puede ejecutarse en Docker
 local o conectarse a PostgreSQL/PostGIS en Supabase. En ese modo, la API conserva simulaciones.
-No confundir esa capacidad del backend con lo disponible en la URL publicada.
+El guardado web usa la tabla `public.pulso_scenarios`, independiente del historial del backend local.
+RLS permite a cada usuario insertar y consultar únicamente sus propios escenarios.
+
+La entrega del hackathon incorpora PDF/Excel estatales y retira la muestra municipal de Datos.
+[Alcance y validación de la entrega](docs/hackathon-delivery.md).
 
 La revisión funcional del 26 de octubre de 2026 recorrió las ocho secciones. Encontró errores de
 presentación de datos y controles de Reportes; las correcciones y el alcance de las pruebas están en
@@ -43,9 +48,9 @@ en producción. Las pruebas reales de IA y sus límites de cuota se detallan en 
 | Análisis IA | Histórico oficial estatal, nacional ponderado, estimación 2027, búsqueda, CSV trazable y consulta estatal a Groq. | Comparte estado/año y APIs con el mapa; el pronóstico usa la misma corrida que Predicciones. No muestra cifras municipales sin homologación. |
 | Laboratorio de modelos | Dos referencias y cuatro modelos ML, métricas temporales, pronósticos para 32 estados, importancia global y escenarios locales. Exporta CSV/JSON. | Entrenamiento previo, no por solicitud. La síntesis automática no es una consulta a IA. Acceso desde Análisis → Preguntar a la IA → Abrir laboratorio de modelos. |
 | Predicciones | Baseline estatal 2027, banda, contexto histórico, errores temporales y asistente Groq. | Las bandas no garantizan cobertura futura; no predice municipios ni efectos de intervenciones. |
-| Escenarios | Cambio supuesto de participación, límites 0–100%, comparación y descarte de resultados al cambiar parámetros. | Demo: cálculo sobre instantánea, sin persistencia. Backend conectado: guarda la simulación. |
-| Reportes | Vista previa estatal, entidad, variable, comparación, gráficas y hallazgos. | PDF, PowerPoint, Excel, envíos automáticos y reportes nacionales/municipales pendientes. Se corrigieron controles que aparentaban generar archivos o páginas. |
-| Datos | Filtros, búsqueda, orden, paginación, selección de filas, CSV/JSON, diccionario y procedencia. | Datos nacionales/estatales oficiales; municipal es una muestra ilustrativa. Subir archivos está pendiente. Actualizar fuentes vuelve a consultar los datos disponibles; no descarga nuevas elecciones del INE. |
+| Escenarios | Cambio supuesto de participación, límites 0–100%, comparación, guardado privado y recuperación del historial. | Cálculo sobre la instantánea en demo; el historial muestra los últimos 20 escenarios de la entidad. Corridas anteriores no se restauran sobre una base distinta. |
+| Reportes | Reporte estatal descargable en PDF y Excel, entidad, variable, comparación nacional ponderada, histórico, hallazgos y metodología. PDF incluye gráficas opcionales; Excel conserva conteos y tasas numéricas. | PowerPoint, envíos automáticos y reportes nacionales/municipales pendientes. Las últimas cinco descargas se pueden repetir durante la sesión de la sección; no hay archivo persistente de reportes. |
+| Datos | Filtros, búsqueda, orden, paginación, selección de filas, CSV/JSON, diccionario y procedencia. | Datos nacionales/estatales oficiales; muestra municipal retirada y opción deshabilitada hasta homologar fuentes. Subir archivos está pendiente. Actualizar fuentes vuelve a consultar los datos disponibles; no descarga nuevas elecciones del INE. |
 
 Mapa, Análisis, Predicciones y Escenarios comparten estado seleccionado; Análisis y el histórico del
 mapa también comparten año. El laboratorio usa la selección territorial del dashboard.
@@ -142,6 +147,7 @@ Demo publicada
 Navegador → Supabase Auth
           → Next.js en Vercel → instantánea del repositorio
                               → Groq desde el servidor
+                              → Supabase: escenarios privados con RLS
 
 Backend conectado
 INE CCPC → validación e ingesta → PostgreSQL/PostGIS
@@ -283,12 +289,12 @@ HTTP 200 en login, redirección 307 al entrar sin sesión y 401 en las dos APIs 
 
 1. **Correo y acceso de evaluadores:** SMTP, registro/confirmación/recuperación con buzones reales,
    revisión del aviso de privacidad, ayuda y términos; roles y permisos si habrá usuarios con distinto acceso.
-2. **Datos y persistencia en producción:** desplegar FastAPI y conectarlo a una base preparada;
-   proteger la API, guardar escenarios por usuario y permitir historial. Hoy la URL usa una instantánea.
-3. **Eliminar demostraciones visuales:** sustituir la muestra municipal que permanece en Datos
-   por registros homologados y retirar notificaciones ficticias.
-4. **Reportes reales:** generar y descargar PDF/PPTX/XLSX, implementar contenido nacional/municipal,
-   historial persistente, notas/factores y programación de envíos.
+2. **Datos en producción:** desplegar FastAPI y proteger su API si se requiere actualizar datos
+   desde una base activa. La demo usa una instantánea; el historial privado de escenarios ya usa Supabase.
+3. **Cobertura municipal:** incorporar registros homologados antes de habilitar ese nivel; la muestra
+   ilustrativa fue retirada. Retirar también notificaciones ficticias del diseño.
+4. **Ampliación de reportes:** PowerPoint, contenido nacional/municipal, historial persistente,
+   factores y programación de envíos. PDF y Excel estatales ya están implementados.
 5. **Operación:** límites de solicitudes y cuota por usuario para IA, monitoreo de errores,
    alertas, copias/restauración verificadas y pruebas de carga. HTTPS y secretos de servidor ya existen en Vercel.
 6. **Calidad y método:** WCAG con tecnologías de asistencia, prueba con usuarios, más bloques electorales,

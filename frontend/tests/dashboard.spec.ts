@@ -233,11 +233,20 @@ test("simulator persists real API results, clears stale outputs, clips and reset
   await expect(page.locator(".scenario-active > strong")).toHaveText(
     `${(row.scenario.abstention_rate * 100).toFixed(1)}%`,
   );
-  const record = await request.get(
-    `http://127.0.0.1:8001/api/v1/simulations/${saved.id}`,
-  );
+  const record = await request.get("/api/backend/simulations?state_code=17");
   expect(record.ok()).toBeTruthy();
-  expect((await record.json()).id).toBe(saved.id);
+  expect(
+    (await record.json()).items.some((r: { id: string }) => r.id === saved.id),
+  ).toBe(true);
+  await page.reload();
+  await page.getByRole("button", { name: "Escenarios", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Recuperar escenario", exact: true })
+    .first()
+    .click();
+  await expect(page.locator(".scenario-active > strong")).toHaveText(
+    `${(row.scenario.abstention_rate * 100).toFixed(1)}%`,
+  );
   await page.screenshot({
     path: "test-results/scenario-desktop.png",
     fullPage: true,

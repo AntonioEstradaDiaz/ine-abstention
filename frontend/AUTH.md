@@ -93,7 +93,7 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_TU_CLAVE
 NEXT_PUBLIC_APP_URL=https://TU_DOMINIO
 ```
 
-Solo usar clave **publishable**, nunca `service_role` ni una clave secret. Estas dos variables públicas se incluyen en la compilación; después de agregarlas, reconstruir/redeploy. La clave privada de Groq sigue siendo solo del servidor. No se necesitan tablas nuevas ni acceso de administrador a la base de datos: los usuarios se gestionan en Auth.
+Solo usar clave **publishable**, nunca `service_role` ni una clave secret. Estas dos variables públicas se incluyen en la compilación; después de agregarlas, reconstruir/redeploy. La clave privada de Groq sigue siendo solo del servidor. Los usuarios se gestionan en Auth. El historial de escenarios utiliza además `public.pulso_scenarios`, con RLS por propietario y sin clave administrativa; ver [entrega del hackathon](../docs/hackathon-delivery.md).
 
 ## Configuración en el proyecto
 

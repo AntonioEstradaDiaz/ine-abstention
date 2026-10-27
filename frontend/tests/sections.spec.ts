@@ -168,9 +168,12 @@ test("reports preview the chosen state on the shared republic map", async ({
     page.getByRole("img", { name: /Mapa de Baja California/ }),
   ).toBeVisible();
   await expect(page.locator(".report-findings li")).toHaveCount(4);
+  const pdfDownload = page.waitForEvent("download");
   await page
-    .getByRole("button", { name: "Guardar vista previa", exact: true })
+    .getByRole("button", { name: "Descargar reporte", exact: true })
     .click();
+  const pdf = await pdfDownload;
+  expect(pdf.suggestedFilename()).toBe("pulso-reporte-02-2027.pdf");
   await expect(page.locator(".report-recent tbody tr")).toHaveCount(1);
   await expect(
     page.getByRole("button", { name: "Nacional", exact: true }),
@@ -180,7 +183,7 @@ test("reports preview the chosen state on the shared republic map", async ({
   ).toBeDisabled();
   await expect(
     page.getByRole("radio", { name: "PDF (recomendado)", exact: true }),
-  ).toBeDisabled();
+  ).toBeEnabled();
   await expect(
     page.getByRole("switch", {
       name: "Activar Reporte semanal nacional",
@@ -191,6 +194,15 @@ test("reports preview the chosen state on the shared republic map", async ({
     page.getByRole("button", { name: "Página siguiente", exact: true }),
   ).toHaveCount(0);
   await expect(page.locator(".report-state")).toHaveText("Baja California");
+  await page.getByRole("radio", { name: "Excel", exact: true }).check();
+  const excelDownload = page.waitForEvent("download");
+  await page
+    .getByRole("button", { name: "Descargar reporte", exact: true })
+    .click();
+  expect((await excelDownload).suggestedFilename()).toBe(
+    "pulso-reporte-02-2027.xlsx",
+  );
+  await expect(page.locator(".report-recent tbody tr")).toHaveCount(2);
 });
 
 test("analysis does not reuse an AI answer for another state or period", async ({
@@ -285,7 +297,7 @@ test("map KPI cards follow the selected forecast instead of design placeholders"
   }
 });
 
-test("data explorer filters, downloads and labels the illustrative municipal level", async ({
+test("data explorer filters, downloads and excludes unverified municipal data", async ({
   page,
 }) => {
   await open(page, "Datos");
@@ -300,12 +312,12 @@ test("data explorer filters, downloads and labels the illustrative municipal lev
   const file = await download;
   expect(file.suggestedFilename()).toBe("pulso-datos-estatal-2024.csv");
   await page.getByLabel("Buscar en los datos").fill("");
-  await page.getByRole("radio", { name: /Municipal/ }).check();
-  await page
-    .getByRole("button", { name: "Aplicar filtros", exact: true })
-    .click();
-  await expect(page.locator(".data-illustrative")).toContainText(
-    "Datos ilustrativos",
-  );
-  await expect(rows).toHaveCount(5);
+  await expect(page.getByRole("radio", { name: /Municipal/ })).toBeDisabled();
+  await expect(
+    page.getByText("El nivel municipal requiere homologación oficial.", {
+      exact: false,
+    }),
+  ).toBeVisible();
+  await expect(page.locator(".data-illustrative")).toHaveCount(0);
+  await expect(rows).toHaveCount(10);
 });

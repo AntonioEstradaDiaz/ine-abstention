@@ -5,6 +5,8 @@ import { createHmac, randomBytes, randomUUID } from "node:crypto";
 const key = "sb_publishable_ci_fixture";
 const secret = randomBytes(32);
 const sessions = new Map();
+// Test-only PostgREST stand-in. Production uses the real table and RLS policies.
+const scenarios = [];
 const user = {
   id: "00000000-0000-4000-8000-000000000001",
   aud: "authenticated",
@@ -63,6 +65,35 @@ const server = createServer(async (req, res) => {
     return send(401, { msg: "Invalid fixture key" });
   const token = req.headers.authorization?.replace(/^Bearer /, "");
   const active = sessions.get(token);
+  if (url.pathname === "/rest/v1/pulso_scenarios") {
+    if (!active) return send(401, { message: "Invalid test session" });
+    if (req.method === "POST") {
+      let raw = "";
+      for await (const chunk of req) raw += chunk;
+      const item = JSON.parse(raw);
+      if (item.user_id !== active.user.id)
+        return send(403, { message: "Owner mismatch" });
+      const record = {
+        ...item,
+        id: randomUUID(),
+        created_at: new Date().toISOString(),
+      };
+      scenarios.unshift(record);
+      return send(201, record);
+    }
+    if (req.method === "GET") {
+      const code = url.searchParams.get("state_code")?.replace(/^eq\./, "");
+      return send(
+        200,
+        scenarios
+          .filter(
+            (r) =>
+              r.user_id === active.user.id && (!code || r.state_code === code),
+          )
+          .slice(0, 20),
+      );
+    }
+  }
   if (url.pathname === "/auth/v1/user" && req.method === "GET") {
     return active && active.expires_at > Date.now() / 1000
       ? send(200, user)
