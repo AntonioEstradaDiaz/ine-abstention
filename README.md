@@ -1,345 +1,270 @@
 # Pulso electoral · INE Abstention
 
-Dashboard y API para explorar participación y abstención electoral en México, comparar territorios
-y construir escenarios hipotéticos con datos oficiales del INE. El objetivo es apoyar la exploración
-territorial con evidencia y supuestos visibles; no recomendar intervenciones ni afirmar efectos causales.
+Aplicación para explorar participación y abstención electoral en México, comparar entidades,
+revisar modelos y calcular escenarios hipotéticos con datos abiertos del INE.
+Es un **prototipo experimental**, sin aval institucional del INE y sin validación para decisiones operativas.
 
-**Estado:** prototipo funcional, con backend de fases 1–7 y frontend de ocho secciones.
-La estimación futura disponible es estatal, para las elecciones intermedias de 2027.
-No es un producto oficial del INE ni está validado para decisiones operativas.
+**Demo:** [pulso-electoral-demo.vercel.app](https://pulso-electoral-demo.vercel.app).
+Requiere una cuenta confirmada de Supabase Auth. El login es público; el dashboard y sus APIs requieren sesión.
 
-## Qué está hecho
+## Estado actual: demo publicada, producto todavía incompleto
 
-| Área | Funcionalidad disponible |
+La demo corre en Vercel Hobby con Next.js, Supabase Auth y Groq reales. Usa `PULSO_PREVIEW=1`:
+los datos y pronósticos son una instantánea versionada del repositorio. **No hay FastAPI ni
+PostgreSQL de la aplicación desplegados detrás de esta demo. Los escenarios no se guardan.**
+
+La implementación completa del backend sí existe en este repositorio y puede ejecutarse en Docker
+local o conectarse a PostgreSQL/PostGIS en Supabase. En ese modo, la API conserva simulaciones.
+No confundir esa capacidad del backend con lo disponible en la URL publicada.
+
+La revisión funcional del 26 de octubre de 2026 recorrió las ocho secciones. Encontró errores de
+presentación de datos y controles de Reportes; las correcciones y el alcance de las pruebas están en
+[la auditoría de la app publicada](docs/published-app-audit.md). Las correcciones locales necesitan
+publicarse antes de considerarlas disponibles en producción.
+
+## Secciones y alcance real
+
+| Sección | Disponible | Límites y pendientes |
+| --- | --- | --- |
+| Mapa de riesgo | Cartografía de los 32 estados, selección territorial, estimación 2027, histórico y detalle con cuatro pestañas. | Los límites INEGI son geoestadísticos, no electorales históricos. Los indicadores superiores se corrigieron para usar pronósticos reales del estado seleccionado. |
+| Tendencias | Comparación de hasta tres estados, participación/abstención y tabla de procedencia. | Se separan intermedias y presidenciales; no hay series municipales homologadas. Acceso desde «Comparar históricos» en el mapa. |
+| Análisis IA | Filtros, búsqueda municipal, CSV y consulta estatal a Groq. | Las tarjetas, comparaciones municipales y síntesis de esta pantalla son **ilustrativas**. La respuesta de Groq consulta datos estatales reales y puede diferir de ellas. |
+| Laboratorio de modelos | Dos referencias y cuatro modelos ML, métricas temporales, pronósticos para 32 estados, importancia global y escenarios locales. Exporta CSV/JSON. | Entrenamiento previo, no por solicitud. La síntesis automática no es una consulta a IA. Acceso desde Análisis → Preguntar a la IA → Abrir laboratorio de modelos. |
+| Predicciones | Baseline estatal 2027, banda, contexto histórico, errores temporales y asistente Groq. | Las bandas no garantizan cobertura futura; no predice municipios ni efectos de intervenciones. |
+| Escenarios | Cambio supuesto de participación, límites 0–100%, comparación y descarte de resultados al cambiar parámetros. | Demo: cálculo sobre instantánea, sin persistencia. Backend conectado: guarda la simulación. |
+| Reportes | Vista previa estatal, entidad, variable, comparación, gráficas y hallazgos. | PDF, PowerPoint, Excel, envíos automáticos y reportes nacionales/municipales pendientes. Se corrigieron controles que aparentaban generar archivos o páginas. |
+| Datos | Filtros, búsqueda, orden, paginación, selección de filas, CSV/JSON, diccionario y procedencia. | Datos nacionales/estatales oficiales; municipal es una muestra ilustrativa. Subir archivos está pendiente. Actualizar fuentes vuelve a consultar los datos disponibles; no descarga nuevas elecciones del INE. |
+
+Los pronósticos de Mapa, Predicciones y Escenarios comparten estado seleccionado. Análisis tiene su
+propio selector ilustrativo. El laboratorio usa la selección territorial del dashboard.
+La corrección móvil incorpora un selector con las ocho secciones, porque la barra de escritorio
+se oculta en pantallas estrechas.
+Los avisos de notificaciones y varios elementos visuales siguen siendo referencias del diseño.
+
+![Dashboard corregido y verificado en local](docs/screenshots/audit-dashboard-20261026.png)
+
+[Vista móvil con selector de secciones](docs/screenshots/audit-mobile-20261026.png).
+Estas capturas corresponden a la versión local corregida, no a un nuevo despliegue.
+
+## Pruebas reales en producción
+
+Verificadas el **26 de octubre de 2026** sobre la demo:
+
+- Login con Supabase Auth y carga de 32 entidades; logout y denegación de acceso privado sin sesión.
+- Mapa: selección de Baja California, detalle histórico, factores y recomendaciones.
+- Tendencias: series intermedias 2009/2015/2021 y presidenciales 2012/2018/2024.
+- Análisis: filtro por Acapulco y respuesta real de Groq sobre Guerrero.
+- Laboratorio: seis estimadores y escenario XGBoost de Baja California, 53.6% → 50.6% al sumar 3 pp de participación.
+- Predicciones: datos de Baja California; prueba previa de Groq en Morelos identificada como `IA · qwen/qwen3.8-27b`.
+- Escenarios: Baja California −3 pp, abstención 62.4% → 65.4%; cambiar el supuesto invalida el resultado.
+- Datos: búsqueda «baja», dos filas estatales, descarga CSV y muestra municipal identificada como ilustrativa.
+- Reportes: vista previa y reproducción de los errores de alcance nacional y paginación, corregidos en código local.
+- Metodología: fórmulas, fuentes, límites del semáforo y cartografía visibles.
+
+Esto no sustituye pruebas de carga, auditoría de accesibilidad completa ni validación con usuarios.
+El detalle de cobertura y regresiones está en [la auditoría](docs/published-app-audit.md).
+
+## Acceso con Supabase Auth
+
+Proyecto `ine-abstention` (`npzgdyyzdcsdadtfxhmr`). Se crearon dos usuarios QA mediante Auth Admin,
+con confirmación individual, sin desactivar la confirmación global ni habilitar acceso anónimo:
+
+| Usuario de prueba | Estado probado |
 | --- | --- |
-| Datos oficiales | Descarga, inventario, SHA-256, validación e ingesta de CCPC 2009, 2012, 2015, 2018, 2021 y 2024. |
-| Backend | FastAPI, SQLAlchemy, PostgreSQL/PostGIS, migraciones, procedencia, indicadores y API documentada. |
-| Modelos | Dos referencias históricas y cuatro candidatos; desarrollo temporal 2018/2021 y prueba final 2024. |
-| Riesgo | 32 predicciones estatales, tres categorías relativas, bandas empíricas y explicación del baseline. |
-| Simulador | Escenarios aritméticos persistidos, cambios de participación en puntos porcentuales y límites 0–100%. |
-| Dashboard | Laboratorio de modelos, Análisis IA, Mapa, Tendencias, Predicciones, Escenarios, Reportes y Datos; API, búsqueda, exportación y diseño adaptable. |
-| Cartografía | Polígonos de los 32 estados del servicio oficial INEGI, con procedencia y checksum. Son referencia geoestadística. |
+| `pulso.qa.20261025.1@example.com` | Confirmado; login y logout reales, incluida la demo publicada. |
+| `pulso.qa.20261025.2@example.com` | Confirmado; login y logout reales en la prueba local previa. |
 
-El dashboard conserva el territorio al cambiar de sección. El mapa permite elegir estados y alternar
-observaciones históricas con estimaciones. Tendencias compara hasta tres entidades sin mezclar tipos
-de elección. Predicciones muestra el modelo, sus errores temporales y sus límites. Escenarios consulta
-el backend, guarda el resultado y evita mostrar resultados anteriores como si correspondieran a nuevos parámetros.
+Las contraseñas no están en el repositorio. Estos buzones ficticios no reciben mensajes; para reutilizarlos,
+el administrador debe gestionar sus credenciales en Supabase. **No son credenciales públicas para evaluadores.**
 
-![Dashboard territorial conectado al backend, con cartografía oficial INEGI](docs/screenshots/dashboard.png)
+Site URL: `https://pulso-electoral-demo.vercel.app`. Callbacks autorizados:
 
-[Ver el simulador](docs/screenshots/scenario.png) · [Ver la versión móvil](docs/screenshots/mobile.png)
+- `https://pulso-electoral-demo.vercel.app/auth/callback`
+- `https://pulso-electoral-demo.vercel.app/auth/callback?next=/reset-password`
 
-Datos permite filtrar y descargar CSV/JSON de registros nacionales y estatales. Su nivel municipal
-usa una muestra ilustrativa identificada como no oficial; no habilita series municipales homologadas.
-Reportes ofrece configuración y vista previa del documento; la generación de PDF/PowerPoint/Excel
-y los envíos programados todavía no están implementados.
+Registro y recuperación tienen interfaz, pero **el ciclo completo por correo sigue pendiente**.
+El proveedor rechazó las direcciones ficticias con HTTP 400; crear usuarios con Auth Admin no prueba
+registro público ni recepción de correo. SMTP personalizado sigue deshabilitado.
+Se necesitan buzones reales controlados y un servicio de correo adecuado.
+[Configuración y resultados completos de Auth](frontend/AUTH.md).
 
-## Acceso y revisión de Supabase Auth
+## Arquitectura y modos de ejecución
 
-El frontend incorpora login, registro, recuperación y cierre de sesión con Supabase Auth.
-El 26 de octubre de 2026 se crearon y comprobaron dos cuentas ficticias en el proyecto real
-`ine-abstention` (`npzgdyyzdcsdadtfxhmr`), mediante Auth Admin y confirmación individual:
+```text
+Demo publicada
+Navegador → Supabase Auth
+          → Next.js en Vercel → instantánea del repositorio
+                              → Groq desde el servidor
 
-| Usuario de prueba | Resultado |
-| --- | --- |
-| `pulso.qa.20261025.1@example.com` | Creado, confirmado; login y logout reales aprobados. |
-| `pulso.qa.20261025.2@example.com` | Creado, confirmado; login y logout reales aprobados. |
+Backend conectado
+INE CCPC → validación e ingesta → PostgreSQL/PostGIS
+                                     ↕
+                         FastAPI /api/v1 + modelos materializados
+                                     ↕
+                     Next.js /api/backend → dashboard React
+```
 
-La primera cuenta cargó el dashboard con datos de los 32 estados. Se comprobó el rechazo de
-contraseña incorrecta, la validación de contraseñas distintas en registro y la denegación de la API
-privada después del logout. Ambas cuentas quedaron sin sesiones activas al terminar las pruebas.
+El navegador nunca recibe la clave de Groq, credenciales PostgreSQL ni claves administrativas de
+Supabase. La URL y clave publicable de Supabase sí son configuración pública del cliente.
+El login protege las APIs Next.js; una futura API FastAPI pública requiere su propia protección.
 
-El registro público previo rechazó estas direcciones ficticias; la creación administrativa sí
-funcionó. La recuperación real devolvió HTTP 400 por dirección inválida. No se verificaron
-recepción de correo ni cambio de contraseña. La confirmación global sigue obligatoria y el acceso
-anónimo deshabilitado; no se modificaron esas políticas para crear las cuentas.
+### Variables de la demo
 
-La demo está publicada en **https://pulso-electoral-demo.vercel.app** desde el 26 de octubre de 2026.
-Supabase ya tiene ese Site URL y los callbacks de confirmación y recuperación autorizados.
-SMTP personalizado sigue deshabilitado; se necesitan direcciones reales controladas y un servicio
-de correo adecuado para completar registro y recuperación.
-Los resultados, identificadores y límites están en [la guía de Auth](frontend/AUTH.md#revisión-del-proyecto-real).
-Las contraseñas, tokens y claves no se incluyen en la documentación.
+En Vercel, Production y Preview:
 
-En la URL publicada se verificaron login con la primera cuenta, carga de los 32 estados,
-una respuesta real de Groq (`qwen/qwen3.8-27b`), un escenario de Morelos con +3 pp de
-participación (abstención 48.1% → 45.1%; participación 51.9% → 54.9%) y logout.
-Tras cerrar sesión, ambas APIs privadas rechazaron el acceso y el dashboard volvió al login.
-Esta demo usa `PULSO_PREVIEW=1`: sirve la instantánea del repositorio y calcula escenarios sin
-guardarlos. Auth y Groq son servicios reales; no se desplegó FastAPI ni se probó persistencia remota.
+```env
+PULSO_PREVIEW=1
+AI_PROVIDER=groq
+GROQ_MODEL=qwen/qwen3.8-27b
+NEXT_PUBLIC_SUPABASE_URL=https://TU_PROYECTO.supabase.co
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=TU_CLAVE_PUBLICABLE
+GROQ_API_KEY=TU_CLAVE_PRIVADA
+```
 
-## Laboratorio de machine learning e IA
+En Production: `NEXT_PUBLIC_APP_URL=https://pulso-electoral-demo.vercel.app`.
+Guardar `GROQ_API_KEY` como secreto de servidor, nunca con prefijo `NEXT_PUBLIC_` ni en Git.
+En Preview, configurar el origen y callbacks exactos si se probarán flujos de email.
+Después de cambiar variables, reconstruir el despliegue.
+Proyecto Vercel `pulso-electoral-demo`, raíz `frontend`, build `npm run build`, con acceso a
+archivos fuera de la raíz para importar `data/samples/ml_laboratory.json`.
+[Guía de Groq y despliegue](frontend/GROQ.md).
 
-La sección **Laboratorio de modelos** compara Ridge, Random Forest, XGBoost y LightGBM con dos referencias históricas. Los seis estimadores se entrenan con los agregados estatales 2009–2024: 192 observaciones y 128 ejemplos supervisados. Esta corrida usa la muestra CSV, sin desgloses demográficos; sus métricas no sustituyen las del experimento original con variables adicionales.
+## Datos, modelos y límites metodológicos
 
-- Desarrollo con elecciones completas 2018/2021; prueba reservada 2024. El entrenamiento de cada corte solo usa elecciones anteriores.
-- Pronósticos materializados para los 32 estados en 2027, bandas empíricas específicas de cada modelo y su importancia interna global cuando el algoritmo la ofrece.
-- El laboratorio genera una síntesis automática basada en tasas y errores medidos. Los asistentes de Análisis IA y Predicciones admiten Groq (predeterminado), Gemini u Ollama, configurados en el servidor; si el proveedor no está disponible, muestran una lectura automática identificada como tal.
-- Escenarios locales de sensibilidad: trasladan el pronóstico ML y su banda por un cambio supuesto de participación; no reentrenan el estimador ni estiman efectos de intervenciones. Se invalidan si cambia el modelo, la entidad o el supuesto. Exportación CSV de pronósticos y JSON de escenarios.
+- CCPC 2009, 2012, 2015, 2018, 2021 y 2024; inventario y checksum SHA-256.
+- En la ingesta completa se validaron 54,872,712 filas originales y se cargaron 14,971 registros
+  territoriales y 139,653 desgloses demográficos. Son cifras del backend, no del tamaño de la instantánea web.
+- Participación: `SV/(SV+NV)`; abstención: `NV/(SV+NV)`. `NS` se conserva por separado.
+  El nacional suma conteos; la media estatal da el mismo peso a cada entidad.
+- Referencia elegida: `baseline_last`, repetición de la intermedia 2021. MAE de prueba 2024: **3.49 pp**.
+- Desarrollo temporal: 2018/2021; prueba reservada: 2024. No se elige retrospectivamente el modelo con esa prueba.
+- Laboratorio web: 192 observaciones estatales y 128 ejemplos supervisados; Ridge, Random Forest,
+  XGBoost y LightGBM, además de las dos referencias. Usa agregados sin desgloses demográficos;
+  sus métricas no sustituyen las del experimento original con variables adicionales.
+- Bandas empíricas calibradas con un bloque intermedio: soporte limitado, sin cobertura futura garantizada.
+  El semáforo es relativo y no es un estándar oficial del INE.
+- Escenarios aritméticos, sin interpretación causal, recomendación de campañas ni predicción de sus efectos.
 
-Para reproducir el entrenamiento desde la raíz:
+Para regenerar el laboratorio:
 
 ```powershell
 uv sync --group ml --group dev --locked
 uv run python scripts/train_web_ml.py
 ```
 
-Los pesos, el protocolo y los errores por corte se conservan en `artifacts/models/<run_id>/` (ignorado por Git). El informe materializado se guarda en `data/samples/ml_laboratory.json` e incluye checksums, versiones de paquetes y trazabilidad de variables. La API sirve **GET /api/v1/ml/laboratory** sin cargar pesos, entrenar por petición o consultar la base de datos. El contenedor incluye solo el informe JSON.
+El informe se guarda en `data/samples/ml_laboratory.json`; pesos locales en `artifacts/models/`,
+ignorados por Git. La API sirve el informe sin entrenar por petición.
 
-En `frontend/`, `npm run preview` permite abrir el laboratorio sin FastAPI. `npm run dev` consulta la API real mediante el proxy habitual. Se conserva la referencia `baseline_last` elegida en desarrollo; el mejor candidato ML puede explorarse sin promocionarlo a producción. Las bandas usan únicamente errores intermedios de 2021, un bloque de calibración con soporte limitado.
+## Ejecutar en local
 
-Validación: `uv run pytest tests/unit tests/ml -q`, `npm run typecheck` y `npm run build` en el frontend.
+Requisitos: Node.js 24 y npm; para backend, Python 3.12+, uv y PostgreSQL/PostGIS o Docker Desktop.
+No sobrescribir `.env` ni `frontend/.env.local` existentes.
 
-## Cómo funciona
+### Frontend con instantánea
 
-```text
-Fuentes CCPC del INE → validación e ingesta → PostgreSQL/PostGIS
-                                                ↕
-                               FastAPI /api/v1 + resultados materializados
-                                                ↕
-                         Proxy privado de servidor Next.js /api/backend
-                                                ↕
-                          Dashboard React + MapLibre + Apache ECharts
-                          ↑ cartografía contextual oficial del INEGI
-```
-
-La base puede ejecutarse en Supabase o en Docker local. El navegador consulta FastAPI mediante
-Next.js; nunca recibe las contraseñas de PostgreSQL ni claves administrativas de Supabase.
-El frontend no modifica el entrenamiento, las predicciones base ni el esquema de datos.
-
-La participación observada es `SV/(SV+NV)` y la abstención `NV/(SV+NV)`. `NS` se conserva por separado.
-El indicador nacional agrega conteos; la media de predicciones estatales da igual peso a cada estado.
-Son estadísticas distintas y están identificadas en pantalla.
-
-El modelo seleccionado es `baseline_last`: repite el dato de la última elección del mismo tipo, 2021.
-Su MAE en la prueba temporal 2024 es aproximadamente **3.49 puntos porcentuales**. Se eligió con
-desarrollo 2018/2021; un candidato con menor error en 2024 no reemplaza retrospectivamente esa selección.
-Las bandas empíricas no tienen cobertura futura garantizada. El semáforo no es un estándar oficial del INE.
-
-## Abrir el dashboard
-
-Requisitos: Node.js 24, npm y una API con datos, modelos y predicciones cargados.
-En este equipo, el backend Docker está en `http://127.0.0.1:8001`.
+Configurar las variables públicas de Auth y `NEXT_PUBLIC_APP_URL=http://127.0.0.1:3000`
+en `frontend/.env.local`; Groq es opcional para la lectura automática de respaldo.
 
 ```powershell
-# En la raíz, si el volumen local ya está preparado:
-docker compose --env-file .env.docker.example up -d --wait api
-
 cd frontend
 npm.cmd ci
-npm.cmd run dev
+npm.cmd run preview
 ```
 
-Abrir **http://127.0.0.1:3000**. Para la API local sobre Supabase en puerto 8000, crear
-`frontend/.env.local` con `BACKEND_URL=http://127.0.0.1:8000`. No sobrescribir el `.env` de la raíz.
-Se utiliza Webpack de forma explícita por un fallo observado de Turbopack al iniciar procesos auxiliares en Windows.
+Abrir `http://127.0.0.1:3000`. Requiere login también en modo instantánea.
+Webpack se usa explícitamente por un fallo observado de Turbopack en Windows.
 
-Un clon nuevo **no incluye una base activa ni los ZIP electorales**. Incluye un paquete verificado de agregados y modelos congelados en `tests/fixtures/ci.tar.gz`, restaurable para la demo local y CI; no incluye todos los pesos de entrenamientos locales.
-Se puede restaurar ese paquete, conectar una API ya preparada o reconstruir la base siguiendo [la instalación desde cero](docs/installation.md).
-Las variables de ejemplo usan únicamente credenciales locales de desarrollo.
+### Frontend con backend Docker
 
-## Qué falta y cómo mejorarlo
-
-Prioridades y criterios de aceptación en [estado y hoja de ruta](docs/project-status.md).
-
-1. **Antes de desplegar:** autenticación/autorización, límites de solicitudes, HTTPS, gestión de secretos,
-   copias/restauración y monitoreo. El prototipo se sirve solo en localhost.
-2. **Para mejorar las estimaciones:** más bloques electorales, auditoría de fechas de publicación, evaluación
-   de sesgo por NS y validación externa. Hoy hay pocas elecciones y la incertidumbre tiene soporte limitado.
-3. **Para bajar de nivel territorial:** correspondencias municipales verificadas y cartografía electoral
-   homologada. No se habilitan series municipales, distritales o seccionales por repetir códigos.
-4. **Para ampliar el producto:** escenarios multiterritoriales en la interfaz, historial de simulaciones,
-   exportaciones de reportes, análisis demográfico y revisión WCAG con usuarios y tecnologías de asistencia.
-5. **Para mantenerlo:** revisar dependencias y resultados del CI existente, añadir pruebas de carga y optimizar la capa
-   geográfica de 28.8 MB mediante un proceso verificable. No se ha elegido una licencia de distribución del código.
-
-## Estructura y documentación
-
-```text
-app/                 API, estadísticas, modelos y servicios
-alembic/             Migraciones de PostgreSQL
-pipelines/           Ingesta y transformación de datos oficiales
-scripts/             Descarga, carga, entrenamiento, predicción y demostración
-frontend/            Next.js, componentes, cliente tipado y pruebas de navegador
-tests/               Pruebas unitarias, ML e integración del backend
-docs/                Metodología, resultados, instalación y pendientes
-data/, artifacts/    Datos y pesos locales, excluidos de Git
-```
-
-- [Guía del frontend](frontend/README.md): ejecución, variables, contratos y pruebas.
-- [Validación del dashboard](docs/frontend-validation.md): alcance probado y límites pendientes.
-- [Instalación nueva](docs/installation.md): reconstrucción con fuentes oficiales.
-- [Estado del proyecto](docs/project-status.md): entregado, faltantes y mejoras.
-- [Fases 2–7](docs/phase7.md): metodología y validación histórica del backend.
-
----
-
-## Backend: fases 1 a 7
-
-Base del backend del Sistema Inteligente de Predicción de Riesgo de Abstención Electoral.
-Fases 1 a 7: FastAPI, PostgreSQL/PostGIS, ingesta CCPC, estadística, predicciones y simulaciones territoriales.
-Supabase contiene seis elecciones, agregados estatales/municipales y distribuciones demográficas.
-Se entrenaron referencias históricas y cuatro candidatos sobre observaciones estatales.
-El escenario 2027 incorpora semáforo histórico, bandas empíricas y explicaciones del modelo seleccionado.
-El simulador compara continuidad con cambios hipotéticos de participación y conserva los supuestos en Supabase.
-
-## Ejecución con Supabase (configuración actual)
-
-PostgreSQL/PostGIS se aloja en Supabase Free. FastAPI se ejecuta localmente sin Docker.
-El `.env` local ya contiene las conexiones; no sobrescribirlo con `.env.example`.
+Un clon nuevo no incluye una base activa ni los ZIP originales. El paquete verificado
+`tests/fixtures/ci.tar.gz` permite restaurar agregados y modelos para demo/CI:
 
 ```powershell
-uv sync --locked
+uv sync --locked --group ml
+uv run python scripts/ci_fixtures.py restore
+docker compose --env-file .env.docker.example --profile demo build
+docker compose --env-file .env.docker.example --profile demo run --rm seed
+docker compose --env-file .env.docker.example up -d --wait api
+```
+
+Configurar `BACKEND_URL=http://127.0.0.1:8001` y quitar `PULSO_PREVIEW=1` del entorno local.
+Conservar las variables de Auth; después, en `frontend`, ejecutar `npm.cmd run dev`.
+API: `http://127.0.0.1:8001/docs`; disponibilidad: `/api/v1/health/ready`.
+Las credenciales de `.env.docker.example` son exclusivamente locales.
+
+Para conectar FastAPI a Supabase, usar las conexiones del entorno privado y ejecutar:
+
+```powershell
+uv sync --locked --group ml
 uv run alembic upgrade head
 uv run uvicorn app.main:app --host 127.0.0.1 --port 8000
 ```
 
-Consultar `docs/supabase.md` para los roles, conexión SSL y pruebas de integración.
-La [guía de integración y demostración](docs/phase7.md) distingue Compose local y Compose sobre Supabase.
+En ese caso, `BACKEND_URL=http://127.0.0.1:8000`.
+[Instalación desde cero](docs/installation.md) · [Supabase/PostGIS](docs/supabase.md).
 
-## Datos oficiales
-
-El inventario, las variables y los límites de comparabilidad están en [docs/phase2.md](docs/phase2.md).
-Se validaron 54,872,712 filas originales y se cargaron 14,971 registros territoriales y 139,653
-desgloses demográficos. Los originales se conservan localmente con checksum SHA-256.
+## Verificación y CI
 
 ```powershell
-uv run python scripts/inspect_ccpc.py
-uv run python scripts/prepare_ccpc.py
-uv run alembic upgrade head
-uv run python scripts/load_ccpc.py
-uv run python scripts/report_ccpc.py
-```
-
-La carga omite fuentes ya procesadas sin duplicar datos. Consultas:
-
-- `/api/v1/data-sources`: procedencia de los ZIP oficiales.
-- `/api/v1/elections`: elecciones disponibles.
-- `/api/v1/participation/history?state_code=17`: historia estatal de Morelos.
-
-La abstención se calcula como `NV/(SV+NV)`, conforme al manual INE. `NS` representa información
-no especificada y se conserva aparte. La comparación municipal entre años requiere homologación.
-
-## Estadísticas y tendencias
-
-Las fórmulas, unidades y límites están en [docs/phase3.md](docs/phase3.md).
-Consultar [docs/phase3_results.md](docs/phase3_results.md) para el análisis calculado sobre Supabase.
-
-- `/api/v1/statistics/summary?year=2024`: indicadores nacionales.
-- `/api/v1/statistics/trends?state_code=17`: tendencias de Morelos por tipo de elección.
-- `/api/v1/statistics/territories?year=2024`: indicadores y comparaciones territoriales.
-- `/api/v1/statistics/demographics?dimension=sex&year=2024`: distribución por sexo.
-
-Se comparan elecciones del mismo tipo. Las tendencias municipales permanecen pendientes de
-homologación. Para regenerar los informes y el CSV de indicadores estatales:
-
-```powershell
-uv run python scripts/report_statistics.py
-```
-
-## Modelos y evaluación temporal
-
-La metodología, elegibilidad y límites de disponibilidad histórica están en [docs/phase4.md](docs/phase4.md).
-Resultados: [docs/phase4_results.md](docs/phase4_results.md). Son 128 ejemplos estatales elegibles,
-evaluados con elecciones completas de 2018, 2021 y 2024 fuera del entrenamiento de cada corte.
-La selección usa solo 2018 y 2021; 2024 es una prueba final que no cambia esa selección.
-
-```powershell
-uv sync --group ml
-uv run --group ml alembic upgrade head
-uv run --group ml python scripts/train_models.py --register
-```
-
-`GET /api/v1/models/metrics` devuelve métricas y versiones registradas. Los artefactos locales
-incluyen pesos de evaluación y pesos finales separados, fuentes, variables con linaje y SHA-256.
-La validación es retrospectiva por año electoral; no certifica las fechas de publicación de cada
-versión histórica. Las fases 5 y 6 incorporan pronósticos y bandas empíricas con sus limitaciones.
-
-## Ejecución con Docker (alternativa local)
-
-Requisitos: Docker Desktop activo con contenedores Linux y Docker Compose.
-Desde PowerShell, en la raíz del proyecto:
-
-```powershell
-uv run python scripts/demo_bundle.py export
-docker compose --env-file .env.docker.example build
-docker compose --env-file .env.docker.example --profile demo run --rm seed
-docker compose --env-file .env.docker.example up -d api
-uv run python scripts/demo_backend.py --api-url http://127.0.0.1:8001
-```
-
-Compose inicia PostgreSQL, espera su disponibilidad, aplica Alembic y arranca la API.
-Las credenciales incluidas son exclusivamente para desarrollo local. API y base se publican
-solo en la interfaz local. Si cambias usuario o contraseña, usa valores compatibles con URL
-o configura explícitamente las cadenas de conexión antes de ejecutar.
-
-- OpenAPI de Compose local: http://localhost:8001/docs
-- Estado del proceso: http://localhost:8001/api/v1/health
-- Conexión, PostGIS y esquema: http://localhost:8001/api/v1/health/ready
-
-```powershell
-docker compose --env-file .env.docker.example logs api migrate
-docker compose --env-file .env.docker.example down
-```
-
-`down` conserva el volumen de datos. Las migraciones requieren un usuario autorizado para
-crear extensiones; el usuario local de Compose cuenta con ese permiso.
-
-## Desarrollo local con uv
-
-Requisitos: Python 3.12 o superior y uv. PostgreSQL puede ejecutarse con Compose.
-
-```powershell
-uv sync --locked
-uv run alembic upgrade head
-uv run uvicorn app.main:app --reload
-```
-
-`DATABASE_URL` usa el driver `postgresql+psycopg`. CORS se configura con una lista JSON
-en `CORS_ORIGINS`; por defecto no se permiten orígenes externos.
-Este flujo usa el `.env` existente de Supabase. Para una instalación nueva con una base propia,
-configurar `.env.example` sin sobrescribir credenciales existentes.
-
-## Verificación
-
-```powershell
-uv run ruff check .
-uv run ruff format --check .
+# Raíz: backend
+uv run ruff check app pipelines scripts tests
 uv run --locked --group ml pytest
-$env:RUN_INTEGRATION = '1'
-$env:RUN_ML_INTEGRATION = '1'
-$env:RUN_FORECAST_INTEGRATION = '1'
-$env:RUN_SIMULATION_INTEGRATION = '1'
-uv run --locked --group ml pytest -m integration
-Remove-Item Env:RUN_INTEGRATION, Env:RUN_ML_INTEGRATION, Env:RUN_FORECAST_INTEGRATION, Env:RUN_SIMULATION_INTEGRATION
+
+# frontend
+npm.cmd run test:unit
+npm.cmd run build
+npm.cmd run typecheck
+npm.cmd run test:e2e
 ```
 
-En Windows con permisos restringidos, consultar [la ejecución local de pruebas](docs/ci.md#ejecución-local-en-windows): usar caché de uv y temporales de pytest dentro de `tmp/`.
+Las pruebas de integración requieren una base activa, migraciones y datos; ver [CI](docs/ci.md).
+Las de navegador requieren backend local y frontend con Auth de prueba configurado según esa guía.
+Playwright levanta una fixture Auth local; **no demuestra que funcione el correo de Supabase real**.
+No apuntar esa fixture a producción ni publicar su estado de sesión.
 
-Las pruebas de integración necesitan la base activa, las migraciones y los seis años cargados.
-Las pruebas normales
-no requieren conexión. Para nuevas migraciones: `uv run alembic revision --autogenerate -m "descripcion"`;
-revisar el archivo generado antes de aplicar `uv run alembic upgrade head`.
+Validación local de esta revisión: **9 pruebas unitarias y 25 pruebas de navegador aprobadas**,
+compilación de producción y TypeScript correctos. Incluye navegación móvil por las ocho vistas,
+tarjetas del mapa ligadas a datos, controles pendientes de Reportes y contexto de respuestas de IA.
 
-## Estructura
+GitHub Actions comprueba backend (unitarias, ML e integración) y frontend (unidades, tipos,
+compilación y navegador). Vercel genera previews de ramas y despliega `main` automáticamente.
+Tras el merge del PR #16, commit `5be0ab3`, ambos jobs de CI y Vercel aprobaron; se verificaron
+HTTP 200 en login, redirección 307 al entrar sin sesión y 401 en las dos APIs privadas.
 
-- `app/api/v1`: rutas versionadas.
-- `app/core`: configuración, sesiones y logging JSON.
-- `app/db/models`: base declarativa de SQLAlchemy.
-- `app/schemas`: contratos de respuesta; `repositories` y `services`: consultas y estadísticas.
-- `app/ml`: variables históricas, modelos, cortes temporales, artefactos y registro de versiones.
-- `pipelines`: catálogo de fuentes, validación, agregación y carga CCPC.
-- `alembic`: migraciones explícitas; la API no crea tablas al iniciar.
-- `tests`: pruebas unitarias e integración con PostGIS real.
-- `data`, `artifacts`, `notebooks`, `docs`, `scripts`: espacios para etapas posteriores.
+## Qué falta para completar el producto
 
-La fase 5 incorpora predicciones estatales 2027, semáforo histórico, bandas empíricas y explicaciones
-en la API. Consulta [el protocolo y los límites de interpretación](docs/phase5.md).
-La fase 6 añade `POST /api/v1/simulations` y consulta de escenarios registrados mediante GET.
-Consulta [fórmulas y supuestos](docs/phase6.md) y [la demostración calculada](docs/phase6_results.md).
-El frontend y las geometrías estatales contextuales ya están integrados. Las correspondencias territoriales temporales siguen pendientes.
-La fase 7 añade catálogo territorial, datos de mapa con geometría ausente explícita, índice de
-consultas y demostración integral: `uv run python scripts/demo_backend.py`.
-Compose local está construido y validado: API saludable en http://127.0.0.1:8001/docs,
-restauración e idempotencia verificadas, 96 pruebas y 26 comprobaciones HTTP aprobadas.
-Ver [la validación Docker](docs/docker_validation.md) y [los pasos de reproducción](docs/phase7.md).
+1. **Correo y acceso de evaluadores:** SMTP, registro/confirmación/recuperación con buzones reales,
+   revisión del aviso de privacidad, ayuda y términos; roles y permisos si habrá usuarios con distinto acceso.
+2. **Datos y persistencia en producción:** desplegar FastAPI y conectarlo a una base preparada;
+   proteger la API, guardar escenarios por usuario y permitir historial. Hoy la URL usa una instantánea.
+3. **Eliminar demostraciones visuales:** conectar Análisis a estadísticas oficiales comparables,
+   sustituir muestras municipales por datos homologados y retirar notificaciones ficticias.
+4. **Reportes reales:** generar y descargar PDF/PPTX/XLSX, implementar contenido nacional/municipal,
+   historial persistente, notas/factores y programación de envíos.
+5. **Operación:** límites de solicitudes y cuota por usuario para IA, monitoreo de errores,
+   alertas, copias/restauración verificadas y pruebas de carga. HTTPS y secretos de servidor ya existen en Vercel.
+6. **Calidad y método:** WCAG con tecnologías de asistencia, prueba con usuarios, más bloques electorales,
+   validación externa, auditoría de fechas de publicación y sesgo por registros NS.
+7. **Mantenimiento:** optimizar cartografía de 28.8 MB con trazabilidad, automatizar actualización validada
+   de fuentes y elegir licencia para el código.
+
+## Estructura y guías
+
+```text
+app/                 FastAPI, estadísticas, modelos y servicios
+alembic/             Migraciones PostgreSQL
+pipelines/           Ingesta y transformación de fuentes INE
+scripts/             Descarga, entrenamiento, predicción, restauración y demo
+frontend/            Next.js, componentes, APIs privadas y pruebas
+tests/               Pruebas backend y fixtures verificadas
+docs/                Metodología, instalación, auditorías y resultados
+data/, artifacts/    Datos y pesos; algunos informes/muestras sí están versionados
+```
+
+- [Auditoría de la app publicada](docs/published-app-audit.md).
+- [Frontend](frontend/README.md), [Auth](frontend/AUTH.md), [Groq](frontend/GROQ.md).
+- [Instalación](docs/installation.md), [Docker](docs/docker_validation.md), [CI](docs/ci.md).
+- [Metodología de datos](docs/phase2.md), [estadística](docs/phase3.md), [modelos](docs/phase4.md),
+  [predicciones](docs/phase5.md), [simulaciones](docs/phase6.md), [integración backend](docs/phase7.md).
+- [Hoja de ruta histórica](docs/project-status.md): consultar junto con esta auditoría; algunas prioridades
+  preceden al despliegue y a la incorporación de Supabase Auth.

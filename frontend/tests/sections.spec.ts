@@ -16,6 +16,41 @@ const offlineAssistant = (page: Page) =>
     }),
   );
 
+test("phone navigation can reach every section without the hidden desktop menu", async ({
+  page,
+}) => {
+  await offlineAssistant(page);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  for (const [section, title] of [
+    ["Tendencias", "Tendencias"],
+    ["Análisis IA", "Entiende la participación electoral"],
+    ["Laboratorio de modelos", "Laboratorio de modelos"],
+    ["Predicciones", "Predicciones de Abstención 2027"],
+    ["Escenarios", "Escenarios de Participación"],
+    ["Reportes", "Reportes y Documentos"],
+    ["Datos", "Gestión de Datos"],
+    ["Mapa de riesgo", "Riesgo de Abstención Electoral"],
+  ]) {
+    await page
+      .getByRole("combobox", { name: "Sección de la aplicación", exact: true })
+      .click();
+    await page.getByRole("option", { name: section, exact: true }).click();
+    await expect(
+      page.getByRole("heading", { name: title, exact: true, level: 1 }),
+    ).toBeAttached();
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBeTruthy();
+  }
+  await page.screenshot({
+    path: "test-results/audit-map-mobile.png",
+    fullPage: true,
+  });
+});
+
 test("redesigned sections share the map header and four live metric cards", async ({
   page,
 }) => {
@@ -134,9 +169,120 @@ test("reports preview the chosen state on the shared republic map", async ({
   ).toBeVisible();
   await expect(page.locator(".report-findings li")).toHaveCount(4);
   await page
-    .getByRole("button", { name: "Generar reporte", exact: true })
+    .getByRole("button", { name: "Guardar vista previa", exact: true })
     .click();
   await expect(page.locator(".report-recent tbody tr")).toHaveCount(1);
+  await expect(
+    page.getByRole("button", { name: "Nacional", exact: true }),
+  ).toBeDisabled();
+  await expect(
+    page.getByRole("button", { name: "Municipal", exact: true }),
+  ).toBeDisabled();
+  await expect(
+    page.getByRole("radio", { name: "PDF (recomendado)", exact: true }),
+  ).toBeDisabled();
+  await expect(
+    page.getByRole("switch", {
+      name: "Activar Reporte semanal nacional",
+      exact: true,
+    }),
+  ).toBeDisabled();
+  await expect(
+    page.getByRole("button", { name: "Página siguiente", exact: true }),
+  ).toHaveCount(0);
+  await expect(page.locator(".report-state")).toHaveText("Baja California");
+});
+
+test("analysis does not reuse an AI answer for another state or period", async ({
+  page,
+}) => {
+  await page.route("**/api/assistant", (route) =>
+    route.fulfill({
+      json: {
+        answer: "Respuesta exclusiva de Guerrero 2018–2024.",
+        model: "test-model",
+      },
+    }),
+  );
+  await open(page, "Análisis IA");
+  await page
+    .getByRole("button", { name: "Preguntar a la IA", exact: true })
+    .click();
+  await page
+    .getByRole("textbox", { name: "Tu pregunta", exact: true })
+    .fill("Resume la estimación.");
+  await page
+    .getByRole("button", { name: "Consultar a la IA", exact: true })
+    .click();
+  await expect(page.getByRole("status")).toContainText(
+    "Respuesta exclusiva de Guerrero",
+  );
+  await expect(page.getByRole("status")).toContainText("IA · test-model");
+  await page
+    .getByRole("button", { name: "Cerrar lectura", exact: true })
+    .click();
+  await page
+    .getByRole("combobox", { name: "Periodo del análisis", exact: true })
+    .click();
+  await page
+    .getByRole("option", { name: "Periodo: 2021 – 2024", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Preguntar a la IA", exact: true })
+    .click();
+  await expect(
+    page.getByText("Respuesta exclusiva de Guerrero 2018–2024.", {
+      exact: true,
+    }),
+  ).toHaveCount(0);
+});
+
+test("map KPI cards follow the selected forecast instead of design placeholders", async ({
+  page,
+  request,
+}) => {
+  const response = await request.get(
+    "/api/backend/predictions?target_year=2027&limit=100",
+  );
+  const { items } = await response.json();
+  await page.goto("/");
+  for (const [code, name] of [
+    ["17", "Morelos"],
+    ["02", "Baja California"],
+  ]) {
+    if (code === "02")
+      await page
+        .getByRole("button", {
+          name: "Seleccionar Baja California",
+          exact: true,
+        })
+        .click();
+    const forecast = items.find(
+      (item: { state_code: string }) => item.state_code === code,
+    );
+    const cards = page.locator(".reference-kpis");
+    await expect(
+      cards.getByRole("article", {
+        name: "Abstención estimada 2027",
+        exact: true,
+      }),
+    ).toContainText(`${(forecast.predicted * 100).toFixed(1)}%`);
+    await expect(
+      cards.getByRole("article", {
+        name: "Participación estimada 2027",
+        exact: true,
+      }),
+    ).toContainText(name.toUpperCase());
+    await expect(
+      cards.getByRole("article", {
+        name: "Entidades en riesgo alto",
+        exact: true,
+      }),
+    ).toContainText(
+      `${items.filter((item: { risk_level: string }) => item.risk_level === "high").length} de 32`,
+    );
+    await expect(cards).not.toContainText("Municipios prioritarios");
+  }
 });
 
 test("data explorer filters, downloads and labels the illustrative municipal level", async ({
