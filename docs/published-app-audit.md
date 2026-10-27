@@ -7,11 +7,33 @@ URL revisada: https://pulso-electoral-demo.vercel.app, producción del commit `5
 contra Supabase real. Se consultó Groq real desde Análisis. La demo sirve la instantánea del
 repositorio (`PULSO_PREVIEW=1`); no hay backend FastAPI desplegado ni persistencia de escenarios.
 
-Las correcciones descritas abajo están en el código local y requieren commit, revisión y despliegue.
-No se presentan como ya publicadas. Las pruebas automatizadas locales usan la fixture Auth y
-el backend Docker, distintos del recorrido real en Vercel.
+Las correcciones se publicaron con el merge del PR #17, commit `014961e`, y Vercel confirmó
+producción en READY. Las pruebas automatizadas locales usan la fixture Auth y el backend Docker,
+distintos del recorrido real en Vercel.
 
-## Recorrido observado en producción
+## Verificación en producción después del PR #17
+
+- Sesión real de Supabase, sin fixture ni respuestas de IA simuladas.
+- A 390 × 844 px, el selector abrió las ocho vistas y no se detectó desbordamiento horizontal.
+- Tarjetas: Morelos 51.9% de participación, 48.1% de abstención y banda 33.8%–62.5%; al elegir
+  Baja California cambiaron a 37.6%, 62.4% y 48.0%–76.8%. Clasificación: 5 de 32 estados en riesgo alto.
+- Reportes: alcance estatal visible; Nacional/Municipal, formatos y funciones pendientes deshabilitados.
+  Guardar vista previa añadió una configuración temporal de Baja California; desmarcar gráficas las
+  ocultó. No hay botón de paginación ficticia ni promesa de descargar un archivo generado.
+- Predicciones: Groq devolvió 62.4% para Baja California, banda 48.0%–76.8%, con etiqueta
+  `IA · qwen/qwen3.8-27b`; fue una respuesta real, no la lectura automática de respaldo.
+- La consulta inmediata desde Análisis alcanzó la cuota de Groq. Se mostró el mensaje seguro
+  `Se alcanzó el límite de Groq. Espera antes de volver a consultar.` Cambiar de periodo quitó
+  ese resultado anterior. El límite del proveedor no se interpreta como un fallo del despliegue.
+- Tras esperar, Análisis respondió correctamente para Guerrero: 43.7%, banda 29.3%–58.0%,
+  con etiqueta `IA · qwen/qwen3.8-27b`. Cambiar el periodo ocultó la respuesta; volver al periodo
+  consultado y cambiar de Guerrero a Morelos también la ocultó. No se reutilizan respuestas para otro contexto.
+- La consulta final de errores de consola devolvió una lista vacía. Logout volvió a la pantalla
+  de login y se restauró el tamaño normal del navegador al terminar la prueba móvil.
+- No se encontraron regresiones de código en estas cuatro áreas. Se actualizaron README y esta
+  auditoría para corregir la afirmación desactualizada de que los cambios aún no estaban publicados.
+
+## Recorrido inicial en producción antes del PR #17
 
 | Área | Evidencia | Resultado |
 | --- | --- | --- |
@@ -71,5 +93,5 @@ interacciones y significado de los datos; no constituye auditoría completa WCAG
 7. Validación externa de modelos, más bloques temporales y revisión de sesgo por NS/fechas de publicación.
 8. Actualización verificable de fuentes, optimización de cartografía y licencia del código.
 
-Approve — correcciones locales en las interacciones inspeccionadas, con los límites del prototipo
-indicados arriba. No implica aprobación para uso operativo ni confirma publicación de estos cambios.
+Approve — correcciones verificadas en las interacciones inspeccionadas, con los límites del prototipo
+indicados arriba. No implica aprobación para uso operativo ni disponibilidad ilimitada de Groq.

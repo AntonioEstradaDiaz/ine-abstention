@@ -19,8 +19,9 @@ No confundir esa capacidad del backend con lo disponible en la URL publicada.
 
 La revisión funcional del 26 de octubre de 2026 recorrió las ocho secciones. Encontró errores de
 presentación de datos y controles de Reportes; las correcciones y el alcance de las pruebas están en
-[la auditoría de la app publicada](docs/published-app-audit.md). Las correcciones locales necesitan
-publicarse antes de considerarlas disponibles en producción.
+[la auditoría de la app publicada](docs/published-app-audit.md). Las correcciones se publicaron
+tras el merge del PR #17, commit `014961e`; navegación móvil, tarjetas y Reportes se comprobaron
+en producción. Las pruebas reales de IA y sus límites de cuota se detallan en la auditoría.
 
 ## Secciones y alcance real
 
