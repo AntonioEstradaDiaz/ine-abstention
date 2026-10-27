@@ -24,7 +24,6 @@ import {
   X,
 } from "lucide-react";
 import { api } from "@/lib/api";
-import { municipalDemo } from "@/lib/municipal-demo";
 import type { Election, Forecast, Prediction, Risk, Source } from "@/lib/types";
 import { number, pct, riskLabels } from "@/lib/utils";
 import { PageKpis } from "./page-kpis";
@@ -232,9 +231,7 @@ export function DataSources({
   const all = coverage.flatMap((q) => q.data?.items ?? []);
   const years = elections.map((e) => e.year);
   const risks = new Map(states.map((s) => [s.state_code, s.risk_level]));
-  const municipalStates = Object.entries(municipalDemo)
-    .filter(([, d]) => d.count !== null)
-    .map(([name]) => name);
+  const municipalStates: string[] = [];
 
   const rows: Row[] = useMemo(() => {
     const ofYear = all.filter((r) => r.year === applied.year);
@@ -262,17 +259,7 @@ export function DataSources({
         };
       });
     if (applied.level === "municipal") {
-      const entity = applied.entity === "all" ? initialEntity : applied.entity;
-      const sample = municipalDemo[entity];
-      if (!sample || sample.count === null) return [];
-      return sample.names.map((name, i) => ({
-        id: `${entity}-${name}`,
-        name,
-        entity,
-        participation: sample.values[i] / 100,
-        abstention: 1 - sample.values[i] / 100,
-        source: "Muestra ilustrativa",
-      }));
+      return [];
     }
     return ofYear
       .filter(
@@ -489,6 +476,7 @@ export function DataSources({
                   type="radio"
                   name="data-level"
                   checked={draft.level === id}
+                  disabled={id === "municipal"}
                   onChange={() =>
                     setDraft((d) => ({
                       ...d,
@@ -504,9 +492,13 @@ export function DataSources({
                   }
                 />
                 <span>{label}</span>
-                {id === "municipal" && <em>Ilustrativo</em>}
+                {id === "municipal" && <em>No disponible</em>}
               </label>
             ))}
+            <p className="section-card-note">
+              El nivel municipal requiere homologación oficial. La muestra
+              ilustrativa fue retirada.
+            </p>
           </fieldset>
           <label className="data-field">
             <span>Entidad</span>

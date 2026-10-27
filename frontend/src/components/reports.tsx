@@ -23,6 +23,11 @@ import {
   Users,
 } from "lucide-react";
 import { api } from "@/lib/api";
+import {
+  downloadStateReport,
+  type ReportFormat,
+  type StateReport,
+} from "@/lib/report-export";
 import type { Election, Forecast, Prediction, Risk } from "@/lib/types";
 import { pct, pp, riskLabels } from "@/lib/utils";
 import { Chart, chartAxis, chartTooltip } from "./chart";
@@ -83,7 +88,13 @@ const titleCase = (name: string) =>
   name
     .toLocaleLowerCase("es-MX")
     .replace(/(^|\s)\S/g, (c) => c.toLocaleUpperCase("es-MX"));
-type Recent = { name: string; entity: string; date: string; format: string };
+type Recent = {
+  name: string;
+  entity: string;
+  date: string;
+  format: ReportFormat;
+  report: StateReport;
+};
 
 export function Reports({
   states,
@@ -109,8 +120,10 @@ export function Reports({
   const [code, setCode] = useState(selected);
   const [variable, setVariable] = useState("abstention");
   const [compare, setCompare] = useState("national");
-  const [included, setIncluded] = useState(["summary", "charts"]);
-  const [format, setFormat] = useState("pdf");
+  const [included, setIncluded] = useState(["summary", "charts", "notes"]);
+  const [format, setFormat] = useState<ReportFormat>("pdf");
+  const [generating, setGenerating] = useState(false);
+  const [exportError, setExportError] = useState("");
   const [recent, setRecent] = useState<Recent[]>([]);
   const history = useQuery({
     queryKey: ["history", code],
@@ -183,39 +196,38 @@ export function Reports({
       ...chartAxis,
       type: "value",
       min: 0,
-      max: 80,
+      max: 100,
       interval: 20,
       axisLabel: { color: "#596D8D", fontSize: 10, formatter: "{value}%" },
     },
     series: [
-      {
-        name: `${variable === "abstention" ? "Abstención" : "Participación"} · ${name}`,
+      ...(["midterm", "presidential"] as const).map((type) => ({
+        name: `${name} · ${type === "midterm" ? "Intermedia" : "Presidencial"}`,
         type: "line",
+        connectNulls: true,
         symbolSize: 7,
         itemStyle: { color: "#e5007e" },
         areaStyle: { color: "rgba(229,0,126,0.08)" },
         data: rows.map((r) => {
           const v = rateOf(r);
-          return v == null ? null : v * 100;
+          return r.election_type !== type || v == null ? null : v * 100;
         }),
-      },
+      })),
       ...(compare === "national"
-        ? [
-            {
-              name: "Nacional",
-              type: "line",
-              symbolSize: 5,
-              itemStyle: { color: "#83909f" },
-              lineStyle: { type: "dashed" },
-              data: rows.map((r) => {
-                const n = national.find(
-                  (q) => q.data?.items[0]?.year === r.year,
-                )?.data?.items[0];
-                const v = n ? rateOf(n) : null;
-                return v == null ? null : v * 100;
-              }),
-            },
-          ]
+        ? (["midterm", "presidential"] as const).map((type) => ({
+            name: `Nacional · ${type === "midterm" ? "Intermedia" : "Presidencial"}`,
+            type: "line",
+            connectNulls: true,
+            symbolSize: 5,
+            itemStyle: { color: "#83909f" },
+            lineStyle: { type: "dashed" },
+            data: rows.map((r) => {
+              const n = national.find((q) => q.data?.items[0]?.year === r.year)
+                ?.data?.items[0];
+              const v = n ? rateOf(n) : null;
+              return r.election_type !== type || v == null ? null : v * 100;
+            }),
+          }))
         : []),
     ],
   };
@@ -234,22 +246,71 @@ export function Reports({
       },
     ],
   };
-  const generate = () =>
-    setRecent((r) =>
-      [
-        {
-          name: `${templates.find((t) => t.id === template)?.title} · ${name}`,
-          entity: level === "national" ? "Nacional" : name,
-          date: new Date().toLocaleDateString("es-MX", {
-            day: "2-digit",
-            month: "short",
-            year: "numeric",
-          }),
-          format: { pdf: "PDF", pptx: "PPT", xlsx: "XLSX" }[format] ?? "PDF",
-        },
-        ...r,
-      ].slice(0, 5),
-    );
+  const exportReady =
+    !!forecast &&
+    history.isSuccess &&
+    rows.length > 0 &&
+    (compare !== "national" || national.every((q) => q.isSuccess));
+  const generate = async () => {
+    if (!forecast || !exportReady || generating) return;
+    const report: StateReport = {
+      title:
+        templates.find((t) => t.id === template)?.title ?? "Reporte estatal",
+      state,
+      forecast,
+      history: rows,
+      national:
+        compare === "national"
+          ? national
+              .flatMap((q) => q.data?.items ?? [])
+              .map((n) => ({
+                year: n.year,
+                participation_rate: n.participation_rate,
+                abstention_rate: n.abstention_rate,
+              }))
+          : [],
+      variable,
+      summary: included.includes("summary") ? findings : [],
+      charts: included.includes("charts"),
+      createdAt: new Date().toISOString(),
+    };
+    setGenerating(true);
+    setExportError("");
+    try {
+      await downloadStateReport(report, format);
+      setRecent((r) =>
+        [
+          {
+            name: `${templates.find((t) => t.id === template)?.title} · ${name}`,
+            entity: level === "national" ? "Nacional" : name,
+            date: new Date().toLocaleDateString("es-MX", {
+              day: "2-digit",
+              month: "short",
+              year: "numeric",
+            }),
+            format,
+            report,
+          },
+          ...r,
+        ].slice(0, 5),
+      );
+    } catch {
+      setExportError("No se pudo generar el archivo. Vuelve a intentar.");
+    } finally {
+      setGenerating(false);
+    }
+  };
+  const downloadRecent = async (item: Recent) => {
+    setGenerating(true);
+    setExportError("");
+    try {
+      await downloadStateReport(item.report, item.format);
+    } catch {
+      setExportError("No se pudo descargar el archivo. Vuelve a intentar.");
+    } finally {
+      setGenerating(false);
+    }
+  };
 
   return (
     <div className="section-page reports-page">
@@ -262,7 +323,7 @@ export function Reports({
             <FileText className="section-card-icon" aria-hidden="true" />
             <div>
               <h2 id="report-config-title">Configura tu reporte</h2>
-              <p>Configura una vista previa estatal. No se generan archivos.</p>
+              <p>Descarga un reporte estatal con datos y procedencia.</p>
             </div>
           </header>
           <label className="data-field">
@@ -374,15 +435,17 @@ export function Reports({
                 />
                 <span>
                   {s.label}
-                  {s.id === "factors" || s.id === "notes"
+                  {s.id === "factors"
                     ? " · Próximamente"
-                    : ""}
+                    : s.id === "notes"
+                      ? " · Siempre incluidas"
+                      : ""}
                 </span>
               </label>
             ))}
           </fieldset>
           <fieldset>
-            <legend>Formatos previstos · aún no disponibles</legend>
+            <legend>Formato de descarga</legend>
             {[
               ["pdf", "PDF (recomendado)"],
               ["pptx", "PowerPoint"],
@@ -393,21 +456,43 @@ export function Reports({
                   type="radio"
                   name="report-format"
                   checked={format === id}
-                  disabled
-                  onChange={() => setFormat(id)}
+                  disabled={id === "pptx" || generating}
+                  onChange={() => {
+                    if (id === "pdf" || id === "xlsx") setFormat(id);
+                  }}
                 />
-                <span>{label}</span>
+                <span>
+                  {label}
+                  {id === "pptx" ? " · Próximamente" : ""}
+                </span>
               </label>
             ))}
           </fieldset>
-          <Button className="report-generate" onClick={generate}>
+          <Button
+            className="report-generate"
+            onClick={() => void generate()}
+            disabled={!exportReady || generating}
+          >
             <FileText size={16} />
-            Guardar vista previa
+            {generating ? "Generando…" : "Descargar reporte"}
           </Button>
           <p className="section-card-note">
-            Vista de diseño: la generación de archivos se habilitará más
-            adelante. Los datos exportables están en Datos.
+            PDF incluye gráficas si las seleccionas. Excel incluye tablas
+            numéricas, conteos y metodología. Las notas metodológicas se
+            incluyen siempre.
           </p>
+          {!exportReady && (
+            <p role="status">
+              Esperando datos completos del histórico y la comparación.
+            </p>
+          )}
+          {(history.error || national.some((q) => q.error)) && (
+            <p role="alert">
+              No se pudieron cargar todos los datos. Cambia la comparación o
+              vuelve a cargar la sección.
+            </p>
+          )}
+          {exportError && <p role="alert">{exportError}</p>}
         </aside>
 
         <section
@@ -419,8 +504,7 @@ export function Reports({
             <div>
               <h2 id="report-preview-title">Vista previa del reporte</h2>
               <p>
-                Vista continua del contenido estatal; sin paginación ni archivo
-                descargable.
+                Contenido estatal. La descarga incluye histórico y metodología.
               </p>
             </div>
           </header>
@@ -693,10 +777,10 @@ export function Reports({
             <header className="section-card-heading">
               <Clock className="section-card-icon" aria-hidden="true" />
               <div>
-                <h2 id="recent-title">Vistas previas de esta sesión</h2>
+                <h2 id="recent-title">Reportes de esta sesión</h2>
                 <p>
-                  Registro temporal de configuraciones; no conserva documentos
-                  ni permite descargarlos.
+                  Descarga de nuevo los últimos cinco reportes. Este listado se
+                  reinicia al salir de la sección.
                 </p>
               </div>
             </header>
@@ -707,7 +791,7 @@ export function Reports({
                     <th>Nombre</th>
                     <th>Entidad</th>
                     <th>Fecha</th>
-                    <th>Formato previsto</th>
+                    <th>Descarga</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -718,12 +802,16 @@ export function Reports({
                       <td>{r.date}</td>
                       <td>
                         <span className="report-format" data-format={r.format}>
-                          {r.format}
+                          {r.format.toUpperCase()}
                         </span>
-                        <Download
-                          className="report-more"
-                          aria-label="Descarga disponible próximamente"
-                        />
+                        <Button
+                          variant="outline"
+                          disabled={generating}
+                          onClick={() => void downloadRecent(r)}
+                          aria-label={`Descargar ${r.name} en ${r.format.toUpperCase()}`}
+                        >
+                          <Download size={16} />
+                        </Button>
                       </td>
                     </tr>
                   ))}
@@ -732,8 +820,8 @@ export function Reports({
             ) : (
               <p className="report-empty">
                 <SlidersHorizontal aria-hidden="true" />
-                Aún no guardas vistas previas. Configura una y pulsa “Guardar
-                vista previa”.
+                Aún no generas reportes. Configura uno y pulsa “Descargar
+                reporte”.
               </p>
             )}
           </section>
