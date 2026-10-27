@@ -1,5 +1,6 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useState } from "react";
+import { useQueries, useQuery } from "@tanstack/react-query";
 import * as Dialog from "@radix-ui/react-dialog";
 import {
   ArrowUpRight,
@@ -20,156 +21,335 @@ import {
 } from "lucide-react";
 import { DashboardSelect } from "./ui/dashboard-select";
 import { Chart, chartTooltip } from "./chart";
-import stateCatalog from "@/lib/analysis-states.json";
-import { municipalDemo } from "@/lib/municipal-demo";
-const demo = municipalDemo;
-type Territory = keyof typeof demo;
-const years = [2018, 2021, 2024];
-const percent = (n: number) => `${n.toFixed(1)}%`;
-const points = (n: number) => `${n > 0 ? "+" : ""}${n.toFixed(1)} pp`;
-export function AnalysisView({ onLaboratory }: { onLaboratory: () => void }) {
-  const [stateQuery, setStateQuery] = useState("");
-  const [territory, setTerritory] = useState<Territory>("Guerrero");
-  const [period, setPeriod] = useState("2018-2024");
-  const [level, setLevel] = useState("municipality");
+import { SourceLink, Status } from "./shared";
+import { api } from "@/lib/api";
+import {
+  analysisRates,
+  comparableElections,
+  participationChange,
+} from "@/lib/analysis";
+import { number, pct, pp, riskLabels } from "@/lib/utils";
+import type {
+  Election,
+  Forecast,
+  Indicator,
+  Prediction,
+  Source,
+} from "@/lib/types";
+
+const fold = (value: string) =>
+  value
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .toLocaleLowerCase("es-MX")
+    .trim();
+const nameOf = (value: string) =>
+  value
+    .toLocaleLowerCase("es-MX")
+    .replace(/(^|\s)\S/g, (c) => c.toLocaleUpperCase("es-MX"));
+const codeOf = (row: Indicator) => row.state_code || row.official_code;
+const cell = (value: unknown) =>
+  `"${String(value ?? "").replaceAll('"', '""')}"`;
+
+type Props = {
+  selected: string;
+  onSelect: (code: string) => void;
+  year: number;
+  onYear: (year: number) => void;
+  states: Prediction[];
+  forecast?: Forecast;
+  elections: Election[];
+  sources?: Source[];
+  loading: boolean;
+  error: Error | null;
+  retry: () => void;
+  onLaboratory: () => void;
+};
+export function AnalysisView({
+  selected,
+  onSelect,
+  year,
+  onYear,
+  states,
+  forecast,
+  elections,
+  sources,
+  loading,
+  error,
+  retry,
+  onLaboratory,
+}: Props) {
+  const [mode, setMode] = useState("observed");
+  const [startYear, setStartYear] = useState<number | null>(null);
   const [compare, setCompare] = useState("national");
   const [metric, setMetric] = useState("participation");
   const [sort, setSort] = useState("highest");
   const [search, setSearch] = useState("");
+  const [stateQuery, setStateQuery] = useState("");
+  const [page, setPage] = useState(1);
+  const prediction = states.find((state) => state.state_code === selected);
+  const territory = prediction ? nameOf(prediction.name) : selected;
+  const estimated = mode === "forecast";
+  const referenceYear = estimated ? (forecast?.as_of_year ?? year) : year;
+  const eligible = comparableElections(elections, referenceYear);
+  const forecastElections = elections
+    .filter(
+      (election) =>
+        election.election_type === forecast?.election_type &&
+        election.year <= (forecast?.as_of_year ?? year),
+    )
+    .sort((a, b) => a.year - b.year);
+  const comparable = estimated ? forecastElections : eligible;
+  const from = estimated
+    ? (comparable[0]?.year ?? referenceYear)
+    : comparable.some((election) => election.year === startYear)
+      ? startYear!
+      : (comparable.at(-2)?.year ?? comparable.at(-1)?.year ?? referenceYear);
+  const years = (
+    estimated
+      ? comparable
+      : comparable.filter((election) => election.year >= from)
+  ).map((election) => election.year);
+  const history = useQuery({
+    queryKey: ["history", selected],
+    queryFn: ({ signal }) => api.history(selected, signal),
+  });
+  const observed = useQuery({
+    queryKey: ["indicators", year],
+    queryFn: ({ signal }) => api.indicators(year, signal),
+    enabled: !estimated,
+  });
+  const previous = useQuery({
+    queryKey: ["indicators", from],
+    queryFn: ({ signal }) => api.indicators(from, signal),
+    enabled: !estimated,
+  });
+  const national = useQueries({
+    queries: years.map((current) => ({
+      queryKey: ["summary", current],
+      queryFn: ({ signal }: { signal: AbortSignal }) =>
+        api.summary(current, signal),
+      enabled: !estimated && compare === "national",
+    })),
+  });
+  const current = observed.data?.items.find((row) => codeOf(row) === selected);
+  const old = previous.data?.items.find((row) => codeOf(row) === selected);
+  const rates = estimated
+    ? prediction
+      ? {
+          participation: 1 - prediction.predicted,
+          abstention: prediction.predicted,
+        }
+      : null
+    : analysisRates(current);
+  const change = estimated ? null : participationChange(current, old);
+  const dataError =
+    error ??
+    history.error ??
+    (!estimated ? (observed.error ?? previous.error) : null);
+  const pending =
+    loading ||
+    history.isPending ||
+    (!estimated && (observed.isPending || previous.isPending));
+  const historyAt = (currentYear: number) =>
+    history.data?.items.find(
+      (row) =>
+        row.year === currentYear &&
+        codeOf(row) === selected &&
+        row.election_type ===
+          comparable.find((election) => election.year === currentYear)
+            ?.election_type,
+    );
+  const seriesRate = (
+    row?: Pick<Indicator, "voter_count" | "nonvoter_count">,
+  ) => {
+    const rate = analysisRates(row);
+    return rate
+      ? (metric === "participation" ? rate.participation : rate.abstention) *
+          100
+      : null;
+  };
+  const rows = (
+    estimated
+      ? states.map((state) => ({
+          code: state.state_code,
+          name: nameOf(state.name),
+          participation: 1 - state.predicted,
+          abstention: state.predicted,
+          change: null,
+          observed: undefined as Indicator | undefined,
+          prediction: state,
+        }))
+      : (observed.data?.items ?? []).map((row) => ({
+          code: codeOf(row),
+          name: nameOf(row.name),
+          participation: analysisRates(row)?.participation ?? null,
+          abstention: analysisRates(row)?.abstention ?? null,
+          change: participationChange(
+            row,
+            previous.data?.items.find((prior) => codeOf(prior) === codeOf(row)),
+          ),
+          observed: row,
+          prediction: undefined as Prediction | undefined,
+        }))
+  )
+    .filter((row) => fold(row.name).includes(fold(search)))
+    .sort((a, b) =>
+      sort === "name"
+        ? a.name.localeCompare(b.name, "es")
+        : sort === "lowest"
+          ? (a.participation ?? Infinity) - (b.participation ?? Infinity)
+          : (b.participation ?? -Infinity) - (a.participation ?? -Infinity),
+    );
+  const pages = Math.max(1, Math.ceil(rows.length / 10));
+  const currentPage = Math.min(page, pages);
+  const visible = rows.slice((currentPage - 1) * 10, currentPage * 10);
+  const labelYear = estimated ? (forecast?.target_year ?? 2027) : year;
+  const electionType =
+    comparable[0]?.election_type === "midterm"
+      ? "Intermedias"
+      : "Presidenciales";
+  const period = `${from}–${estimated ? (comparable.at(-1)?.year ?? referenceYear) : year}`;
+  const summary = estimated
+    ? `${territory}: abstención estimada ${pct(rates?.abstention)} para ${labelYear}, con banda ${pct(prediction?.lower)}–${pct(prediction?.upper)}. Es la misma corrida utilizada en Mapa y Predicciones; no es un resultado observado.`
+    : `${territory}: participación observada ${pct(rates?.participation)} y abstención ${pct(rates?.abstention)} en ${year}. ${from === year ? "No hay una elección anterior comparable en el periodo." : `Cambio de participación: ${pp(change)} frente a ${from}, del mismo tipo electoral.`}`;
+  const context = `${selected}:${mode}:${period}:${forecast?.id ?? ""}`;
   const [question, setQuestion] = useState("");
   const [reply, setReply] = useState<{
     context: string;
     text: string;
     model?: string;
   } | null>(null);
-  const answerContext = `${territory}:${period}`;
-  const answer = reply?.context === answerContext ? reply : null;
   const [asking, setAsking] = useState(false);
-  const data = demo[territory];
-  const [from, to] = period.split("-").map(Number);
-  const indices = years
-    .map((year, i) => ({ year, i }))
-    .filter((x) => x.year >= from && x.year <= to);
-  const first = indices[0].i,
-    last = indices.at(-1)!.i;
-  const participation = data.rates[last],
-    abstention = 100 - participation,
-    change = participation - data.rates[first];
-  const rows = useMemo(() => {
-    const source =
-      level === "state"
-        ? [{ name: territory, value: participation, change }]
-        : data.names.map((name, i) => ({
-            name,
-            value:
-              last === 2
-                ? data.values[i]
-                : data.values[i] - (last === 0 ? data.changes[i] : 6.8),
-            change: period === "2018-2024" ? data.changes[i] : change,
-          }));
-    return source
-      .filter((row) =>
-        row.name
-          .normalize("NFD")
-          .replace(/\p{Diacritic}/gu, "")
-          .toLowerCase()
-          .includes(
-            search
-              .normalize("NFD")
-              .replace(/\p{Diacritic}/gu, "")
-              .toLowerCase(),
-          ),
-      )
-      .sort((a, b) =>
-        sort === "name"
-          ? a.name.localeCompare(b.name, "es")
-          : sort === "lowest"
-            ? a.value - b.value
-            : b.value - a.value,
-      );
-  }, [
-    data,
-    territory,
-    participation,
-    change,
-    level,
-    last,
-    period,
-    search,
-    sort,
-  ]);
-  const national = [52, 52, 61];
-  const chartValues = indices.map((x) =>
-    metric === "participation" ? data.rates[x.i] : 100 - data.rates[x.i],
-  );
-  const referenceValues = indices.map((x) =>
-    metric === "participation" ? national[x.i] : 100 - national[x.i],
-  );
+  const answer = reply?.context === context ? reply : null;
   const reset = () => {
-    setTerritory("Guerrero");
-    setPeriod("2018-2024");
-    setLevel("municipality");
+    setMode("observed");
+    setStartYear(null);
     setCompare("national");
     setMetric("participation");
     setSort("highest");
     setSearch("");
+    setPage(1);
     setReply(null);
   };
+  const refresh = () => {
+    retry();
+    void history.refetch();
+    if (!estimated) {
+      void observed.refetch();
+      void previous.refetch();
+    }
+  };
   const exportAnalysis = () => {
-    const lines = [
-      "Datos ilustrativos; no son estadísticas oficiales",
-      `Territorio,${territory}`,
-      `Periodo,${from}-${to}`,
-      "Municipio,Participación,Abstención,Cambio (pp)",
-      ...rows.map(
-        (r) =>
-          `${r.name},${r.value.toFixed(1)},${(100 - r.value).toFixed(1)},${r.change.toFixed(1)}`,
-      ),
-    ];
+    const headings = estimated
+      ? [
+          "Clave",
+          "Entidad",
+          "Año estimado",
+          "Participación estimada (%)",
+          "Abstención estimada (%)",
+          "Banda inferior (%)",
+          "Banda superior (%)",
+          "Riesgo relativo",
+          "Corrida",
+          "Modelo",
+        ]
+      : [
+          "Clave",
+          "Entidad",
+          "Año observado",
+          "Participación (%)",
+          "Abstención (%)",
+          `Cambio participación vs ${from} (pp)`,
+          "SV",
+          "NV",
+          "NS",
+          "Lista nominal",
+          "Fuente ID",
+          "Fuente URL",
+        ];
+    const data = rows.map((row) =>
+      estimated
+        ? [
+            row.code,
+            row.name,
+            labelYear,
+            row.participation == null ? null : row.participation * 100,
+            row.abstention == null ? null : row.abstention * 100,
+            row.prediction!.lower * 100,
+            row.prediction!.upper * 100,
+            riskLabels[row.prediction!.risk_level],
+            forecast?.id,
+            forecast?.provenance.model_name,
+          ]
+        : [
+            row.code,
+            row.name,
+            year,
+            row.participation == null ? null : row.participation * 100,
+            row.abstention == null ? null : row.abstention * 100,
+            row.change,
+            row.observed?.voter_count,
+            row.observed?.nonvoter_count,
+            row.observed?.unspecified_count,
+            row.observed?.nominal_list,
+            row.observed?.source_id,
+            sources?.find(
+              (source) => String(source.id) === String(row.observed?.source_id),
+            )?.landing_url,
+          ],
+    );
     const url = URL.createObjectURL(
-      new Blob(["\uFEFF" + lines.join("\r\n")], {
-        type: "text/csv;charset=utf-8",
-      }),
+      new Blob(
+        [
+          "\uFEFF" +
+            [headings, ...data]
+              .map((row) => row.map(cell).join(","))
+              .join("\r\n"),
+        ],
+        { type: "text/csv;charset=utf-8" },
+      ),
     );
     const link = document.createElement("a");
     link.href = url;
-    link.download = `analisis-ilustrativo-${territory.toLowerCase().replaceAll(" ", "-")}.csv`;
+    link.download = `analisis-${estimated ? "estimacion" : "oficial"}-${labelYear}.csv`;
     link.click();
     URL.revokeObjectURL(url);
   };
-  const closer =
-    Math.abs(participation - national[last]) <=
-    Math.abs(data.rates[first] - national[first]);
-  const summary = `La participación en ${territory} ${change >= 0 ? "aumentó" : "disminuyó"} ${Math.abs(change).toFixed(1)} puntos respecto a ${from}${compare === "national" ? `, ${closer ? "acercándose al" : "alejándose del"} promedio nacional` : ""}.`;
   const kpis = [
     {
-      label: "Participación",
-      value: percent(participation),
+      label: `Participación ${estimated ? "estimada" : "observada"} ${labelYear}`,
+      value: pct(rates?.participation),
       icon: TrendingUp,
-      trend: "line",
     },
     {
-      label: "Abstención",
-      value: percent(abstention),
+      label: `Abstención ${estimated ? "estimada" : "observada"} ${labelYear}`,
+      value: pct(rates?.abstention),
       icon: Users,
-      trend: "down",
     },
     {
-      label: `Cambio vs. ${from}`,
-      value: points(change),
+      label: estimated
+        ? `Riesgo relativo ${labelYear}`
+        : `Cambio participación vs. ${from}`,
+      value: estimated
+        ? prediction
+          ? riskLabels[prediction.risk_level]
+          : "—"
+        : from === year
+          ? "—"
+          : pp(change),
       icon: BarChart3,
-      trend: "green",
     },
     {
-      label: level === "municipality" ? "Municipios" : "Entidades",
-      value:
-        level === "municipality"
-          ? data.count === null
-            ? "—"
-            : String(data.count)
-          : "1",
+      label: estimated
+        ? `Banda de abstención ${labelYear}`
+        : "NS / lista nominal",
+      value: estimated
+        ? `${pct(prediction?.lower)} – ${pct(prediction?.upper)}`
+        : current && current.nominal_list > 0
+          ? pct(current.unspecified_count / current.nominal_list)
+          : "—",
       icon: MapPin,
-      trend: "bars",
     },
   ];
   return (
@@ -184,11 +364,21 @@ export function AnalysisView({ onLaboratory }: { onLaboratory: () => void }) {
         <div>
           <div className="analysis-title-line">
             <h1>Entiende la participación electoral</h1>
-            <span className="analysis-chip">Datos ilustrativos</span>
+            <span className="analysis-chip">
+              {estimated ? "Estimación experimental" : "Datos oficiales INE"}
+            </span>
           </div>
-          <p>Explora tendencias y descubre qué cambia entre territorios.</p>
+          <p>
+            {territory} ·{" "}
+            {estimated ? `Estimación ${labelYear}` : `Observado ${year}`} ·
+            Nivel estatal
+          </p>
         </div>
-        <button className="analysis-export" onClick={exportAnalysis}>
+        <button
+          className="analysis-export"
+          onClick={exportAnalysis}
+          disabled={pending || !!dataError || !rows.length}
+        >
           <Upload size={21} />
           Exportar análisis
         </button>
@@ -206,7 +396,7 @@ export function AnalysisView({ onLaboratory }: { onLaboratory: () => void }) {
               aria-label="Buscar estado para el análisis"
               title="Buscar estado"
             >
-              <SlidersHorizontal size={19} aria-hidden="true" />
+              <SlidersHorizontal size={19} />
             </button>
           </Dialog.Trigger>
           <Dialog.Portal>
@@ -214,87 +404,49 @@ export function AnalysisView({ onLaboratory }: { onLaboratory: () => void }) {
             <Dialog.Content className="dialog-content analysis-question analysis-state-search">
               <Dialog.Title>Buscar estado</Dialog.Title>
               <Dialog.Description>
-                Selecciona un estado para actualizar las métricas, la gráfica y
-                el detalle municipal. Busca entre las 32 entidades federativas.
-                Las cifras municipales se muestran solo cuando están
-                disponibles.
+                Selecciona una de las 32 entidades con datos oficiales. La
+                selección se comparte con Mapa y Predicciones.
               </Dialog.Description>
               <label htmlFor="analysis-state-query">Nombre del estado</label>
               <input
                 id="analysis-state-query"
-                placeholder="Escribe un estado…"
                 value={stateQuery}
                 onChange={(event) => setStateQuery(event.target.value)}
-                autoComplete="off"
+                placeholder="Escribe un estado…"
               />
-              <div className="analysis-state-results" aria-live="polite">
-                {(Object.keys(demo) as Territory[])
-                  .filter((name) =>
-                    name
-                      .normalize("NFD")
-                      .replace(/\p{Diacritic}/gu, "")
-                      .toLowerCase()
-                      .includes(
-                        stateQuery
-                          .normalize("NFD")
-                          .replace(/\p{Diacritic}/gu, "")
-                          .toLowerCase()
-                          .trim(),
-                      ),
+              <div className="analysis-state-results">
+                {states
+                  .filter((state) =>
+                    fold(state.name).includes(fold(stateQuery)),
                   )
-                  .map((name) => (
-                    <Dialog.Close asChild key={name}>
+                  .map((state) => (
+                    <Dialog.Close asChild key={state.state_code}>
                       <button
-                        type="button"
                         className="analysis-state-result"
-                        onClick={() => {
-                          setTerritory(name);
-                          if (demo[name].count === null) setLevel("state");
-                          setSearch("");
-                          setReply(null);
-                        }}
+                        onClick={() => onSelect(state.state_code)}
                       >
-                        <MapPin size={20} aria-hidden="true" />
+                        <MapPin size={20} />
                         <span>
-                          <strong>{name}</strong>
-                          <small>
-                            {demo[name].count === null
-                              ? "Datos estatales disponibles"
-                              : `${demo[name].count} municipios · Datos ilustrativos`}
-                          </small>
+                          <strong>{nameOf(state.name)}</strong>
+                          <small>Datos estatales oficiales · INE CCPC</small>
                         </span>
-                        <span className="analysis-state-action">
-                          {territory === name ? "Actual" : "Seleccionar"}
+                        <span>
+                          {state.state_code === selected
+                            ? "Actual"
+                            : "Seleccionar"}
                         </span>
                       </button>
                     </Dialog.Close>
                   ))}
-                {!Object.keys(demo).some((name) =>
-                  name
-                    .normalize("NFD")
-                    .replace(/\p{Diacritic}/gu, "")
-                    .toLowerCase()
-                    .includes(
-                      stateQuery
-                        .normalize("NFD")
-                        .replace(/\p{Diacritic}/gu, "")
-                        .toLowerCase()
-                        .trim(),
-                    ),
-                ) && (
-                  <p role="status">
-                    No encontramos ese estado. Revisa el nombre o prueba con
-                    otro término.
-                  </p>
-                )}
+                {!states.some((state) =>
+                  fold(state.name).includes(fold(stateQuery)),
+                ) && <p role="status">No encontramos ese estado.</p>}
               </div>
-              <Dialog.Close asChild>
-                <button
-                  className="analysis-dialog-close"
-                  aria-label="Cerrar búsqueda de estados"
-                >
-                  <X size={20} />
-                </button>
+              <Dialog.Close
+                className="analysis-dialog-close"
+                aria-label="Cerrar búsqueda de estados"
+              >
+                <X size={20} />
               </Dialog.Close>
             </Dialog.Content>
           </Dialog.Portal>
@@ -302,553 +454,570 @@ export function AnalysisView({ onLaboratory }: { onLaboratory: () => void }) {
         <div className="analysis-filter-options">
           <DashboardSelect
             aria-label="Territorio del análisis"
-            value={territory}
-            onChange={(e) => {
-              setTerritory(e.target.value as Territory);
-              if (demo[e.target.value].count === null) setLevel("state");
-              setSearch("");
+            value={selected}
+            onChange={(event) => onSelect(event.target.value)}
+          >
+            {states.map((state) => (
+              <option key={state.state_code} value={state.state_code}>
+                {nameOf(state.name)}
+              </option>
+            ))}
+          </DashboardSelect>
+          <DashboardSelect
+            aria-label="Datos del análisis"
+            value={mode}
+            onChange={(event) => {
+              setMode(event.target.value);
+              setPage(1);
             }}
           >
-            {Object.keys(demo).map((name) => (
-              <option key={name} value={name}>
-                {name}
+            <option value="observed">Histórico observado</option>
+            <option value="forecast">Estimación 2027</option>
+          </DashboardSelect>
+          <DashboardSelect
+            aria-label="Año del análisis"
+            value={year}
+            disabled={estimated || !elections.length}
+            onChange={(event) => {
+              onYear(Number(event.target.value));
+              setStartYear(null);
+            }}
+          >
+            {elections.map((election) => (
+              <option key={election.id} value={election.year}>
+                {election.year} ·{" "}
+                {election.election_type === "midterm"
+                  ? "Intermedia"
+                  : "Presidencial"}
               </option>
             ))}
           </DashboardSelect>
           <DashboardSelect
             aria-label="Periodo del análisis"
-            value={period}
-            onChange={(e) => setPeriod(e.target.value)}
+            value={from}
+            disabled={estimated || !comparable.length}
+            onChange={(event) => setStartYear(Number(event.target.value))}
           >
-            <option value="2018-2024">Periodo: 2018 – 2024</option>
-            <option value="2021-2024">Periodo: 2021 – 2024</option>
-            <option value="2018-2021">Periodo: 2018 – 2021</option>
-          </DashboardSelect>
-          <DashboardSelect
-            aria-label="Nivel del análisis"
-            value={level}
-            onChange={(e) => setLevel(e.target.value)}
-          >
-            <option value="municipality">Nivel: Municipio</option>
-            <option value="state">Nivel: Estado</option>
+            {comparable.map((election) => (
+              <option key={election.year} value={election.year}>
+                Periodo: {election.year} –{" "}
+                {estimated ? comparable.at(-1)?.year : year}
+              </option>
+            ))}
           </DashboardSelect>
           <DashboardSelect
             aria-label="Comparación del análisis"
             value={compare}
-            onChange={(e) => setCompare(e.target.value)}
+            disabled={estimated}
+            onChange={(event) => setCompare(event.target.value)}
           >
-            <option value="national">Comparar: Nacional</option>
+            <option value="national">Comparar: Nacional ponderado</option>
             <option value="none">Sin comparación</option>
           </DashboardSelect>
           <button
-            type="button"
             className="analysis-reset"
             onClick={reset}
             aria-label="Restablecer preferencias del análisis"
             title="Restablecer preferencias"
           >
-            <span>
-              <RotateCw size={17} />
-            </span>
+            <RotateCw size={17} />
           </button>
         </div>
       </div>
-      <div className="analysis-kpis">
-        {kpis.map(({ label, value, icon: Icon, trend }) => (
-          <article key={label} className="analysis-kpi">
-            <span className="analysis-kpi-icon">
-              <Icon size={27} strokeWidth={1.6} />
-            </span>
-            <div>
-              <p>{label}</p>
-              <strong className={trend === "green" ? "analysis-positive" : ""}>
-                {value}
-              </strong>
-            </div>
-            <svg viewBox="0 0 90 49" aria-hidden="true">
-              {trend === "bars" ? (
-                Array.from({ length: 11 }, (_, i) => (
-                  <rect
-                    key={i}
-                    x={i * 8}
-                    y={46 - [7, 12, 15, 23, 17, 19, 25, 21, 28, 24, 37][i]}
-                    width="4"
-                    height={[7, 12, 15, 23, 17, 19, 25, 21, 28, 24, 37][i]}
-                    rx="2"
-                    fill="#ff9dd3"
-                  />
-                ))
-              ) : (
-                <>
-                  <path
-                    d={
-                      trend === "down"
-                        ? "M3 20 C20 24 25 35 41 27 S66 36 84 24"
-                        : trend === "green"
-                          ? "M3 40 L28 27 L44 30 L60 18 L84 10"
-                          : "M3 31 C18 33 27 18 40 20 S55 29 84 13"
-                    }
-                    fill="none"
-                    stroke={trend === "green" ? "#009f70" : "#e5008d"}
-                    strokeWidth="1.5"
-                  />
-                  <circle
-                    cx="3"
-                    cy={trend === "down" ? 20 : trend === "green" ? 40 : 31}
-                    r="2.5"
-                    fill={trend === "green" ? "#009f70" : "#e5008d"}
-                  />
-                  <circle
-                    cx="84"
-                    cy={trend === "down" ? 24 : trend === "green" ? 10 : 13}
-                    r="2.5"
-                    fill={trend === "green" ? "#009f70" : "#e5008d"}
-                  />
-                </>
-              )}
-            </svg>
-          </article>
-        ))}
-      </div>
-      <div className="analysis-main-grid">
-        <article className="analysis-card analysis-evolution">
-          <header>
-            <div className="analysis-card-title">
-              <span>
-                <TrendingUp size={19} />
-              </span>
-              <div>
-                <h2>Evolución de la participación</h2>
-                <p>
-                  {territory}
-                  {compare === "national"
-                    ? " frente al promedio nacional"
-                    : " · periodo seleccionado"}
-                </p>
-              </div>
-            </div>
-            <div
-              className="analysis-metric-switch"
-              aria-label="Métrica de la evolución"
-            >
-              <button
-                aria-pressed={metric === "participation"}
-                onClick={() => setMetric("participation")}
-              >
-                Participación
-              </button>
-              <button
-                aria-pressed={metric === "abstention"}
-                onClick={() => setMetric("abstention")}
-              >
-                Abstención
-              </button>
-            </div>
-          </header>
-          <div className="analysis-chart-wrap">
-            <Chart
-              height={278}
-              label={`Evolución ilustrativa de ${metric === "participation" ? "participación" : "abstención"} en ${territory}`}
-              option={{
-                grid: { left: 44, right: 18, top: 25, bottom: 65 },
-                tooltip: {
-                  ...chartTooltip,
-                  trigger: "axis",
-                  valueFormatter: (value: number) => percent(value),
-                },
-                xAxis: {
-                  type: "category",
-                  boundaryGap: false,
-                  data: indices.map((x) => x.year),
-                  axisLine: { lineStyle: { color: "#d5dfed" } },
-                  axisTick: { lineStyle: { color: "#d5dfed" } },
-                  axisLabel: { color: "#254472", fontSize: 12, margin: 12 },
-                },
-                yAxis: {
-                  type: "value",
-                  min: 0,
-                  max: 100,
-                  interval: 20,
-                  axisLabel: {
-                    formatter: "{value}%",
-                    color: "#52688a",
-                    fontSize: 12,
-                  },
-                  splitLine: {
-                    lineStyle: { color: "#e9eff6", type: "dashed" },
-                  },
-                },
-                legend: {
-                  bottom: 5,
-                  left: "center",
-                  itemWidth: 23,
-                  itemHeight: 10,
-                  textStyle: { color: "#52688a", fontSize: 12 },
-                },
-                series: [
-                  {
-                    name: territory,
-                    type: "line",
-                    smooth: 0.25,
-                    data: chartValues,
-                    symbol: "circle",
-                    symbolSize: 11,
-                    itemStyle: {
-                      color: "#e5008d",
-                      borderWidth: 1,
-                      borderColor: "#fff",
-                    },
-                    lineStyle: { width: 2.5, color: "#ed008c" },
-                    areaStyle: {
-                      color: {
-                        type: "linear",
-                        x: 0,
-                        y: 0,
-                        x2: 0,
-                        y2: 1,
-                        colorStops: [
-                          { offset: 0, color: "#f7cbe380" },
-                          { offset: 1, color: "#fff0" },
-                        ],
-                      },
-                    },
-                    label: {
-                      show: true,
-                      position: "top",
-                      formatter: (p: { value: number; dataIndex: number }) =>
-                        p.dataIndex === chartValues.length - 1
-                          ? ""
-                          : percent(p.value),
-                      fontSize: 13,
-                      fontWeight: 700,
-                      color: "#df0085",
-                      distance: 8,
-                    },
-                    z: 3,
-                  },
-                  ...(compare === "national"
-                    ? [
-                        {
-                          name: "Nacional",
-                          type: "line",
-                          smooth: 0.25,
-                          data: referenceValues,
-                          symbol: "circle",
-                          symbolSize: 10,
-                          itemStyle: {
-                            color: "#93a6c0",
-                            borderColor: "#fff",
-                            borderWidth: 1,
-                          },
-                          lineStyle: { color: "#93a6c0", width: 2 },
-                          label: {
-                            show: true,
-                            position: "bottom",
-                            formatter: (p: { value: number }) =>
-                              percent(p.value),
-                            color: "#52688a",
-                            fontSize: 12,
-                            distance: 8,
-                          },
-                        },
-                      ]
-                    : []),
-                ],
-              }}
-            />
-            <div
-              className="analysis-point-callout"
-              style={{
-                top: Math.max(
-                  4,
-                  25 + (1 - (chartValues.at(-1)! - 0) / 100) * 188 - 70,
-                ),
-              }}
-            >
-              <span>{territory}</span>
-              <strong>{percent(chartValues.at(-1)!)}</strong>
-            </div>
+      <p className="analysis-disclaimer">
+        <Info size={17} />
+        {estimated
+          ? "Pronóstico estatal experimental: misma corrida que Mapa y Predicciones. No hay una estimación nacional ponderada."
+          : `INE CCPC · Tasas sobre SV + NV; NS separado. ${electionType} ${period}. El nacional suma conteos, no promedia tasas estatales.`}{" "}
+        Sin detalle municipal homologado.
+      </p>
+      <Status
+        loading={pending}
+        error={dataError}
+        retry={refresh}
+        empty={!pending && !dataError && !rates}
+      />
+      {!pending && !dataError && rates && (
+        <>
+          <div className="analysis-kpis">
+            {kpis.map(({ label, value, icon: Icon }) => (
+              <article key={label} className="analysis-kpi" aria-label={label}>
+                <span className="analysis-kpi-icon">
+                  <Icon size={27} strokeWidth={1.6} />
+                </span>
+                <div>
+                  <p>{label}</p>
+                  <strong>{value}</strong>
+                </div>
+              </article>
+            ))}
           </div>
-        </article>
-        <article className="analysis-card analysis-reading">
-          <header>
-            <div className="analysis-card-title">
-              <Sparkles
-                className="analysis-sparkle"
-                size={27}
-                fill="currentColor"
-              />
-              <h2>Lectura de IA</h2>
-            </div>
-            <span className="analysis-chip">3 hallazgos</span>
-          </header>
-          <div className="analysis-reading-summary">
-            <span className="analysis-kpi-icon">
-              <BarChart3 size={22} />
-            </span>
-            <div>
-              <h3>Resumen del periodo seleccionado</h3>
-              <p>{summary}</p>
-            </div>
-          </div>
-          <ol className="analysis-findings">
-            <li>
-              <span>1</span>
-              <div>
-                <h3>
-                  {change >= 0 ? "Recuperación" : "Variación"} de la
-                  participación
-                </h3>
-                <p>
-                  {change >= 0 ? "Aumentó" : "Disminuyó"}{" "}
-                  {Math.abs(change).toFixed(1)} puntos respecto a {from}.
-                </p>
-              </div>
-            </li>
-            <li>
-              <span>2</span>
-              <div>
-                <h3>Diferencias entre municipios</h3>
-                <p>Consulta dónde se concentran los cambios.</p>
-              </div>
-            </li>
-            <li>
-              <span>3</span>
-              <div>
-                <h3>Contexto para interpretar</h3>
-                <p>Los patrones observados no demuestran causalidad.</p>
-              </div>
-            </li>
-          </ol>
-          <Dialog.Root>
-            <Dialog.Trigger asChild>
-              <button className="analysis-ask">
-                Preguntar a la IA <ArrowUpRight size={16} />
-              </button>
-            </Dialog.Trigger>
-            <Dialog.Portal>
-              <Dialog.Overlay className="dialog-overlay" />
-              <Dialog.Content className="dialog-content analysis-question">
-                <Dialog.Title>Explora esta lectura</Dialog.Title>
-                <Dialog.Description>
-                  El asistente consulta el histórico estatal y el pronóstico del
-                  servidor. Las tarjetas ilustrativas pueden diferir de esos
-                  datos.
-                </Dialog.Description>
-                <p>{summary}</p>
-                <form
-                  onSubmit={async (e) => {
-                    e.preventDefault();
-                    if (asking) return;
-                    setAsking(true);
-                    setReply(null);
-                    try {
-                      const state = stateCatalog.find(
-                        (entry) => entry.name === territory,
-                      );
-                      if (!state)
-                        throw new Error("No se encontró el código del estado.");
-                      const response = await fetch("/api/assistant", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                          state_code: state.code,
-                          messages: [
+          <div className="analysis-main-grid">
+            <article className="analysis-card analysis-evolution">
+              <header>
+                <div className="analysis-card-title">
+                  <TrendingUp size={19} />
+                  <div>
+                    <h2>
+                      {estimated
+                        ? "Histórico y estimación 2027"
+                        : "Evolución de la participación"}
+                    </h2>
+                    <p>
+                      {territory} · {electionType}
+                      {!estimated && compare === "national"
+                        ? " · Nacional ponderado"
+                        : ""}
+                    </p>
+                  </div>
+                </div>
+                <div
+                  className="analysis-metric-switch"
+                  aria-label="Métrica de la evolución"
+                >
+                  <button
+                    aria-pressed={metric === "participation"}
+                    onClick={() => setMetric("participation")}
+                  >
+                    Participación
+                  </button>
+                  <button
+                    aria-pressed={metric === "abstention"}
+                    onClick={() => setMetric("abstention")}
+                  >
+                    Abstención
+                  </button>
+                </div>
+              </header>
+              <Chart
+                height={278}
+                label={`${estimated ? "Histórico y estimación" : "Evolución oficial"} de ${metric === "participation" ? "participación" : "abstención"} en ${territory}. ${electionType}; cifras exactas en la tabla histórica.`}
+                option={{
+                  grid: { left: 44, right: 18, top: 25, bottom: 65 },
+                  tooltip: {
+                    ...chartTooltip,
+                    trigger: "axis",
+                    valueFormatter: (value: number) => `${value.toFixed(1)}%`,
+                  },
+                  xAxis: {
+                    type: "category",
+                    data: estimated ? [...years, labelYear] : years,
+                  },
+                  yAxis: {
+                    type: "value",
+                    min: 0,
+                    max: 100,
+                    axisLabel: { formatter: "{value}%" },
+                  },
+                  legend: { bottom: 5 },
+                  series: [
+                    {
+                      name: `${territory} · observado`,
+                      type: "line",
+                      connectNulls: false,
+                      data: estimated
+                        ? [
+                            ...years.map((currentYear) =>
+                              seriesRate(historyAt(currentYear)),
+                            ),
+                            null,
+                          ]
+                        : years.map((currentYear) =>
+                            seriesRate(historyAt(currentYear)),
+                          ),
+                      itemStyle: { color: "#e5008d" },
+                    },
+                    ...(estimated
+                      ? [
+                          {
+                            name: "Estimación experimental",
+                            type: "line",
+                            lineStyle: { type: "dashed" },
+                            data: [
+                              ...years.map((currentYear, index) =>
+                                index === years.length - 1
+                                  ? seriesRate(historyAt(currentYear))
+                                  : null,
+                              ),
+                              (metric === "participation"
+                                ? rates.participation
+                                : rates.abstention) * 100,
+                            ],
+                            itemStyle: { color: "#e5008d" },
+                          },
+                        ]
+                      : compare === "national"
+                        ? [
                             {
-                              role: "user",
-                              content: `Periodo seleccionado: ${from}–${to}. ${question}`,
+                              name: "Nacional ponderado",
+                              type: "line",
+                              connectNulls: false,
+                              data: national.map((query) =>
+                                seriesRate(query.data?.items[0]),
+                              ),
+                              itemStyle: { color: "#74849c" },
                             },
-                          ],
-                        }),
-                      });
-                      const reply = await response.json();
-                      if (!response.ok)
-                        throw new Error(
-                          reply.detail ?? "No se pudo consultar la IA.",
-                        );
-                      setReply({
-                        context: answerContext,
-                        text: reply.answer,
-                        model: reply.model,
-                      });
-                    } catch (error) {
-                      setReply({
-                        context: answerContext,
-                        text:
-                          error instanceof Error
-                            ? error.message
-                            : "No se pudo consultar la IA.",
-                      });
-                    } finally {
-                      setAsking(false);
-                    }
+                          ]
+                        : []),
+                  ],
+                }}
+              />
+              {!estimated &&
+                compare === "national" &&
+                national.some((query) => query.isError) && (
+                  <p role="alert">
+                    No se pudo cargar la comparación nacional.{" "}
+                    <button
+                      onClick={() =>
+                        national.forEach((query) => void query.refetch())
+                      }
+                    >
+                      Reintentar comparación
+                    </button>
+                  </p>
+                )}
+              <div className="analysis-table-scroll">
+                <table aria-label="Histórico oficial del estado y nacional">
+                  <thead>
+                    <tr>
+                      <th>Año</th>
+                      <th>Participación estatal</th>
+                      <th>Abstención estatal</th>
+                      <th>Participación nacional</th>
+                      <th>Fuente</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {years.map((currentYear, index) => {
+                      const record = historyAt(currentYear);
+                      const rate = analysisRates(record);
+                      return (
+                        <tr key={currentYear}>
+                          <td>{currentYear}</td>
+                          <td>{pct(rate?.participation)}</td>
+                          <td>{pct(rate?.abstention)}</td>
+                          <td>
+                            {!estimated && compare === "national"
+                              ? pct(
+                                  analysisRates(national[index]?.data?.items[0])
+                                    ?.participation,
+                                )
+                              : "—"}
+                          </td>
+                          <td>
+                            <SourceLink
+                              id={record?.source_id}
+                              sources={sources}
+                            />
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </article>
+            <article className="analysis-card analysis-reading">
+              <header>
+                <div className="analysis-card-title">
+                  <Sparkles size={24} />
+                  <h2>Lectura de los datos</h2>
+                </div>
+                <span className="analysis-chip">Cálculo verificable</span>
+              </header>
+              <div className="analysis-reading-summary">
+                <BarChart3 size={22} />
+                <div>
+                  <h3>
+                    {estimated
+                      ? "Estimación seleccionada"
+                      : "Resumen del periodo seleccionado"}
+                  </h3>
+                  <p>{summary}</p>
+                </div>
+              </div>
+              <ol className="analysis-findings">
+                <li>
+                  <span>1</span>
+                  <div>
+                    <h3>Fuente común</h3>
+                    <p>
+                      {estimated
+                        ? `Corrida ${forecast?.id ?? "—"}, modelo ${forecast?.provenance.model_name ?? "—"}.`
+                        : `${number(current?.voter_count)} votantes (SV) y ${number(current?.nonvoter_count)} no votantes (NV), ${year}.`}
+                    </p>
+                  </div>
+                </li>
+                <li>
+                  <span>2</span>
+                  <div>
+                    <h3>Incertidumbre y comparabilidad</h3>
+                    <p>
+                      {estimated
+                        ? "La banda no garantiza cobertura futura ni certeza del nivel de riesgo."
+                        : "Solo se comparan elecciones del mismo tipo. NS no entra en el denominador de las tasas."}
+                    </p>
+                  </div>
+                </li>
+                <li>
+                  <span>3</span>
+                  <div>
+                    <h3>Contexto para interpretar</h3>
+                    <p>
+                      Estos patrones no demuestran causalidad. No hay cifras
+                      municipales en esta vista.
+                    </p>
+                  </div>
+                </li>
+              </ol>
+              <Dialog.Root>
+                <Dialog.Trigger asChild>
+                  <button className="analysis-ask">
+                    Preguntar a la IA <ArrowUpRight size={16} />
+                  </button>
+                </Dialog.Trigger>
+                <Dialog.Portal>
+                  <Dialog.Overlay className="dialog-overlay" />
+                  <Dialog.Content className="dialog-content analysis-question">
+                    <Dialog.Title>Explora esta lectura</Dialog.Title>
+                    <Dialog.Description>
+                      El asistente consulta el histórico estatal y el pronóstico
+                      de la misma entidad. Distingue observaciones de
+                      estimaciones y no genera pronósticos nuevos.
+                    </Dialog.Description>
+                    <p>{summary}</p>
+                    <form
+                      onSubmit={async (event) => {
+                        event.preventDefault();
+                        if (asking || !question.trim()) return;
+                        setAsking(true);
+                        setReply(null);
+                        try {
+                          const response = await fetch("/api/assistant", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                              state_code: selected,
+                              messages: [
+                                {
+                                  role: "user",
+                                  content: `Vista: ${estimated ? `estimación ${labelYear}` : `histórico oficial ${period}, ${electionType}`}. Distingue tasas observadas y predicción. ${question.trim()}`,
+                                },
+                              ],
+                            }),
+                          });
+                          const result = await response.json();
+                          if (!response.ok)
+                            throw new Error(
+                              result.detail ?? "No se pudo consultar la IA.",
+                            );
+                          setReply({
+                            context,
+                            text: result.answer,
+                            model: result.model,
+                          });
+                        } catch (failure) {
+                          setReply({
+                            context,
+                            text:
+                              failure instanceof Error
+                                ? failure.message
+                                : "No se pudo consultar la IA.",
+                          });
+                        } finally {
+                          setAsking(false);
+                        }
+                      }}
+                    >
+                      <label>
+                        Tu pregunta
+                        <input
+                          value={question}
+                          onChange={(event) => setQuestion(event.target.value)}
+                          placeholder="Pregunta sobre esta entidad…"
+                          required
+                          maxLength={2000}
+                        />
+                      </label>
+                      <button
+                        className="analysis-export"
+                        type="submit"
+                        disabled={asking || !question.trim()}
+                      >
+                        {asking ? "Consultando…" : "Consultar a la IA"}
+                      </button>
+                    </form>
+                    {answer && (
+                      <div role="status">
+                        <p>{answer.text}</p>
+                        {answer.model && <small>IA · {answer.model}</small>}
+                      </div>
+                    )}
+                    <button className="analysis-ask" onClick={onLaboratory}>
+                      Abrir laboratorio de modelos <ArrowUpRight size={15} />
+                    </button>
+                    <Dialog.Close
+                      className="analysis-dialog-close"
+                      aria-label="Cerrar lectura"
+                    >
+                      <X size={18} />
+                    </Dialog.Close>
+                  </Dialog.Content>
+                </Dialog.Portal>
+              </Dialog.Root>
+            </article>
+          </div>
+          <div className="analysis-bottom-grid">
+            <article className="analysis-card analysis-comparison">
+              <header>
+                <div className="analysis-card-title">
+                  <BarChart3 size={19} />
+                  <h2>Comparativa estatal {labelYear}</h2>
+                </div>
+                <DashboardSelect
+                  aria-label="Orden de participación"
+                  value={sort}
+                  onChange={(event) => {
+                    setSort(event.target.value);
+                    setPage(1);
                   }}
                 >
-                  <label>
-                    Tu pregunta
-                    <input
-                      value={question}
-                      onChange={(e) => setQuestion(e.target.value)}
-                      placeholder="¿Qué territorio tiene mayor participación?"
-                      required
-                    />
-                  </label>
-                  <button
-                    type="submit"
-                    className="analysis-export"
-                    disabled={asking}
-                  >
-                    {asking ? "Consultando…" : "Consultar a la IA"}
-                  </button>
-                </form>
-                {answer && (
-                  <div role="status">
-                    <p>{answer.text}</p>
-                    {answer.model && <small>IA · {answer.model}</small>}
-                  </div>
-                )}
-                <button className="analysis-ask" onClick={onLaboratory}>
-                  Abrir laboratorio de modelos <ArrowUpRight size={15} />
-                </button>
-                <Dialog.Close
-                  className="analysis-dialog-close"
-                  aria-label="Cerrar lectura"
-                >
-                  <X size={18} />
-                </Dialog.Close>
-              </Dialog.Content>
-            </Dialog.Portal>
-          </Dialog.Root>
-        </article>
-      </div>
-      <div className="analysis-bottom-grid">
-        <article className="analysis-card analysis-comparison">
-          <header>
-            <div className="analysis-card-title">
-              <span>
-                <BarChart3 size={19} />
-              </span>
-              <h2>
-                {level === "municipality"
-                  ? "Comparativa municipal"
-                  : "Comparativa territorial"}
-              </h2>
-            </div>
-            <DashboardSelect
-              aria-label="Orden de participación"
-              value={sort}
-              onChange={(e) => setSort(e.target.value)}
-            >
-              <option value="highest">Mayor participación</option>
-              <option value="lowest">Menor participación</option>
-              <option value="name">Nombre del municipio</option>
-            </DashboardSelect>
-          </header>
-          <div className="analysis-bars">
-            {rows.map((row) => (
-              <div key={row.name}>
-                <span>{row.name}</span>
-                <div>
-                  <i style={{ width: `${row.value}%` }} />
-                </div>
-                <strong>{percent(row.value)}</strong>
-              </div>
-            ))}
-            {!rows.length && (
-              <p className="analysis-empty">No hay coincidencias.</p>
-            )}
-          </div>
-        </article>
-        <article className="analysis-card analysis-details">
-          <header>
-            <div className="analysis-card-title">
-              <span>
-                <FileText size={18} />
-              </span>
-              <h2>
-                {level === "municipality"
-                  ? "Detalle por municipio"
-                  : "Detalle territorial"}
-              </h2>
-            </div>
-            <label className="analysis-search">
-              <Search size={15} />
-              <input
-                aria-label="Buscar municipio del análisis"
-                placeholder={
-                  level === "municipality"
-                    ? "Buscar municipio…"
-                    : "Buscar territorio…"
-                }
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
-            </label>
-          </header>
-          <div className="analysis-table-scroll">
-            <table>
-              <thead>
-                <tr>
-                  <th>
-                    <button onClick={() => setSort("name")}>
-                      {level === "municipality" ? "Municipio" : "Territorio"} ↑
+                  <option value="highest">Mayor participación</option>
+                  <option value="lowest">Menor participación</option>
+                  <option value="name">Nombre del estado</option>
+                </DashboardSelect>
+              </header>
+              <div className="analysis-bars">
+                {rows.slice(0, 5).map((row) => (
+                  <div key={row.code}>
+                    <button
+                      onClick={() => onSelect(row.code)}
+                      aria-label={`Analizar ${row.name}`}
+                    >
+                      {row.name}
                     </button>
-                  </th>
-                  <th>Participación</th>
-                  <th>Abstención</th>
-                  <th>Cambio vs. {from}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((row) => (
-                  <tr key={row.name}>
-                    <td>{row.name}</td>
-                    <td>{percent(row.value)}</td>
-                    <td>{percent(100 - row.value)}</td>
-                    <td>
-                      <span
-                        className={`analysis-change-pill ${row.change < 0 ? "negative" : ""}`}
-                      >
-                        {points(row.change)}
-                      </span>
-                    </td>
-                  </tr>
+                    <div>
+                      <i
+                        style={{ width: `${(row.participation ?? 0) * 100}%` }}
+                      />
+                    </div>
+                    <strong>{pct(row.participation)}</strong>
+                  </div>
                 ))}
-              </tbody>
-            </table>
-            {!rows.length && (
-              <p className="analysis-empty">
-                {data.count === null
-                  ? "No hay desglose municipal disponible para este estado. Selecciona Nivel: Estado para consultar sus estadísticas."
-                  : "No hay municipios que coincidan con la búsqueda."}
+              </div>
+              <p className="section-card-note">
+                Primeras cinco entidades del orden elegido.{" "}
+                {estimated
+                  ? "Estimaciones experimentales."
+                  : "Tasas observadas del INE."}
               </p>
-            )}
+            </article>
+            <article className="analysis-card analysis-details">
+              <header>
+                <div className="analysis-card-title">
+                  <FileText size={18} />
+                  <h2>Detalle estatal {labelYear}</h2>
+                </div>
+                <label className="analysis-search">
+                  <Search size={15} />
+                  <input
+                    aria-label="Buscar estado del análisis"
+                    placeholder="Buscar estado…"
+                    value={search}
+                    onChange={(event) => {
+                      setSearch(event.target.value);
+                      setPage(1);
+                    }}
+                  />
+                </label>
+              </header>
+              <div className="analysis-table-scroll">
+                <table
+                  aria-label={`Detalle estatal ${estimated ? "estimado" : "observado"} ${labelYear}`}
+                >
+                  <thead>
+                    <tr>
+                      <th>Estado</th>
+                      <th>Participación</th>
+                      <th>Abstención</th>
+                      <th>
+                        {estimated
+                          ? "Banda de abstención"
+                          : `Cambio vs. ${from}`}
+                      </th>
+                      <th>{estimated ? "Riesgo relativo" : "Fuente"}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {visible.map((row) => (
+                      <tr key={row.code} aria-selected={row.code === selected}>
+                        <td>
+                          <button onClick={() => onSelect(row.code)}>
+                            {row.name}
+                          </button>
+                        </td>
+                        <td>{pct(row.participation)}</td>
+                        <td>{pct(row.abstention)}</td>
+                        <td>
+                          {estimated
+                            ? `${pct(row.prediction?.lower)} – ${pct(row.prediction?.upper)}`
+                            : from === year
+                              ? "—"
+                              : pp(row.change)}
+                        </td>
+                        <td>
+                          {estimated ? (
+                            row.prediction ? (
+                              riskLabels[row.prediction.risk_level]
+                            ) : (
+                              "—"
+                            )
+                          ) : (
+                            <SourceLink
+                              id={row.observed?.source_id}
+                              sources={sources}
+                            />
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {!rows.length && (
+                  <p className="analysis-empty">
+                    No hay estados que coincidan con la búsqueda.
+                  </p>
+                )}
+              </div>
+              <footer>
+                <span>
+                  {rows.length} entidades ·{" "}
+                  {estimated ? "Estimación experimental" : "INE CCPC oficial"}
+                </span>
+                <div>
+                  <button
+                    aria-label="Página anterior"
+                    disabled={currentPage === 1}
+                    onClick={() => setPage(currentPage - 1)}
+                  >
+                    <ChevronLeft size={15} />
+                  </button>
+                  <span>
+                    {currentPage} / {pages}
+                  </span>
+                  <button
+                    aria-label="Página siguiente"
+                    disabled={currentPage === pages}
+                    onClick={() => setPage(currentPage + 1)}
+                  >
+                    <ChevronRight size={15} />
+                  </button>
+                </div>
+              </footer>
+            </article>
           </div>
-          <footer>
-            <span>
-              {rows.length} de{" "}
-              {level === "municipality" ? (data.count ?? "—") : 1}{" "}
-              {level === "municipality" ? "municipios" : "entidades"}
-              <span className="analysis-sample-note">
-                {" "}
-                · muestra ilustrativa
-              </span>
-            </span>
-            <div>
-              <button disabled aria-label="Página anterior">
-                <ChevronLeft size={15} />
-              </button>
-              <span>1</span>
-              <button disabled aria-label="Página siguiente">
-                <ChevronRight size={15} />
-              </button>
-            </div>
-          </footer>
-        </article>
-      </div>
-      <div className="analysis-disclaimer">
-        <Info size={17} /> Datos de demostración · Cifras ilustrativas
-      </div>
+        </>
+      )}
     </section>
   );
 }
