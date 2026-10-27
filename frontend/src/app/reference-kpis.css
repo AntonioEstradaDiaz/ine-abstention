@@ -48,7 +48,7 @@
 }
 .reference-kpi-details {
   display: grid;
-  grid-template-columns: minmax(68px, 1fr) 70px minmax(50px, 0.85fr);
+  grid-template-columns: minmax(0, 1fr);
   align-items: center;
   gap: 10px;
 }
@@ -64,13 +64,14 @@
   font-weight: 800;
   letter-spacing: -0.5px;
   color: #0d172f;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 .reference-kpi-value > span {
   font-size: 12px;
   line-height: 16px;
   color: #7a89a5;
-  white-space: nowrap;
+  white-space: normal;
 }
 .reference-kpi-change {
   display: flex;
@@ -391,4 +392,17 @@
     grid-template-columns: minmax(64px, 1fr) 66px minmax(42px, 0.8fr);
     gap: 8px;
   }
+}
+
+/* Current cards contain measured values, without decorative trend columns. */
+.design-top .reference-kpi-details {
+  grid-template-columns: minmax(0, 1fr);
+}
+.design-top .reference-kpi-value strong {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  font-size: clamp(20px, 2vw, 28px);
+}
+.design-top .reference-kpi-value > span {
+  white-space: normal;
 }

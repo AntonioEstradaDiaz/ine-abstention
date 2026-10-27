@@ -37,7 +37,13 @@ export function AnalysisView({ onLaboratory }: { onLaboratory: () => void }) {
   const [sort, setSort] = useState("highest");
   const [search, setSearch] = useState("");
   const [question, setQuestion] = useState("");
-  const [answer, setAnswer] = useState("");
+  const [reply, setReply] = useState<{
+    context: string;
+    text: string;
+    model?: string;
+  } | null>(null);
+  const answerContext = `${territory}:${period}`;
+  const answer = reply?.context === answerContext ? reply : null;
   const [asking, setAsking] = useState(false);
   const data = demo[territory];
   const [from, to] = period.split("-").map(Number);
@@ -107,6 +113,7 @@ export function AnalysisView({ onLaboratory }: { onLaboratory: () => void }) {
     setMetric("participation");
     setSort("highest");
     setSearch("");
+    setReply(null);
   };
   const exportAnalysis = () => {
     const lines = [
@@ -155,7 +162,12 @@ export function AnalysisView({ onLaboratory }: { onLaboratory: () => void }) {
     },
     {
       label: level === "municipality" ? "Municipios" : "Entidades",
-      value: level === "municipality" ? (data.count === null ? "—" : String(data.count)) : "1",
+      value:
+        level === "municipality"
+          ? data.count === null
+            ? "—"
+            : String(data.count)
+          : "1",
       icon: MapPin,
       trend: "bars",
     },
@@ -188,7 +200,12 @@ export function AnalysisView({ onLaboratory }: { onLaboratory: () => void }) {
       >
         <Dialog.Root onOpenChange={() => setStateQuery("")}>
           <Dialog.Trigger asChild>
-            <button type="button" className="analysis-filter-icon" aria-label="Buscar estado para el análisis" title="Buscar estado">
+            <button
+              type="button"
+              className="analysis-filter-icon"
+              aria-label="Buscar estado para el análisis"
+              title="Buscar estado"
+            >
               <SlidersHorizontal size={19} aria-hidden="true" />
             </button>
           </Dialog.Trigger>
@@ -196,67 +213,144 @@ export function AnalysisView({ onLaboratory }: { onLaboratory: () => void }) {
             <Dialog.Overlay className="dialog-overlay" />
             <Dialog.Content className="dialog-content analysis-question analysis-state-search">
               <Dialog.Title>Buscar estado</Dialog.Title>
-              <Dialog.Description>Selecciona un estado para actualizar las métricas, la gráfica y el detalle municipal. Busca entre las 32 entidades federativas. Las cifras municipales se muestran solo cuando están disponibles.</Dialog.Description>
+              <Dialog.Description>
+                Selecciona un estado para actualizar las métricas, la gráfica y
+                el detalle municipal. Busca entre las 32 entidades federativas.
+                Las cifras municipales se muestran solo cuando están
+                disponibles.
+              </Dialog.Description>
               <label htmlFor="analysis-state-query">Nombre del estado</label>
-              <input id="analysis-state-query" placeholder="Escribe un estado…" value={stateQuery} onChange={(event) => setStateQuery(event.target.value)} autoComplete="off" />
+              <input
+                id="analysis-state-query"
+                placeholder="Escribe un estado…"
+                value={stateQuery}
+                onChange={(event) => setStateQuery(event.target.value)}
+                autoComplete="off"
+              />
               <div className="analysis-state-results" aria-live="polite">
-                {(Object.keys(demo) as Territory[]).filter((name) => name.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase().includes(stateQuery.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase().trim())).map((name) => (
-                  <Dialog.Close asChild key={name}>
-                    <button type="button" className="analysis-state-result" onClick={() => { setTerritory(name); if (demo[name].count === null) setLevel("state"); setSearch(""); setAnswer(""); }}>
-                      <MapPin size={20} aria-hidden="true" />
-                      <span><strong>{name}</strong><small>{demo[name].count === null ? "Datos estatales disponibles" : `${demo[name].count} municipios · Datos ilustrativos`}</small></span>
-                      <span className="analysis-state-action">{territory === name ? "Actual" : "Seleccionar"}</span>
-                    </button>
-                  </Dialog.Close>
-                ))}
-                {!(Object.keys(demo)).some((name) => name.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase().includes(stateQuery.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase().trim())) && <p role="status">No encontramos ese estado. Revisa el nombre o prueba con otro término.</p>}
+                {(Object.keys(demo) as Territory[])
+                  .filter((name) =>
+                    name
+                      .normalize("NFD")
+                      .replace(/\p{Diacritic}/gu, "")
+                      .toLowerCase()
+                      .includes(
+                        stateQuery
+                          .normalize("NFD")
+                          .replace(/\p{Diacritic}/gu, "")
+                          .toLowerCase()
+                          .trim(),
+                      ),
+                  )
+                  .map((name) => (
+                    <Dialog.Close asChild key={name}>
+                      <button
+                        type="button"
+                        className="analysis-state-result"
+                        onClick={() => {
+                          setTerritory(name);
+                          if (demo[name].count === null) setLevel("state");
+                          setSearch("");
+                          setReply(null);
+                        }}
+                      >
+                        <MapPin size={20} aria-hidden="true" />
+                        <span>
+                          <strong>{name}</strong>
+                          <small>
+                            {demo[name].count === null
+                              ? "Datos estatales disponibles"
+                              : `${demo[name].count} municipios · Datos ilustrativos`}
+                          </small>
+                        </span>
+                        <span className="analysis-state-action">
+                          {territory === name ? "Actual" : "Seleccionar"}
+                        </span>
+                      </button>
+                    </Dialog.Close>
+                  ))}
+                {!Object.keys(demo).some((name) =>
+                  name
+                    .normalize("NFD")
+                    .replace(/\p{Diacritic}/gu, "")
+                    .toLowerCase()
+                    .includes(
+                      stateQuery
+                        .normalize("NFD")
+                        .replace(/\p{Diacritic}/gu, "")
+                        .toLowerCase()
+                        .trim(),
+                    ),
+                ) && (
+                  <p role="status">
+                    No encontramos ese estado. Revisa el nombre o prueba con
+                    otro término.
+                  </p>
+                )}
               </div>
-              <Dialog.Close asChild><button className="analysis-dialog-close" aria-label="Cerrar búsqueda de estados"><X size={20} /></button></Dialog.Close>
+              <Dialog.Close asChild>
+                <button
+                  className="analysis-dialog-close"
+                  aria-label="Cerrar búsqueda de estados"
+                >
+                  <X size={20} />
+                </button>
+              </Dialog.Close>
             </Dialog.Content>
           </Dialog.Portal>
         </Dialog.Root>
         <div className="analysis-filter-options">
-        <DashboardSelect
-          aria-label="Territorio del análisis"
-          value={territory}
-          onChange={(e) => { setTerritory(e.target.value as Territory); if (demo[e.target.value].count === null) setLevel("state"); setSearch(""); }}
-        >
-          {Object.keys(demo).map((name) => (
-            <option key={name} value={name}>
-              {name}
-            </option>
-          ))}
-        </DashboardSelect>
-        <DashboardSelect
-          aria-label="Periodo del análisis"
-          value={period}
-          onChange={(e) => setPeriod(e.target.value)}
-        >
-          <option value="2018-2024">Periodo: 2018 – 2024</option>
-          <option value="2021-2024">Periodo: 2021 – 2024</option>
-          <option value="2018-2021">Periodo: 2018 – 2021</option>
-        </DashboardSelect>
-        <DashboardSelect
-          aria-label="Nivel del análisis"
-          value={level}
-          onChange={(e) => setLevel(e.target.value)}
-        >
-          <option value="municipality">Nivel: Municipio</option>
-          <option value="state">Nivel: Estado</option>
-        </DashboardSelect>
-        <DashboardSelect
-          aria-label="Comparación del análisis"
-          value={compare}
-          onChange={(e) => setCompare(e.target.value)}
-        >
-          <option value="national">Comparar: Nacional</option>
-          <option value="none">Sin comparación</option>
-        </DashboardSelect>
-        <button type="button" className="analysis-reset" onClick={reset} aria-label="Restablecer preferencias del análisis" title="Restablecer preferencias">
-          <span>
-            <RotateCw size={17} />
-          </span>
-        </button>
+          <DashboardSelect
+            aria-label="Territorio del análisis"
+            value={territory}
+            onChange={(e) => {
+              setTerritory(e.target.value as Territory);
+              if (demo[e.target.value].count === null) setLevel("state");
+              setSearch("");
+            }}
+          >
+            {Object.keys(demo).map((name) => (
+              <option key={name} value={name}>
+                {name}
+              </option>
+            ))}
+          </DashboardSelect>
+          <DashboardSelect
+            aria-label="Periodo del análisis"
+            value={period}
+            onChange={(e) => setPeriod(e.target.value)}
+          >
+            <option value="2018-2024">Periodo: 2018 – 2024</option>
+            <option value="2021-2024">Periodo: 2021 – 2024</option>
+            <option value="2018-2021">Periodo: 2018 – 2021</option>
+          </DashboardSelect>
+          <DashboardSelect
+            aria-label="Nivel del análisis"
+            value={level}
+            onChange={(e) => setLevel(e.target.value)}
+          >
+            <option value="municipality">Nivel: Municipio</option>
+            <option value="state">Nivel: Estado</option>
+          </DashboardSelect>
+          <DashboardSelect
+            aria-label="Comparación del análisis"
+            value={compare}
+            onChange={(e) => setCompare(e.target.value)}
+          >
+            <option value="national">Comparar: Nacional</option>
+            <option value="none">Sin comparación</option>
+          </DashboardSelect>
+          <button
+            type="button"
+            className="analysis-reset"
+            onClick={reset}
+            aria-label="Restablecer preferencias del análisis"
+            title="Restablecer preferencias"
+          >
+            <span>
+              <RotateCw size={17} />
+            </span>
+          </button>
         </div>
       </div>
       <div className="analysis-kpis">
@@ -467,13 +561,7 @@ export function AnalysisView({ onLaboratory }: { onLaboratory: () => void }) {
               style={{
                 top: Math.max(
                   4,
-                  25 +
-                    (1 -
-                      (chartValues.at(-1)! -
-                        0) /
-                        100) *
-                      188 -
-                    70,
+                  25 + (1 - (chartValues.at(-1)! - 0) / 100) * 188 - 70,
                 ),
               }}
             >
@@ -543,7 +631,9 @@ export function AnalysisView({ onLaboratory }: { onLaboratory: () => void }) {
               <Dialog.Content className="dialog-content analysis-question">
                 <Dialog.Title>Explora esta lectura</Dialog.Title>
                 <Dialog.Description>
-                  El asistente consulta el histórico estatal y el pronóstico del servidor. Las tarjetas ilustrativas pueden diferir de esos datos.
+                  El asistente consulta el histórico estatal y el pronóstico del
+                  servidor. Las tarjetas ilustrativas pueden diferir de esos
+                  datos.
                 </Dialog.Description>
                 <p>{summary}</p>
                 <form
@@ -551,21 +641,47 @@ export function AnalysisView({ onLaboratory }: { onLaboratory: () => void }) {
                     e.preventDefault();
                     if (asking) return;
                     setAsking(true);
-                    setAnswer("");
+                    setReply(null);
                     try {
-                      const state = stateCatalog.find((entry) => entry.name === territory);
-                      if (!state) throw new Error("No se encontró el código del estado.");
+                      const state = stateCatalog.find(
+                        (entry) => entry.name === territory,
+                      );
+                      if (!state)
+                        throw new Error("No se encontró el código del estado.");
                       const response = await fetch("/api/assistant", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ state_code: state.code, messages: [{ role: "user", content: `Periodo seleccionado: ${from}–${to}. ${question}` }] }),
+                        body: JSON.stringify({
+                          state_code: state.code,
+                          messages: [
+                            {
+                              role: "user",
+                              content: `Periodo seleccionado: ${from}–${to}. ${question}`,
+                            },
+                          ],
+                        }),
                       });
                       const reply = await response.json();
-                      if (!response.ok) throw new Error(reply.detail ?? "No se pudo consultar la IA.");
-                      setAnswer(reply.answer);
+                      if (!response.ok)
+                        throw new Error(
+                          reply.detail ?? "No se pudo consultar la IA.",
+                        );
+                      setReply({
+                        context: answerContext,
+                        text: reply.answer,
+                        model: reply.model,
+                      });
                     } catch (error) {
-                      setAnswer(error instanceof Error ? error.message : "No se pudo consultar la IA.");
-                    } finally { setAsking(false); }
+                      setReply({
+                        context: answerContext,
+                        text:
+                          error instanceof Error
+                            ? error.message
+                            : "No se pudo consultar la IA.",
+                      });
+                    } finally {
+                      setAsking(false);
+                    }
                   }}
                 >
                   <label>
@@ -577,11 +693,20 @@ export function AnalysisView({ onLaboratory }: { onLaboratory: () => void }) {
                       required
                     />
                   </label>
-                  <button type="submit" className="analysis-export" disabled={asking}>
+                  <button
+                    type="submit"
+                    className="analysis-export"
+                    disabled={asking}
+                  >
                     {asking ? "Consultando…" : "Consultar a la IA"}
                   </button>
                 </form>
-                {answer && <p role="status">{answer}</p>}
+                {answer && (
+                  <div role="status">
+                    <p>{answer.text}</p>
+                    {answer.model && <small>IA · {answer.model}</small>}
+                  </div>
+                )}
                 <button className="analysis-ask" onClick={onLaboratory}>
                   Abrir laboratorio de modelos <ArrowUpRight size={15} />
                 </button>
@@ -693,13 +818,16 @@ export function AnalysisView({ onLaboratory }: { onLaboratory: () => void }) {
             </table>
             {!rows.length && (
               <p className="analysis-empty">
-                {data.count === null ? "No hay desglose municipal disponible para este estado. Selecciona Nivel: Estado para consultar sus estadísticas." : "No hay municipios que coincidan con la búsqueda."}
+                {data.count === null
+                  ? "No hay desglose municipal disponible para este estado. Selecciona Nivel: Estado para consultar sus estadísticas."
+                  : "No hay municipios que coincidan con la búsqueda."}
               </p>
             )}
           </div>
           <footer>
             <span>
-              {rows.length} de {level === "municipality" ? (data.count ?? "—") : 1}{" "}
+              {rows.length} de{" "}
+              {level === "municipality" ? (data.count ?? "—") : 1}{" "}
               {level === "municipality" ? "municipios" : "entidades"}
               <span className="analysis-sample-note">
                 {" "}

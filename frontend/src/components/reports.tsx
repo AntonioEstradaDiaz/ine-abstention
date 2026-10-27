@@ -5,7 +5,6 @@ import {
   BarChart3,
   CalendarClock,
   ChartPie,
-  ChevronLeft,
   ChevronRight,
   Clock,
   Download,
@@ -110,10 +109,8 @@ export function Reports({
   const [code, setCode] = useState(selected);
   const [variable, setVariable] = useState("abstention");
   const [compare, setCompare] = useState("national");
-  const [included, setIncluded] = useState(["summary", "charts", "factors"]);
+  const [included, setIncluded] = useState(["summary", "charts"]);
   const [format, setFormat] = useState("pdf");
-  const [page, setPage] = useState(1);
-  const [active, setActive] = useState([true, false, true]);
   const [recent, setRecent] = useState<Recent[]>([]);
   const history = useQuery({
     queryKey: ["history", code],
@@ -156,7 +153,6 @@ export function Reports({
     null;
   const last2021 = rows.find((r) => r.year === 2021);
   const context = state.explanation.context_only;
-  const pages = 1 + included.length + 1;
   const findings = [
     `La abstención estimada para 2027 en ${name} es ${pct(state.predicted)}, con riesgo ${riskLabels[state.risk_level].toLowerCase()}.`,
     `Ocupa el lugar ${rank} de ${states.length} entidades por abstención estimada.`,
@@ -266,7 +262,7 @@ export function Reports({
             <FileText className="section-card-icon" aria-hidden="true" />
             <div>
               <h2 id="report-config-title">Configura tu reporte</h2>
-              <p>Selecciona los parámetros para generar un reporte.</p>
+              <p>Configura una vista previa estatal. No se generan archivos.</p>
             </div>
           </header>
           <label className="data-field">
@@ -277,7 +273,15 @@ export function Reports({
               onChange={(e) => setTemplate(e.target.value)}
             >
               {templates.map((t) => (
-                <option key={t.id} value={t.id}>
+                <option
+                  key={t.id}
+                  value={t.id}
+                  disabled={
+                    t.id === "national" ||
+                    t.id === "municipal" ||
+                    t.id === "scenarios"
+                  }
+                >
                   {t.title}
                 </option>
               ))}
@@ -299,12 +303,20 @@ export function Reports({
                   type="button"
                   key={id}
                   aria-pressed={level === id}
+                  disabled={id !== "state"}
+                  title={
+                    id !== "state" ? "Pendiente de implementación" : undefined
+                  }
                   onClick={() => setLevel(id)}
                 >
                   {label}
                 </button>
               ))}
             </div>
+            <p className="section-card-note">
+              Los reportes nacionales y municipales están pendientes. Estas
+              cifras corresponden a la entidad elegida.
+            </p>
           </div>
           <label className="data-field">
             <span>Entidad</span>
@@ -351,6 +363,7 @@ export function Reports({
                 <input
                   type="checkbox"
                   checked={included.includes(s.id)}
+                  disabled={s.id === "factors" || s.id === "notes"}
                   onChange={(e) =>
                     setIncluded((list) =>
                       e.target.checked
@@ -359,12 +372,17 @@ export function Reports({
                     )
                   }
                 />
-                <span>{s.label}</span>
+                <span>
+                  {s.label}
+                  {s.id === "factors" || s.id === "notes"
+                    ? " · Próximamente"
+                    : ""}
+                </span>
               </label>
             ))}
           </fieldset>
           <fieldset>
-            <legend>Formato de salida</legend>
+            <legend>Formatos previstos · aún no disponibles</legend>
             {[
               ["pdf", "PDF (recomendado)"],
               ["pptx", "PowerPoint"],
@@ -375,6 +393,7 @@ export function Reports({
                   type="radio"
                   name="report-format"
                   checked={format === id}
+                  disabled
                   onChange={() => setFormat(id)}
                 />
                 <span>{label}</span>
@@ -383,7 +402,7 @@ export function Reports({
           </fieldset>
           <Button className="report-generate" onClick={generate}>
             <FileText size={16} />
-            Generar reporte
+            Guardar vista previa
           </Button>
           <p className="section-card-note">
             Vista de diseño: la generación de archivos se habilitará más
@@ -399,28 +418,10 @@ export function Reports({
             <Eye className="section-card-icon" aria-hidden="true" />
             <div>
               <h2 id="report-preview-title">Vista previa del reporte</h2>
-              <p>Revisa el contenido y la estructura antes de generarlo.</p>
-            </div>
-            <div className="section-card-actions report-pager">
-              <button
-                type="button"
-                aria-label="Página anterior"
-                disabled={page === 1}
-                onClick={() => setPage(page - 1)}
-              >
-                <ChevronLeft size={16} />
-              </button>
-              <span>
-                {Math.min(page, pages)} / {pages}
-              </span>
-              <button
-                type="button"
-                aria-label="Página siguiente"
-                disabled={page >= pages}
-                onClick={() => setPage(page + 1)}
-              >
-                <ChevronRight size={16} />
-              </button>
+              <p>
+                Vista continua del contenido estatal; sin paginación ni archivo
+                descargable.
+              </p>
             </div>
           </header>
           <article className="report-document">
@@ -612,6 +613,11 @@ export function Reports({
                   <button
                     type="button"
                     aria-pressed={template === t.id}
+                    disabled={
+                      t.id === "national" ||
+                      t.id === "municipal" ||
+                      t.id === "scenarios"
+                    }
                     onClick={() => {
                       setTemplate(t.id);
                       if (t.id === "national") setLevel("national");
@@ -624,7 +630,14 @@ export function Reports({
                     </span>
                     <div>
                       <strong>{t.title}</strong>
-                      <small>{t.text}</small>
+                      <small>
+                        {t.text}
+                        {t.id === "national" ||
+                        t.id === "municipal" ||
+                        t.id === "scenarios"
+                          ? " Próximamente."
+                          : ""}
+                      </small>
                     </div>
                     <ChevronRight aria-hidden="true" />
                   </button>
@@ -648,7 +661,7 @@ export function Reports({
               </button>
             </header>
             <ul>
-              {schedules.map((s, i) => (
+              {schedules.map((s) => (
                 <li key={s.title}>
                   <CalendarClock aria-hidden="true" />
                   <div>
@@ -658,12 +671,10 @@ export function Reports({
                   <button
                     type="button"
                     role="switch"
-                    aria-checked={active[i]}
+                    aria-checked={false}
                     aria-label={`Activar ${s.title}`}
                     className="report-switch"
-                    onClick={() =>
-                      setActive((a) => a.map((v, j) => (j === i ? !v : v)))
-                    }
+                    disabled
                   >
                     <i />
                   </button>
@@ -682,8 +693,11 @@ export function Reports({
             <header className="section-card-heading">
               <Clock className="section-card-icon" aria-hidden="true" />
               <div>
-                <h2 id="recent-title">Reportes recientes</h2>
-                <p>Consulta los reportes que generaste en esta sesión.</p>
+                <h2 id="recent-title">Vistas previas de esta sesión</h2>
+                <p>
+                  Registro temporal de configuraciones; no conserva documentos
+                  ni permite descargarlos.
+                </p>
               </div>
             </header>
             {recent.length ? (
@@ -693,7 +707,7 @@ export function Reports({
                     <th>Nombre</th>
                     <th>Entidad</th>
                     <th>Fecha</th>
-                    <th>Formato</th>
+                    <th>Formato previsto</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -718,8 +732,8 @@ export function Reports({
             ) : (
               <p className="report-empty">
                 <SlidersHorizontal aria-hidden="true" />
-                Aún no generas reportes. Configura uno y pulsa “Generar
-                reporte”.
+                Aún no guardas vistas previas. Configura una y pulsa “Guardar
+                vista previa”.
               </p>
             )}
           </section>

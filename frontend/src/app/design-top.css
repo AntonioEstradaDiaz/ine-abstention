@@ -1291,3 +1291,19 @@ button {
     padding-inline: 9px;
   }
 }
+
+.mobile-section-nav {
+  display: none;
+}
+@media (max-width: 1180px) {
+  .design-top .mobile-section-nav {
+    display: block;
+    padding: 12px 20px;
+    background: #fff;
+    border-bottom: 1px solid #e8ecf1;
+  }
+  .mobile-section-nav .dashboard-select-trigger {
+    width: 100%;
+    min-height: 44px;
+  }
+}

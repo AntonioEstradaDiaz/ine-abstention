@@ -1,6 +1,7 @@
 "use client";
 import { ElectoralKpis } from "./electoral-kpis";
 import { DashboardSelect } from "./ui/dashboard-select";
+import type { Prediction } from "@/lib/types";
 const imgBell = "/design-top/7872e.svg";
 const imgCalendarDays = "/design-top/b20a3.svg";
 const imgClipboardList = "/design-top/e1ab8.svg";
@@ -27,6 +28,8 @@ export interface PageHeading {
   subtitle: string;
 }
 interface Props {
+  states?: Prediction[];
+  selected?: string;
   view: View;
   heading?: PageHeading;
   // Replaces the search tools beside the title; null leaves the space empty.
@@ -42,6 +45,8 @@ interface Props {
   onSearchSubmit: () => void;
 }
 export function DesignTop({
+  states,
+  selected,
   view,
   heading,
   aside,
@@ -347,6 +352,22 @@ export function DesignTop({
           </form>
         </div>
       </div>
+      <nav className="mobile-section-nav" aria-label="Navegación de secciones">
+        <DashboardSelect
+          aria-label="Sección de la aplicación"
+          value={view}
+          onChange={(event) => onNavigate(event.target.value as View)}
+        >
+          <option value="map">Mapa de riesgo</option>
+          <option value="trends">Tendencias</option>
+          <option value="ml">Análisis IA</option>
+          <option value="laboratory">Laboratorio de modelos</option>
+          <option value="predictions">Predicciones</option>
+          <option value="scenarios">Escenarios</option>
+          <option value="reports">Reportes</option>
+          <option value="data">Datos</option>
+        </DashboardSelect>
+      </nav>
       <div
         className="content-stretch flex flex-col gap-[13px] items-start overflow-clip pb-[27px] pt-[23px] px-[40px] relative shrink-0 w-full"
         data-node-id="10:12511"
@@ -452,7 +473,9 @@ export function DesignTop({
               </div>
             )}
           </div>
-          {view === "map" && <ElectoralKpis />}
+          {view === "map" && (
+            <ElectoralKpis states={states} selected={selected} />
+          )}
         </div>
       </div>
     </div>

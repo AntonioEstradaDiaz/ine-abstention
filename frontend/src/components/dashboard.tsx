@@ -80,7 +80,7 @@ const sections = [
     id: "reports" as const,
     label: "Reportes",
     icon: FileText,
-    subtitle: "Consulta y descarga reportes con datos oficiales del INE.",
+    subtitle: "Configura vistas previas estatales con datos oficiales del INE.",
   },
   {
     id: "data" as const,
@@ -113,7 +113,7 @@ const headings: Partial<Record<View, PageHeading>> = {
     lead: "Reportes y",
     highlight: "Documentos",
     subtitle:
-      "Genera, personaliza y descarga reportes sobre la abstención electoral con información confiable y actualizada.",
+      "Explora vistas previas estatales. La generación de archivos y los envíos programados están pendientes.",
   },
   data: {
     lead: "Gestión de",
@@ -182,6 +182,8 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
         Ir al contenido
       </a>
       <DesignTop
+        states={items}
+        selected={selected}
         view={view}
         heading={headings[view]}
         aside={
@@ -439,9 +441,6 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
           )}
           <footer className="page-footer">
             <Methodology sources={sources.data?.items} />
-            {view === "map" && (
-              <span>Tarjetas superiores: valores del diseño</span>
-            )}
             <span role="status" data-connected={predictions.isSuccess}>
               {predictions.isSuccess
                 ? preview
