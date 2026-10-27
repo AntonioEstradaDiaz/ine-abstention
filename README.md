@@ -7,6 +7,17 @@ Es un **prototipo experimental**, sin aval institucional del INE y sin validaci�
 **Demo:** [pulso-electoral-demo.vercel.app](https://pulso-electoral-demo.vercel.app).
 Requiere una cuenta confirmada de Supabase Auth. El login es público; el dashboard y sus APIs requieren sesión.
 
+### Acceso de prueba para el hackathon
+
+Entrar en [la demo](https://pulso-electoral-demo.vercel.app/login) con una de las dos cuentas confirmadas:
+
+- `pulso.qa.20261025.1@example.com`
+- `pulso.qa.20261025.2@example.com`
+
+Ambas cuentas son usuarios normales de la aplicación. Solicitar la contraseña al equipo por un
+canal privado; no se publica en este repositorio. Los correos son ficticios y no reciben enlaces
+de recuperación. La creación y las pruebas de acceso están documentadas en [Auth](frontend/AUTH.md).
+
 ## Estado actual: demo publicada, producto todavía incompleto
 
 La demo corre en Vercel Hobby con Next.js, Supabase Auth y Groq reales. Usa `PULSO_PREVIEW=1`:
@@ -29,15 +40,15 @@ en producción. Las pruebas reales de IA y sus límites de cuota se detallan en 
 | --- | --- | --- |
 | Mapa de riesgo | Cartografía de los 32 estados, selección territorial, estimación 2027, histórico y detalle con cuatro pestañas. | Los límites INEGI son geoestadísticos, no electorales históricos. Los indicadores superiores se corrigieron para usar pronósticos reales del estado seleccionado. |
 | Tendencias | Comparación de hasta tres estados, participación/abstención y tabla de procedencia. | Se separan intermedias y presidenciales; no hay series municipales homologadas. Acceso desde «Comparar históricos» en el mapa. |
-| Análisis IA | Filtros, búsqueda municipal, CSV y consulta estatal a Groq. | Las tarjetas, comparaciones municipales y síntesis de esta pantalla son **ilustrativas**. La respuesta de Groq consulta datos estatales reales y puede diferir de ellas. |
+| Análisis IA | Histórico oficial estatal, nacional ponderado, estimación 2027, búsqueda, CSV trazable y consulta estatal a Groq. | Comparte estado/año y APIs con el mapa; el pronóstico usa la misma corrida que Predicciones. No muestra cifras municipales sin homologación. |
 | Laboratorio de modelos | Dos referencias y cuatro modelos ML, métricas temporales, pronósticos para 32 estados, importancia global y escenarios locales. Exporta CSV/JSON. | Entrenamiento previo, no por solicitud. La síntesis automática no es una consulta a IA. Acceso desde Análisis → Preguntar a la IA → Abrir laboratorio de modelos. |
 | Predicciones | Baseline estatal 2027, banda, contexto histórico, errores temporales y asistente Groq. | Las bandas no garantizan cobertura futura; no predice municipios ni efectos de intervenciones. |
 | Escenarios | Cambio supuesto de participación, límites 0–100%, comparación y descarte de resultados al cambiar parámetros. | Demo: cálculo sobre instantánea, sin persistencia. Backend conectado: guarda la simulación. |
 | Reportes | Vista previa estatal, entidad, variable, comparación, gráficas y hallazgos. | PDF, PowerPoint, Excel, envíos automáticos y reportes nacionales/municipales pendientes. Se corrigieron controles que aparentaban generar archivos o páginas. |
 | Datos | Filtros, búsqueda, orden, paginación, selección de filas, CSV/JSON, diccionario y procedencia. | Datos nacionales/estatales oficiales; municipal es una muestra ilustrativa. Subir archivos está pendiente. Actualizar fuentes vuelve a consultar los datos disponibles; no descarga nuevas elecciones del INE. |
 
-Los pronósticos de Mapa, Predicciones y Escenarios comparten estado seleccionado. Análisis tiene su
-propio selector ilustrativo. El laboratorio usa la selección territorial del dashboard.
+Mapa, Análisis, Predicciones y Escenarios comparten estado seleccionado; Análisis y el histórico del
+mapa también comparten año. El laboratorio usa la selección territorial del dashboard.
 La corrección móvil incorpora un selector con las ocho secciones, porque la barra de escritorio
 se oculta en pantallas estrechas.
 Los avisos de notificaciones y varios elementos visuales siguen siendo referencias del diseño.
@@ -46,6 +57,41 @@ Los avisos de notificaciones y varios elementos visuales siguen siendo referenci
 
 [Vista móvil con selector de secciones](docs/screenshots/audit-mobile-20261026.png).
 Estas capturas corresponden a la versión local corregida, no a un nuevo despliegue.
+
+### Actualización de Análisis con datos oficiales
+
+La nueva implementación elimina `municipalDemo`, las tasas nacionales fijas y los cambios de
+participación inventados de Análisis. Usa `/api/backend/statistics/territories`,
+`participation/history` y `statistics/summary`; funciona tanto con FastAPI como con la instantánea
+oficial de la demo. No se descarga ni entrena un conjunto nuevo por solicitud.
+
+- **Histórico observado:** participación `SV/(SV+NV)`, abstención `NV/(SV+NV)` y NS separado.
+  Cambios y gráficas comparan exclusivamente elecciones del mismo tipo: presidenciales
+  2012/2018/2024 o intermedias 2009/2015/2021. El nacional suma conteos, no promedia porcentajes estatales.
+- **Estimación 2027:** usa exactamente las tasas, banda, categoría y corrida que Mapa y Predicciones;
+  se identifica como experimental. No inventa un pronóstico nacional ponderado.
+- Seleccionar una entidad en Análisis actualiza la selección del mapa y Predicciones. La búsqueda,
+  comparación y exportación son estatales; el CSV incluye conteos/fuente para observaciones o
+  corrida/modelo/banda para estimaciones. La lectura automática se distingue de una respuesta de IA.
+- Las tasas observadas de 2024 no deben igualarse al pronóstico de 2027: para Morelos son
+  38.6% de abstención observada frente a 48.1% estimada. Coinciden al comparar el mismo modo,
+  estado y año entre secciones. Ante errores o datos ausentes no se sustituyen cifras ilustrativas.
+
+El alcance de verificación de esta actualización es local: API Docker e instantánea del repositorio.
+Las pruebas reales de producción de la siguiente sección describen el despliegue anterior a este cambio.
+
+Consistencia comprobada al seleccionar la misma entidad y modo en Análisis, Mapa y Predicciones:
+
+| Entidad | Participación observada 2024 | Abstención observada 2024 | Abstención estimada 2027 |
+| --- | --- | --- | --- |
+| Morelos | 61.4% | 38.6% | 48.1% |
+| Baja California | 47.0% | 53.0% | 62.4% |
+| Guerrero | 56.7% | 43.3% | 43.7% |
+
+Se contrastaron los conteos de las 32 entidades, el nacional ponderado, periodos comparables,
+exportación de CSV y errores sin sustitución por datos ficticios.
+[Análisis oficial en escritorio](docs/screenshots/analysis-official-desktop.png) ·
+[Versión móvil](docs/screenshots/analysis-official-mobile.png).
 
 ## Pruebas reales en producción
 
@@ -223,9 +269,10 @@ Las de navegador requieren backend local y frontend con Auth de prueba configura
 Playwright levanta una fixture Auth local; **no demuestra que funcione el correo de Supabase real**.
 No apuntar esa fixture a producción ni publicar su estado de sesión.
 
-Validación local de esta revisión: **9 pruebas unitarias y 25 pruebas de navegador aprobadas**,
-compilación de producción y TypeScript correctos. Incluye navegación móvil por las ocho vistas,
-tarjetas del mapa ligadas a datos, controles pendientes de Reportes y contexto de respuestas de IA.
+Validación local con Análisis oficial: **11 pruebas unitarias y 27 pruebas de navegador aprobadas**,
+más **3 pruebas de navegador en modo instantánea**, compilación de producción y TypeScript correctos.
+Incluye consistencia entre secciones, nacional ponderado, CSV oficial, navegación móvil, errores,
+controles pendientes de Reportes y contexto de respuestas de IA.
 
 GitHub Actions comprueba backend (unitarias, ML e integración) y frontend (unidades, tipos,
 compilación y navegador). Vercel genera previews de ramas y despliega `main` automáticamente.
@@ -238,8 +285,8 @@ HTTP 200 en login, redirección 307 al entrar sin sesión y 401 en las dos APIs 
    revisión del aviso de privacidad, ayuda y términos; roles y permisos si habrá usuarios con distinto acceso.
 2. **Datos y persistencia en producción:** desplegar FastAPI y conectarlo a una base preparada;
    proteger la API, guardar escenarios por usuario y permitir historial. Hoy la URL usa una instantánea.
-3. **Eliminar demostraciones visuales:** conectar Análisis a estadísticas oficiales comparables,
-   sustituir muestras municipales por datos homologados y retirar notificaciones ficticias.
+3. **Eliminar demostraciones visuales:** sustituir la muestra municipal que permanece en Datos
+   por registros homologados y retirar notificaciones ficticias.
 4. **Reportes reales:** generar y descargar PDF/PPTX/XLSX, implementar contenido nacional/municipal,
    historial persistente, notas/factores y programación de envíos.
 5. **Operación:** límites de solicitudes y cuota por usuario para IA, monitoreo de errores,

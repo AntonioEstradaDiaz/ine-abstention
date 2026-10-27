@@ -199,7 +199,7 @@ test("analysis does not reuse an AI answer for another state or period", async (
   await page.route("**/api/assistant", (route) =>
     route.fulfill({
       json: {
-        answer: "Respuesta exclusiva de Guerrero 2018–2024.",
+        answer: "Respuesta exclusiva de Morelos 2018–2024.",
         model: "test-model",
       },
     }),
@@ -215,7 +215,7 @@ test("analysis does not reuse an AI answer for another state or period", async (
     .getByRole("button", { name: "Consultar a la IA", exact: true })
     .click();
   await expect(page.getByRole("status")).toContainText(
-    "Respuesta exclusiva de Guerrero",
+    "Respuesta exclusiva de Morelos",
   );
   await expect(page.getByRole("status")).toContainText("IA · test-model");
   await page
@@ -225,13 +225,13 @@ test("analysis does not reuse an AI answer for another state or period", async (
     .getByRole("combobox", { name: "Periodo del análisis", exact: true })
     .click();
   await page
-    .getByRole("option", { name: "Periodo: 2021 – 2024", exact: true })
+    .getByRole("option", { name: "Periodo: 2012 – 2024", exact: true })
     .click();
   await page
     .getByRole("button", { name: "Preguntar a la IA", exact: true })
     .click();
   await expect(
-    page.getByText("Respuesta exclusiva de Guerrero 2018–2024.", {
+    page.getByText("Respuesta exclusiva de Morelos 2018–2024.", {
       exact: true,
     }),
   ).toHaveCount(0);

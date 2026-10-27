@@ -411,7 +411,23 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
             />
           )}
           {view === "ml" && (
-            <AnalysisView onLaboratory={() => setView("laboratory")} />
+            <AnalysisView
+              selected={selected}
+              onSelect={setSelected}
+              year={year}
+              onYear={setYear}
+              states={items ?? []}
+              forecast={forecast}
+              elections={elections.data ?? []}
+              sources={sources.data?.items}
+              loading={predictions.isPending || elections.isPending}
+              error={predictions.error ?? elections.error}
+              retry={() => {
+                void predictions.refetch();
+                void elections.refetch();
+              }}
+              onLaboratory={() => setView("laboratory")}
+            />
           )}
           {view === "laboratory" && <MLLaboratoryView selected={selected} />}
           {view === "reports" && (
