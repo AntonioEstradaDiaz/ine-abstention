@@ -47,6 +47,8 @@ export function PredictionsView({
     queryKey: ["history", p?.state_code],
     queryFn: ({ signal }) => api.history(p!.state_code, signal),
     enabled: !!p,
+    refetchInterval: 60_000,
+    refetchOnWindowFocus: true,
   });
   const run = forecast?.provenance.model_run_id;
   const metrics = useQuery({
@@ -66,6 +68,7 @@ export function PredictionsView({
       p && forecast && history.data
         ? buildAssistantContext({
             prediction: p,
+            forecast,
             states,
             history: history.data.items,
             thresholds: forecast.calibration.risk.thresholds,
