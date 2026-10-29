@@ -1,0 +1,26 @@
+/* Punto 6: diagnóstico compacto acorde con el diseño blanco/rosa pastel PULSO */
+.forecast-validation { margin: 20px 0; padding: clamp(18px,3vw,28px); border-radius: 22px; }
+.validation-heading { display:flex; align-items:center; flex-wrap:wrap; gap:14px; margin-bottom:20px; }
+.validation-icon { display:grid; place-items:center; width:46px; height:46px; flex-shrink:0; border-radius:15px; background:#fce7f2; color:#b80060; border:1px solid #f2cade; }
+.validation-heading > div { flex:1; min-width:200px; }
+.validation-heading h2 { font-size:clamp(17px,2vw,22px); font-weight:800; color:#0d172f; }
+.validation-heading p { color:#66758c; font-size:12px; }
+.validation-eyebrow { color:#a9005b; font-size:10px; font-weight:750; letter-spacing:.05em; text-transform:uppercase; }
+.validation-experimental { border:1px solid #f4d0e4; border-radius:999px; padding:6px 11px; background:#fff2f8; color:#a40059; font-size:11px; font-weight:750; }
+.validation-metrics { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:13px; }
+.validation-metric { min-width:0; display:flex; flex-direction:column; align-items:flex-start; gap:5px; padding:19px; border-radius:17px; border:1px solid #f4dce9; background:linear-gradient(135deg,#fff,#fff7fb); }
+.validation-metric > svg { color:#bf0069; margin-bottom:8px; }
+.validation-metric > span { font-size:12px; font-weight:650; color:#52617b; }
+.validation-metric strong { color:#ab005c; font-size:clamp(23px,2.7vw,30px); line-height:1.3; }
+.validation-metric small { font-size:13px; color:#63718b; }
+.validation-metric p { color:#65738a; font-size:12px; line-height:1.6; }
+.validation-details { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; margin-top:14px; }
+.validation-details > div { border:1px solid #ebe8ef; border-radius:17px; padding:18px; background:#fff; }
+.validation-details h3 { color:#17223a; font-size:14px; font-weight:750; margin-bottom:10px; }
+.validation-details p { display:flex; flex-wrap:wrap; justify-content:space-between; gap:6px; padding:8px 0; border-bottom:1px solid #f1eff4; color:#627189; font-size:12px; }
+.validation-details strong { color:#a4005a; }
+.validation-details small { display:block; color:#68768e; line-height:1.6; margin-top:11px; }
+.validation-warning { display:flex; align-items:flex-start; gap:11px; padding:15px 17px; margin-top:16px; border-radius:15px; border:1px solid #f4cddd; background:#fff4fa; color:#75435f; font-size:12px; line-height:1.65; }
+.validation-warning svg { flex-shrink:0; margin-top:2px; color:#aa005b; }
+.validation-source { margin-top:13px; font-size:11px; color:#718096; overflow-wrap:anywhere; }
+@media(max-width:800px) { .validation-metrics,.validation-details { grid-template-columns:1fr; } }
