@@ -403,6 +403,7 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
           {view === "scenarios" && (
             <Scenarios
               prediction={chosen}
+              states={items ?? []}
               forecast={forecast}
               initialChange={scenarioChange}
               loading={predictions.isPending}

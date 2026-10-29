@@ -16,6 +16,7 @@ import {
   Vote,
 } from "lucide-react";
 import { api } from "@/lib/api";
+import { MultiStateComparison } from "./multi-state-comparison";
 import type { Forecast, Prediction, Simulation } from "@/lib/types";
 import { pct, pp, riskLabels } from "@/lib/utils";
 import { Button } from "./ui/button";
@@ -30,6 +31,7 @@ const clamp = (v: number) => Math.max(0, Math.min(1, v));
 export function Scenarios({
   prediction,
   forecast,
+  states,
   initialChange = 3,
   loading,
   error,
@@ -37,6 +39,7 @@ export function Scenarios({
 }: {
   prediction?: Prediction;
   forecast?: Forecast;
+  states: Prediction[];
   initialChange?: number;
   loading: boolean;
   error: Error | null;
@@ -52,12 +55,20 @@ export function Scenarios({
       />
     );
   return (
-    <ScenarioForm
-      key={`${prediction.state_code}-${forecast.id}-${initialChange}`}
-      prediction={prediction}
-      forecast={forecast}
-      initialChange={initialChange}
-    />
+    <>
+      <ScenarioForm
+        key={`${prediction.state_code}-${forecast.id}-${initialChange}`}
+        prediction={prediction}
+        forecast={forecast}
+        initialChange={initialChange}
+      />
+      <MultiStateComparison
+        key={`compare-${prediction.state_code}-${forecast.id}`}
+        primary={prediction}
+        states={states}
+        forecast={forecast}
+      />
+    </>
   );
 }
 
