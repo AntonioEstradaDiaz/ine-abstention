@@ -42,9 +42,15 @@ administrativo al panel de Supabase.
 | `pulso.qa.20261025.1@example.com` | `ecaa829b-f3ac-4d28-aaaa-60371b5cde22` | Confirmado; login y logout aprobados. |
 | `pulso.qa.20261025.2@example.com` | `3a84200f-6a36-4161-aba9-bcedf42d1735` | Confirmado; login y logout aprobados. |
 
-Las contraseñas aleatorias se usaron durante la prueba y no se publicaron ni se guardaron en el
-repositorio. Para reutilizar las cuentas, el administrador debe gestionar una contraseña mediante
-Auth Admin; estos buzones ficticios no permiten recuperación por correo.
+Las contraseñas aleatorias originales no se guardaron. El **29 de octubre de 2026**, por autorización
+del responsable del proyecto, se sustituyeron por una contraseña pública compartida para las pruebas
+del hackathon: consultar la tabla de [acceso de prueba del README](../README.md#acceso-de-prueba-para-el-hackathon).
+Las cuentas conservan el rol normal `authenticated` y el correo confirmado. Sus escenarios son de
+prueba y no deben contener información personal. Estos buzones ficticios no permiten recuperación
+por correo; cualquier cambio posterior de contraseña debe reflejarse en el README.
+
+Ese mismo día se verificaron login con la nueva contraseña, consulta del usuario validada por el
+servidor y logout de ambas cuentas contra Supabase real, sin la fixture local de CI.
 
 ### Resultados del recorrido real
 
