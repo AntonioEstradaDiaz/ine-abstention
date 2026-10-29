@@ -52,3 +52,16 @@ test("saved scenario survives reload and restores its original calculation", asy
     fullPage: true,
   });
 });
+
+test("multi-state comparison renders two states without saving to history", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Escenarios", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Comparar escenarios entre varios estados" })).toBeVisible();
+  const section = page.getByRole("region", { name: "Comparar escenarios entre varios estados" });
+  await expect(section.getByRole("row")).toHaveCount(3);
+  await section.getByRole("spinbutton", { name: "Cambio de participación para comparar estados" }).fill("5");
+  await expect(section.getByRole("row")).toHaveCount(3);
+  const csv = page.waitForEvent("download");
+  await section.getByRole("button", { name: "Descargar CSV" }).click();
+  expect((await csv).suggestedFilename()).toBe("pulso-comparativo-escenarios-2027.csv");
+});

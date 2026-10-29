@@ -177,7 +177,7 @@ test("reports preview the chosen state on the shared republic map", async ({
   await expect(page.locator(".report-recent tbody tr")).toHaveCount(1);
   await expect(
     page.getByRole("button", { name: "Nacional", exact: true }),
-  ).toBeDisabled();
+  ).toBeEnabled();
   await expect(
     page.getByRole("button", { name: "Municipal", exact: true }),
   ).toBeDisabled();
@@ -320,6 +320,25 @@ test("data explorer filters, downloads and excludes unverified municipal data", 
   ).toBeVisible();
   await expect(page.locator(".data-illustrative")).toHaveCount(0);
   await expect(rows).toHaveCount(10);
+});
+
+test("national comparison exports official-history PDFs and Excel", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Reportes", exact: true }).click();
+  await page.getByRole("button", { name: "Nacional", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Panorama de las 32 entidades" })).toBeVisible();
+  await expect(page.locator(".national-states-table tbody tr")).toHaveCount(32);
+  const downloadButton = page.getByRole("button", { name: "Descargar comparativo nacional" });
+  await expect(downloadButton).toBeEnabled();
+  const pdfPromise = page.waitForEvent("download");
+  await downloadButton.click();
+  expect((await pdfPromise).suggestedFilename()).toBe("pulso-reporte-nacional-2027.pdf");
+  await page.getByRole("radio", { name: "Excel", exact: true }).check();
+  const excelPromise = page.waitForEvent("download");
+  await downloadButton.click();
+  expect((await excelPromise).suggestedFilename()).toBe("pulso-reporte-nacional-2027.xlsx");
+  await page.getByRole("button", { name: "Volver al reporte estatal" }).click();
+  await expect(page.getByRole("heading", { name: "Configura tu reporte" })).toBeVisible();
 });
 
 test("notifications summarize loaded data, open their section and stay read", async ({
