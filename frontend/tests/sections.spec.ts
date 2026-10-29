@@ -387,7 +387,7 @@ test("the header process drives the map trend, report history and data year", as
     page.getByRole("button", { name: "Histórico", exact: true }),
   ).toHaveAttribute("aria-pressed", "true");
   await expect(page.locator(".territory-gauge")).toContainText(
-    "Abstención · 2015",
+    "Abstención observada · 2015",
   );
   await page.getByRole("button", { name: "Reportes", exact: true }).click();
   await expect(page.locator(".report-process")).toHaveText(
