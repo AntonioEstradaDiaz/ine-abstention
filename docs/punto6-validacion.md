@@ -63,3 +63,9 @@ incompletos, fugas temporales y selección retrospectiva.
 La interfaz incluye una tarjeta moderna y accesible, con errores
 históricos por entidad, ejemplo de NS y aviso de validación externa pendiente;
 nunca atribuye resultados de una corrida a un modelo distinto.
+
+La tarjeta solo muestra cifras si coinciden el identificador del pronóstico,
+el entrenamiento, el modelo, el corte, el año objetivo, el tipo electoral y
+la calibración (radio, años, bloques y garantía). Otra corrida del mismo modelo
+o una vista previa muestra un aviso de evidencia no coincidente; requiere su
+propia auditoría antes de atribuirle estos resultados.

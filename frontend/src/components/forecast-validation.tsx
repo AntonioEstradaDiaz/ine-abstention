@@ -1,5 +1,6 @@
 import { AlertTriangle, CalendarClock, Database, FlaskConical, ShieldAlert } from "lucide-react";
 import type { Forecast, Prediction } from "@/lib/types";
+import { matchesForecastAudit } from "@/lib/forecast-audit-match";
 import audit from "@/lib/forecast-validation.json";
 
 const format = (n: number) => new Intl.NumberFormat("es-MX", {
@@ -9,12 +10,7 @@ const format = (n: number) => new Intl.NumberFormat("es-MX", {
 export function ForecastValidation({
   forecast, prediction,
 }: { forecast: Forecast; prediction: Prediction }) {
-  const sourceOk = forecast.provenance.model_run_id === audit.training_run_id ||
-    (forecast.provenance.model_run_id === "preview-csv" &&
-      forecast.provenance.mode === "preview");
-  const aligned = sourceOk && forecast.provenance.model_name === audit.selected_model &&
-    forecast.as_of_year === 2024 && forecast.target_year === 2027 &&
-    forecast.election_type === "midterm";
+  const aligned = matchesForecastAudit(forecast, audit);
   const state = audit.state_diagnostics.find((x) => x.state_code === prediction.state_code);
   const midterm = audit.by_year.find((x) => x.year === 2021);
   const holdout = audit.by_year.find((x) => x.year === 2024);
@@ -74,7 +70,7 @@ export function ForecastValidation({
         </>
       ) : (
         <p role="note" className="validation-warning">
-          La corrida no coincide con el modelo auditado; sus errores históricos
+          La corrida o su calibración no coinciden con la auditoría congelada; sus errores históricos
           no pueden atribuirse a esta predicción.
         </p>
       )}
