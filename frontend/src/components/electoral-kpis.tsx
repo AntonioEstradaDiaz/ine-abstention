@@ -1,4 +1,5 @@
 "use client";
+import { UsersRound, TriangleAlert, Building2, BetweenHorizontalStart } from "lucide-react";
 import type { Prediction } from "@/lib/types";
 import { pct, riskLabels } from "@/lib/utils";
 
@@ -16,7 +17,7 @@ export function ElectoralKpis({
       title: "Participación estimada 2027",
       value: state ? pct(1 - state.predicted) : "—",
       reference: state?.name ?? "Consultando territorio",
-      icon: "9c63f.svg",
+      icon: UsersRound,
     },
     {
       title: "Abstención estimada 2027",
@@ -24,19 +25,19 @@ export function ElectoralKpis({
       reference: state
         ? `Riesgo ${riskLabels[state.risk_level].toLowerCase()}`
         : "Sin estimación",
-      icon: "b08fb.svg",
+      icon: TriangleAlert,
     },
     {
       title: "Entidades en riesgo alto",
       value: states.length ? `${high} de ${states.length}` : "—",
       reference: "Clasificación estatal relativa",
-      icon: "d19fd.svg",
+      icon: Building2,
     },
     {
       title: "Banda de abstención 2027",
       value: state ? `${pct(state.lower)} – ${pct(state.upper)}` : "—",
       reference: "Sin cobertura futura garantizada",
-      icon: "9c63f.svg",
+      icon: BetweenHorizontalStart,
     },
   ];
   return (
@@ -48,8 +49,8 @@ export function ElectoralKpis({
           key={metric.title}
           aria-label={metric.title}
         >
-          <div className="reference-kpi-icon reference-kpi-icon-line">
-            <img src={`/design-top/${metric.icon}`} alt="" />
+          <div className="reference-kpi-icon reference-kpi-icon-line" aria-hidden="true">
+            <metric.icon className="reference-kpi-symbol" strokeWidth={2} />
           </div>
           <div className="reference-kpi-body">
             <p className="reference-kpi-title">{metric.title}</p>

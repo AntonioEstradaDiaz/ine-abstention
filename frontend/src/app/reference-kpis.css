@@ -406,3 +406,12 @@
 .design-top .reference-kpi-value > span {
   white-space: normal;
 }
+
+/* Complete vector symbols share the same optical size inside each tile. */
+.reference-kpi-icon > .reference-kpi-symbol {
+  display: block;
+  width: 32px;
+  height: 32px;
+  color: #b9005e;
+  fill: none;
+}
