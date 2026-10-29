@@ -404,7 +404,7 @@ test("predictions show historical errors, NS and explicit external limits", asyn
   await expect(panel).toBeVisible();
   await expect(panel).toContainText("MAE 2021");
   await expect(panel).toContainText("MAE 2024");
-  await expect(panel).toContainText("14,37");
+  await expect(panel).toContainText("14.37");
   await expect(panel).toContainText("Validación externa pendiente");
   await expect(panel).toContainText("Sensibilidad a NS");
   await expect(panel).toContainText("no es una banda predictiva");
