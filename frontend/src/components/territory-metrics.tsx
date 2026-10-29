@@ -11,6 +11,7 @@ import {
   ShieldCheck,
   Database,
 } from "lucide-react";
+import { analysisRates } from "@/lib/analysis";
 import { api } from "@/lib/api";
 import type { Indicator, Prediction, Source } from "@/lib/types";
 import { number, pct, pp } from "@/lib/utils";
@@ -23,7 +24,6 @@ export function TerritoryMetrics({
   actual,
   selected,
   year,
-  historical,
   loading,
   error,
   retry,
@@ -32,7 +32,6 @@ export function TerritoryMetrics({
   actual?: Indicator;
   selected: string;
   year: number;
-  historical: boolean;
   loading: boolean;
   error: Error | null;
   retry: () => void;
@@ -47,7 +46,9 @@ export function TerritoryMetrics({
   const history = useQuery({
     queryKey: ["history", selected],
     queryFn: ({ signal }) => api.history(selected, signal),
-    enabled: !!p,
+    enabled: !!selected,
+    refetchInterval: 60_000,
+    refetchOnWindowFocus: true,
   });
   const records = (history.data?.items ?? [])
     .slice()
@@ -73,11 +74,18 @@ export function TerritoryMetrics({
     actual?.participation_rate != null && previous?.participation_rate != null
       ? (actual.participation_rate - previous.participation_rate) * 100
       : null;
-  const value = historical ? actual?.abstention_rate : p?.predicted;
+  const observed =
+    actual?.year === year &&
+    (actual.state_code || actual.official_code) === selected
+      ? actual
+      : undefined;
+  const rates = analysisRates(observed);
+  const value = rates?.abstention;
+  const observedLabel = year > 0 ? `Abstención observada · ${observed?.year ?? year}` : "Sin proceso disponible";
   const safe = value == null ? 0 : Math.min(1, Math.max(0, value));
   const context = p?.explanation.context_only;
-  const name = p?.name
-    .toLocaleLowerCase("es-MX")
+  const name = (observed?.name ?? p?.name)
+    ?.toLocaleLowerCase("es-MX")
     .replace(/(^|\s)\S/g, (c) => c.toLocaleUpperCase("es-MX"));
   const rows = [
     {
@@ -187,7 +195,7 @@ export function TerritoryMetrics({
           </button>
         ))}
       </div>
-      {!p ? (
+      {loading || error ? (
         <Status loading={loading} error={error} retry={retry} />
       ) : (
         <div
@@ -204,7 +212,8 @@ export function TerritoryMetrics({
               <div className="territory-metric-grid">
                 <div
                   className="territory-gauge"
-                  aria-label={`${historical ? `Abstención observada ${year}` : "Abstención estimada 2027"}: ${pct(value)}`}
+                  aria-label={`${observedLabel}: ${value == null ? "Sin datos" : pct(value)}`}
+                  aria-live="polite"
                 >
                   <svg viewBox="0 0 180 112" aria-hidden="true">
                     <path
@@ -217,17 +226,20 @@ export function TerritoryMetrics({
                       pathLength="100"
                       className="territory-gauge-value"
                       strokeDasharray={`${safe * 100} 100`}
+                      style={{ opacity: value == null || value === 0 ? 0 : 1 }}
                     />
                   </svg>
-                  <strong className="detail-rate-value">{pct(value)}</strong>
+                  <strong className="detail-rate-value">
+                    {value == null ? "Sin datos" : pct(value)}
+                  </strong>
                   <span>
-                    {historical ? `Abstención · ${year}` : "Abstención · 2027"}
+                    {observedLabel}
                   </span>
                 </div>
                 <div className="territory-stat-cards">
                   <div>
                     <span>Participación {year}</span>
-                    <strong>{pct(actual?.participation_rate)}</strong>
+                    <strong>{pct(rates?.participation)}</strong>
                     <small>
                       {delta == null
                         ? "Sin comparación disponible"
@@ -236,25 +248,16 @@ export function TerritoryMetrics({
                   </div>
                   <div>
                     <span>Abstenciones {year}</span>
-                    <strong>{number(actual?.nonvoter_count)}</strong>
-                    <small>{pct(actual?.abstention_rate)} sobre SV + NV</small>
-                  </div>
-                  <div className="territory-band">
-                    <span>Banda del pronóstico 2027</span>
-                    <strong>
-                      {pct(p.lower)} – {pct(p.upper)}
-                    </strong>
-                    <span className="territory-band-track" aria-hidden="true">
-                      <i
-                        style={{
-                          left: `${p.lower * 100}%`,
-                          width: `${(p.upper - p.lower) * 100}%`,
-                        }}
-                      />
-                    </span>
+                    <strong>{number(observed?.nonvoter_count)}</strong>
+                    <small>{pct(value)} sobre SV + NV</small>
                   </div>
                 </div>
               </div>
+              <p className="territory-metrics-footnote">
+                Datos observados · NV / (SV + NV). Los registros sin especificar
+                se excluyen del denominador. Actualización automática cada
+                minuto.
+              </p>
               <h3>Indicadores de contexto</h3>
               {contextRows}
             </>
@@ -345,7 +348,7 @@ export function TerritoryMetrics({
               )}
             </section>
           )}
-          {tab === "Factores" && (
+          {tab === "Factores" && p && (
             <section
               className="territory-tab-view"
               aria-label="Factores y contexto del pronóstico"
@@ -390,7 +393,7 @@ export function TerritoryMetrics({
               </div>
             </section>
           )}
-          {tab === "Recomendaciones" && (
+          {tab === "Recomendaciones" && p && (
             <section
               className="territory-tab-view"
               aria-label="Recomendaciones de lectura del territorio"
