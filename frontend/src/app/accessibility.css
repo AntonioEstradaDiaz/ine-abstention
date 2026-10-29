@@ -1,0 +1,27 @@
+/* Punto 9: foco y páginas informativas, sin redefinir los estilos del producto. */
+:where(a, button, input, textarea, select, [role="combobox"], [tabindex]):focus-visible { outline: 3px solid #970051; outline-offset: 3px; }
+.skip-link:focus-visible { top: 12px; background: #85004d; color: #fff; border-radius: 8px; }
+.site-policy-links { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 18px; }
+.site-policy-links a, .auth-info a { color: #8d004f; text-decoration: underline; text-underline-offset: 3px; }
+.auth-independent { text-align: center; font-size: 12px; color: #4b5873; margin-top: 12px; }
+.legal-shell { min-height: 100dvh; display: flex; flex-direction: column; background: #fffafd; color: #18233b; font: 16px/1.6 Roboto, "Segoe UI", Arial, sans-serif; }
+.legal-header { background: white; border-bottom: 1px solid #f0d9e4; padding: 22px max(24px, calc((100vw - 1080px)/2)); display: flex; flex-wrap: wrap; gap: 20px; align-items: center; justify-content: space-between; }
+.legal-header nav, .legal-footer nav { display: flex; flex-wrap: wrap; gap: 12px 22px; }
+.legal-header nav a, .legal-footer a, .legal-copy a { color: #8d004f; text-decoration: underline; text-underline-offset: 3px; }
+.legal-brand { color: #87004b; font-size: 22px; font-weight: 800; }
+.legal-brand span { font-weight: 500; color: #30394d; }
+.legal-main { width: min(840px, calc(100% - 48px)); margin: 44px auto 60px; flex: 1; }
+.legal-intro { border-bottom: 1px solid #edd9e4; padding-bottom: 24px; }
+.legal-eyebrow { color: #85004d; text-transform: uppercase; font-weight: 700; font-size: 12px; letter-spacing: .07em; }
+.legal-intro h1 { font-size: clamp(28px,4vw,42px); margin: 12px 0; letter-spacing: -.5px; }
+.legal-intro > p:last-child { color: #47546b; }
+.legal-copy h2 { margin: 28px 0 10px; color: #18233b; font-size: 20px; }
+.legal-copy p { margin: 12px 0; }
+.legal-copy ol { padding-left: 24px; }
+.legal-copy li { margin: 8px 0; }
+.legal-copy code { overflow-wrap: anywhere; }
+.legal-warning { padding: 14px 18px; border-left: 4px solid #970051; background: #fff0f7; color: #4e2440; }
+.legal-footer { background: white; border-top: 1px solid #efdfe7; color: #48556b; padding: 24px max(24px, calc((100vw - 1080px)/2)); display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between; }
+@media(max-width:600px) { .legal-header { padding: 18px 24px; } .legal-main { width: calc(100% - 32px); margin: 28px auto 40px; } .legal-footer { padding: 20px 16px; } }
+@media(prefers-reduced-motion:reduce) { :where(.legal-shell,.app-shell,.auth-page) *, :where(.legal-shell,.app-shell,.auth-page) *::before, :where(.legal-shell,.app-shell,.auth-page) *::after { animation-duration: .01ms!important; transition-duration: .01ms!important; scroll-behavior: auto!important; } }
+@media(forced-colors:active) { :where(a,button,input,textarea,select,[role="combobox"],[tabindex]):focus-visible { outline-color: Highlight; } .legal-warning { border-left-color: Highlight; } }
