@@ -53,6 +53,25 @@ jobs:
         run: uv run --locked --group ml pytest -q -W error --junitxml=tmp/backend-tests.xml
       - name: Verify the running API
         run: uv run --locked python scripts/demo_backend.py --api-url http://127.0.0.1:8001 --output tmp/http-checks.json
+      - name: Operational load and isolated restore drill
+        run: |
+          set -euo pipefail
+          uv run --locked python scripts/ops_loadcheck.py --url http://127.0.0.1:8001/api/v1/health --requests 24 --workers 6 > tmp/p8-load.json
+          archive="$(mktemp /tmp/pulso-p8-XXXXXXXX.dump)"
+          trap 'rm -f "$archive"' EXIT
+          docker compose --env-file .env.docker.example exec -T db pg_dump -U ine_owner -Fc --no-owner --no-acl -d ine_abstention > "$archive"
+          test -s "$archive"
+          docker compose --env-file .env.docker.example exec -T db pg_restore --list < "$archive" > /dev/null
+          docker compose --env-file .env.docker.example exec -T db createdb -U ine_owner pulso_restore_ci
+          docker compose --env-file .env.docker.example exec -T db pg_restore -U ine_owner --no-owner --no-acl --exit-on-error -d pulso_restore_ci < "$archive"
+          before="$(docker compose --env-file .env.docker.example exec -T db psql -U ine_owner -d ine_abstention -Atqc 'SELECT count(*) FROM ine.territories')"
+          after="$(docker compose --env-file .env.docker.example exec -T db psql -U ine_owner -d pulso_restore_ci -Atqc 'SELECT count(*) FROM ine.territories')"
+          test "$before" = "$after"
+          test "$after" -gt 0
+          docker compose --env-file .env.docker.example exec -T db dropdb -U ine_owner pulso_restore_ci
+          echo "Backup/restore drill verified against official aggregate count"
+      - name: Git secret file hygiene
+        run: uv run --locked python scripts/ops_repo_audit.py
       - name: Capture service logs
         if: always()
         run: |

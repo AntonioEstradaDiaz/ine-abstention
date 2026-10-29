@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { previewResponse } from "@/lib/preview";
+import { backendInternalHeaders } from "@/lib/backend-internal";
 import { authServer } from "@/lib/supabase/server";
 import type { Simulation } from "@/lib/types";
 
@@ -86,6 +87,7 @@ async function proxy(
       body,
       headers: {
         Accept: "application/json",
+        ...backendInternalHeaders(),
         ...(body ? { "Content-Type": "application/json" } : {}),
       },
       cache: "no-store",
@@ -163,7 +165,7 @@ async function simulations(req: NextRequest, body?: string) {
             {
               method: "POST",
               body,
-              headers: { "Content-Type": "application/json" },
+              headers: { "Content-Type": "application/json", ...backendInternalHeaders() },
               cache: "no-store",
               signal: AbortSignal.timeout(30_000),
             },

@@ -339,3 +339,10 @@ La [licencia del código](docs/LICENCIA_PENDIENTE.md) requiere aprobación de su
 Las páginas públicas `/privacidad`, `/terminos` y `/soporte` son preliminares:
 se debe completar y aprobar la documentación legal y el contacto de soporte antes
  de abrir el registro al público. PULSO no es una plataforma oficial del INE.
+
+## Punto 8 · Operación y seguridad
+
+Consultar [el plan de operación y seguridad](docs/punto8-operacion-seguridad.md)
+para la clave interna de FastAPI, logs con correlación, métricas, monitor,
+respaldo/restauración, pruebas de concurrencia y aislamiento multiusuario.
+No pasar a producción sin configurar secretos y servicios externos verificables.

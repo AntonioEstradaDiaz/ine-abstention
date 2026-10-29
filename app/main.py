@@ -18,6 +18,7 @@ from app.api.v1.territories import router as territories_router
 from app.core.config import get_settings
 from app.core.database import get_engine
 from app.core.logging import configure_logging
+from app.core.operations import install_operations
 
 
 @asynccontextmanager
@@ -30,12 +31,21 @@ async def lifespan(app: FastAPI):
 
 
 settings = get_settings()
-app = FastAPI(title=settings.app_name, version="0.1.0", debug=settings.debug, lifespan=lifespan)
+app = FastAPI(
+    title=settings.app_name,
+    version="0.1.0",
+    debug=settings.debug,
+    lifespan=lifespan,
+    docs_url=None if settings.environment.lower() in {"production", "prod"} else "/docs",
+    redoc_url=None if settings.environment.lower() in {"production", "prod"} else "/redoc",
+    openapi_url=None if settings.environment.lower() in {"production", "prod"} else "/openapi.json",
+)
+install_operations(app, settings)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,
     allow_methods=["GET", "POST", "OPTIONS"],
-    allow_headers=["Content-Type", "Authorization"],
+    allow_headers=["Content-Type", "Authorization", "X-Pulso-Internal-Token", "X-Request-ID"],
 )
 app.include_router(health_router, prefix="/api/v1")
 app.include_router(data_router, prefix="/api/v1")

@@ -1,7 +1,7 @@
 import logging
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
@@ -17,6 +17,12 @@ logger = logging.getLogger(__name__)
 def health() -> dict[str, str]:
     """Comprobar que el proceso de API responde, sin consultar la base."""
     return {"status": "ok"}
+
+
+@router.get("/metrics")
+def metrics(request: Request) -> dict:
+    """Per-worker counters for internal monitoring, protected by the API token in production."""
+    return request.app.state.telemetry.snapshot()
 
 
 @router.get("/ready")

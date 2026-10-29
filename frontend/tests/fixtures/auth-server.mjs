@@ -19,15 +19,20 @@ const user = {
   user_metadata: {},
   identities: [],
 };
+const secondaryUser = {
+  ...user,
+  id: "00000000-0000-4000-8000-000000000002",
+  email: "browser-second@example.invalid",
+};
 const encode = (value) =>
   Buffer.from(JSON.stringify(value)).toString("base64url");
-function session() {
+function session(account = user) {
   const now = Math.floor(Date.now() / 1000);
   const claims = {
-    sub: user.id,
-    aud: user.aud,
-    role: user.role,
-    email: user.email,
+    sub: account.id,
+    aud: account.aud,
+    role: account.role,
+    email: account.email,
     iat: now,
     exp: now + 3600,
     session_id: randomUUID(),
@@ -40,7 +45,7 @@ function session() {
     expires_in: 3600,
     expires_at: claims.exp,
     refresh_token: randomUUID(),
-    user,
+    user: account,
   };
   sessions.set(access, result);
   return result;
@@ -96,7 +101,7 @@ const server = createServer(async (req, res) => {
   }
   if (url.pathname === "/auth/v1/user" && req.method === "GET") {
     return active && active.expires_at > Date.now() / 1000
-      ? send(200, user)
+      ? send(200, active.user)
       : send(401, { code: "bad_jwt", msg: "Invalid test session" });
   }
   if (url.pathname === "/auth/v1/logout" && req.method === "POST") {
@@ -114,10 +119,10 @@ const server = createServer(async (req, res) => {
     }
     if (
       url.searchParams.get("grant_type") === "password" &&
-      body.email === user.email &&
+      (body.email === user.email || body.email === secondaryUser.email) &&
       body.password === "Browser-test-only-123!"
     ) {
-      return send(200, session());
+      return send(200, session(body.email === user.email ? user : secondaryUser));
     }
     if (url.searchParams.get("grant_type") === "refresh_token") {
       const previous = [...sessions.values()].find(
@@ -125,7 +130,7 @@ const server = createServer(async (req, res) => {
       );
       if (previous) {
         sessions.delete(previous.access_token);
-        return send(200, session());
+        return send(200, session(previous.user));
       }
     }
     return send(400, {
