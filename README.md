@@ -11,12 +11,15 @@ Requiere una cuenta confirmada de Supabase Auth. El login es público; el dashbo
 
 Entrar en [la demo](https://pulso-electoral-demo.vercel.app/login) con una de las dos cuentas confirmadas:
 
-- `pulso.qa.20261025.1@example.com`
-- `pulso.qa.20261025.2@example.com`
+| Correo | Contraseña de demo |
+| --- | --- |
+| `pulso.qa.20261025.1@example.com` | `PulsoDemo2026!` |
+| `pulso.qa.20261025.2@example.com` | `PulsoDemo2026!` |
 
-Ambas cuentas son usuarios normales de la aplicación. Solicitar la contraseña al equipo por un
-canal privado; no se publica en este repositorio. Los correos son ficticios y no reciben enlaces
-de recuperación. La creación y las pruebas de acceso están documentadas en [Auth](frontend/AUTH.md).
+Ambas cuentas son usuarios normales de la aplicación y comparten acceso público para las pruebas
+del hackathon. No guardar información personal en sus escenarios. Los correos son ficticios y no
+reciben enlaces de recuperación. La creación y las pruebas de acceso están documentadas en
+[Auth](frontend/AUTH.md).
 
 ## Estado actual: demo publicada, producto todavía incompleto
 
@@ -126,8 +129,9 @@ con confirmación individual, sin desactivar la confirmación global ni habilita
 | `pulso.qa.20261025.1@example.com` | Confirmado; login y logout reales, incluida la demo publicada. |
 | `pulso.qa.20261025.2@example.com` | Confirmado; login y logout reales en la prueba local previa. |
 
-Las contraseñas no están en el repositorio. Estos buzones ficticios no reciben mensajes; para reutilizarlos,
-el administrador debe gestionar sus credenciales en Supabase. **No son credenciales públicas para evaluadores.**
+Las credenciales públicas para evaluadores están en [Acceso de prueba para el hackathon](#acceso-de-prueba-para-el-hackathon).
+Estos buzones ficticios no reciben mensajes; si se cambia la contraseña en Supabase, actualizar también
+la tabla de acceso de este README.
 
 Site URL: `https://pulso-electoral-demo.vercel.app`. Callbacks autorizados:
 
