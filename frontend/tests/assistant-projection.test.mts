@@ -38,7 +38,7 @@ test("2027 uses the registered forecast; other years use same-type observed coun
   const custom = projectHorizon(
     history,
     "17",
-    2030,
+    2028,
     "presidential",
     registered,
   );
@@ -50,25 +50,25 @@ test("2027 uses the registered forecast; other years use same-type observed coun
     reference.nonvoter_count /
       (reference.voter_count + reference.nonvoter_count),
   );
-  assert.equal(custom.lower, null);
-  assert.equal(custom.upper, null);
+  assert.ok(custom.lower! <= custom.abstention);
+  assert.ok(custom.upper! >= custom.abstention);
   assert.equal(custom.forecastId, null);
   assert.equal(
-    projectHorizon(history, "17", 2036, "presidential", registered).abstention,
+    projectHorizon(history, "17", 2029, "presidential", registered).abstention,
     custom.abstention,
   );
 });
 test("rejects past years, invalid counts, duplicates and unsupported types", () => {
-  for (const year of [2024, 2020, 2030.5, NaN, 2101])
+  for (const year of [2024, 2020, 2028.5, NaN, 2101])
     assert.throws(() =>
       projectHorizon(history, "17", year, "midterm", registered),
     );
   assert.throws(() =>
-    projectHorizon(history, "99", 2030, "presidential", registered),
+    projectHorizon(history, "99", 2028, "presidential", registered),
   );
   const row = history.find((r: { year: number }) => r.year === 2024);
   assert.throws(
-    () => projectHorizon([row, row], "17", 2030, "presidential"),
+    () => projectHorizon([row, row], "17", 2028, "presidential"),
     /duplicados/,
   );
   assert.throws(
@@ -76,7 +76,7 @@ test("rejects past years, invalid counts, duplicates and unsupported types", () 
       projectHorizon(
         [{ ...row, voter_count: 0, nonvoter_count: 0 }],
         "17",
-        2030,
+        2028,
         "presidential",
       ),
     /conteos/,
@@ -85,7 +85,7 @@ test("rejects past years, invalid counts, duplicates and unsupported types", () 
     projectHorizon(
       [{ ...row, voter_count: 100, nonvoter_count: 0 }],
       "17",
-      2030,
+      2028,
       "presidential",
     ).abstention,
     0,
@@ -113,13 +113,13 @@ test("new observed data invalidates a stale registered forecast", () => {
 test("custom horizon facts and offline answer do not reuse 2027 bands or rankings", () => {
   const current = {
     ...context,
-    projection: projectHorizon(history, "17", 2030, "presidential", registered),
+    projection: projectHorizon(history, "17", 2028, "presidential", registered),
   };
   const facts = contextFacts(current);
-  assert.match(facts, /Año solicitado: 2030/);
+  assert.match(facts, /Año solicitado: 2028/);
   assert.doesNotMatch(facts, /Posición:/);
-  assert.match(automaticAnswer("dame la predicción", current), /2030/);
-  assert.match(automaticAnswer("predice 2036", current), /Cambia el año/);
+  assert.match(automaticAnswer("dame la predicción", current), /2028/);
+  assert.match(automaticAnswer("predice 2029", current), /Cambia el año/);
   assert.match(systemPrompt(current), /No inventes cifras/);
   assert.match(
     automaticAnswer("Propón soluciones", current),

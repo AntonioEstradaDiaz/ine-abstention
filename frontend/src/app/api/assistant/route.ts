@@ -157,7 +157,7 @@ export async function POST(req: NextRequest) {
     (typeof body.target_year !== "number" ||
       !Number.isInteger(body.target_year) ||
       body.target_year < 2025 ||
-      body.target_year > 2100)
+      body.target_year > 2029)
   )
     return detail("Año objetivo inválido.", 400);
   if (

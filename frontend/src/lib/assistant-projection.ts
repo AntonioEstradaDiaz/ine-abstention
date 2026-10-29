@@ -32,10 +32,10 @@ export function projectHorizon(
   if (
     !Number.isInteger(targetYear) ||
     targetYear <= cutoffYear ||
-    targetYear > 2100
+    targetYear > 2029
   )
     throw new Error(
-      `Elige un año posterior a ${cutoffYear} y no mayor que 2100. Los años observados se consultan en Histórico.`,
+      `Elige un año posterior a ${cutoffYear} y no mayor que 2029. Los años observados se consultan en Histórico.`,
     );
   if (electionType !== "midterm" && electionType !== "presidential")
     throw new Error("Selecciona un tipo de elección válido.");
@@ -62,19 +62,31 @@ export function projectHorizon(
     throw new Error(
       "Los conteos de la elección de referencia no permiten calcular una tasa.",
     );
+  const samples = [...comparable].reverse().map(r => {
+    if (!Number.isInteger(r.year) || !Number.isFinite(r.voter_count) || !Number.isFinite(r.nonvoter_count) || r.voter_count < 0 || r.nonvoter_count < 0 || r.voter_count + r.nonvoter_count <= 0)
+      throw new Error("Conteos históricos inválidos para calcular la banda.");
+    return { year: r.year, rate: r.nonvoter_count / (r.voter_count + r.nonvoter_count) };
+  });
+  if (new Set(samples.map(r => r.year)).size !== samples.length)
+    throw new Error("Hay años duplicados en el histórico.");
+  const errors = samples.slice(1).map((r, i) => Math.abs(r.rate - samples[i].rate));
+  const radius = errors.length ? Math.max(...errors) : null;
   const match =
     registered &&
     registered.prediction.state_code === stateCode &&
     registered.forecast.target_year === targetYear &&
     registered.forecast.election_type === electionType &&
-    registered.forecast.as_of_year >= cutoffYear;
+    registered.forecast.as_of_year === cutoffYear &&
+    registered.prediction.explanation.reference_year === reference.year &&
+    registered.prediction.explanation.voter_count === voters &&
+    registered.prediction.explanation.nonvoter_count === nonvoters;
   const abstention = match
     ? registered.prediction.predicted
     : nonvoters / (voters + nonvoters);
   if (!Number.isFinite(abstention) || abstention < 0 || abstention > 1)
     throw new Error("La estimación registrada no contiene una tasa válida.");
-  const lower = match ? registered.prediction.lower : null;
-  const upper = match ? registered.prediction.upper : null;
+  const lower = match ? registered.prediction.lower : radius == null ? null : Math.max(0, abstention - radius);
+  const upper = match ? registered.prediction.upper : radius == null ? null : Math.min(1, abstention + radius);
   if (
     match &&
     (lower == null ||
@@ -108,6 +120,6 @@ export function projectHorizon(
       : "baseline_last: NV / (SV + NV) de la última elección del mismo tipo",
     warning: match
       ? "Estimación experimental; la banda empírica no garantiza cobertura futura."
-      : "Proyección hipotética de referencia constante, no un modelo entrenado para este horizonte. No incorpora tendencias ni cambios futuros; no hay banda calibrada ni precisión validada para este año. Elegir un año no confirma que exista una elección en él. El supuesto se debilita a mayor distancia del último dato.",
+      : `Referencia constante basada en la última elección comparable. ${radius == null ? "Histórico insuficiente para calcular un rango." : `Rango de sensibilidad: máximo error de ${errors.length} comparaciones históricas del mismo tipo (${(radius * 100).toFixed(2)} pp).`} No es un intervalo de confianza ni garantiza cobertura futura. El año elegido representa un escenario, no confirma una elección.`,
   };
 }
