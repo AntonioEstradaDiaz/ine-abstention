@@ -32,6 +32,7 @@ import type { Election, Forecast, Prediction, Risk } from "@/lib/types";
 import { pct, pp, riskLabels } from "@/lib/utils";
 import { Chart, chartAxis, chartTooltip } from "./chart";
 import { RepublicMap } from "./republic-map";
+import { NationalReports } from "./national-reports";
 import { Status } from "./shared";
 import { Button } from "./ui/button";
 import { DashboardSelect } from "./ui/dashboard-select";
@@ -146,6 +147,10 @@ export function Reports({
         retry={retry}
       />
     );
+  if (level === "national" && forecast) {
+    return <NationalReports states={states} forecast={forecast} elections={elections}
+      onBack={() => { setLevel("state"); setTemplate("territorial"); }} />;
+  }
   const state = states.find((s) => s.state_code === code) ?? states[0];
   const name = titleCase(state.name);
   const sorted = [...states].sort((a, b) => b.predicted - a.predicted);
@@ -323,7 +328,7 @@ export function Reports({
             <FileText className="section-card-icon" aria-hidden="true" />
             <div>
               <h2 id="report-config-title">Configura tu reporte</h2>
-              <p>Descarga un reporte estatal con datos y procedencia.</p>
+              <p>Descarga informes estatales o compara las 32 entidades a nivel nacional.</p>
             </div>
           </header>
           <label className="data-field">
@@ -337,11 +342,7 @@ export function Reports({
                 <option
                   key={t.id}
                   value={t.id}
-                  disabled={
-                    t.id === "national" ||
-                    t.id === "municipal" ||
-                    t.id === "scenarios"
-                  }
+                  disabled={t.id === "municipal" || t.id === "scenarios"}
                 >
                   {t.title}
                 </option>
@@ -364,19 +365,21 @@ export function Reports({
                   type="button"
                   key={id}
                   aria-pressed={level === id}
-                  disabled={id !== "state"}
-                  title={
-                    id !== "state" ? "Pendiente de implementación" : undefined
-                  }
-                  onClick={() => setLevel(id)}
+                  disabled={id === "municipal"}
+                  title={id === "municipal" ? "Pendiente de homologación oficial" : undefined}
+                  onClick={() => {
+                    setLevel(id);
+                    if (id === "national") setTemplate("national");
+                    if (id === "state") setTemplate("territorial");
+                  }}
                 >
                   {label}
                 </button>
               ))}
             </div>
             <p className="section-card-note">
-              Los reportes nacionales y municipales están pendientes. Estas
-              cifras corresponden a la entidad elegida.
+              El comparativo nacional ya está disponible. El detalle municipal
+               requiere homologación oficial y permanece deshabilitado.
             </p>
           </div>
           <label className="data-field">
@@ -697,11 +700,7 @@ export function Reports({
                   <button
                     type="button"
                     aria-pressed={template === t.id}
-                    disabled={
-                      t.id === "national" ||
-                      t.id === "municipal" ||
-                      t.id === "scenarios"
-                    }
+                    disabled={t.id === "municipal" || t.id === "scenarios"}
                     onClick={() => {
                       setTemplate(t.id);
                       if (t.id === "national") setLevel("national");
@@ -716,9 +715,7 @@ export function Reports({
                       <strong>{t.title}</strong>
                       <small>
                         {t.text}
-                        {t.id === "national" ||
-                        t.id === "municipal" ||
-                        t.id === "scenarios"
+                        {t.id === "municipal" || t.id === "scenarios"
                           ? " Próximamente."
                           : ""}
                       </small>

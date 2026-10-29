@@ -113,7 +113,7 @@ const headings: Partial<Record<View, PageHeading>> = {
     lead: "Reportes y",
     highlight: "Documentos",
     subtitle:
-      "Explora vistas previas estatales. La generación de archivos y los envíos programados están pendientes.",
+      "Descarga reportes estatales y comparativos nacionales con fuentes verificables. Los envíos programados siguen pendientes.",
   },
   data: {
     lead: "Gestión de",

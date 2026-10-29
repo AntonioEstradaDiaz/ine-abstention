@@ -17,6 +17,7 @@ import "./section-pages.css";
 import "./data-reports.css";
 import "./analysis-view.css";
 import "./auth.css";
+import "./punto7.css";
 
 export const metadata: Metadata = {
   title: "Pulso electoral · Participación territorial",

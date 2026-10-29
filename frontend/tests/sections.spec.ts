@@ -177,7 +177,7 @@ test("reports preview the chosen state on the shared republic map", async ({
   await expect(page.locator(".report-recent tbody tr")).toHaveCount(1);
   await expect(
     page.getByRole("button", { name: "Nacional", exact: true }),
-  ).toBeDisabled();
+  ).toBeEnabled();
   await expect(
     page.getByRole("button", { name: "Municipal", exact: true }),
   ).toBeDisabled();
