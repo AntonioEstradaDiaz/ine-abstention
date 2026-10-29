@@ -312,11 +312,12 @@ test("offline and empty states never substitute invented values", async ({
   await expect(
     page
       .locator(".territory-metrics")
-      .getByRole("heading", { name: "Selecciona un estado", exact: true }),
+      .getByRole("heading", { name: "Morelos", exact: true }),
   ).toBeVisible();
   await expect(
     page.getByRole("button", { name: "Reintentar", exact: true }).first(),
   ).toBeVisible();
+  await expect(page.locator(".territory-gauge")).toContainText("Abstención observada · 2024");
   await page.unroute("**/api/backend/predictions?**");
   await page
     .getByRole("button", { name: "Reintentar", exact: true })
