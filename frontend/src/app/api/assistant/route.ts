@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import snapshot from "@/lib/preview-data.json";
+import { backendInternalHeaders } from "@/lib/backend-internal";
 import {
   buildAssistantContext,
   systemPrompt,
@@ -63,7 +64,7 @@ export async function GET() {
 async function backend<T>(path: string): Promise<T> {
   const base = process.env.BACKEND_URL || "http://127.0.0.1:8001";
   const response = await fetch(new URL(`/api/v1/${path}`, base), {
-    headers: { Accept: "application/json" },
+    headers: { Accept: "application/json", ...backendInternalHeaders() },
     cache: "no-store",
     signal: AbortSignal.timeout(15_000),
   });
