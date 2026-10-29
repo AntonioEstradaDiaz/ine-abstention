@@ -596,3 +596,60 @@
   .legal-warning, .legal-section, .legal-nav-link.is-active { border-color: CanvasText; }
   .legal-hero-icon, .legal-section-icon { border: 1px solid CanvasText; }
 }
+
+/* Shared footer typography and actions across dashboard sections. */
+.app-shell .page-footer {
+  justify-content: flex-start;
+  align-items: center;
+  gap: 12px 24px;
+  padding: 20px 16px;
+  color: #52647c;
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.app-shell .page-footer > span {
+  font-size: inherit;
+  line-height: inherit;
+  overflow-wrap: anywhere;
+}
+.app-shell .page-footer > span:last-child {
+  margin-left: auto;
+  white-space: normal;
+}
+.app-shell .page-footer > .button,
+.app-shell .page-footer .site-policy-links a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 8px 12px;
+  border: 1px solid #f6d3e6;
+  border-radius: 10px;
+  background: #fff7fb;
+  color: #92004d;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.6;
+  text-decoration: none;
+}
+.app-shell .page-footer > .button:hover,
+.app-shell .page-footer .site-policy-links a:hover {
+  background: #fce7f2;
+  border-color: #e9a9cc;
+}
+.app-shell .page-footer .site-policy-links {
+  gap: 8px;
+}
+@media (max-width: 720px) {
+  .app-shell .page-footer {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .app-shell .page-footer > span:last-child {
+    margin-left: 0;
+  }
+}
