@@ -11,7 +11,7 @@ import {
   FlaskConical,
 } from "lucide-react";
 import { api } from "@/lib/api";
-import type { ElectionType, Prediction, Risk } from "@/lib/types";
+import type { Election, ElectionType, Prediction, Risk } from "@/lib/types";
 import { pct, pp, riskLabels } from "@/lib/utils";
 import { Chart, chartAxis, chartTooltip } from "./chart";
 import { Status } from "./shared";
@@ -25,18 +25,31 @@ const palette = ["#83909f", "#e5007e", "#f575b5", "#7c16ff"];
 const riskPalette = { high: "#c00063", medium: "#f45ca9", low: "#bec4cb" };
 export function DashboardInsights({
   states,
+  year,
+  elections,
   selected,
   onSelect,
   onNavigate,
   onShowAll,
 }: {
   states: Prediction[];
+  year: number;
+  elections: Election[];
   selected: string;
   onSelect: (code: string) => void;
   onNavigate: (view: "trends" | "scenarios" | "ml", changePP?: number) => void;
   onShowAll: () => void;
 }) {
-  const [type, setType] = useState<ElectionType>("midterm");
+  // The trend follows the electoral process chosen in the header.
+  const yearType =
+    elections.find((e) => e.year === year)?.election_type ?? "midterm";
+  const [type, setType] = useState<ElectionType>(yearType);
+  const syncKey = `${year}:${yearType}`;
+  const [synced, setSynced] = useState(syncKey);
+  if (synced !== syncKey) {
+    setSynced(syncKey);
+    setType(yearType);
+  }
   const [change, setChange] = useState(5.4);
   const codes = [...new Set([selected, "12", "16", "07"])].slice(0, 3);
   const histories = useQueries({
@@ -145,7 +158,10 @@ export function DashboardInsights({
           <TrendingUp size={18} />
           <div>
             <h2 id="lower-trend-title">Tendencia de participación</h2>
-            <p>Comparativa por proceso electoral</p>
+            <p>
+              Comparativa por proceso electoral
+              {years.includes(year) ? ` · Proceso ${year}` : ""}
+            </p>
           </div>
           <DashboardSelect
             aria-label="Elecciones de la tendencia"
@@ -214,6 +230,19 @@ export function DashboardInsights({
                   }),
                   symbolSize: 5,
                   lineStyle: { width: 1.5 },
+                  markLine: {
+                    silent: true,
+                    symbol: "none",
+                    lineStyle: { color: "#e5007e", type: "dashed", width: 1 },
+                    label: {
+                      formatter: String(year),
+                      color: "#b9005e",
+                      fontSize: 9,
+                    },
+                    data: years.includes(year)
+                      ? [{ xAxis: years.indexOf(year) }]
+                      : [],
+                  },
                 },
                 ...records.map((rows, i) => ({
                   name: name(

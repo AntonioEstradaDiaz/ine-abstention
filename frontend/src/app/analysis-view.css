@@ -80,7 +80,7 @@
   color: #ed008c;
   background: #fff;
   border: 1px solid #ed008c;
-  border-radius: 6px;
+  border-radius: 12px;
   padding: 10px 17px;
   min-height: 42px;
   font-size: 13px;
@@ -95,7 +95,7 @@
   gap: 13px;
   border: 1px solid #e6edf6;
   background: white;
-  border-radius: 10px;
+  border-radius: 15px;
   padding: 9px 16px;
   margin-bottom: 11px;
   min-width: 0;
@@ -107,7 +107,7 @@
   width: 42px;
   height: 40px;
   border: 1px solid #dce5f2;
-  border-radius: 7px;
+  border-radius: 10px;
   flex-shrink: 0;
   color: #23365e;
 }
@@ -116,7 +116,7 @@
   min-width: 0;
   width: calc(17% + 5px);
   font-size: 14px;
-  border-radius: 6px;
+  border-radius: 10px;
   padding: 8px 15px;
   border-color: #dce5f2;
   flex-shrink: 1;
@@ -142,7 +142,7 @@
   height: 40px;
   width: 40px;
   border: 1px solid #e3eaf3;
-  border-radius: 7px;
+  border-radius: 10px;
   color: #2b3f69;
 }
 .analysis-kpis {
@@ -157,7 +157,7 @@
   gap: 18px;
   min-width: 0;
   border: 1px solid #e6edf6;
-  border-radius: 10px;
+  border-radius: 15px;
   background: #fff;
   padding: 15px 18px;
   min-height: 90px;
@@ -169,8 +169,8 @@
   width: 56px;
   height: 56px;
   flex-shrink: 0;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #fdebf7, #fce7f4);
+  border-radius: 15px;
+  background: linear-gradient(145deg, #fff2f9, #fce7f3);
   color: #ed008c;
 }
 .analysis-kpi > div {
@@ -203,7 +203,7 @@
 .analysis-card {
   min-width: 0;
   border: 1px solid #e6edf6;
-  border-radius: 10px;
+  border-radius: 15px;
   background: #fff;
   box-shadow: 0 5px 18px #243e5803;
   padding: 12px 17px;
@@ -266,7 +266,7 @@
   display: flex;
   border: 1px solid #dfe7f1;
   background: #f7f9fc;
-  border-radius: 6px;
+  border-radius: 10px;
   flex-shrink: 0;
 }
 .analysis-metric-switch button {
@@ -275,7 +275,7 @@
   background: transparent;
   padding: 7px 17px;
   font-size: 12px;
-  border-radius: 6px;
+  border-radius: 8px;
   margin: -1px;
 }
 .analysis-metric-switch button[aria-pressed="true"] {
@@ -299,7 +299,7 @@
   gap: 16px;
   padding: 12px 13px;
   background: linear-gradient(100deg, #fdf0f9, #fff6fb);
-  border-radius: 8px;
+  border-radius: 12px;
   margin: 2px 0 4px;
 }
 .analysis-reading-summary .analysis-kpi-icon {
@@ -385,7 +385,7 @@
   padding: 7px 11px;
   min-height: 32px;
   width: 172px;
-  border-radius: 6px;
+  border-radius: 10px;
   flex-shrink: 0;
 }
 .analysis-bars {
@@ -409,14 +409,14 @@
 }
 .analysis-bars > div > div {
   height: 14px;
-  border-radius: 4px;
+  border-radius: 999px;
   background: linear-gradient(90deg, #f5f7fa, #e9eef4);
   overflow: hidden;
 }
 .analysis-bars i {
   display: block;
   height: 100%;
-  border-radius: 3px;
+  border-radius: 999px;
   background: linear-gradient(90deg, #cf0085, #e10097);
 }
 .analysis-bars strong {
@@ -430,7 +430,7 @@
   align-items: center;
   gap: 9px;
   border: 1px solid #dce5f2;
-  border-radius: 6px;
+  border-radius: 10px;
   padding: 7px 10px;
   color: #25406b;
   width: 220px;
@@ -471,10 +471,10 @@
   background: #f5f7fa;
 }
 .analysis-screen thead th:first-child {
-  border-radius: 8px 0 0 8px;
+  border-radius: 10px 0 0 10px;
 }
 .analysis-screen thead th:last-child {
-  border-radius: 0 8px 8px 0;
+  border-radius: 0 10px 10px 0;
 }
 .analysis-screen th {
   font-weight: 400;
@@ -541,7 +541,7 @@
   width: 27px;
   height: 28px;
   border: 1px solid #e5ebf5;
-  border-radius: 5px;
+  border-radius: 8px;
   background: #fff;
   color: #3e5279;
 }
@@ -555,7 +555,7 @@
   width: 29px;
   height: 29px;
   background: #fde8f6;
-  border-radius: 5px;
+  border-radius: 8px;
   color: #e5008c;
 }
 .analysis-sample-note {
@@ -605,7 +605,7 @@
   width: 100%;
   font-size: 12px;
   border: 1px solid #e1e7ef;
-  border-radius: 7px;
+  border-radius: 10px;
   padding: 10px;
 }
 .analysis-dialog-close {
@@ -877,7 +877,7 @@
   gap: 2px;
   border: 1px solid #d8e2ee;
   box-shadow: 0 3px 8px #243e581a;
-  border-radius: 8px;
+  border-radius: 10px;
   background: white;
   padding: 7px 9px;
   z-index: 1;
@@ -947,7 +947,7 @@
   gap: 12px;
   width: 100%;
   border: 1px solid #e6edf6;
-  border-radius: 10px;
+  border-radius: 12px;
   background: #fff;
   padding: 14px;
   color: #ed008c;

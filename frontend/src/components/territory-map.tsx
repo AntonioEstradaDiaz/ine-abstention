@@ -3,15 +3,17 @@ import { useEffect, useId, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { Map as MapLibreMap } from "maplibre-gl";
 import {
-  LocateFixed,
-  MapPin,
-  RotateCcw,
-  RotateCw,
-  Plus,
-  Minus,
-  SlidersHorizontal,
   ChevronDown,
   ChevronUp,
+  LocateFixed,
+  MapPin,
+  Maximize2,
+  Minimize2,
+  Minus,
+  Plus,
+  RotateCcw,
+  RotateCw,
+  SlidersHorizontal,
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { pct, riskColors, riskLabels } from "@/lib/utils";
@@ -564,19 +566,6 @@ export function TerritoryMap({
             <Minus size={17} />
           </Button>
         </div>
-        <Button
-          variant="outline"
-          className="map-restore"
-          title="Restablecer vista de México"
-          aria-label="Ver todo México"
-          disabled={!loaded}
-          onClick={() => {
-            if (mapRef.current)
-              frameMexico(mapRef.current, threeD, motionDuration());
-          }}
-        >
-          <LocateFixed size={18} /> Restablecer vista
-        </Button>
         {threeD && (
           <>
             <div
@@ -619,6 +608,36 @@ export function TerritoryMap({
             </div>
           </>
         )}
+        <Button
+          variant="outline"
+          className="map-restore"
+          title="Restablecer vista de México"
+          aria-label="Ver todo México"
+          disabled={!loaded}
+          onClick={() => {
+            if (mapRef.current)
+              frameMexico(mapRef.current, threeD, motionDuration());
+          }}
+        >
+          <LocateFixed size={18} /> Restablecer vista
+        </Button>
+        <Button
+          variant="outline"
+          size="icon"
+          className="map-fullscreen"
+          aria-label={expanded ? "Reducir mapa" : "Ampliar mapa"}
+          title={expanded ? "Reducir mapa" : "Ampliar mapa"}
+          disabled={!loaded}
+          onClick={() =>
+            container.current
+              ?.querySelector<HTMLButtonElement>(
+                ".maplibregl-ctrl-fullscreen, .maplibregl-ctrl-shrink",
+              )
+              ?.click()
+          }
+        >
+          {expanded ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
+        </Button>
       </div>
       <div className="compact-map-legend" aria-label="Leyenda del mapa">
         {historical ? (
@@ -660,8 +679,11 @@ export function TerritoryMap({
           rel="noreferrer"
         >
           Geografía: INEGI
-        </a>{" "}
-        · Límites geoestadísticos de referencia
+        </a>
+        <span className="map-attribution-note">
+          {" "}
+          · Límites geoestadísticos de referencia
+        </span>
       </div>
     </div>
   );
