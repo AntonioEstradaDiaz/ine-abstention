@@ -61,7 +61,7 @@ test("territorial metrics follow Guerrero and Baja California, including the his
     "/api/backend/predictions?target_year=2027&limit=100",
   );
   expect(forecastsResponse.ok()).toBeTruthy();
-  const forecasts = (await forecastsResponse.json()).items;
+  await forecastsResponse.json();
   const observedResponse = await request.get(
     "/api/backend/statistics/territories?year=2024&territory_type=state&limit=100",
   );
@@ -78,9 +78,6 @@ test("territorial metrics follow Guerrero and Baja California, including the his
     ["12", "Guerrero"],
     ["02", "Baja California"],
   ]) {
-    const forecast = forecasts.find(
-      (r: { state_code: string }) => r.state_code === code,
-    );
     const actual = observed.find(
       (r: { state_code?: string; official_code: string }) =>
         (r.state_code || r.official_code) === code,
@@ -95,7 +92,9 @@ test("territorial metrics follow Guerrero and Baja California, including the his
       panel.getByRole("heading", { name, exact: true }),
     ).toBeVisible();
     await expect(panel.locator(".detail-rate-value")).toHaveText(
-      rate(forecast.predicted),
+      rate(
+        actual.nonvoter_count / (actual.voter_count + actual.nonvoter_count),
+      ),
     );
     await expect(
       panel.locator(".territory-stat-cards > div").nth(0).locator("strong"),

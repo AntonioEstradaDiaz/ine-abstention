@@ -133,7 +133,7 @@ const titleCase = (name: string) =>
 export function Dashboard({ preview = false }: { preview?: boolean }) {
   const [view, setView] = useState<View>("map");
   const [selected, setSelected] = useState("17");
-  const [year, setYear] = useState(2024);
+  const [selectedYear, setYear] = useState<number | null>(null);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [scenarioChange, setScenarioChange] = useState(3);
   const [historical, setHistorical] = useState(false);
@@ -146,10 +146,17 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
   const elections = useQuery({
     queryKey: ["elections"],
     queryFn: ({ signal }) => api.elections(signal),
+    refetchInterval: 60_000,
+    refetchOnWindowFocus: true,
   });
+  const year =
+    selectedYear ?? Math.max(...(elections.data ?? []).map((e) => e.year), 0);
   const indicators = useQuery({
     queryKey: ["indicators", year],
     queryFn: ({ signal }) => api.indicators(year, signal),
+    enabled: year > 0,
+    refetchInterval: 60_000,
+    refetchOnWindowFocus: true,
   });
   const sources = useQuery({
     queryKey: ["sources"],
@@ -290,7 +297,14 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
       />
       <div className="workspace">
         <main id="main" tabIndex={-1}>
-          <p className="sr-only" role="status" aria-label="Sección activa" aria-live="polite">Sección activa: {currentSection.label}</p>
+          <p
+            className="sr-only"
+            role="status"
+            aria-label="Sección activa"
+            aria-live="polite"
+          >
+            Sección activa: {currentSection.label}
+          </p>
           <div className={headings[view] ? "sr-only" : "page-heading"}>
             <div>
               <div className="eyebrow">
@@ -446,10 +460,12 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
                   actual={actual}
                   selected={selected}
                   year={year}
-                  historical={historical}
-                  loading={predictions.isPending}
-                  error={predictions.error}
-                  retry={() => void predictions.refetch()}
+                  loading={elections.isPending || (year > 0 && indicators.isPending)}
+                  error={elections.error ?? indicators.error}
+                  retry={() => {
+                    void elections.refetch();
+                    if (year > 0) void indicators.refetch();
+                  }}
                   sources={sources.data?.items}
                   onExplore={() => setView("predictions")}
                 />
@@ -557,7 +573,10 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
             <span>
               Tasas con participación conocida · Modelo sin validación operativa
             </span>
-            <nav className="site-policy-links" aria-label="Información del proyecto">
+            <nav
+              className="site-policy-links"
+              aria-label="Información del proyecto"
+            >
               <Link href="/privacidad">Aviso de privacidad</Link>
               <Link href="/terminos">Términos</Link>
               <Link href="/soporte">Soporte</Link>

@@ -95,12 +95,19 @@ test("dashboard uses live backend data, maps and historical periods", async ({
   await expect(page.locator(".territory-metrics h2")).toHaveText(
     "Baja California",
   );
-  const selected = predictions.items.find(
-    (p: { state_code: string }) => p.state_code === "02",
+  const currentObserved = await (
+    await request.get(
+      "http://127.0.0.1:8001/api/v1/statistics/territories?year=2024&territory_type=state&limit=100",
+    )
+  ).json();
+  const selectedObserved = currentObserved.items.find(
+    (r: { state_code: string }) => r.state_code === "02",
   );
   await expect(
     page.locator(".territory-metrics .detail-rate-value"),
-  ).toHaveText(`${(selected.predicted * 100).toFixed(1)}%`);
+  ).toHaveText(
+    `${((selectedObserved.nonvoter_count / (selectedObserved.voter_count + selectedObserved.nonvoter_count)) * 100).toFixed(1)}%`,
+  );
   await page.getByRole("button", { name: "Histórico", exact: true }).click();
   await chooseOption(page, "Año histórico", "2024 · Presidencial");
   await expect(
