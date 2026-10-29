@@ -103,3 +103,15 @@ alertas centralizadas adicionales fuera de este repositorio.
    Supabase de preproducción.
 5. Dependencias/secretos auditados, responsables operativos y procedimiento de
    incidentes definidos. Hasta entonces el punto no acredita operación productiva.
+
+## Revisiones periódicas de dependencias
+`.github/dependabot.yml` solicita actualizaciones semanales para `npm` en
+`frontend/`, `uv.lock`/Python y las acciones de GitHub. Los PR automáticos
+deben ejecutar CI y revisarse manualmente antes de fusionarse.
+`.github/workflows/dependency-audit.yml` añade comprobación semanal
+`npm audit --omit=dev --audit-level=high`; si detecta avisos altos o críticos,
+el job falla y guarda un reporte JSON. Requiere que GitHub Actions se habilite
+tras incorporar la rama principal. El auditor de npm no cubre las dependencias
+de Python: revisar alertas y solicitudes de Dependabot uv y los boletines de
+seguridad por separado. Se recomienda habilitar Dependabot alerts y secret
+scanning en los ajustes del repositorio donde estén disponibles.
