@@ -322,3 +322,13 @@ data/, artifacts/    Datos y pesos; algunos informes/muestras sí están version
   [predicciones](docs/phase5.md), [simulaciones](docs/phase6.md), [integración backend](docs/phase7.md).
 - [Hoja de ruta histórica](docs/project-status.md): consultar junto con esta auditoría; algunas prioridades
   preceden al despliegue y a la incorporación de Supabase Auth.
+
+## Punto 9 · Experiencia y entrega (octubre de 2026)
+
+Se añadieron guías de [accesibilidad](docs/punto9-accesibilidad.md),
+[pruebas con usuarios](docs/punto9-pruebas-usuario.md) y
+[entrega al equipo receptor](docs/punto9-entrega.md).
+La [licencia del código](docs/LICENCIA_PENDIENTE.md) requiere aprobación de sus titulares.
+Las páginas públicas `/privacidad`, `/terminos` y `/soporte` son preliminares:
+se debe completar y aprobar la documentación legal y el contacto de soporte antes
+ de abrir el registro al público. PULSO no es una plataforma oficial del INE.
