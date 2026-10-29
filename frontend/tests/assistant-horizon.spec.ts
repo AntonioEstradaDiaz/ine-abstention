@@ -55,6 +55,12 @@ test("assistant calculates a selected horizon and clears the previous conversati
     0,
   );
   await expect(result).toContainText("2029");
+  await expect(result).toContainText("Rango de abstención:");
+  await expect(result).not.toContainText("no hay banda");
+  await assistant.getByLabel("Año objetivo del asistente").fill("2030");
+  await assistant.getByRole("button", {name: "Calcular proyección", exact: true}).click();
+  await expect(result).toContainText("2029");
+  await expect(assistant.getByLabel("Año objetivo del asistente")).toHaveAttribute("max", "2029");
 });
 
 test("assistant rejects malformed horizons before contacting an AI provider", async ({
@@ -62,6 +68,7 @@ test("assistant rejects malformed horizons before contacting an AI provider", as
 }) => {
   for (const payload of [
     { target_year: 2020 },
+    { target_year: 2030 },
     { target_year: 2028.5 },
     { target_year: 2028, election_type: "invalid" },
   ]) {
