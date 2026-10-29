@@ -36,7 +36,7 @@ export async function reportPdf(report: StateReport): Promise<Uint8Array> {
   const { PDFDocument, StandardFonts, rgb } = await import("pdf-lib");
   const doc = await PDFDocument.create();
   doc.setTitle(`${report.title} · ${report.state.name}`);
-  doc.setAuthor("Pulso electoral");
+  doc.setAuthor("Atlas De La Participación");
   if (report.visualCover) {
     const cover = await doc.embedPng(report.visualCover);
     const page = doc.addPage([595.28, 841.89]);
@@ -78,7 +78,7 @@ export async function reportPdf(report: StateReport): Promise<Uint8Array> {
       y -= size + 5;
     }
   };
-  text("PULSO ELECTORAL", 12, true);
+  text("Atlas De La Participación", 12, true);
   text(report.title, 22, true);
   text(report.state.name, 18, true);
   text(
@@ -177,7 +177,7 @@ export async function reportPdf(report: StateReport): Promise<Uint8Array> {
   doc
     .getPages()
     .forEach((p, i, all) =>
-      p.drawText(`Pulso electoral · ${i + 1} / ${all.length}`, {
+      p.drawText(`Atlas De La Participación · ${i + 1} / ${all.length}`, {
         x: 52,
         y: 30,
         size: 8,
@@ -191,11 +191,11 @@ export async function reportPdf(report: StateReport): Promise<Uint8Array> {
 export async function reportExcel(report: StateReport): Promise<Uint8Array> {
   const { default: ExcelJS } = await import("exceljs");
   const book = new ExcelJS.Workbook();
-  book.creator = "Pulso electoral";
+  book.creator = "Atlas De La Participación";
   book.created = new Date(report.createdAt);
   const summary = book.addWorksheet("Resumen");
   summary.addRows([
-    ["Pulso electoral", report.title],
+    ["Atlas De La Participación", report.title],
     ["Entidad", report.state.name],
     ["Código de entidad", report.state.state_code],
     ["Generado", report.createdAt],
@@ -290,7 +290,7 @@ export async function downloadStateReport(
   const url = URL.createObjectURL(blob),
     a = document.createElement("a");
   a.href = url;
-  a.download = `pulso-reporte-${report.state.state_code}-${report.forecast.target_year}.${format}`;
+  a.download = `atlas-participacion-reporte-${report.state.state_code}-${report.forecast.target_year}.${format}`;
   document.body.appendChild(a);
   a.click();
   a.remove();

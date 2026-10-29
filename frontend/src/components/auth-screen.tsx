@@ -406,7 +406,7 @@ export function AuthScreen({
             {info === "terms" ? (
               <>
                 <p>
-                  Pulso electoral es un prototipo analítico con datos abiertos
+                  Atlas De La Participación es un prototipo analítico con datos abiertos
                   del INE. Sus estimaciones son experimentales, no son un
                   producto oficial del INE y no deben usarse para decisiones
                   operativas.

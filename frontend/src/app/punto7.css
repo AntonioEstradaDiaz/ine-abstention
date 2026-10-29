@@ -1,4 +1,4 @@
-/* Punto 7: reportes nacionales en el mismo lenguaje visual PULSO. */
+/* Punto 7: reportes nacionales en el mismo lenguaje visual Atlas De La Participación. */
 .national-report-intro { display:flex;align-items:center;justify-content:space-between;gap:20px;padding:32px;background:linear-gradient(110deg,#fff 0%,#fff5fa 63%,#fce7f2 100%);border:1px solid #f6d5e7;border-radius:22px;overflow:hidden; }
 .national-report-intro-copy { min-width:0;position:relative;z-index:1; }
 .national-report-overline { display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:6px 12px;color:#a9005d;background:#fff;border:1px solid #f4c4dd;font-size:12px;font-weight:700; }

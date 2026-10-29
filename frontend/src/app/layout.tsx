@@ -22,7 +22,7 @@ import "./punto6.css";
 import "./accessibility.css";
 
 export const metadata: Metadata = {
-  title: "Pulso electoral · Participación territorial",
+  title: "Atlas De La Participación · Participación territorial",
   description:
     "Explora la participación histórica, el riesgo de abstención y escenarios territoriales con datos oficiales del INE.",
 };

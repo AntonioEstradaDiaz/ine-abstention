@@ -20,8 +20,8 @@ const limits =
 export async function nationalPdf(report: NationalReport): Promise<Uint8Array> {
   const { PDFDocument, StandardFonts, rgb } = await import("pdf-lib");
   const doc = await PDFDocument.create();
-  doc.setTitle("Pulso electoral · Comparativo nacional");
-  doc.setAuthor("Pulso electoral");
+  doc.setTitle("Atlas De La Participación · Comparativo nacional");
+  doc.setAuthor("Atlas De La Participación");
   const font = await doc.embedFont(StandardFonts.Helvetica);
   const bold = await doc.embedFont(StandardFonts.HelveticaBold);
   const pink = rgb(0.77, 0, 0.42);
@@ -52,7 +52,7 @@ export async function nationalPdf(report: NationalReport): Promise<Uint8Array> {
     if (current) draw(current);
     y -= 5;
   };
-  line("PULSO ELECTORAL", 13, true);
+  line("Atlas De La Participación", 13, true);
   line("Comparativo nacional", 22, true);
   line(`Generado: ${new Date(report.createdAt).toLocaleString("es-MX", { timeZone: "America/Mexico_City" })}`);
   line(`Pronosticos territoriales ${report.forecast.target_year} · ${report.states.length} entidades disponibles`);
@@ -74,7 +74,7 @@ export async function nationalPdf(report: NationalReport): Promise<Uint8Array> {
   line("Fuentes: INE, Conteos Censales de Participacion Ciudadana (CCPC).", 9);
   line(limits, 9);
   doc.getPages().forEach((p, i, all) => {
-    p.drawText(`Pulso electoral · ${i + 1} / ${all.length}`, {
+    p.drawText(`Atlas De La Participación · ${i + 1} / ${all.length}`, {
       x: 48, y: 30, size: 8, font, color: ink,
     });
   });
@@ -84,11 +84,11 @@ export async function nationalPdf(report: NationalReport): Promise<Uint8Array> {
 export async function nationalExcel(report: NationalReport): Promise<Uint8Array> {
   const { default: ExcelJS } = await import("exceljs");
   const book = new ExcelJS.Workbook();
-  book.creator = "Pulso electoral";
+  book.creator = "Atlas De La Participación";
   book.created = new Date(report.createdAt);
   const cover = book.addWorksheet("Resumen");
   cover.addRows([
-    ["PULSO", "Comparativo nacional"],
+    ["Atlas De La Participación", "Comparativo nacional"],
     ["Generado", report.createdAt],
     ["Predicciones", "Solo por entidad; NO agregadas nacionalmente"],
     ["Entidades", report.states.length],
@@ -147,7 +147,7 @@ export async function downloadNationalReport(
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
-  link.download = `pulso-reporte-nacional-${report.forecast.target_year}.${format}`;
+  link.download = `atlas-participacion-reporte-nacional-${report.forecast.target_year}.${format}`;
   document.body.appendChild(link);
   link.click();
   link.remove();

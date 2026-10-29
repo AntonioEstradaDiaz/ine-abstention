@@ -5,8 +5,8 @@ import { LegalLayout, LegalNotice, LegalSection } from "@/components/legal-layou
 import { publicContact, publicController } from "@/lib/public-contact";
 
 export const metadata: Metadata = {
-  title: "Privacidad | Pulso electoral",
-  description: "Información preliminar sobre la privacidad y los datos personales en Pulso electoral.",
+  title: "Privacidad | Atlas De La Participación",
+  description: "Información preliminar sobre la privacidad y los datos personales en Atlas De La Participación.",
 };
 
 export default function PrivacidadPage() {
@@ -28,7 +28,7 @@ export default function PrivacidadPage() {
       <LegalSection id="responsable" title="Responsable del tratamiento" icon={<UserRound size={21} />}>
         <p>
           {controller ?? "El responsable legal todavía debe ser designado por el equipo receptor."}
-          {" "}Pulso electoral es un proyecto independiente y no representa al
+          {" "}Atlas De La Participación es un proyecto independiente y no representa al
           Instituto Nacional Electoral (INE).
         </p>
       </LegalSection>

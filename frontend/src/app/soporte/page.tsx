@@ -5,8 +5,8 @@ import { LegalLayout, LegalNotice, LegalSection } from "@/components/legal-layou
 import { publicContact } from "@/lib/public-contact";
 
 export const metadata: Metadata = {
-  title: "Soporte | Pulso electoral",
-  description: "Centro de ayuda y contacto para el prototipo Pulso electoral.",
+  title: "Soporte | Atlas De La Participación",
+  description: "Centro de ayuda y contacto para el prototipo Atlas De La Participación.",
 };
 
 export default function SoportePage() {
@@ -16,7 +16,7 @@ export default function SoportePage() {
     <LegalLayout
       page="support"
       title="Ayuda y soporte"
-      subtitle="Encuentra respuestas rápidas y aprende a resolver problemas de acceso a PULSO."
+      subtitle="Encuentra respuestas rápidas y aprende a resolver problemas de acceso a Atlas De La Participación."
     >
       <LegalSection id="acceso" title="¿Tienes problemas para iniciar sesión?" icon={<KeyRound size={21} />}>
         <ol className="legal-steps">
