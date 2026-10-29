@@ -1,4 +1,4 @@
-# Pulso electoral · INE Abstention
+# Atlas De La Participación
 
 Aplicación para explorar participación y abstención electoral en México, comparar entidades,
 revisar modelos y calcular escenarios hipotéticos con datos abiertos del INE.
@@ -21,7 +21,23 @@ del hackathon. No guardar información personal en sus escenarios. Los correos s
 reciben enlaces de recuperación. La creación y las pruebas de acceso están documentadas en
 [Auth](frontend/AUTH.md).
 
-## Estado actual: demo publicada, producto todavía incompleto
+
+## Guía del proyecto · actualización documental del 29 de octubre de 2026
+
+**Atlas De La Participación** es el nombre del producto. El repositorio, el dominio de
+la demo, los usuarios de prueba y los identificadores internos conservan sus nombres
+anteriores por compatibilidad. Las credenciales demo de esta página permanecen sin cambios.
+
+- [Machine learning, predicciones y límites](docs/machine-learning.md).
+- [Galería del dashboard](docs/dashboard-gallery.md).
+- [Instalación](docs/installation.md), [autenticación](frontend/AUTH.md) y [estado del proyecto](docs/project-status.md).
+- [Reportes nacionales y escenarios](docs/punto7-reportes-escenarios.md).
+
+Las secciones de pruebas fechadas más abajo son registros históricos de esas versiones,
+no certificaciones del despliegue actual. Una rama subida no equivale a una funcionalidad
+fusionada ni desplegada. Las capturas conservan la apariencia de la versión fotografiada.
+
+## Estado de la demo y límites
 
 La demo corre en Vercel Hobby con Next.js, Supabase Auth y Groq reales. Usa `PULSO_PREVIEW=1`:
 los datos y pronósticos son una instantánea versionada del repositorio. **No hay FastAPI ni
@@ -52,7 +68,7 @@ en producción. Las pruebas reales de IA y sus límites de cuota se detallan en 
 | Laboratorio de modelos | Dos referencias y cuatro modelos ML, métricas temporales, pronósticos para 32 estados, importancia global y escenarios locales. Exporta CSV/JSON. | Entrenamiento previo, no por solicitud. La síntesis automática no es una consulta a IA. Acceso desde Análisis → Preguntar a la IA → Abrir laboratorio de modelos. |
 | Predicciones | Baseline estatal 2027, banda, contexto histórico, errores temporales y asistente Groq. | Las bandas no garantizan cobertura futura; no predice municipios ni efectos de intervenciones. |
 | Escenarios | Cambio supuesto de participación, límites 0–100%, comparación, guardado privado y recuperación del historial. | Cálculo sobre la instantánea en demo; el historial muestra los últimos 20 escenarios de la entidad. Corridas anteriores no se restauran sobre una base distinta. |
-| Reportes | Reporte estatal descargable en PDF y Excel, entidad, variable, comparación nacional ponderada, histórico, hallazgos y metodología. PDF incluye gráficas opcionales; Excel conserva conteos y tasas numéricas. | PowerPoint, envíos automáticos y reportes nacionales/municipales pendientes. Las últimas cinco descargas se pueden repetir durante la sesión de la sección; no hay archivo persistente de reportes. |
+| Reportes | Reporte estatal descargable en PDF y Excel, entidad, variable, comparación nacional ponderada, histórico, hallazgos y metodología. PDF incluye gráficas opcionales; Excel conserva conteos y tasas numéricas. | Comparativo nacional disponible; PowerPoint, envíos automáticos y detalle municipal pendientes. Las últimas cinco descargas se pueden repetir durante la sesión de la sección; no hay archivo persistente de reportes. |
 | Datos | Filtros, búsqueda, orden, paginación, selección de filas, CSV/JSON, diccionario y procedencia. | Datos nacionales/estatales oficiales; muestra municipal retirada y opción deshabilitada hasta homologar fuentes. Subir archivos está pendiente. Actualizar fuentes vuelve a consultar los datos disponibles; no descarga nuevas elecciones del INE. |
 
 Mapa, Análisis, Predicciones y Escenarios comparten estado seleccionado; Análisis y el histórico del
@@ -342,7 +358,7 @@ Se añadieron guías de [accesibilidad](docs/punto9-accesibilidad.md),
 La [licencia del código](docs/LICENCIA_PENDIENTE.md) requiere aprobación de sus titulares.
 Las páginas públicas `/privacidad`, `/terminos` y `/soporte` son preliminares:
 se debe completar y aprobar la documentación legal y el contacto de soporte antes
- de abrir el registro al público. PULSO no es una plataforma oficial del INE.
+ de abrir el registro al público. Atlas De La Participación no es una plataforma oficial del INE.
 
 ## Punto 8 · Operación y seguridad
 

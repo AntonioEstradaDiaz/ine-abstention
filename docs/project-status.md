@@ -1,6 +1,6 @@
 # Estado del proyecto y plan de mejora
 
-Estado revisado: 28 de octubre de 2026 (America/Mexico_City). Nombre de producto: **Pulso electoral**.
+Estado revisado: 28 de octubre de 2026 (America/Mexico_City). Nombre de producto: **Atlas De La Participación**.
 Repositorio: `AntonioEstradaDiaz/ine-abstention`, público a la fecha de revisión. Estado: demo funcional, con pendientes de producción.
 
 ## Qué problema resuelve
