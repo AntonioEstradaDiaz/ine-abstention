@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { AnalysisView } from "./analysis-view";
 import { DashboardSelect } from "./ui/dashboard-select";
 import { useMemo, useState } from "react";
@@ -289,6 +290,7 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
       />
       <div className="workspace">
         <main id="main" tabIndex={-1}>
+          <p className="sr-only" role="status" aria-label="Sección activa" aria-live="polite">Sección activa: {currentSection.label}</p>
           <div className={headings[view] ? "sr-only" : "page-heading"}>
             <div>
               <div className="eyebrow">
@@ -554,7 +556,12 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
             <span>
               Tasas con participación conocida · Modelo sin validación operativa
             </span>
-            <span>Pulso electoral / 2026</span>
+            <nav className="site-policy-links" aria-label="Información del proyecto">
+              <Link href="/privacidad">Aviso de privacidad</Link>
+              <Link href="/terminos">Términos</Link>
+              <Link href="/soporte">Soporte</Link>
+            </nav>
+            <span>Pulso electoral / 2026 · Proyecto independiente del INE</span>
           </footer>
         </main>
       </div>
