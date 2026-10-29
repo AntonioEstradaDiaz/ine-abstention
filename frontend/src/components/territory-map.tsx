@@ -18,7 +18,10 @@ import {
 import { Button } from "./ui/button";
 import { pct, riskColors, riskLabels } from "@/lib/utils";
 import { geometryQuery } from "@/lib/geometry";
-import { createMapSelection } from "@/lib/map-selection-layer";
+import {
+  createMapSelection,
+  createRoofBorders,
+} from "@/lib/map-selection-layer";
 import type { Risk } from "@/lib/types";
 
 export interface MapDatum {
@@ -76,6 +79,7 @@ export function TerritoryMap({
   const mapRef = useRef<MapLibreMap | null>(null);
   const selectRef = useRef(onSelect);
   const calloutRef = useRef<HTMLDivElement>(null);
+  const roofBorders = useRef<ReturnType<typeof createRoofBorders> | null>(null);
   const selectionLayer = useRef<ReturnType<typeof createMapSelection> | null>(
     null,
   );
@@ -284,12 +288,14 @@ export function TerritoryMap({
               id: "states-border",
               type: "line",
               source: "states",
+              layout: { visibility: modeRef.current ? "none" : "visible" },
               paint: { "line-color": "#0B1220", "line-width": 1 },
             });
             instance.addLayer({
               id: "selected-border",
               type: "line",
               source: "states",
+              layout: { visibility: modeRef.current ? "none" : "visible" },
               filter: ["==", ["get", "cvegeo"], ""],
               paint: { "line-color": "#F1F5F9", "line-width": 2.5 },
             });
@@ -309,6 +315,8 @@ export function TerritoryMap({
               callout.dataset.below = String(y < 175);
               callout.setAttribute("aria-hidden", String(!visible));
             });
+            roofBorders.current = createRoofBorders();
+            instance.addLayer(roofBorders.current.layer);
             instance.addLayer(selectionLayer.current.layer);
             instance.on(
               "click",
@@ -360,6 +368,7 @@ export function TerritoryMap({
       instance?.remove();
       mapPanel?.classList.remove("maplibregl-pseudo-fullscreen");
       selectionLayer.current = null;
+      roofBorders.current = null;
       mapRef.current = null;
     };
   }, [geo.data]);
@@ -367,6 +376,10 @@ export function TerritoryMap({
     const map = mapRef.current;
     if (!loaded || !map || !geo.data) return;
     // Styling changes update only 32 feature states, never resend the 28 MB polygons.
+    const roofs: Array<{
+      feature: (typeof geo.data.features)[number];
+      height: number;
+    }> = [];
     for (const feature of geo.data.features) {
       const id = String(feature.properties?.cvegeo);
       const row = rows.find((r) => r.state_code === id);
@@ -379,18 +392,16 @@ export function TerritoryMap({
               ? "#c00063"
               : riskColors[row.risk]
             : "#29384B";
-      map.setFeatureState(
-        { source: "states", id },
-        {
-          color,
-          height:
-            v == null || !Number.isFinite(v)
-              ? 0
-              : Math.max(0, Math.min(1, v)) * 300_000,
-          dim: !historical && filter !== "all" && row?.risk !== filter,
-        },
-      );
+      const dim = !historical && filter !== "all" && row?.risk !== filter;
+      const height =
+        v == null || !Number.isFinite(v)
+          ? 0
+          : Math.max(0, Math.min(1, v)) * 300_000;
+      map.setFeatureState({ source: "states", id }, { color, height, dim });
+      // Dimmed states are drawn flat, so their border stays on the ground.
+      roofs.push({ feature, height: dim ? 0 : height });
     }
+    roofBorders.current?.update(roofs, threeD);
     map.setFilter("selected-border", ["==", ["get", "cvegeo"], selected]);
     const selectedFeature = geo.data.features.find(
       (f) => String(f.properties?.cvegeo) === selected,
@@ -416,6 +427,9 @@ export function TerritoryMap({
       "visibility",
       threeD ? "visible" : "none",
     );
+    // In 3D the borders are drawn on each roof; flat lines would not match the blocks.
+    for (const id of ["states-border", "selected-border"])
+      map.setLayoutProperty(id, "visibility", threeD ? "none" : "visible");
     map.setPaintProperty("states-fill", "fill-opacity", [
       "case",
       ["boolean", ["feature-state", "dim"], false],

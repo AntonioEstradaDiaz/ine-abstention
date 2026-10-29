@@ -368,7 +368,8 @@ test("the header process drives the map trend, report history and data year", as
     "Proceso Electoral 2015",
   );
   const years = page.locator(".report-charts .chart text");
-  await expect(years.filter({ hasText: /^2015$/ })).toHaveCount(1);
+  // The axis label plus the process marker label.
+  await expect(years.filter({ hasText: /^2015$/ })).toHaveCount(2);
   await expect(years.filter({ hasText: /^2018$/ })).toHaveCount(0);
   await page.getByRole("button", { name: "Datos", exact: true }).click();
   await expect(
