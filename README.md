@@ -329,3 +329,13 @@ Consulte [documentación del punto 7](docs/punto7-reportes-escenarios.md):
 comparativos nacionales PDF/Excel y comparador multiestado exploratorio,
 pendientes de CI. Se conservan los reportes estatales y los escenarios privados.
 No están habilitados todavía PowerPoint, envíos programados ni reportes municipales.
+
+## Punto 9 · Experiencia y entrega (octubre de 2026)
+
+Se añadieron guías de [accesibilidad](docs/punto9-accesibilidad.md),
+[pruebas con usuarios](docs/punto9-pruebas-usuario.md) y
+[entrega al equipo receptor](docs/punto9-entrega.md).
+La [licencia del código](docs/LICENCIA_PENDIENTE.md) requiere aprobación de sus titulares.
+Las páginas públicas `/privacidad`, `/terminos` y `/soporte` son preliminares:
+se debe completar y aprobar la documentación legal y el contacto de soporte antes
+ de abrir el registro al público. PULSO no es una plataforma oficial del INE.

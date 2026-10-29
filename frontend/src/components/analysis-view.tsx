@@ -848,7 +848,7 @@ export function AnalysisView({
                       </button>
                     </form>
                     {answer && (
-                      <div role="status">
+                      <div role="status" aria-label="Respuesta del asistente de IA">
                         <p>{answer.text}</p>
                         {answer.model && <small>IA · {answer.model}</small>}
                       </div>

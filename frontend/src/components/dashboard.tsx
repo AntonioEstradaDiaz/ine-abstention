@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { AnalysisView } from "./analysis-view";
 import { DashboardSelect } from "./ui/dashboard-select";
 import { useMemo, useState } from "react";
@@ -16,6 +17,8 @@ import {
 } from "lucide-react";
 import { api } from "@/lib/api";
 import type { Risk } from "@/lib/types";
+import { pct, riskLabels } from "@/lib/utils";
+import type { Notice } from "./notifications";
 import { Button } from "./ui/button";
 import { Methodology, Status } from "./shared";
 import { TerritoryMap, type MapDatum } from "./territory-map";
@@ -176,6 +179,85 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
   const currentSection = sections.find((s) => s.id === view)!;
   const mapQuery = historical ? indicators : predictions;
   const forecast = predictions.data?.forecast;
+  // Header notifications come from the data already loaded by the dashboard.
+  const notices = useMemo<Notice[]>(() => {
+    const list: Notice[] = [];
+    const date = (iso?: string) =>
+      iso
+        ? new Date(iso).toLocaleDateString("es-MX", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+            timeZone: "UTC",
+          })
+        : undefined;
+    if (predictions.isError)
+      list.push({
+        id: "api-offline",
+        kind: "error",
+        title: "Sin conexión con la API",
+        text: "Las cifras no se pudieron actualizar. Reintenta en unos minutos.",
+      });
+    if (forecast && items?.length) {
+      list.push({
+        id: `forecast-${forecast.id}`,
+        kind: "forecast",
+        title: `Estimación ${forecast.target_year} disponible`,
+        text: `Corrida ${forecast.id} con ${items.length} entidades y bandas de referencia.`,
+        when: date(forecast.created_at),
+        view: "predictions",
+      });
+      const high = [...items]
+        .filter((s) => s.risk_level === "high")
+        .sort((a, b) => b.predicted - a.predicted);
+      if (high.length)
+        list.push({
+          id: `risk-high-${forecast.id}-${high.length}`,
+          kind: "risk",
+          title: `${high.length} entidades en riesgo alto`,
+          text: `Mayor abstención estimada: ${high
+            .slice(0, 3)
+            .map((s) => `${titleCase(s.name)} (${pct(s.predicted)})`)
+            .join(", ")}.`,
+          view: "map",
+        });
+      if (chosen)
+        list.push({
+          id: `selected-${forecast.id}-${chosen.state_code}`,
+          kind: "risk",
+          title: `${titleCase(chosen.name)}: riesgo ${riskLabels[chosen.risk_level].toLowerCase()}`,
+          text: chosen.uncertainty.classification_uncertain
+            ? `Abstención estimada ${pct(chosen.predicted)}; la banda cruza categorías de riesgo.`
+            : `Abstención estimada ${pct(chosen.predicted)}; la categoría es estable en su banda.`,
+          view: "predictions",
+        });
+    }
+    const years = (elections.data ?? []).map((e) => e.year);
+    if (sources.data?.items.length && years.length)
+      list.push({
+        id: `data-${years.at(-1)}-${sources.data.items.length}`,
+        kind: "data",
+        title: "Datos oficiales cargados",
+        text: `INE · CCPC ${Math.min(...years)}–${Math.max(...years)}, ${sources.data.items.length} fuentes verificadas.`,
+        view: "data",
+      });
+    if (preview)
+      list.push({
+        id: "preview-mode",
+        kind: "info",
+        title: "Modo de vista previa",
+        text: "Las cifras provienen de la copia del repositorio, no de la API en vivo.",
+      });
+    return list;
+  }, [
+    predictions.isError,
+    forecast,
+    items,
+    chosen,
+    elections.data,
+    sources.data,
+    preview,
+  ]);
   return (
     <div className={`app-shell ${view === "ml" ? "analysis-mode" : ""}`}>
       <a className="skip-link" href="#main">
@@ -186,6 +268,7 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
         selected={selected}
         view={view}
         heading={headings[view]}
+        notices={notices}
         aside={
           view === "data" ? (
             <DataHeaderStats
@@ -207,6 +290,7 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
       />
       <div className="workspace">
         <main id="main" tabIndex={-1}>
+          <p className="sr-only" role="status" aria-label="Sección activa" aria-live="polite">Sección activa: {currentSection.label}</p>
           <div className={headings[view] ? "sr-only" : "page-heading"}>
             <div>
               <div className="eyebrow">
@@ -372,6 +456,8 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
               </div>
               <DashboardInsights
                 states={items ?? []}
+                year={year}
+                elections={elections.data ?? []}
                 selected={selected}
                 onSelect={setSelected}
                 onNavigate={(next, change) => {
@@ -471,7 +557,12 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
             <span>
               Tasas con participación conocida · Modelo sin validación operativa
             </span>
-            <span>Pulso electoral / 2026</span>
+            <nav className="site-policy-links" aria-label="Información del proyecto">
+              <Link href="/privacidad">Aviso de privacidad</Link>
+              <Link href="/terminos">Términos</Link>
+              <Link href="/soporte">Soporte</Link>
+            </nav>
+            <span>Pulso electoral / 2026 · Proyecto independiente del INE</span>
           </footer>
         </main>
       </div>

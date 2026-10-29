@@ -162,7 +162,10 @@ export function Reports({
   const risks = Object.fromEntries(
     states.map((s) => [s.state_code, s.risk_level]),
   );
-  const rows = [...(history.data?.items ?? [])].sort((a, b) => a.year - b.year);
+  // The report covers elections up to the process chosen in the header.
+  const rows = (history.data?.items ?? [])
+    .filter((r) => r.year <= year)
+    .sort((a, b) => a.year - b.year);
   const rateOf = (r: {
     abstention_rate: number | null;
     participation_rate: number | null;
@@ -189,7 +192,7 @@ export function Reports({
       itemHeight: 8,
       textStyle: { color: "#596D8D", fontSize: 10 },
     },
-    grid: { left: 34, right: 10, top: 14, bottom: 40 },
+    grid: { left: 34, right: 22, top: 24, bottom: 40 },
     xAxis: {
       ...chartAxis,
       type: "category",
@@ -213,6 +216,22 @@ export function Reports({
         symbolSize: 7,
         itemStyle: { color: "#e5007e" },
         areaStyle: { color: "rgba(229,0,126,0.08)" },
+        markLine:
+          type === "midterm"
+            ? {
+                silent: true,
+                symbol: "none",
+                lineStyle: { color: "#b9005e", type: "dashed", width: 1 },
+                label: {
+                  formatter: String(year),
+                  color: "#b9005e",
+                  fontSize: 9,
+                },
+                data: rows.some((r) => r.year === year)
+                  ? [{ xAxis: rows.findIndex((r) => r.year === year) }]
+                  : [],
+              }
+            : undefined,
         data: rows.map((r) => {
           const v = rateOf(r);
           return r.election_type !== type || v == null ? null : v * 100;

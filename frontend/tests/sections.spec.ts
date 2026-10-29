@@ -226,10 +226,10 @@ test("analysis does not reuse an AI answer for another state or period", async (
   await page
     .getByRole("button", { name: "Consultar a la IA", exact: true })
     .click();
-  await expect(page.getByRole("status")).toContainText(
+  await expect(page.getByRole("status", { name: "Respuesta del asistente de IA" })).toContainText(
     "Respuesta exclusiva de Morelos",
   );
-  await expect(page.getByRole("status")).toContainText("IA · test-model");
+  await expect(page.getByRole("status", { name: "Respuesta del asistente de IA" })).toContainText("IA · test-model");
   await page
     .getByRole("button", { name: "Cerrar lectura", exact: true })
     .click();
@@ -339,4 +339,59 @@ test("national comparison exports official-history PDFs and Excel", async ({ pag
   expect((await excelPromise).suggestedFilename()).toBe("pulso-reporte-nacional-2027.xlsx");
   await page.getByRole("button", { name: "Volver al reporte estatal" }).click();
   await expect(page.getByRole("heading", { name: "Configura tu reporte" })).toBeVisible();
+});
+
+test("notifications summarize loaded data, open their section and stay read", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const bell = page.getByRole("button", { name: /^Notificaciones/ });
+  await expect(bell).toHaveAttribute("aria-label", /sin leer/);
+  await bell.click();
+  const panel = page.getByRole("dialog", { name: "Notificaciones" });
+  await expect(panel.getByText("Estimación 2027 disponible")).toBeVisible();
+  await expect(panel.getByText("Datos oficiales cargados")).toBeVisible();
+  await panel
+    .getByRole("button", { name: /Estimación 2027 disponible/ })
+    .click();
+  await expect(
+    page.getByRole("button", { name: "Predicciones", exact: true }),
+  ).toHaveAttribute("aria-current", "page");
+  await bell.click();
+  await page.getByRole("button", { name: "Marcar como leídas" }).click();
+  await expect(bell).toHaveAttribute("aria-label", "Notificaciones");
+  await page.keyboard.press("Escape");
+  await expect(panel).toHaveCount(0);
+  await page.reload();
+  await expect(
+    page.getByRole("button", { name: /^Notificaciones/ }),
+  ).toHaveAttribute("aria-label", "Notificaciones");
+});
+
+test("the header process drives the map trend, report history and data year", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const process = page.getByRole("combobox", {
+    name: "Proceso electoral de referencia",
+  });
+  await process.click();
+  await page.getByRole("option", { name: /2015/ }).click();
+  const trend = page.locator(".lower-trends");
+  await expect(
+    trend.getByRole("combobox", { name: "Elecciones de la tendencia" }),
+  ).toHaveText("Intermedias");
+  await expect(trend.locator("header p")).toContainText("Proceso 2015");
+  await page.getByRole("button", { name: "Reportes", exact: true }).click();
+  await expect(page.locator(".report-process")).toHaveText(
+    "Proceso Electoral 2015",
+  );
+  const years = page.locator(".report-charts .chart text");
+  // The axis label plus the process marker label.
+  await expect(years.filter({ hasText: /^2015$/ })).toHaveCount(2);
+  await expect(years.filter({ hasText: /^2018$/ })).toHaveCount(0);
+  await page.getByRole("button", { name: "Datos", exact: true }).click();
+  await expect(
+    page.getByRole("combobox", { name: "Año o proceso", exact: true }),
+  ).toContainText("2015");
 });

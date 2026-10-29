@@ -525,8 +525,7 @@ button {
     padding-inline: 14px;
   }
 
-  [data-name="Proceso y perfil"] > [data-name="Selector de proceso electoral"],
-  [data-name="Proceso y perfil"] > [data-name="Notificaciones"] {
+  [data-name="Proceso y perfil"] > [data-name="Selector de proceso electoral"] {
     display: none;
   }
 
@@ -1305,5 +1304,218 @@ button {
   .mobile-section-nav .dashboard-select-trigger {
     width: 100%;
     min-height: 44px;
+  }
+}
+
+/* Notificaciones de la barra superior. */
+/* La barra deja salir el panel y queda por encima de la cabecera de la página. */
+.design-top [data-name="Navegación principal"] {
+  z-index: 40;
+  overflow: visible;
+}
+.design-top [data-name="Proceso y perfil"] {
+  overflow: visible;
+}
+.design-top .notifications {
+  position: relative;
+  flex-shrink: 0;
+}
+.design-top .notifications:hover {
+  /* El panel abierto no debe moverse con el efecto de la barra. */
+  transform: none;
+}
+.design-top .notifications-trigger {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  cursor: pointer;
+}
+.design-top .notifications-trigger:hover,
+.design-top .notifications-trigger[aria-expanded="true"] {
+  background: #fce7f2;
+}
+.design-top .notifications-trigger > img {
+  width: 20px;
+  height: 20px;
+}
+.design-top .notifications-badge {
+  position: absolute;
+  top: 3px;
+  right: 2px;
+  display: grid;
+  place-items: center;
+  min-width: 16px;
+  height: 16px;
+}
+.design-top .notifications-badge img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.design-top .notifications-badge b {
+  position: relative;
+  padding: 0 3px;
+  font-size: 9px;
+  font-weight: 700;
+  color: #fff;
+}
+.design-top .notifications-panel {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: -8px;
+  z-index: 60;
+  width: min(380px, calc(100vw - 24px));
+  border: 1px solid #f3e3ec;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 18px 40px #0d172f1f;
+  overflow: hidden;
+  text-align: left;
+}
+.design-top .notifications-panel header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 16px 16px 12px;
+  border-bottom: 1px solid #f0f2f6;
+}
+.design-top .notifications-panel header strong {
+  display: block;
+  font-size: 15px;
+  color: #0d172f;
+}
+.design-top .notifications-panel header span {
+  font-size: 12px;
+  color: #596d8d;
+}
+.design-top .notifications-panel header button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 9px;
+  border: 0;
+  border-radius: 9px;
+  background: #fff0f8;
+  color: #c00063;
+  font-size: 11px;
+  cursor: pointer;
+}
+.design-top .notifications-panel header button:disabled {
+  background: #f5f7fa;
+  color: #8a98ae;
+  cursor: default;
+}
+.design-top .notifications-panel ul {
+  max-height: min(420px, 60vh);
+  margin: 0;
+  padding: 6px;
+  overflow-y: auto;
+  list-style: none;
+}
+.design-top .notifications-panel li > button {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) auto auto;
+  align-items: start;
+  gap: 10px;
+  width: 100%;
+  padding: 11px 10px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+.design-top .notifications-panel li > button:hover {
+  background: #fff6fb;
+}
+.design-top .notifications-panel li > button[data-unread="true"] {
+  background: #fff8fc;
+}
+.design-top .notifications-icon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 11px;
+  background: #fce7f2;
+  color: #e5007e;
+}
+.design-top .notifications-icon svg {
+  width: 18px;
+  height: 18px;
+}
+.design-top [data-kind="error"] .notifications-icon {
+  background: #fff1e8;
+  color: #c2410c;
+}
+.design-top [data-kind="data"] .notifications-icon,
+.design-top [data-kind="info"] .notifications-icon {
+  background: #eef4fb;
+  color: #3b5b85;
+}
+.design-top .notifications-text {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+.design-top .notifications-text strong {
+  font-size: 13px;
+  color: #0d172f;
+}
+.design-top .notifications-text > span {
+  font-size: 12px;
+  line-height: 1.45;
+  color: #4a5876;
+}
+.design-top .notifications-text small {
+  font-size: 11px;
+  color: #8a98ae;
+}
+.design-top .notifications-dot {
+  width: 8px;
+  height: 8px;
+  margin-top: 5px;
+  border-radius: 50%;
+  background: #e5007e;
+}
+.design-top .notifications-go {
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  color: #8a98ae;
+}
+.design-top .notifications-empty {
+  margin: 0;
+  padding: 22px 16px;
+  font-size: 13px;
+  color: #596d8d;
+  text-align: center;
+}
+.design-top .notifications-panel footer {
+  padding: 10px 16px 12px;
+  border-top: 1px solid #f0f2f6;
+  font-size: 11px;
+  color: #8a98ae;
+}
+.design-top .notifications-trigger:focus-visible,
+.design-top .notifications-panel button:focus-visible {
+  outline: 2px solid #e5007e;
+  outline-offset: 2px;
+}
+@media (max-width: 480px) {
+  .design-top .notifications-panel {
+    position: fixed;
+    top: 72px;
+    right: 12px;
+    left: 12px;
+    width: auto;
   }
 }
