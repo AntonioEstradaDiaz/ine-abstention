@@ -77,8 +77,7 @@ def install_operations(app, settings: Settings):
 
     @app.middleware("http")
     async def operations(request: Request, call_next):
-        incoming = request.headers.get("x-request-id", "")
-        request_id = incoming if REQUEST_ID.fullmatch(incoming) else secrets.token_hex(12)
+        request_id = request.state.request_id
         telemetry.begin()
         start = time.monotonic()
         status = 500
@@ -117,6 +116,7 @@ def install_operations(app, settings: Settings):
     async def request_id_header(request: Request, call_next):
         incoming = request.headers.get("x-request-id", "")
         request_id = incoming if REQUEST_ID.fullmatch(incoming) else secrets.token_hex(12)
+        request.state.request_id = request_id
         response = await call_next(request)
         response.headers["X-Request-ID"] = request_id
         response.headers["X-Content-Type-Options"] = "nosniff"
