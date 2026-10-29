@@ -920,3 +920,53 @@
 .territory-metrics-body[data-tab="Histórico"] .territory-history-series {padding:13px}
 .territory-metrics-body[data-tab="Histórico"] .territory-history-row {margin-top:8px}
 @media(max-width:400px){.territory-metrics-body[data-tab="Histórico"] .territory-tab-view{gap:10px}}
+
+/* Keep all four summary sections in normal flow; never shrink the gauge. */
+.territory-metrics .territory-metrics-body[data-tab="Resumen"] {
+  display: grid;
+  grid-template-rows: auto auto auto auto;
+  align-content: start;
+  gap: 16px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+.territory-metrics .territory-metrics-body[data-tab="Resumen"] .territory-metric-grid {
+  min-height: 170px;
+  align-items: stretch;
+}
+.territory-metrics .territory-metrics-body[data-tab="Resumen"] .territory-gauge {
+  min-height: 170px;
+}
+.territory-metrics .territory-metrics-body[data-tab="Resumen"] > .territory-context-rows {
+  height: auto;
+  gap: 14px;
+  grid-auto-rows: auto;
+}
+.territory-metrics .territory-context-rows > div {
+  grid-template-columns: 20px minmax(0, 1fr) 72px;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid #edf0f5;
+  border-radius: 10px;
+  background: #fafbfe;
+}
+.territory-metrics .territory-context-rows > div > span:nth-child(2) {
+  font-size: 12px;
+}
+.territory-metrics .territory-context-rows strong {
+  grid-column: 3;
+  grid-row: 1;
+  font-size: 12px;
+  font-weight: 600;
+}
+.territory-metrics .territory-context-track {
+  grid-column: 2 / -1;
+  grid-row: 2;
+  width: 100%;
+  height: 12px;
+}
+@media (max-width: 480px) {
+  .territory-metrics .territory-metrics-body[data-tab="Resumen"] .territory-metric-grid {
+    grid-template-columns: 1fr;
+  }
+}
