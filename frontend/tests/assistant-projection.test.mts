@@ -126,3 +126,26 @@ test("custom horizon facts and offline answer do not reuse 2027 bands or ranking
     /mejoras generales/,
   );
 });
+
+test("all 32 states provide bounded estimates and ranges through 2029", () => {
+  for (const state of snapshot.predictions.items) {
+    for (const type of ["midterm", "presidential"] as const) {
+      for (const year of [2025, 2026, 2027, 2028, 2029]) {
+        const p = projectHorizon(snapshot.history, state.state_code, year, type, {forecast: registered.forecast, prediction: state});
+        assert.ok(Number.isFinite(p.abstention));
+        assert.ok(p.lower != null && p.lower >= 0 && p.lower <= p.abstention);
+        assert.ok(p.upper != null && p.upper <= 1 && p.upper >= p.abstention);
+        assert.equal(p.abstention + p.participation, 1);
+        assert.doesNotMatch(p.warning, /no hay banda|no está configurada/);
+      }
+    }
+  }
+  assert.throws(() => projectHorizon(history, "17", 2030, "presidential"));
+});
+
+test("learns a linear trend without using the held-out observation for fitting", () => {
+  const rows = [2012,2018,2024].map((year,i) => ({...history[0],state_code:"17",year,election_type:"presidential",voter_count:80-i*10,nonvoter_count:20+i*10}));
+  const p = projectHorizon(rows,"17",2025,"presidential");
+  assert.ok(Math.abs(p.abstention - (0.4+0.1/6)) < 1e-9);
+  assert.match(p.method,/Regresión/);
+});

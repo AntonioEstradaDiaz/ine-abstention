@@ -70,9 +70,20 @@ export function projectHorizon(
   if (new Set(samples.map(r => r.year)).size !== samples.length)
     throw new Error("Hay años duplicados en el histórico.");
   const errors = samples.slice(1).map((r, i) => Math.abs(r.rate - samples[i].rate));
-  const radius = errors.length ? Math.max(...errors) : null;
+  const trend = (train: typeof samples, year: number) => {
+    const mx = train.reduce((n, r) => n + r.year, 0) / train.length;
+    const my = train.reduce((n, r) => n + r.rate, 0) / train.length;
+    const denominator = train.reduce((n, r) => n + (r.year - mx) ** 2, 0);
+    const slope = denominator ? train.reduce((n, r) => n + (r.year - mx) * (r.rate - my), 0) / denominator : 0;
+    return Math.max(0, Math.min(1, my + slope * (year - mx)));
+  };
+  const trendErrors = samples.slice(2).map((r, i) => Math.abs(trend(samples.slice(0, i + 2), r.year) - r.rate));
+  const baselineErrors = errors.slice(1);
+  const useTrend = trendErrors.length > 0 && trendErrors.reduce((a,b) => a+b,0) < baselineErrors.reduce((a,b) => a+b,0);
+  // Conservative descriptive range; not a claimed probabilistic interval.
+  const radius = errors.length ? Math.max(...errors, ...trendErrors) : null;
   const match =
-    registered &&
+    !useTrend && registered &&
     registered.prediction.state_code === stateCode &&
     registered.forecast.target_year === targetYear &&
     registered.forecast.election_type === electionType &&
@@ -82,7 +93,7 @@ export function projectHorizon(
     registered.prediction.explanation.nonvoter_count === nonvoters;
   const abstention = match
     ? registered.prediction.predicted
-    : nonvoters / (voters + nonvoters);
+    : useTrend ? trend(samples, targetYear) : nonvoters / (voters + nonvoters);
   if (!Number.isFinite(abstention) || abstention < 0 || abstention > 1)
     throw new Error("La estimación registrada no contiene una tasa válida.");
   const lower = match ? registered.prediction.lower : radius == null ? null : Math.max(0, abstention - radius);
@@ -117,9 +128,9 @@ export function projectHorizon(
     forecastId: match ? registered.forecast.id : null,
     method: match
       ? registered.forecast.provenance.model_name
-      : "baseline_last: NV / (SV + NV) de la última elección del mismo tipo",
+      : useTrend ? "Regresión temporal: menor error histórico que la referencia constante" : "Referencia constante: la tendencia no mejora el error histórico o faltan cortes",
     warning: match
       ? "Estimación experimental; la banda empírica no garantiza cobertura futura."
-      : `Referencia constante basada en la última elección comparable. ${radius == null ? "Histórico insuficiente para calcular un rango." : `Rango de sensibilidad: máximo error de ${errors.length} comparaciones históricas del mismo tipo (${(radius * 100).toFixed(2)} pp).`} No es un intervalo de confianza ni garantiza cobertura futura. El año elegido representa un escenario, no confirma una elección.`,
+      : `${useTrend ? "Tendencia ajustada a elecciones comparables." : "Se conserva la última tasa comparable porque es la referencia elegida por la evaluación."} ${radius == null ? "Histórico insuficiente para calcular un rango." : `Rango de sensibilidad: máximo error de ${errors.length} comparaciones históricas del mismo tipo (${(radius * 100).toFixed(2)} pp).`} No es un intervalo de confianza ni garantiza cobertura futura. El año elegido representa un escenario, no confirma una elección.`,
   };
 }

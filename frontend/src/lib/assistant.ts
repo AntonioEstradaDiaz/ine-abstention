@@ -195,7 +195,7 @@ export function automaticAnswer(question: string, c: AssistantContext) {
     return "Puedo proponer mejoras generales del análisis, no estrategias para modificar la participación electoral de estados o grupos específicos. Plan orientativo: 1) Equipo de datos: revisar duplicados, conteos y registros NS en una semana; criterio: informe de calidad sin inconsistencias pendientes. 2) Equipo de modelado: evaluar con cortes temporales separados y elecciones del mismo tipo en dos semanas; criterio: errores y límites reproducibles publicados. 3) Equipo de producto: revisar teclado, contraste y lenguaje del dashboard en una semana; criterio: incidencias corregidas y verificadas. Los plazos requieren confirmar capacidad y no prometen cambios en votos.";
   if (c.projection?.kind === "reference") {
     const p = c.projection;
-    return `Proyección experimental para ${c.state}, ${p.targetYear}: abstención ${pc(p.abstention)} y participación ${pc(p.participation)}. Referencia ${p.electionType === "midterm" ? "intermedia" : "presidencial"} de ${p.referenceYear}, fuente INE CCPC ${p.sourceId}. Se mantiene la tasa NV / (SV + NV), con corte ${p.cutoffYear}. Rango de abstención: ${pc(p.lower)} a ${pc(p.upper)}. ${p.warning}`;
+    return `Proyección experimental para ${c.state}, ${p.targetYear}: abstención ${pc(p.abstention)} y participación ${pc(p.participation)}. Referencia ${p.electionType === "midterm" ? "intermedia" : "presidencial"} de ${p.referenceYear}, fuente INE CCPC ${p.sourceId}. Método: ${p.method}. Corte ${p.cutoffYear}. Rango de abstención: ${pc(p.lower)} a ${pc(p.upper)}. ${p.warning}`;
   }
   const observed = c.history.filter((h) => h.abstention != null);
   const first = observed[0];

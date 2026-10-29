@@ -307,6 +307,7 @@ export function AiAssistant({
             {projection.lower != null && projection.upper != null && (
               <p className="ai-projection-band">Rango de abstención: {(projection.lower * 100).toFixed(1)}% – {(projection.upper * 100).toFixed(1)}%</p>
             )}
+            <p>{projection.method}</p>
             <p>{projection.warning}</p>
           </div>
         )}
