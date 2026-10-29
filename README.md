@@ -323,6 +323,13 @@ data/, artifacts/    Datos y pesos; algunos informes/muestras sí están version
 - [Hoja de ruta histórica](docs/project-status.md): consultar junto con esta auditoría; algunas prioridades
   preceden al despliegue y a la incorporación de Supabase Auth.
 
+## Punto 7 · Reportes y escenarios (rama de trabajo)
+
+Consulte [documentación del punto 7](docs/punto7-reportes-escenarios.md):
+comparativos nacionales PDF/Excel y comparador multiestado exploratorio,
+pendientes de CI. Se conservan los reportes estatales y los escenarios privados.
+No están habilitados todavía PowerPoint, envíos programados ni reportes municipales.
+
 ## Punto 9 · Experiencia y entrega (octubre de 2026)
 
 Se añadieron guías de [accesibilidad](docs/punto9-accesibilidad.md),
