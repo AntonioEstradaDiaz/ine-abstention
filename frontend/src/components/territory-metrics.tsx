@@ -238,6 +238,7 @@ export function TerritoryMetrics({
                 </div>
                 <div className="territory-stat-cards">
                   <div>
+                    <ChartNoAxesCombined className="territory-stat-icon" size={24} aria-hidden="true" />
                     <span>Participación {year}</span>
                     <strong>{pct(rates?.participation)}</strong>
                     <small>
@@ -247,6 +248,7 @@ export function TerritoryMetrics({
                     </small>
                   </div>
                   <div>
+                    <Users className="territory-stat-icon" size={24} aria-hidden="true" />
                     <span>Abstenciones {year}</span>
                     <strong>{number(observed?.nonvoter_count)}</strong>
                     <small>{pct(value)} sobre SV + NV</small>
@@ -258,8 +260,10 @@ export function TerritoryMetrics({
                 se excluyen del denominador. Actualización automática cada
                 minuto.
               </p>
-              <h3>Indicadores de contexto</h3>
-              {contextRows}
+              <section className="territory-context-panel" aria-label="Indicadores de contexto">
+                <h3>Indicadores de contexto</h3>
+                {contextRows}
+              </section>
             </>
           )}
           {tab === "Histórico" && (

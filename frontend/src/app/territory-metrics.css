@@ -970,3 +970,80 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Reference layout: one context card, proportional bars and complete summary. */
+.map-detail-grid.electoral-map-layout {
+  height: auto;
+  min-height: 660px;
+}
+.map-detail-grid.electoral-map-layout > .territory-metrics {
+  height: auto;
+}
+.territory-metrics .territory-metrics-body[data-tab="Resumen"] {
+  grid-template-rows: auto auto auto;
+  overflow: visible;
+}
+.territory-context-panel {
+  padding: 16px;
+  border: 1px solid #e7ecf1;
+  border-radius: 14px;
+}
+.territory-context-panel h3 {
+  margin: 0 0 12px;
+  font-size: 16px;
+  line-height: 1.4;
+}
+.territory-context-panel .territory-context-rows {
+  gap: 0;
+}
+.territory-context-panel .territory-context-rows > div {
+  grid-template-columns: 30px minmax(0, 1.4fr) minmax(60px, 1fr) 65px;
+  padding: 12px 0;
+  border: 0;
+  border-bottom: 1px solid #edf0f5;
+  border-radius: 0;
+  background: transparent;
+}
+.territory-context-panel .territory-context-rows > div:last-child {
+  border-bottom: 0;
+}
+.territory-context-panel .territory-context-rows > div > svg {
+  width: 30px;
+  height: 30px;
+  padding: 6px;
+  border-radius: 50%;
+  background: #fff0f7;
+}
+.territory-context-panel .territory-context-track {
+  grid-column: 3;
+  grid-row: 1;
+  height: 12px;
+}
+.territory-context-panel .territory-context-rows strong {
+  grid-column: 4;
+}
+.territory-stat-icon {
+  box-sizing: content-box;
+  padding: 10px;
+  border-radius: 50%;
+  color: #df007b;
+  background: #fff0f7;
+}
+.territory-metrics .territory-stat-cards > div {
+  justify-content: center;
+  gap: 8px;
+  padding: 14px;
+}
+.territory-metrics .territory-stat-cards strong {
+  font-size: clamp(18px, 1.5vw, 26px);
+}
+@media (max-width: 480px) {
+  .territory-context-panel .territory-context-rows > div {
+    grid-template-columns: 30px minmax(0, 1fr) 65px;
+  }
+  .territory-context-panel .territory-context-rows strong { grid-column: 3; }
+  .territory-context-panel .territory-context-track {
+    grid-column: 2 / -1;
+    grid-row: 2;
+  }
+}
