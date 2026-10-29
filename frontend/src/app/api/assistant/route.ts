@@ -1,3 +1,4 @@
+import { projectHorizon } from "@/lib/assistant-projection";
 import { NextRequest, NextResponse } from "next/server";
 import snapshot from "@/lib/preview-data.json";
 import { backendInternalHeaders } from "@/lib/backend-internal";
@@ -13,7 +14,12 @@ import type { Indicator, ModelMetrics, Page, Predictions } from "@/lib/types";
 export const dynamic = "force-dynamic";
 import { generateGroqReply } from "@/lib/groq";
 import { generateGeminiReply } from "@/lib/gemini";
-const provider = () => process.env.AI_PROVIDER === "ollama" ? "ollama" : process.env.AI_PROVIDER === "gemini" ? "gemini" : "groq";
+const provider = () =>
+  process.env.AI_PROVIDER === "ollama"
+    ? "ollama"
+    : process.env.AI_PROVIDER === "gemini"
+      ? "gemini"
+      : "groq";
 const groqModel = () => process.env.GROQ_MODEL || "qwen/qwen3.8-27b";
 const geminiModel = () => process.env.GEMINI_MODEL || "gemini-2.5-flash";
 const ollamaUrl = () => process.env.OLLAMA_URL || "http://127.0.0.1:11434";
@@ -44,10 +50,26 @@ const defaultModel = (models: string[]) => {
 
 export async function GET() {
   if (provider() === "groq") {
-    return NextResponse.json({ provider: "groq", reachable: !!process.env.GROQ_API_KEY, models: [groqModel()], defaultModel: groqModel() }, { headers: { "Cache-Control": "no-store" } });
+    return NextResponse.json(
+      {
+        provider: "groq",
+        reachable: !!process.env.GROQ_API_KEY,
+        models: [groqModel()],
+        defaultModel: groqModel(),
+      },
+      { headers: { "Cache-Control": "no-store" } },
+    );
   }
   if (provider() === "gemini") {
-    return NextResponse.json({ provider: "gemini", reachable: !!process.env.GEMINI_API_KEY, models: [geminiModel()], defaultModel: geminiModel() }, { headers: { "Cache-Control": "no-store" } });
+    return NextResponse.json(
+      {
+        provider: "gemini",
+        reachable: !!process.env.GEMINI_API_KEY,
+        models: [geminiModel()],
+        defaultModel: geminiModel(),
+      },
+      { headers: { "Cache-Control": "no-store" } },
+    );
   }
   const models = await installedModels();
   const status: AssistantStatus = {
@@ -111,7 +133,13 @@ export async function POST(req: NextRequest) {
   const raw = await req.text();
   if (Buffer.byteLength(raw) > 32_768)
     return new NextResponse(null, { status: 413 });
-  let body: { state_code?: unknown; model?: unknown; messages?: unknown };
+  let body: {
+    state_code?: unknown;
+    model?: unknown;
+    messages?: unknown;
+    target_year?: unknown;
+    election_type?: unknown;
+  };
   try {
     body = JSON.parse(raw);
   } catch {
@@ -124,18 +152,38 @@ export async function POST(req: NextRequest) {
       : null;
   if (!messages || !stateCode) return detail("Solicitud inválida.", 400);
 
+  if (
+    body.target_year !== undefined &&
+    (typeof body.target_year !== "number" ||
+      !Number.isInteger(body.target_year) ||
+      body.target_year < 2025 ||
+      body.target_year > 2100)
+  )
+    return detail("Año objetivo inválido.", 400);
+  if (
+    body.election_type !== undefined &&
+    body.election_type !== "midterm" &&
+    body.election_type !== "presidential"
+  )
+    return detail("Tipo de elección inválido.", 400);
   let model: string;
   if (provider() === "groq") {
-    if (!process.env.GROQ_API_KEY) return detail("Falta configurar GROQ_API_KEY en el servidor.", 503);
+    if (!process.env.GROQ_API_KEY)
+      return detail("Falta configurar GROQ_API_KEY en el servidor.", 503);
     model = groqModel();
   } else if (provider() === "gemini") {
-    if (!process.env.GEMINI_API_KEY) return detail("Falta configurar GEMINI_API_KEY en el servidor.", 503);
+    if (!process.env.GEMINI_API_KEY)
+      return detail("Falta configurar GEMINI_API_KEY en el servidor.", 503);
     model = geminiModel();
   } else {
     const models = await installedModels();
     if (!models) return detail("Ollama sin conexión.", 503);
-    const selectedModel = typeof body.model === "string" && models.includes(body.model) ? body.model : defaultModel(models);
-    if (!selectedModel) return detail("No hay un modelo de Ollama disponible.", 503);
+    const selectedModel =
+      typeof body.model === "string" && models.includes(body.model)
+        ? body.model
+        : defaultModel(models);
+    if (!selectedModel)
+      return detail("No hay un modelo de Ollama disponible.", 503);
     model = selectedModel;
   }
 
@@ -154,6 +202,7 @@ export async function POST(req: NextRequest) {
   );
   const context = buildAssistantContext({
     prediction,
+    forecast: data.predictions.forecast,
     states: data.predictions.items,
     history: data.history,
     thresholds: data.predictions.forecast.calibration.risk.thresholds,
@@ -161,20 +210,57 @@ export async function POST(req: NextRequest) {
       selected?.model_name ?? data.predictions.forecast.provenance.model_name,
     maePP: selected?.metrics.holdout_2024.mae_pp ?? null,
   });
+  try {
+    context.projection = projectHorizon(
+      data.history,
+      stateCode,
+      (body.target_year as number) ?? data.predictions.forecast.target_year,
+      (body.election_type as "midterm" | "presidential") ??
+        data.predictions.forecast.election_type,
+      { forecast: data.predictions.forecast, prediction },
+    );
+  } catch (error) {
+    return detail(
+      error instanceof Error ? error.message : "Horizonte no disponible.",
+      422,
+    );
+  }
   if (provider() === "groq") {
     try {
-      const answer = await generateGroqReply({ apiKey: process.env.GROQ_API_KEY!, model, system: systemPrompt(context), messages });
-      return NextResponse.json({ answer, model }, { headers: { "Cache-Control": "no-store" } });
+      const answer = await generateGroqReply({
+        apiKey: process.env.GROQ_API_KEY!,
+        model,
+        system: systemPrompt(context),
+        messages,
+      });
+      return NextResponse.json(
+        { answer, model },
+        { headers: { "Cache-Control": "no-store" } },
+      );
     } catch (error) {
-      return detail(error instanceof Error ? error.message : "Groq no está disponible.", 502);
+      return detail(
+        error instanceof Error ? error.message : "Groq no está disponible.",
+        502,
+      );
     }
   }
   if (provider() === "gemini") {
     try {
-      const answer = await generateGeminiReply({ apiKey: process.env.GEMINI_API_KEY!, model, system: systemPrompt(context), messages });
-      return NextResponse.json({ answer, model }, { headers: { "Cache-Control": "no-store" } });
+      const answer = await generateGeminiReply({
+        apiKey: process.env.GEMINI_API_KEY!,
+        model,
+        system: systemPrompt(context),
+        messages,
+      });
+      return NextResponse.json(
+        { answer, model },
+        { headers: { "Cache-Control": "no-store" } },
+      );
     } catch (error) {
-      return detail(error instanceof Error ? error.message : "Gemini no está disponible.", 502);
+      return detail(
+        error instanceof Error ? error.message : "Gemini no está disponible.",
+        502,
+      );
     }
   }
   try {
