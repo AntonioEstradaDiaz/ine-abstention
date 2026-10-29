@@ -1,0 +1,412 @@
+{
+  "by_year": [
+    {
+      "bias_pp": 0.091796,
+      "mae_pp": 2.788546,
+      "mean_unspecified_pct": 6.740831,
+      "n_states": 32,
+      "ns_illustrative_mean_width_pp": 6.740831,
+      "rmse_pp": 3.430075,
+      "type": "presidential",
+      "year": 2018
+    },
+    {
+      "bias_pp": 4.311287,
+      "mae_pp": 7.981116,
+      "mean_unspecified_pct": 4.687328,
+      "n_states": 32,
+      "ns_illustrative_mean_width_pp": 4.687328,
+      "rmse_pp": 9.857304,
+      "type": "midterm",
+      "year": 2021
+    },
+    {
+      "bias_pp": -2.719341,
+      "mae_pp": 3.491929,
+      "mean_unspecified_pct": 6.82902,
+      "n_states": 32,
+      "ns_illustrative_mean_width_pp": 6.82902,
+      "rmse_pp": 4.134101,
+      "type": "presidential",
+      "year": 2024
+    }
+  ],
+  "calibration": {
+    "chronological_coverage": [
+      {
+        "calibration_blocks": 0,
+        "kind": "presidential",
+        "observed_coverage_pct": null,
+        "prior_reference_years": [],
+        "radius_pp": null,
+        "year": 2018
+      },
+      {
+        "calibration_blocks": 0,
+        "kind": "midterm",
+        "observed_coverage_pct": null,
+        "prior_reference_years": [],
+        "radius_pp": null,
+        "year": 2021
+      },
+      {
+        "calibration_blocks": 1,
+        "kind": "presidential",
+        "observed_coverage_pct": 81.25,
+        "prior_reference_years": [
+          2018
+        ],
+        "radius_pp": 5.622313,
+        "year": 2024
+      }
+    ],
+    "coverage_guaranteed": false,
+    "independent_election_blocks": 1,
+    "reference_radius_pp": 14.368856,
+    "reference_years": [
+      2021
+    ],
+    "type": "midterm",
+    "year": 2027
+  },
+  "data_quality": {
+    "ns_excluded_from_known_denominator": true,
+    "ns_illustration": "Suppose NS is the residual nominal-list fraction. Lower assigns all NS to SV; upper assigns all NS to NV. This sensitivity of a historical target is not an error bar or a predictive interval.",
+    "publication_vintage_verified": false
+  },
+  "external_validation": {
+    "held_out_release_vintage_verified": false,
+    "independent_external_dataset_verified": false,
+    "independent_post_2024_outcome_available": false,
+    "status": "not_completed"
+  },
+  "forecast_run_id": "e63b667cf09b747f7de8",
+  "holdout_models_descriptive_only": [
+    {
+      "mae_2024_pp": 2.881113,
+      "model": "lightgbm"
+    },
+    {
+      "mae_2024_pp": 2.947422,
+      "model": "xgboost"
+    },
+    {
+      "mae_2024_pp": 3.013861,
+      "model": "random_forest"
+    },
+    {
+      "mae_2024_pp": 3.324853,
+      "model": "baseline_mean"
+    },
+    {
+      "mae_2024_pp": 3.491929,
+      "model": "baseline_last"
+    },
+    {
+      "mae_2024_pp": 4.681465,
+      "model": "ridge"
+    }
+  ],
+  "interpretation": "Retrospective by-election validation only; 32 correlated states per election are not 32 independent elections. Holdout 2024 is presidential and cannot certify midterm 2027 performance.",
+  "production_ready": false,
+  "selected_model": "baseline_last",
+  "selection_is_development_only": true,
+  "selection_years": [
+    2018,
+    2021
+  ],
+  "state_diagnostics": [
+    {
+      "error_2024_presidential_pp": 0.705537,
+      "illustrative_ns_lower_2024_pct": 40.214515,
+      "illustrative_ns_upper_2024_pct": 42.936516,
+      "known_abstention_2024_pct": 41.339784,
+      "mae_2021_midterm_pp": 13.084502,
+      "ns_2024_pct": 2.722,
+      "state_code": "01"
+    },
+    {
+      "error_2024_presidential_pp": 4.33424,
+      "illustrative_ns_lower_2024_pct": 49.148403,
+      "illustrative_ns_upper_2024_pct": 56.334743,
+      "known_abstention_2024_pct": 52.953847,
+      "mae_2021_midterm_pp": 7.644105,
+      "ns_2024_pct": 7.18634,
+      "state_code": "02"
+    },
+    {
+      "error_2024_presidential_pp": 3.151536,
+      "illustrative_ns_lower_2024_pct": 44.803647,
+      "illustrative_ns_upper_2024_pct": 49.363361,
+      "known_abstention_2024_pct": 46.944166,
+      "mae_2021_midterm_pp": 3.439065,
+      "ns_2024_pct": 4.559714,
+      "state_code": "03"
+    },
+    {
+      "error_2024_presidential_pp": 5.726917,
+      "illustrative_ns_lower_2024_pct": 31.57256,
+      "illustrative_ns_upper_2024_pct": 46.431615,
+      "known_abstention_2024_pct": 37.082699,
+      "mae_2021_midterm_pp": 2.090579,
+      "ns_2024_pct": 14.859056,
+      "state_code": "04"
+    },
+    {
+      "error_2024_presidential_pp": 2.333084,
+      "illustrative_ns_lower_2024_pct": 30.222054,
+      "illustrative_ns_upper_2024_pct": 44.718937,
+      "known_abstention_2024_pct": 35.346143,
+      "mae_2021_midterm_pp": 12.602247,
+      "ns_2024_pct": 14.496883,
+      "state_code": "05"
+    },
+    {
+      "error_2024_presidential_pp": 5.269687,
+      "illustrative_ns_lower_2024_pct": 42.443168,
+      "illustrative_ns_upper_2024_pct": 44.990349,
+      "known_abstention_2024_pct": 43.55253,
+      "mae_2021_midterm_pp": 7.409458,
+      "ns_2024_pct": 2.547182,
+      "state_code": "06"
+    },
+    {
+      "error_2024_presidential_pp": 6.557465,
+      "illustrative_ns_lower_2024_pct": 33.701056,
+      "illustrative_ns_upper_2024_pct": 45.540888,
+      "known_abstention_2024_pct": 38.227078,
+      "mae_2021_midterm_pp": 15.203933,
+      "ns_2024_pct": 11.839832,
+      "state_code": "07"
+    },
+    {
+      "error_2024_presidential_pp": 1.307873,
+      "illustrative_ns_lower_2024_pct": 40.960361,
+      "illustrative_ns_upper_2024_pct": 55.875736,
+      "known_abstention_2024_pct": 48.140731,
+      "mae_2021_midterm_pp": 14.177613,
+      "ns_2024_pct": 14.915375,
+      "state_code": "08"
+    },
+    {
+      "error_2024_presidential_pp": 0.759799,
+      "illustrative_ns_lower_2024_pct": 30.106117,
+      "illustrative_ns_upper_2024_pct": 32.017089,
+      "known_abstention_2024_pct": 30.692645,
+      "mae_2021_midterm_pp": 8.216069,
+      "ns_2024_pct": 1.910972,
+      "state_code": "09"
+    },
+    {
+      "error_2024_presidential_pp": 2.234233,
+      "illustrative_ns_lower_2024_pct": 45.339162,
+      "illustrative_ns_upper_2024_pct": 47.339306,
+      "known_abstention_2024_pct": 46.264519,
+      "mae_2021_midterm_pp": 0.699108,
+      "ns_2024_pct": 2.000145,
+      "state_code": "10"
+    },
+    {
+      "error_2024_presidential_pp": 3.493069,
+      "illustrative_ns_lower_2024_pct": 42.454285,
+      "illustrative_ns_upper_2024_pct": 46.337411,
+      "known_abstention_2024_pct": 44.16944,
+      "mae_2021_midterm_pp": 1.5356,
+      "ns_2024_pct": 3.883126,
+      "state_code": "11"
+    },
+    {
+      "error_2024_presidential_pp": 5.706258,
+      "illustrative_ns_lower_2024_pct": 41.07211,
+      "illustrative_ns_upper_2024_pct": 46.117062,
+      "known_abstention_2024_pct": 43.254267,
+      "mae_2021_midterm_pp": 0.207454,
+      "ns_2024_pct": 5.044952,
+      "state_code": "12"
+    },
+    {
+      "error_2024_presidential_pp": 1.788279,
+      "illustrative_ns_lower_2024_pct": 34.216358,
+      "illustrative_ns_upper_2024_pct": 40.198617,
+      "known_abstention_2024_pct": 36.393512,
+      "mae_2021_midterm_pp": 1.25352,
+      "ns_2024_pct": 5.982259,
+      "state_code": "13"
+    },
+    {
+      "error_2024_presidential_pp": 1.109879,
+      "illustrative_ns_lower_2024_pct": 40.421511,
+      "illustrative_ns_upper_2024_pct": 46.288738,
+      "known_abstention_2024_pct": 42.940954,
+      "mae_2021_midterm_pp": 4.678153,
+      "ns_2024_pct": 5.867227,
+      "state_code": "14"
+    },
+    {
+      "error_2024_presidential_pp": 3.291658,
+      "illustrative_ns_lower_2024_pct": 34.591064,
+      "illustrative_ns_upper_2024_pct": 38.898485,
+      "known_abstention_2024_pct": 36.148115,
+      "mae_2021_midterm_pp": 3.49893,
+      "ns_2024_pct": 4.307422,
+      "state_code": "15"
+    },
+    {
+      "error_2024_presidential_pp": 3.14509,
+      "illustrative_ns_lower_2024_pct": 42.263333,
+      "illustrative_ns_upper_2024_pct": 50.47929,
+      "known_abstention_2024_pct": 46.046493,
+      "mae_2021_midterm_pp": 5.68616,
+      "ns_2024_pct": 8.215957,
+      "state_code": "16"
+    },
+    {
+      "error_2024_presidential_pp": 3.971686,
+      "illustrative_ns_lower_2024_pct": 36.100338,
+      "illustrative_ns_upper_2024_pct": 42.47157,
+      "known_abstention_2024_pct": 38.556887,
+      "mae_2021_midterm_pp": 2.595192,
+      "ns_2024_pct": 6.371232,
+      "state_code": "17"
+    },
+    {
+      "error_2024_presidential_pp": 0.196255,
+      "illustrative_ns_lower_2024_pct": 41.019489,
+      "illustrative_ns_upper_2024_pct": 48.265561,
+      "known_abstention_2024_pct": 44.223991,
+      "mae_2021_midterm_pp": 11.681301,
+      "ns_2024_pct": 7.246072,
+      "state_code": "18"
+    },
+    {
+      "error_2024_presidential_pp": 0.886913,
+      "illustrative_ns_lower_2024_pct": 41.020014,
+      "illustrative_ns_upper_2024_pct": 48.415334,
+      "known_abstention_2024_pct": 44.295832,
+      "mae_2021_midterm_pp": 7.474704,
+      "ns_2024_pct": 7.395319,
+      "state_code": "19"
+    },
+    {
+      "error_2024_presidential_pp": 7.048668,
+      "illustrative_ns_lower_2024_pct": 38.520973,
+      "illustrative_ns_upper_2024_pct": 45.33783,
+      "known_abstention_2024_pct": 41.338993,
+      "mae_2021_midterm_pp": 15.105406,
+      "ns_2024_pct": 6.816857,
+      "state_code": "20"
+    },
+    {
+      "error_2024_presidential_pp": 3.164632,
+      "illustrative_ns_lower_2024_pct": 33.083555,
+      "illustrative_ns_upper_2024_pct": 40.481671,
+      "known_abstention_2024_pct": 35.726654,
+      "mae_2021_midterm_pp": 14.368856,
+      "ns_2024_pct": 7.398116,
+      "state_code": "21"
+    },
+    {
+      "error_2024_presidential_pp": 1.401304,
+      "illustrative_ns_lower_2024_pct": 38.129373,
+      "illustrative_ns_upper_2024_pct": 40.406719,
+      "known_abstention_2024_pct": 39.017946,
+      "mae_2021_midterm_pp": 5.456006,
+      "ns_2024_pct": 2.277346,
+      "state_code": "22"
+    },
+    {
+      "error_2024_presidential_pp": 3.609891,
+      "illustrative_ns_lower_2024_pct": 43.847046,
+      "illustrative_ns_upper_2024_pct": 46.992989,
+      "known_abstention_2024_pct": 45.271254,
+      "mae_2021_midterm_pp": 3.479303,
+      "ns_2024_pct": 3.145943,
+      "state_code": "23"
+    },
+    {
+      "error_2024_presidential_pp": 1.473285,
+      "illustrative_ns_lower_2024_pct": 35.913785,
+      "illustrative_ns_upper_2024_pct": 43.283458,
+      "known_abstention_2024_pct": 38.771088,
+      "mae_2021_midterm_pp": 1.590802,
+      "ns_2024_pct": 7.369673,
+      "state_code": "24"
+    },
+    {
+      "error_2024_presidential_pp": 4.714154,
+      "illustrative_ns_lower_2024_pct": 41.05957,
+      "illustrative_ns_upper_2024_pct": 50.774776,
+      "known_abstention_2024_pct": 45.477835,
+      "mae_2021_midterm_pp": 11.481926,
+      "ns_2024_pct": 9.715206,
+      "state_code": "25"
+    },
+    {
+      "error_2024_presidential_pp": 0.796623,
+      "illustrative_ns_lower_2024_pct": 45.190577,
+      "illustrative_ns_upper_2024_pct": 55.55848,
+      "known_abstention_2024_pct": 50.417851,
+      "mae_2021_midterm_pp": 8.21873,
+      "ns_2024_pct": 10.367903,
+      "state_code": "26"
+    },
+    {
+      "error_2024_presidential_pp": 9.963339,
+      "illustrative_ns_lower_2024_pct": 36.839929,
+      "illustrative_ns_upper_2024_pct": 44.996439,
+      "known_abstention_2024_pct": 40.111639,
+      "mae_2021_midterm_pp": 4.531362,
+      "ns_2024_pct": 8.15651,
+      "state_code": "27"
+    },
+    {
+      "error_2024_presidential_pp": 4.874086,
+      "illustrative_ns_lower_2024_pct": 40.378247,
+      "illustrative_ns_upper_2024_pct": 49.783256,
+      "known_abstention_2024_pct": 44.570066,
+      "mae_2021_midterm_pp": 7.60228,
+      "ns_2024_pct": 9.405009,
+      "state_code": "28"
+    },
+    {
+      "error_2024_presidential_pp": 4.746551,
+      "illustrative_ns_lower_2024_pct": 28.003656,
+      "illustrative_ns_upper_2024_pct": 34.373489,
+      "known_abstention_2024_pct": 29.908796,
+      "mae_2021_midterm_pp": 26.975886,
+      "ns_2024_pct": 6.369834,
+      "state_code": "29"
+    },
+    {
+      "error_2024_presidential_pp": 5.962957,
+      "illustrative_ns_lower_2024_pct": 39.725569,
+      "illustrative_ns_upper_2024_pct": 44.20356,
+      "known_abstention_2024_pct": 41.58787,
+      "mae_2021_midterm_pp": 14.315379,
+      "ns_2024_pct": 4.477991,
+      "state_code": "30"
+    },
+    {
+      "error_2024_presidential_pp": 3.03047,
+      "illustrative_ns_lower_2024_pct": 26.373086,
+      "illustrative_ns_upper_2024_pct": 34.001972,
+      "known_abstention_2024_pct": 28.551226,
+      "mae_2021_midterm_pp": 7.485382,
+      "ns_2024_pct": 7.628886,
+      "state_code": "31"
+    },
+    {
+      "error_2024_presidential_pp": 4.986317,
+      "illustrative_ns_lower_2024_pct": 39.410272,
+      "illustrative_ns_upper_2024_pct": 43.458571,
+      "known_abstention_2024_pct": 41.073031,
+      "mae_2021_midterm_pp": 11.606707,
+      "ns_2024_pct": 4.048299,
+      "state_code": "32"
+    }
+  ],
+  "training_run_id": "daf97a195864693a644e",
+  "unit": "state",
+  "unseen_holdout_year": 2024,
+  "version": "state-backtest-audit-v1"
+}

@@ -51,6 +51,8 @@ jobs:
         run: uv run --locked --group ml ruff check app pipelines scripts tests
       - name: Run all backend tests (warnings are errors)
         run: uv run --locked --group ml pytest -q -W error --junitxml=tmp/backend-tests.xml
+      - name: Verify frozen out-of-time validation audit
+        run: uv run --locked --group ml python -m scripts.validate_forecasts --check
       - name: Verify the running API
         run: uv run --locked python scripts/demo_backend.py --api-url http://127.0.0.1:8001 --output tmp/http-checks.json
       - name: Operational load and isolated restore drill

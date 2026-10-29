@@ -346,3 +346,11 @@ Consultar [el plan de operación y seguridad](docs/punto8-operacion-seguridad.md
 para la clave interna de FastAPI, logs con correlación, métricas, monitor,
 respaldo/restauración, pruebas de concurrencia y aislamiento multiusuario.
 No pasar a producción sin configurar secretos y servicios externos verificables.
+
+## Punto 6 · Validación de pronósticos
+
+La [auditoría temporal y de calidad](docs/punto6-validacion.md) presenta
+los errores 2018/2021/2024, la sensibilidad NS y las limitaciones de la
+banda 2027. El [diagnóstico reproducible](docs/punto6_validacion.json) tiene
+resultados por estado y se muestra en Predicciones. **No constituye una
+validación externa independiente ni acredita uso operativo.**

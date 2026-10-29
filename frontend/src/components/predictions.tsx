@@ -21,6 +21,7 @@ import { number, pct, pp, riskLabels } from "@/lib/utils";
 import { AiAssistant } from "./ai-assistant";
 import { Chart, chartAxis, chartTooltip } from "./chart";
 import { PageKpis } from "./page-kpis";
+import { ForecastValidation } from "./forecast-validation";
 import { SectionCard } from "./section-card";
 import { Note, RiskBadge, SourceLink, Status } from "./shared";
 
@@ -498,6 +499,7 @@ export function PredictionsView({
           </p>
         </SectionCard>
       </div>
+      <ForecastValidation forecast={forecast} prediction={p} />
       <Note>
         Semáforo relativo: bajo &lt; {pct(thresholds[0])}; medio desde{" "}
         {pct(thresholds[0])} hasta menos de {pct(thresholds[1])}; alto desde{" "}

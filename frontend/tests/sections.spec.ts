@@ -395,3 +395,30 @@ test("the header process drives the map trend, report history and data year", as
     page.getByRole("combobox", { name: "Año o proceso", exact: true }),
   ).toContainText("2015");
 });
+
+test("predictions show historical errors, NS and explicit external limits", async ({ page }) => {
+  await open(page, "Predicciones");
+  const panel = page.getByRole("region", {
+    name: "¿Qué tan validada está esta predicción?",
+  });
+  await expect(panel).toBeVisible();
+  await expect(panel).toContainText("MAE 2021");
+  await expect(panel).toContainText("MAE 2024");
+  await expect(panel).toContainText("14.37");
+  await expect(panel).toContainText("Validación externa pendiente");
+  await expect(panel).toContainText("Sensibilidad a NS");
+  await expect(panel).toContainText("no es una banda predictiva");
+});
+
+test("another forecast of the same model cannot inherit the frozen audit", async ({ page }) => {
+  await page.route("**/api/backend/predictions?**", async route => {
+    const response = await route.fetch();
+    const data = await response.json();
+    await route.fulfill({ response, json: { ...data, forecast: { ...data.forecast, id: "different-forecast-run" } } });
+  });
+  await open(page, "Predicciones");
+  const panel = page.getByRole("region", { name: "¿Qué tan validada está esta predicción?" });
+  await expect(panel).toContainText("no coinciden con la auditoría congelada");
+  await expect(panel.locator(".validation-metric")).toHaveCount(0);
+  await expect(panel).toContainText("Validación externa pendiente");
+});
