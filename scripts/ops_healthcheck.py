@@ -40,7 +40,10 @@ def alert(webhook: str, event: str) -> None:
     if parsed.scheme != "https" or not parsed.hostname or parsed.username or parsed.password:
         raise ValueError("Alert webhook must use HTTPS")
     body = json.dumps({"text": event}).encode("utf-8")
-    request = Request(webhook, method="POST", data=body, headers={"Content-Type": "application/json"})
+    request = Request(
+        webhook, method="POST", data=body,
+        headers={"Content-Type": "application/json"},
+    )
     with urlopen(request, timeout=10) as response:
         if response.status >= 300:
             raise ValueError("Alert delivery failed")
@@ -63,7 +66,10 @@ def main() -> int:
     webhook = os.environ.get("PULSO_ALERT_WEBHOOK", "")
     if webhook:
         try:
-            alert(webhook, "PULSO ALERT: production readiness check failed. Inspect the monitoring job.")
+            alert(
+                webhook,
+                "PULSO ALERT: production readiness failed. Inspect the monitoring job.",
+            )
             print("Alert webhook submitted")
         except (ValueError, HTTPError, URLError, TimeoutError, OSError):
             print("Alert delivery failed; check webhook configuration.", file=sys.stderr)

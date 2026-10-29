@@ -27,8 +27,11 @@ class Settings(BaseSettings):
         if self.environment.lower() in {"production", "prod"}:
             if self.debug:
                 raise ValueError("DEBUG must be false in production")
-            if self.api_internal_token is None or len(self.api_internal_token.get_secret_value()) < 32:
-                raise ValueError("API_INTERNAL_TOKEN of at least 32 characters is required in production")
+            if (
+                self.api_internal_token is None
+                or len(self.api_internal_token.get_secret_value()) < 32
+            ):
+                raise ValueError("API_INTERNAL_TOKEN must have 32+ characters in production")
             if "*" in self.cors_origins:
                 raise ValueError("Wildcard CORS is not allowed in production")
         elif self.api_internal_token and len(self.api_internal_token.get_secret_value()) < 32:

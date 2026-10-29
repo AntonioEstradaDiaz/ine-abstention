@@ -1,7 +1,8 @@
 """Back up and verify the FastAPI PostgreSQL database (NOT Supabase Auth).
 
 Usage:
- PULSO_BACKUP_DATABASE_URL=postgresql://... python scripts/ops_backup.py backup --directory /encrypted/backups
+ PULSO_BACKUP_DATABASE_URL=postgresql://... \\
+   python scripts/ops_backup.py backup --directory /encrypted/backups
  python scripts/ops_backup.py verify --archive /encrypted/backups/pulso-....dump
  PULSO_RESTORE_DATABASE_URL=postgresql://... PULSO_RESTORE_ALLOWED=YES \
    python scripts/ops_backup.py restore --archive ... --confirm-restore
@@ -33,7 +34,10 @@ def connection(env_name: str) -> tuple[list[str], dict[str, str], str]:
     env["PGPASSWORD"] = unquote(parsed.password or "")
     if not env["PGPASSWORD"]:
         raise ValueError(f"{env_name} requires a password")
-    opts = ["-h", parsed.hostname, "-p", str(parsed.port or 5432), "-U", unquote(parsed.username or "")]
+    opts = [
+        "-h", parsed.hostname, "-p", str(parsed.port or 5432),
+        "-U", unquote(parsed.username or ""),
+    ]
     if not parsed.username:
         raise ValueError(f"{env_name} requires a username")
     # Security: credentials never appear in the argument list, file name or manifest.

@@ -58,7 +58,10 @@ def main() -> int:
     parser.add_argument("--workers", type=int, default=5)
     parser.add_argument("--max-errors", type=int, default=0)
     args = parser.parse_args()
-    report = run(args.url, args.requests, args.workers, os.environ.get("PULSO_INTERNAL_API_TOKEN", ""))
+    report = run(
+        args.url, args.requests, args.workers,
+        os.environ.get("PULSO_INTERNAL_API_TOKEN", ""),
+    )
     print(json.dumps(report))
     return int(report["failed"] > args.max_errors)
 
