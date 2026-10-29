@@ -116,6 +116,7 @@ export function Reports({
   error: Error | null;
   retry: () => void;
 }) {
+  const reportDocument = useRef<HTMLElement>(null);
   const [template, setTemplate] = useState("territorial");
   const [level, setLevel] = useState("state");
   const [code, setCode] = useState(selected);
@@ -275,7 +276,6 @@ export function Reports({
     history.isSuccess &&
     rows.length > 0 &&
     (compare !== "national" || national.every((q) => q.isSuccess));
-  const reportDocument = useRef<HTMLElement>(null);
   const generate = async () => {
     if (!forecast || !exportReady || generating) return;
     const report: StateReport = {
