@@ -28,7 +28,8 @@ test("assistant calculates a selected horizon and clears the previous conversati
   await assistant.getByLabel("Año objetivo del asistente").fill("2028");
   await assistant
     .getByLabel("Tipo de elección del asistente")
-    .selectOption("presidential");
+    .click();
+  await page.getByRole("option", { name: "Presidencial", exact: true }).click();
   await assistant
     .getByRole("button", { name: "Calcular proyección", exact: true })
     .click();
