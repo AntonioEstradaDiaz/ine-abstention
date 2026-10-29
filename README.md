@@ -339,3 +339,11 @@ La [licencia del código](docs/LICENCIA_PENDIENTE.md) requiere aprobación de su
 Las páginas públicas `/privacidad`, `/terminos` y `/soporte` son preliminares:
 se debe completar y aprobar la documentación legal y el contacto de soporte antes
  de abrir el registro al público. PULSO no es una plataforma oficial del INE.
+
+## Punto 6 · Validación de pronósticos
+
+La [auditoría temporal y de calidad](docs/punto6-validacion.md) presenta
+los errores 2018/2021/2024, la sensibilidad NS y las limitaciones de la
+banda 2027. El [diagnóstico reproducible](docs/punto6_validacion.json) tiene
+resultados por estado y se muestra en Predicciones. **No constituye una
+validación externa independiente ni acredita uso operativo.**

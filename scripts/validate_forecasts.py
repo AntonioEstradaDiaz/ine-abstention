@@ -20,7 +20,7 @@ def main() -> int:
     expected = json.dumps(result, indent=2, ensure_ascii=False, sort_keys=True) + "\n"
     if args.check:
         for path in TARGETS:
-            if not path.exists() or path.read_text(encoding="utf-8") != expected:
+            if not path.exists() or json.loads(path.read_text(encoding="utf-8")) != result:
                 raise SystemExit(f"Snapshot outdated: {path.relative_to(ROOT)}")
         print("Forecast audit: both snapshots match the frozen out-of-time data")
         return 0

@@ -67,5 +67,7 @@ def test_selection_is_not_retrofitted_from_holdout():
     forecast = json.loads((ROOT / "docs/phase5_results.json").read_text(encoding="utf-8"))
     changed = deepcopy(training)
     changed["development_selected_model"] = "lightgbm"
+    changed_forecast = deepcopy(forecast)
+    changed_forecast["provenance"]["model_name"] = "lightgbm"
     with pytest.raises(ValueError, match="selección"):
-        build_audit(records, changed, forecast)
+        build_audit(records, changed, changed_forecast)
