@@ -67,10 +67,36 @@ export function projectHorizon(
     registered.prediction.state_code === stateCode &&
     registered.forecast.target_year === targetYear &&
     registered.forecast.election_type === electionType &&
-    registered.forecast.as_of_year >= cutoffYear;
+    registered.forecast.as_of_year === cutoffYear;
+  const samples = [...comparable].reverse().map(r => {
+    const total = r.voter_count + r.nonvoter_count;
+    if (!Number.isFinite(total) || r.voter_count < 0 || r.nonvoter_count < 0 || total <= 0)
+      throw new Error("Conteos históricos inválidos para entrenar la tendencia.");
+    return { x: r.year, y: r.nonvoter_count / total };
+  });
+  if (new Set(samples.map(r => r.x)).size !== samples.length)
+    throw new Error("Hay años duplicados en el histórico comparable.");
+  // Rolling-origin evaluation: every held-out election uses only earlier data.
+  const predict = (train: typeof samples, year: number) => {
+    const mx = train.reduce((s, r) => s + r.x, 0) / train.length;
+    const my = train.reduce((s, r) => s + r.y, 0) / train.length;
+    const slope = train.reduce((s, r) => s + (r.x - mx) * (r.y - my), 0) /
+      train.reduce((s, r) => s + (r.x - mx) ** 2, 0);
+    return Math.max(0, Math.min(1, my + slope * (year - mx)));
+  };
+  let trendError = 0, baselineError = 0;
+  for (let i = 2; i < samples.length; i++) {
+    trendError += Math.abs(predict(samples.slice(0, i), samples[i].x) - samples[i].y);
+    baselineError += Math.abs(samples[i - 1].y - samples[i].y);
+  }
+  const useTrend = samples.length >= 3 && trendError < baselineError;
+  const fitted = useTrend ? predict(samples, targetYear) : nonvoters / (voters + nonvoters);
+  const evaluation = samples.length >= 3
+    ? `Validación temporal: ${samples.length - 2} elecciones; error absoluto medio de tendencia ${(100 * trendError / (samples.length - 2)).toFixed(2)} pp y referencia ${(100 * baselineError / (samples.length - 2)).toFixed(2)} pp.`
+    : "Histórico insuficiente para validar tendencia; se conserva la última tasa comparable.";
   const abstention = match
     ? registered.prediction.predicted
-    : nonvoters / (voters + nonvoters);
+    : fitted;
   if (!Number.isFinite(abstention) || abstention < 0 || abstention > 1)
     throw new Error("La estimación registrada no contiene una tasa válida.");
   const lower = match ? registered.prediction.lower : null;
@@ -105,9 +131,9 @@ export function projectHorizon(
     forecastId: match ? registered.forecast.id : null,
     method: match
       ? registered.forecast.provenance.model_name
-      : "baseline_last: NV / (SV + NV) de la última elección del mismo tipo",
+      : ` ${useTrend ? "Regresión lineal temporal ajustada a conteos NV / (SV + NV) del mismo tipo" : "baseline_last: última tasa comparable"}. ${evaluation}`,
     warning: match
       ? "Estimación experimental; la banda empírica no garantiza cobertura futura."
-      : "Proyección hipotética de referencia constante, no un modelo entrenado para este horizonte. No incorpora tendencias ni cambios futuros; no hay banda calibrada ni precisión validada para este año. Elegir un año no confirma que exista una elección en él. El supuesto se debilita a mayor distancia del último dato.",
+      : "Escenario experimental condicionado al tipo de elección, no un resultado observado. No hay banda calibrada para este horizonte. La validación histórica limitada no garantiza precisión futura. Elegir un año no confirma que exista una elección en él; la extrapolación pierde fiabilidad con la distancia.",
   };
 }

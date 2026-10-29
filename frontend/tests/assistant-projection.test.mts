@@ -126,3 +126,28 @@ test("custom horizon facts and offline answer do not reuse 2027 bands or ranking
     /mejoras generales/,
   );
 });
+
+test("learns a consistent historical trend and extrapolates the requested year", () => {
+  const rows = [2012, 2018, 2024].map((year, i) => ({
+    ...history[0], state_code: "17", year, election_type: "presidential",
+    voter_count: 80 - 10 * i, nonvoter_count: 20 + 10 * i,
+  }));
+  const result = projectHorizon(rows, "17", 2025, "presidential");
+  assert.ok(Math.abs(result.abstention - (0.4 + 0.1 / 6)) < 1e-10);
+  assert.match(result.method, /Regresión lineal/);
+  assert.match(result.method, /Validación temporal: 1/);
+  assert.equal(result.participation, 1 - result.abstention);
+  assert.equal(result.lower, null);
+  const changed = rows.map((r, i) => i === 2 ? { ...r, voter_count: 90, nonvoter_count: 10 } : r);
+  assert.notEqual(projectHorizon(changed, "17", 2025, "presidential").abstention, result.abstention);
+});
+
+test("does not extrapolate a trend that loses against the last observed rate", () => {
+  const rows = [2012, 2018, 2024].map((year, i) => ({
+    ...history[0], state_code: "17", year, election_type: "presidential",
+    voter_count: [80, 60, 60][i], nonvoter_count: [20, 40, 40][i],
+  }));
+  assert.equal(projectHorizon(rows, "17", 2025, "presidential").abstention, 0.4);
+  assert.match(projectHorizon(rows, "17", 2025, "presidential").method, /baseline_last/);
+  assert.throws(() => projectHorizon([{...rows[0], voter_count: -1}, ...rows.slice(1)], "17", 2025, "presidential"));
+});

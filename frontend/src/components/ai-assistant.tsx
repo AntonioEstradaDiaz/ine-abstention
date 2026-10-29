@@ -264,7 +264,7 @@ export function AiAssistant({
           </label>
           <label>
             Tipo de referencia
-            <select
+            <DashboardSelect
               aria-label="Tipo de elección del asistente"
               value={
                 electionType ?? baseContext?.forecast.election_type ?? "midterm"
@@ -273,7 +273,7 @@ export function AiAssistant({
             >
               <option value="midterm">Intermedia</option>
               <option value="presidential">Presidencial</option>
-            </select>
+            </DashboardSelect>
           </label>
           <button type="submit" disabled={!baseContext}>
             Calcular proyección
@@ -304,6 +304,7 @@ export function AiAssistant({
               Referencia {projection.referenceYear} · Corte{" "}
               {projection.cutoffYear} · INE CCPC, fuente {projection.sourceId}
             </small>
+            <p>{projection.method}</p>
             <p>{projection.warning}</p>
           </div>
         )}
