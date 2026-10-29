@@ -83,7 +83,8 @@ export function DesignTop({
             height={724}
           />
         </div>
-        <div
+        <nav
+          aria-label="Secciones principales"
           className="content-stretch flex gap-[17px] items-center overflow-clip relative shrink-0"
           data-node-id="10:12481"
           data-name="Secciones"
@@ -258,7 +259,7 @@ export function DesignTop({
               Datos
             </p>
           </button>
-        </div>
+        </nav>
         <div
           className="content-stretch flex gap-[20px] items-center overflow-clip relative shrink-0"
           data-node-id="10:12500"

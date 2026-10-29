@@ -226,10 +226,10 @@ test("analysis does not reuse an AI answer for another state or period", async (
   await page
     .getByRole("button", { name: "Consultar a la IA", exact: true })
     .click();
-  await expect(page.getByRole("status")).toContainText(
+  await expect(page.getByRole("status", { name: "Respuesta del asistente de IA" })).toContainText(
     "Respuesta exclusiva de Morelos",
   );
-  await expect(page.getByRole("status")).toContainText("IA · test-model");
+  await expect(page.getByRole("status", { name: "Respuesta del asistente de IA" })).toContainText("IA · test-model");
   await page
     .getByRole("button", { name: "Cerrar lectura", exact: true })
     .click();

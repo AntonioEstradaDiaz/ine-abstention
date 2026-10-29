@@ -368,6 +368,7 @@ export function AuthScreen({
             <ShieldCheck aria-hidden="true" />
             Acceso seguro a tu información
           </p>
+          <p className="auth-independent">Prototipo independiente · No es una plataforma oficial del INE</p>
           <footer>
             <button onClick={() => setInfo("privacy")}>
               Aviso de privacidad
@@ -428,6 +429,7 @@ export function AuthScreen({
                   privacidad completo y los medios de contacto antes de abrir el
                   registro al público.
                 </p>
+                <p><Link href="/privacidad" target="_blank" rel="noopener noreferrer">Consultar el borrador de privacidad (abre una nueva pestaña)</Link></p>
               </>
             ) : (
               <>
@@ -440,6 +442,7 @@ export function AuthScreen({
                   Si el acceso no está disponible o un enlace expiró, contacta
                   al administrador de esta instalación.
                 </p>
+                <p><Link href="/soporte" target="_blank" rel="noopener noreferrer">Consultar ayuda y soporte (abre una nueva pestaña)</Link></p>
               </>
             )}
             <button className="auth-primary" onClick={() => setInfo(null)}>

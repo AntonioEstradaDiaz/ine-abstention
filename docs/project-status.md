@@ -1,7 +1,7 @@
 # Estado del proyecto y plan de mejora
 
-Estado revisado: 25 de octubre de 2026 (America/Mexico_City). Nombre de producto: **Pulso electoral**.
-Repositorio: `AntonioEstradaDiaz/ine-abstention`, privado. Estado: prototipo funcional local.
+Estado revisado: 28 de octubre de 2026 (America/Mexico_City). Nombre de producto: **Pulso electoral**.
+Repositorio: `AntonioEstradaDiaz/ine-abstention`, público a la fecha de revisión. Estado: demo funcional, con pendientes de producción.
 
 ## Qué problema resuelve
 
@@ -26,7 +26,7 @@ Los CCPC son agregados de cuadernillos y tienen cobertura y registros NS que req
 | Demostración backend | Docker local, restauración idempotente y recorrido HTTP documentado en fase 7. |
 | Frontend | Ocho secciones: Laboratorio de modelos, Análisis IA, Mapa, Tendencias, Predicciones, Escenarios, Reportes y Datos; cartografía INEGI, cliente tipado, proxy y exportaciones CSV/JSON. |
 | Asistente | Groq, Gemini u Ollama, contexto estatal consultado en servidor y lectura automática cuando el proveedor no responde. |
-| Datos y Reportes | Datos descarga CSV/JSON de conteos nacionales y estatales; la muestra municipal es ilustrativa. Reportes configura y muestra documentos, sin generar archivos ni envíos programados. |
+| Datos y Reportes | Datos descarga CSV/JSON de conteos nacionales y estatales; la muestra municipal es ilustrativa. Reportes permite descarga PDF/Excel estatal; reportes nacionales y municipales y envíos programados siguen pendientes. |
 | CI | GitHub Actions con pruebas unitarias, ML, integración, TypeScript, build y Playwright; ver ci.md. |
 | Validación frontend | TypeScript, compilación y recorrido de navegador de escritorio/móvil; evidencia en frontend-validation.md. |
 
@@ -38,10 +38,9 @@ Los CCPC son agregados de cuadernillos y tienen cobertura y registros NS que req
 - Evidencia predictiva suficiente para considerar el modelo listo para producción.
 - Verificación histórica de fechas de publicación de todas las variables y revisiones de las fuentes.
 - Calibración con más elecciones independientes y estudio explícito del sesgo por NS.
-- Historial, recuperación y comparación de escenarios en la interfaz; hoy el backend guarda y recupera,
-  mientras el dashboard muestra la simulación recién calculada y su identificador.
-- Simulaciones simultáneas de varios estados en la interfaz, análisis demográfico y reportes PDF/XLSX.
-- Pruebas de carga/concurrencia, recuperación ante desastres y auditoría completa WCAG.
+- Comparación simultánea de escenarios entre varios estados. El historial privado de escenarios ya está implementado.
+- Simulaciones simultáneas entre varios estados, análisis demográfico y reportes nacionales/municipales; PDF/XLSX estatales ya implementados.
+- Pruebas de carga/concurrencia, recuperación ante desastres y auditoría completa WCAG (ver `punto9-accesibilidad.md`).
 - Licencia de distribución del código acordada por su titular; conservar atribuciones de fuentes y dependencias.
 
 ## Mejoras priorizadas y criterios de aceptación
