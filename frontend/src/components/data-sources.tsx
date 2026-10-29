@@ -209,6 +209,13 @@ export function DataSources({
   };
   const [draft, setDraft] = useState(defaults);
   const [applied, setApplied] = useState(defaults);
+  // Changing the process in the header moves the explorer to that year.
+  const [syncedYear, setSyncedYear] = useState(initialYear);
+  if (syncedYear !== initialYear) {
+    setSyncedYear(initialYear);
+    setDraft((d) => ({ ...d, year: initialYear }));
+    setApplied((a) => ({ ...a, year: initialYear }));
+  }
   const [sort, setSort] = useState<{ key: keyof Row; asc: boolean }>({
     key: "abstention",
     asc: false,
