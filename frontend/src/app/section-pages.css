@@ -1058,3 +1058,13 @@
 .scenario-results .section-table {
   white-space: normal;
 }
+
+/* Forecast controls stay usable within the assistant column. */
+.ai-assistant .ai-horizon-controls { display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0; }
+.ai-assistant .ai-horizon-controls label { display: flex; flex: 1 1 130px; flex-direction: column; align-items: stretch; gap: 6px; font-size: 12px; }
+.ai-horizon-controls input, .ai-horizon-controls select { width: 100%; min-width: 0; padding: 10px; border: 1px solid #efc9df; border-radius: 10px; background: white; color: #0d172f; }
+.ai-horizon-controls button { border: 0; border-radius: 10px; padding: 10px 14px; background: #c4006b; color: white; cursor: pointer; }
+.ai-horizon-controls button:disabled { opacity: .5; cursor: default; }
+.ai-projection-result { padding: 14px; border: 1px solid #f4cfe4; border-radius: 14px; background: #fff6fa; font-size: 13px; }
+.ai-projection-result p { margin: 6px 0; }
+.ai-projection-result small { color: #596d8d; }
