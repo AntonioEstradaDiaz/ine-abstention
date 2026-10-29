@@ -146,6 +146,7 @@ export function RepublicMap({
                 <path
                   key="selected"
                   className="republic-map-selected"
+                  fill="none"
                   d={s.d}
                 />
               ))}
