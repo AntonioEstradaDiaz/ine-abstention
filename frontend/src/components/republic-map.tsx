@@ -7,11 +7,18 @@ import type { Risk } from "@/lib/types";
 import { riskColors } from "@/lib/utils";
 
 type Ring = Array<[number, number]>;
+type Box = [number, number, number, number];
+interface Part {
+  rings: Ring[];
+  box: Box;
+  area: number;
+}
 interface Shape {
   code: string;
   name: string;
   rings: Ring[];
-  box: [number, number, number, number];
+  box: Box;
+  parts: Part[];
 }
 // Same equirectangular look as the 3D map at Mexico's latitude.
 const SCALE_X = Math.cos((23.5 * Math.PI) / 180);
@@ -28,6 +35,42 @@ function simplify(ring: Ring, tolerance: number): Ring {
   return out;
 }
 
+const union = (boxes: Box[]): Box =>
+  boxes.reduce<Box>(
+    (b, x) => [
+      Math.min(b[0], x[0]),
+      Math.min(b[1], x[1]),
+      Math.max(b[2], x[2]),
+      Math.max(b[3], x[3]),
+    ],
+    [Infinity, Infinity, -Infinity, -Infinity],
+  );
+function ringArea(ring: Ring) {
+  let area = 0;
+  for (let i = 0; i < ring.length - 1; i++)
+    area += ring[i][0] * ring[i + 1][1] - ring[i + 1][0] * ring[i][1];
+  return Math.abs(area) / 2;
+}
+/**
+ * A focused entity is framed on its main territory. Far, small islands
+ * (Revillagigedo for Colima, Guadalupe for Baja California) would otherwise
+ * stretch the frame and leave the state as a speck; nearby islands stay.
+ */
+function mainland(shape: Shape): Part[] {
+  const largest = Math.max(...shape.parts.map((part) => part.area));
+  const core = shape.parts.filter((part) => part.area >= largest * 0.1);
+  const box = union(core.map((part) => part.box));
+  const reach = Math.max(box[2] - box[0], box[3] - box[1]) * 0.25;
+  return shape.parts.filter(
+    (part) =>
+      core.includes(part) ||
+      (part.box[0] < box[2] + reach &&
+        part.box[2] > box[0] - reach &&
+        part.box[1] < box[3] + reach &&
+        part.box[3] > box[1] - reach),
+  );
+}
+
 // Projects INEGI polygons once and keeps a light copy for SVG drawing.
 function shapes(geo: FeatureCollection): Shape[] {
   const known = cache.get(geo);
@@ -37,9 +80,9 @@ function shapes(geo: FeatureCollection): Shape[] {
     if (!g || (g.type !== "Polygon" && g.type !== "MultiPolygon")) return [];
     const polygons: Position[][][] =
       g.type === "Polygon" ? [g.coordinates] : g.coordinates;
-    const box: Shape["box"] = [Infinity, Infinity, -Infinity, -Infinity];
-    const rings = polygons.flatMap((polygon) =>
-      polygon.map((ring) => {
+    const parts = polygons.map((polygon): Part => {
+      const box: Box = [Infinity, Infinity, -Infinity, -Infinity];
+      const rings = polygon.map((ring) => {
         const projected = ring.map(
           ([lon, lat]) => [lon * SCALE_X, -lat] as [number, number],
         );
@@ -50,14 +93,16 @@ function shapes(geo: FeatureCollection): Shape[] {
           box[3] = Math.max(box[3], y);
         }
         return simplify(projected, 0.004);
-      }),
-    );
+      });
+      return { rings, box, area: ringArea(rings[0] ?? []) };
+    });
     return [
       {
         code: String(feature.properties?.cvegeo ?? ""),
         name: String(feature.properties?.nomgeo ?? ""),
-        rings,
-        box,
+        rings: parts.flatMap((part) => part.rings),
+        box: union(parts.map((part) => part.box)),
+        parts,
       },
     ];
   });
@@ -93,23 +138,18 @@ export function RepublicMap({
     if (!geo.data) return null;
     const all = shapes(geo.data);
     const target = focus ? all.find((s) => s.code === selected) : undefined;
-    const box = target
-      ? target.box
-      : all.reduce<Shape["box"]>(
-          (b, s) => [
-            Math.min(b[0], s.box[0]),
-            Math.min(b[1], s.box[1]),
-            Math.max(b[2], s.box[2]),
-            Math.max(b[3], s.box[3]),
-          ],
-          [Infinity, Infinity, -Infinity, -Infinity],
-        );
+    const framed = target ? mainland(target) : undefined;
+    const box = framed
+      ? union(framed.map((part) => part.box))
+      : union(all.map((s) => s.box));
     const pad =
       Math.max(box[2] - box[0], box[3] - box[1]) * (target ? 0.08 : 0.06);
     const view = [box[0] - pad, box[1] - pad, box[2] + pad, box[3] + pad];
     const tolerance = (view[2] - view[0]) / 520;
     // A focused map shows only its entity, on the same plain card background.
-    const visible = target ? [target] : all;
+    const visible = target
+      ? [{ ...target, rings: framed!.flatMap((part) => part.rings) }]
+      : all;
     return {
       viewBox: `${view[0]} ${view[1]} ${view[2] - view[0]} ${view[3] - view[1]}`,
       states: visible.map((s) => ({
@@ -146,6 +186,7 @@ export function RepublicMap({
                 <path
                   key="selected"
                   className="republic-map-selected"
+                  fill="none"
                   d={s.d}
                 />
               ))}

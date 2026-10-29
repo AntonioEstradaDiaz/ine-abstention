@@ -1,6 +1,7 @@
 import type { Forecast, Indicator, Prediction } from "./types";
 
 export type StateReport = {
+  visualCover?: string;
   title: string;
   state: Prediction;
   forecast: Forecast;
@@ -36,6 +37,13 @@ export async function reportPdf(report: StateReport): Promise<Uint8Array> {
   const doc = await PDFDocument.create();
   doc.setTitle(`${report.title} · ${report.state.name}`);
   doc.setAuthor("Pulso electoral");
+  if (report.visualCover) {
+    const cover = await doc.embedPng(report.visualCover);
+    const page = doc.addPage([595.28, 841.89]);
+    const scale = Math.min(555.28 / cover.width, 771.89 / cover.height);
+    const width = cover.width * scale, height = cover.height * scale;
+    page.drawImage(cover, { x: (595.28 - width) / 2, y: 821.89 - height, width, height });
+  }
   const font = await doc.embedFont(StandardFonts.Helvetica);
   const bold = await doc.embedFont(StandardFonts.HelveticaBold);
   const ink = rgb(0.06, 0.12, 0.24),
