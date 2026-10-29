@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useQueries } from "@tanstack/react-query";
 import {
-  ArrowLeft, BarChart3, Download, FileText, Info, MapPinned, ShieldAlert, TrendingUp,
+  ArrowLeft, BarChart3, Download, Info, MapPinned, ShieldAlert, TrendingUp,
 } from "lucide-react";
 import { api } from "@/lib/api";
 import { downloadNationalReport, type NationalReport } from "@/lib/national-export";
