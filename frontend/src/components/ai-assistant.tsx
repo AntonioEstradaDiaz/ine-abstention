@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   Bot,
@@ -19,9 +19,13 @@ import {
   type AssistantReply,
   type AssistantStatus,
 } from "@/lib/assistant";
+import { projectHorizon } from "@/lib/assistant-projection";
+import type { ElectionType } from "@/lib/types";
 import { DashboardSelect } from "./ui/dashboard-select";
 
 const suggestions = [
+  "¿Cuál es la proyección del año seleccionado?",
+  "Propón mejoras generales para evaluar los datos y el modelo",
   "¿Por qué tiene este nivel de riesgo?",
   "Resume su histórico de abstención",
   "¿Qué tan confiable es la estimación?",
@@ -39,6 +43,8 @@ async function assistantStatus(signal: AbortSignal) {
 }
 async function ask(body: {
   state_code: string;
+  target_year: number;
+  election_type: ElectionType;
   model: string;
   messages: AssistantMessage[];
 }) {
@@ -50,12 +56,46 @@ async function ask(body: {
   const data = await response.json().catch(() => null);
   if (!response.ok)
     throw new Error(
-      typeof data?.detail === "string" ? data.detail : "El asistente no respondió.",
+      typeof data?.detail === "string"
+        ? data.detail
+        : "El asistente no respondió.",
     );
   return data as AssistantReply;
 }
 
-export function AiAssistant({ context }: { context: AssistantContext | null }) {
+export function AiAssistant({
+  context: baseContext,
+}: {
+  context: AssistantContext | null;
+}) {
+  const [yearInput, setYearInput] = useState<string | null>(null);
+  const [targetYear, setTargetYear] = useState<number | null>(null);
+  const [electionType, setElectionType] = useState<ElectionType | null>(null);
+  const horizon = useMemo(() => {
+    if (!baseContext) return { context: null, error: null };
+    try {
+      const projection = projectHorizon(
+        baseContext.observedHistory,
+        baseContext.stateCode,
+        targetYear ?? baseContext.forecast.target_year,
+        electionType ?? baseContext.forecast.election_type,
+        { forecast: baseContext.forecast, prediction: baseContext.prediction },
+      );
+      return { context: { ...baseContext, projection }, error: null };
+    } catch (error) {
+      return {
+        context: null,
+        error:
+          error instanceof Error ? error.message : "Proyección no disponible.",
+      };
+    }
+  }, [baseContext, targetYear, electionType]);
+  const context = horizon.context;
+  const projection = context?.projection;
+  const cutoff = baseContext
+    ? Math.max(...baseContext.observedHistory.map((h) => h.year))
+    : 2024;
+
   const status = useQuery({
     queryKey: ["assistant-status"],
     queryFn: ({ signal }) => assistantStatus(signal),
@@ -73,8 +113,9 @@ export function AiAssistant({ context }: { context: AssistantContext | null }) {
       ? chosenModel
       : (status.data?.defaultModel ?? null);
   const online = !!status.data?.reachable && !!model;
-  const code = context?.stateCode;
+  const code = JSON.stringify(context);
   const activeCode = useRef(code);
+  activeCode.current = code;
   useEffect(() => {
     activeCode.current = code;
     setChat([]);
@@ -94,7 +135,7 @@ export function AiAssistant({ context }: { context: AssistantContext | null }) {
     setChat(next);
     setDraft("");
     const fallback = (reason?: string) => {
-      if (activeCode.current !== context.stateCode) return;
+      if (activeCode.current !== code) return;
       setNotice(reason ?? null);
       setChat([
         ...next,
@@ -109,6 +150,8 @@ export function AiAssistant({ context }: { context: AssistantContext | null }) {
     mutation.mutate(
       {
         state_code: context.stateCode,
+        target_year: context.projection!.targetYear,
+        election_type: context.projection!.electionType,
         model,
         messages: next
           .slice(-MAX_MESSAGES)
@@ -116,7 +159,7 @@ export function AiAssistant({ context }: { context: AssistantContext | null }) {
       },
       {
         onSuccess: (reply) => {
-          if (activeCode.current !== context.stateCode) return;
+          if (activeCode.current !== code) return;
           setNotice(null);
           setChat([
             ...next,
@@ -136,10 +179,26 @@ export function AiAssistant({ context }: { context: AssistantContext | null }) {
   const connection = status.isPending
     ? { label: "Comprobando…", tone: "pending" }
     : online
-      ? { label: status.data?.provider === "groq" ? "Groq configurado" : status.data?.provider === "gemini" ? "Gemini configurado" : "Ollama conectado", tone: "online" }
+      ? {
+          label:
+            status.data?.provider === "groq"
+              ? "Groq configurado"
+              : status.data?.provider === "gemini"
+                ? "Gemini configurado"
+                : "Ollama conectado",
+          tone: "online",
+        }
       : status.data?.reachable
         ? { label: "Sin modelo instalado", tone: "offline" }
-        : { label: status.data?.provider === "groq" ? "Groq sin configurar" : status.data?.provider === "gemini" ? "Gemini sin configurar" : "Ollama sin conexión", tone: "offline" };
+        : {
+            label:
+              status.data?.provider === "groq"
+                ? "Groq sin configurar"
+                : status.data?.provider === "gemini"
+                  ? "Gemini sin configurar"
+                  : "Ollama sin conexión",
+            tone: "offline",
+          };
   return (
     <section className="section-card ai-assistant" aria-labelledby="ai-title">
       <header className="section-card-heading ai-assistant-heading">
@@ -148,7 +207,7 @@ export function AiAssistant({ context }: { context: AssistantContext | null }) {
         </span>
         <div>
           <h2 id="ai-title">Asistente IA</h2>
-          <p>Explica las predicciones con datos abiertos del INE</p>
+          <p>Consulta proyecciones y sus límites con datos del INE</p>
         </div>
         <span
           className="ai-connection"
@@ -179,6 +238,75 @@ export function AiAssistant({ context }: { context: AssistantContext | null }) {
             <strong>Por definir</strong>
           )}
         </label>
+        <form
+          className="ai-horizon-controls"
+          onSubmit={(e) => {
+            e.preventDefault();
+            setTargetYear(
+              Number(yearInput ?? baseContext?.forecast.target_year),
+            );
+          }}
+        >
+          <label>
+            Año objetivo
+            <input
+              aria-label="Año objetivo del asistente"
+              type="number"
+              min={cutoff + 1}
+              max={2100}
+              step={1}
+              value={
+                yearInput ?? String(baseContext?.forecast.target_year ?? "")
+              }
+              onChange={(e) => setYearInput(e.target.value)}
+              required
+            />
+          </label>
+          <label>
+            Tipo de referencia
+            <select
+              aria-label="Tipo de elección del asistente"
+              value={
+                electionType ?? baseContext?.forecast.election_type ?? "midterm"
+              }
+              onChange={(e) => setElectionType(e.target.value as ElectionType)}
+            >
+              <option value="midterm">Intermedia</option>
+              <option value="presidential">Presidencial</option>
+            </select>
+          </label>
+          <button type="submit" disabled={!baseContext}>
+            Calcular proyección
+          </button>
+        </form>
+        {horizon.error && (
+          <p role="alert" className="ai-error-notice">
+            {horizon.error}
+          </p>
+        )}
+        {projection && (
+          <div
+            className="ai-projection-result"
+            aria-label="Proyección del asistente"
+            aria-live="polite"
+          >
+            <strong>
+              {projection.kind === "registered"
+                ? "Pronóstico registrado"
+                : "Proyección de referencia"}{" "}
+              · {projection.targetYear}
+            </strong>
+            <p>
+              Abstención {(projection.abstention * 100).toFixed(1)}% ·
+              Participación {(projection.participation * 100).toFixed(1)}%
+            </p>
+            <small>
+              Referencia {projection.referenceYear} · Corte{" "}
+              {projection.cutoffYear} · INE CCPC, fuente {projection.sourceId}
+            </small>
+            <p>{projection.warning}</p>
+          </div>
+        )}
         <ul className="ai-context-chips" aria-label="Contexto del asistente">
           <li>
             <MapPin aria-hidden="true" />
@@ -186,17 +314,24 @@ export function AiAssistant({ context }: { context: AssistantContext | null }) {
           </li>
           <li>
             <Database aria-hidden="true" />
-            INE · CCPC 2009–2024
+            INE · CCPC hasta {cutoff}
           </li>
-          <li>Estimación 2027</li>
+          <li>Horizonte {projection?.targetYear ?? "—"}</li>
         </ul>
       </div>
       {!status.isPending && !online && (
         <p className="ai-offline-notice">
-          <strong>El asistente no está conectado.</strong> Las respuestas son lecturas
-          automáticas calculadas con reglas sobre los mismos datos. Configura{" "}
-          <code>{status.data?.provider === "gemini" ? "GEMINI_API_KEY" : status.data?.provider === "ollama" ? "OLLAMA_URL" : "GROQ_API_KEY"}</code> en el servidor para activar el
-          modelo.
+          <strong>El asistente no está conectado.</strong> Las respuestas son
+          lecturas automáticas calculadas con reglas sobre los mismos datos.
+          Configura{" "}
+          <code>
+            {status.data?.provider === "gemini"
+              ? "GEMINI_API_KEY"
+              : status.data?.provider === "ollama"
+                ? "OLLAMA_URL"
+                : "GROQ_API_KEY"}
+          </code>{" "}
+          en el servidor para activar el modelo.
         </p>
       )}
       <div
@@ -214,7 +349,7 @@ export function AiAssistant({ context }: { context: AssistantContext | null }) {
           <div>
             <p>
               {context
-                ? `Hola. Puedo explicarte la estimación de ${context.state} para 2027, su histórico y sus límites. Las cifras provienen del modelo y de los conteos del INE; no las invento.`
+                ? `Hola. Puedo explicarte la estimación de ${context.state} para ${context.projection?.targetYear}, su histórico y sus límites. Las cifras provienen del modelo y de los conteos del INE; no las invento.`
                 : "Selecciona una entidad para comenzar."}
             </p>
           </div>
@@ -310,8 +445,9 @@ export function AiAssistant({ context }: { context: AssistantContext | null }) {
         </button>
       </form>
       <p className="section-card-note">
-        El asistente explica cifras existentes; no genera predicciones, no
-        atribuye causas ni recomienda intervenciones.
+        Las cifras se calculan con datos y métodos explícitos; la IA las
+        explica. Las proyecciones son experimentales y no prueban causas ni
+        efectos de intervenciones.
       </p>
     </section>
   );
