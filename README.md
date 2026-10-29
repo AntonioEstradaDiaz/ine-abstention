@@ -322,3 +322,10 @@ data/, artifacts/    Datos y pesos; algunos informes/muestras sí están version
   [predicciones](docs/phase5.md), [simulaciones](docs/phase6.md), [integración backend](docs/phase7.md).
 - [Hoja de ruta histórica](docs/project-status.md): consultar junto con esta auditoría; algunas prioridades
   preceden al despliegue y a la incorporación de Supabase Auth.
+
+## Punto 8 · Operación y seguridad
+
+Consultar [el plan de operación y seguridad](docs/punto8-operacion-seguridad.md)
+para la clave interna de FastAPI, logs con correlación, métricas, monitor,
+respaldo/restauración, pruebas de concurrencia y aislamiento multiusuario.
+No pasar a producción sin configurar secretos y servicios externos verificables.
