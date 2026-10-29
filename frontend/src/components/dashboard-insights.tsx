@@ -200,7 +200,7 @@ export function DashboardInsights({
                 textStyle: { color: "#596d8d", fontSize: 8 },
                 type: "scroll",
               },
-              grid: { left: 30, right: 8, top: 10, bottom: 43 },
+              grid: { left: 30, right: 14, top: 22, bottom: 43 },
               xAxis: {
                 ...chartAxis,
                 type: "category",

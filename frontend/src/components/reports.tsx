@@ -187,7 +187,7 @@ export function Reports({
       itemHeight: 8,
       textStyle: { color: "#596D8D", fontSize: 10 },
     },
-    grid: { left: 34, right: 10, top: 14, bottom: 40 },
+    grid: { left: 34, right: 22, top: 24, bottom: 40 },
     xAxis: {
       ...chartAxis,
       type: "category",
@@ -218,7 +218,7 @@ export function Reports({
                 symbol: "none",
                 lineStyle: { color: "#b9005e", type: "dashed", width: 1 },
                 label: {
-                  formatter: `Proceso ${year}`,
+                  formatter: String(year),
                   color: "#b9005e",
                   fontSize: 9,
                 },
