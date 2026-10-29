@@ -1,7 +1,6 @@
 """Offline safety checks; never run a destructive operation or send a real alert."""
 import importlib.util
 import json
-import os
 from pathlib import Path
 from unittest.mock import patch
 
