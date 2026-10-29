@@ -138,6 +138,11 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
   const [scenarioChange, setScenarioChange] = useState(3);
   const [historical, setHistorical] = useState(false);
   const [filter, setFilter] = useState<Risk | "all">("all");
+  // Choosing a process means "show me that election": the 2027 estimate has a single target year.
+  const chooseYear = (next: number) => {
+    setYear(next);
+    setHistorical(true);
+  };
   const [search, setSearch] = useState("");
   const predictions = useQuery({
     queryKey: ["predictions"],
@@ -284,7 +289,7 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
         filtersOpen={filtersOpen}
         onNavigate={setView}
         onSearch={setSearch}
-        onYear={setYear}
+        onYear={chooseYear}
         onFilters={() => setFiltersOpen((v) => !v)}
         onSearchSubmit={() => setFiltersOpen(true)}
       />
@@ -392,7 +397,7 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
                         <DashboardSelect
                           aria-label="Año histórico"
                           value={year}
-                          onChange={(e) => setYear(Number(e.target.value))}
+                          onChange={(e) => chooseYear(Number(e.target.value))}
                           disabled={!elections.data}
                         >
                           {elections.data?.map((e) => (

@@ -382,6 +382,13 @@ test("the header process drives the map trend, report history and data year", as
     trend.getByRole("combobox", { name: "Elecciones de la tendencia" }),
   ).toHaveText("Intermedias");
   await expect(trend.locator("header p")).toContainText("Proceso 2015");
+  // A chosen process shows that election on the map, not the single 2027 estimate.
+  await expect(
+    page.getByRole("button", { name: "Histórico", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator(".territory-gauge")).toContainText(
+    "Abstención · 2015",
+  );
   await page.getByRole("button", { name: "Reportes", exact: true }).click();
   await expect(page.locator(".report-process")).toHaveText(
     "Proceso Electoral 2015",
@@ -390,6 +397,13 @@ test("the header process drives the map trend, report history and data year", as
   // The axis label plus the process marker label.
   await expect(years.filter({ hasText: /^2015$/ })).toHaveCount(2);
   await expect(years.filter({ hasText: /^2018$/ })).toHaveCount(0);
+  // Colima is framed on its mainland, not stretched out to the Revillagigedo islands.
+  await page
+    .getByRole("combobox", { name: "Entidad del reporte", exact: true })
+    .click();
+  await page.getByRole("option", { name: /Colima/i }).click();
+  const viewBox = await page.locator(".report-map svg").getAttribute("viewBox");
+  expect(Number(viewBox?.split(" ")[2])).toBeLessThan(3);
   await page.getByRole("button", { name: "Datos", exact: true }).click();
   await expect(
     page.getByRole("combobox", { name: "Año o proceso", exact: true }),
