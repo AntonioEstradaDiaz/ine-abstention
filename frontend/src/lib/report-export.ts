@@ -48,8 +48,16 @@ export async function reportPdf(report: StateReport): Promise<Uint8Array> {
   const bold = await doc.embedFont(StandardFonts.HelveticaBold);
   const ink = rgb(0.06, 0.12, 0.24),
     pink = rgb(0.78, 0, 0.39);
-  let page = doc.addPage([595.28, 841.89]),
-    y = 790;
+  const newDetailPage = () => {
+    const p = doc.addPage([595.28, 841.89]);
+    p.drawRectangle({ x: 0, y: 0, width: 595.28, height: 841.89, color: rgb(0.97, 0.98, 0.99) });
+    p.drawRectangle({ x: 28, y: 54, width: 539.28, height: 700, color: rgb(1, 1, 1), borderColor: rgb(0.9, 0.92, 0.95), borderWidth: 0.7 });
+    p.drawText("PULSO ELECTORAL", { x: 40, y: 800, size: 10, font: bold, color: pink });
+    p.drawText(report.state.name, { x: 40, y: 778, size: 17, font: bold, color: ink });
+    p.drawLine({ start: { x: 40, y: 765 }, end: { x: 555, y: 765 }, color: pink, thickness: 2 });
+    return p;
+  };
+  let page = newDetailPage(), y = 727;
   const text = (value: string, size = 10, strong = false) => {
     // Wrap with font metrics so Spanish entity names and provenance never clip.
     const selected = strong ? bold : font;
@@ -65,8 +73,12 @@ export async function reportPdf(report: StateReport): Promise<Uint8Array> {
     y -= 6;
     function draw(line: string) {
       if (y < 65) {
-        page = doc.addPage([595.28, 841.89]);
-        y = 790;
+        page = newDetailPage();
+        y = 727;
+      }
+      if (strong) {
+        page.drawRectangle({ x: 40, y: y - 6, width: 515, height: size + 13, color: rgb(1, 0.95, 0.98) });
+        page.drawRectangle({ x: 40, y: y - 6, width: 3, height: size + 13, color: pink });
       }
       page.drawText(line, {
         x: 52,
@@ -78,7 +90,6 @@ export async function reportPdf(report: StateReport): Promise<Uint8Array> {
       y -= size + 5;
     }
   };
-  text("PULSO ELECTORAL", 12, true);
   text(report.title, 22, true);
   text(report.state.name, 18, true);
   text(
@@ -115,6 +126,9 @@ export async function reportPdf(report: StateReport): Promise<Uint8Array> {
     );
   }
   if (report.charts) {
+    page = newDetailPage();
+    y = 727;
+    text("Evolución y metodología", 19, true);
     // Separate election types; no misleading line between presidential and midterm elections.
     for (const type of ["midterm", "presidential"]) {
       const rows = report.history.filter(
@@ -122,12 +136,17 @@ export async function reportPdf(report: StateReport): Promise<Uint8Array> {
       );
       if (rows.length < 2) continue;
       if (y < 210) {
-        page = doc.addPage([595.28, 841.89]);
-        y = 790;
+        page = newDetailPage();
+        y = 727;
       }
       text(`Evolución · ${kind(type)} (0–100%)`, 11, true);
       const top = y - 5,
-        bottom = top - 80;
+        bottom = top - 120;
+      for (const tick of [0, 0.25, 0.5, 0.75, 1]) {
+        const gy = bottom + tick * 120;
+        page.drawLine({ start: { x: 80, y: gy }, end: { x: 520, y: gy }, color: rgb(0.88, 0.9, 0.94), thickness: 0.5 });
+        page.drawText(`${tick * 100}%`, { x: 49, y: gy - 3, size: 7, font, color: ink });
+      }
       page.drawLine({
         start: { x: 70, y: bottom },
         end: { x: 520, y: bottom },
@@ -137,7 +156,7 @@ export async function reportPdf(report: StateReport): Promise<Uint8Array> {
       rows.forEach((row, i) => {
         const x = 80 + (i * 420) / (rows.length - 1),
           v = rate(report, row)!;
-        const py = bottom + v * 80;
+        const py = bottom + v * 120;
         page.drawCircle({ x, y: py, size: 3, color: pink });
         page.drawText(`${row.year}: ${percentage(v)}`, {
           x: x - 24,
@@ -150,7 +169,7 @@ export async function reportPdf(report: StateReport): Promise<Uint8Array> {
           page.drawLine({
             start: {
               x: 80 + ((i - 1) * 420) / (rows.length - 1),
-              y: bottom + rate(report, rows[i - 1])! * 80,
+              y: bottom + rate(report, rows[i - 1])! * 120,
             },
             end: { x, y: py },
             thickness: 2,
