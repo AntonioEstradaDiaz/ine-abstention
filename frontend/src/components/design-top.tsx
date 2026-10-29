@@ -1,4 +1,5 @@
 "use client";
+import { Notifications, type Notice } from "./notifications";
 import { ElectoralKpis } from "./electoral-kpis";
 import { DashboardSelect } from "./ui/dashboard-select";
 import type { Prediction } from "@/lib/types";
@@ -34,6 +35,7 @@ interface Props {
   heading?: PageHeading;
   // Replaces the search tools beside the title; null leaves the space empty.
   aside?: React.ReactNode;
+  notices?: Notice[];
   search: string;
   year: number;
   elections: Array<{ id: number; year: number }>;
@@ -50,6 +52,7 @@ export function DesignTop({
   view,
   heading,
   aside,
+  notices,
   search,
   year,
   elections,
@@ -295,41 +298,12 @@ export function DesignTop({
               </DashboardSelect>
             </p>
           </div>
-          <div
-            className="content-stretch flex h-[30px] items-center relative shrink-0 w-[24px]"
-            data-node-id="10:12505"
-            data-name="Notificaciones"
-            title="Referencia visual del diseño · Sin servicio de notificaciones"
-          >
-            <div
-              className="relative shrink-0 size-[20px]"
-              data-node-id="10:13409"
-              data-name="bell"
-            >
-              <img
-                alt=""
-                className="absolute block inset-0 max-w-none size-full"
-                src={imgBell}
-              />
-            </div>
-            <div
-              className="absolute left-[14px] size-[11px] top-[-3px]"
-              data-node-id="10:12507"
-              data-name="Notificación nueva"
-            >
-              <img
-                alt=""
-                className="absolute block inset-0 max-w-none size-full"
-                src={imgNotificacionNueva}
-              />
-            </div>
-            <p
-              className="[word-break:break-word] absolute font-['Inter:Regular'] font-normal leading-[normal] left-[17px] not-italic text-[7px] text-white top-[-2px] whitespace-nowrap"
-              data-node-id="10:12508"
-            >
-              1
-            </p>
-          </div>
+          <Notifications
+            notices={notices ?? []}
+            bellIcon={imgBell}
+            dotIcon={imgNotificacionNueva}
+            onOpenView={(next) => onNavigate(next as View)}
+          />
           <form action="/api/auth/logout" method="post">
             <button
               type="submit"
