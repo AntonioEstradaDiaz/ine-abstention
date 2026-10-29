@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useQuery, useQueries } from "@tanstack/react-query";
 import {
   BarChart3,
@@ -275,6 +275,7 @@ export function Reports({
     history.isSuccess &&
     rows.length > 0 &&
     (compare !== "national" || national.every((q) => q.isSuccess));
+  const reportDocument = useRef<HTMLElement>(null);
   const generate = async () => {
     if (!forecast || !exportReady || generating) return;
     const report: StateReport = {
@@ -301,6 +302,15 @@ export function Reports({
     setGenerating(true);
     setExportError("");
     try {
+      if (format === "pdf" && reportDocument.current) {
+        await document.fonts.ready;
+        const { toPng } = await import("html-to-image");
+        report.visualCover = await toPng(reportDocument.current, {
+          pixelRatio: 2,
+          backgroundColor: "#ffffff",
+          cacheBust: false,
+        });
+      }
       await downloadStateReport(report, format);
       setRecent((r) =>
         [
@@ -530,7 +540,7 @@ export function Reports({
               </p>
             </div>
           </header>
-          <article className="report-document">
+          <article ref={reportDocument} className="report-document">
             <div className="report-cover">
               <div className="report-cover-text">
                 <img
