@@ -1081,3 +1081,51 @@ small.ai-quota {
 .ai-projection-result { padding: 14px; border: 1px solid #f4cfe4; border-radius: 14px; background: #fff6fa; font-size: 13px; }
 .ai-projection-result p { margin: 6px 0; }
 .ai-projection-result small { color: #596d8d; }
+
+/* Prediction cards follow the numbered, four-column pastel reference. */
+.section-page .prediction-details { grid-template-columns: repeat(4,minmax(0,1fr)); gap: 18px; align-items: stretch; counter-reset: prediction-card; }
+.prediction-details > .section-card { container-type: inline-size; counter-increment: prediction-card; padding: 20px; gap: 18px; border: 1px solid #ffd7ea; border-radius: 26px; background: linear-gradient(135deg,#fffafd,#fff7fb); box-shadow: 0 8px 24px #d0007008; }
+.prediction-details .section-card-heading { display: grid; grid-template-columns: 36px 28px minmax(0,1fr); gap: 10px; min-height: 66px; align-items: start; }
+.prediction-details .section-card-heading::before { content: "0" counter(prediction-card); display: grid; place-items: center; min-height: 30px; border-radius: 10px; background: #fcd8ee; color: #ce0078; font-size: 17px; font-weight: 800; }
+.prediction-details .section-card-icon { width: 26px; height: 26px; flex-shrink: 0; overflow: visible; margin: 3px 0 0; color: #e5007e; stroke-width: 1.8; }
+.section-page .prediction-details .section-card-heading h2 { color: #3e123c; font-size: clamp(16px,5cqi,22px); line-height: 1.25; }
+.prediction-details .section-card-heading p { font-size: 12px; line-height: 1.5; color: #75648d; }
+.prediction-details .prediction-state-name { font-weight: 700; }
+.prediction-details .forecast-gauge { height: 200px; min-height: 200px; padding-top: 78px; border: 0; background: #ffffff80; border-radius: 18px; }
+.prediction-details .forecast-gauge svg { width: 270px; top: 0; max-width: 95%; overflow: visible; }
+.section-page .prediction-details .forecast-value { font-size: clamp(34px,13cqi,50px); color: #390b39; }
+.prediction-details .forecast-gauge > span { font-size: 14px; font-weight: 600; color: #75648d; }
+.prediction-details .forecast-risk { padding: 12px 14px; border: 1px solid #efdfed; border-radius: 14px; gap: 10px; flex-wrap: wrap; }
+.prediction-details .prediction-risk-options { padding-top: 12px; border-top: 1px solid #efdfed; font-size: 13px; }
+.prediction-risk-options > div { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+.prediction-risk-options > div > * { flex: 1; justify-content: center; padding: 10px; border-radius: 14px; font-size: 13px; }
+.prediction-details .note { margin-top: auto; padding: 12px; background: #f9eefb; color: #75648d; line-height: 1.5; }
+.prediction-details .note svg { flex-shrink: 0; overflow: visible; }
+.section-page .prediction-details .formula { padding: 20px 14px; min-height: 86px; border-color: #ffbfe2; background: #ffedf7; gap: 10px; }
+.section-page .prediction-details .formula span { font-size: clamp(11px,3.7cqi,16px); font-weight: 700; white-space: nowrap; }
+.prediction-details .formula svg { flex-shrink: 0; overflow: visible; }
+.section-page .prediction-details .formula strong { font-size: clamp(25px,9cqi,38px); padding-left: 12px; border-left: 1px solid #f2b5d6; color: #390b39; }
+.prediction-details .section-facts { grid-template-columns: minmax(0,1fr); gap: 20px; }
+.prediction-details .section-facts > div { display: grid; grid-template-columns: 42px minmax(0,1fr) auto; align-items: center; gap: 10px; padding: 18px 12px; min-height: 90px; border-color: #efdfed; border-radius: 16px; }
+.prediction-details .section-facts svg { box-sizing: content-box; width: 22px; height: 22px; padding: 10px; background: #fce4f1; border-radius: 50%; color: #e5007e; overflow: visible; }
+.prediction-details .section-facts dt { color: #4e315d; font-size: 12px; }
+.prediction-details .section-facts dd { margin: 0; font-size: clamp(17px,6.4cqi,28px); color: #390b39; letter-spacing: -.5px; }
+.prediction-details a.text-link { align-self: center; padding: 8px 18px; border-radius: 999px; background: #fce4f1; }
+.prediction-details .section-bars { gap: 16px; }
+.prediction-details .section-bars li { display: grid; grid-template-columns: 42px minmax(0,1fr) auto; gap: 10px; padding: 16px 12px; min-height: 82px; background: linear-gradient(110deg,#ffeaf5,#f9eefb); border: 0; border-radius: 16px; font-size: 13px; }
+.prediction-details .section-bars li > svg { box-sizing: content-box; width: 22px; height: 22px; padding: 10px; background: #fce0ef; border-radius: 50%; overflow: visible; }
+.prediction-details .section-bars li > strong { color: #390b39; font-size: clamp(16px,5.8cqi,26px); white-space: normal; text-align: right; }
+.prediction-details .section-card-note { margin: auto 0 0; padding-top: 12px; font-size: 12px; line-height: 1.6; overflow-wrap: anywhere; color: #75648d; }
+.prediction-details .model-stats { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
+.prediction-details .model-stats > div { width: 100%; min-width: 0; padding: 14px; border-radius: 16px; background: #ffeaf5; }
+.prediction-details .model-stats strong { font-size: clamp(16px,5cqi,22px); overflow-wrap: anywhere; }
+.prediction-details .prediction-model-table { overflow-x: auto; border-radius: 14px; }
+.prediction-details .section-table { width: 100%; min-width: 300px; }
+.prediction-details .section-table th, .prediction-details .section-table td { padding: 10px 8px; font-size: 12px; }
+@media (max-width: 1500px) { .section-page .prediction-details { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+@media (max-width: 700px) { .section-page .prediction-details { grid-template-columns: minmax(0,1fr); } }
+
+.prediction-details .risk-high { background: #fce0f0; color: #c4006b; }
+.prediction-details .section-card-note svg { display: inline-block; vertical-align: middle; margin-right: 8px; color: #a0297b; overflow: visible; }
+.prediction-details .model-stats svg { color: #d00078; margin-bottom: 4px; overflow: visible; }
+.section-page .prediction-details .section-table th, .section-page .prediction-details .section-table td { font-size: 13px; padding: 11px 8px; }
