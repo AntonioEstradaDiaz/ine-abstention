@@ -480,6 +480,12 @@
   background: #fcdded;
   color: #b9005e;
 }
+/* /confirmar: second step of email links, a single-column card. */
+.auth-card-single {
+  grid-template-columns: minmax(0, 1fr);
+  width: min(560px, 100%);
+  min-height: auto;
+}
 .auth-page :is(a, button, input):focus-visible,
 .auth-logout:focus-visible {
   outline: 2px solid #b9005e;
