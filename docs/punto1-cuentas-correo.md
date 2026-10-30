@@ -123,11 +123,12 @@ que salta RLS. Úsala solo en una máquina de confianza y **nunca** la guardes e
 
 1. Copia el identificador (`id`) de la cuenta desde Authentication → Users.
 2. En una terminal, dentro de `frontend/` (ahí está instalado `@supabase/supabase-js`), define las dos
-   variables solo para esa sesión (PowerShell):
+   variables solo para esa sesión (PowerShell). La clave se pide oculta con `Read-Host`, así no queda
+   escrita en el historial de la terminal:
 
    ```powershell
    $env:SUPABASE_URL = "https://<ref>.supabase.co"
-   $env:SUPABASE_SECRET_KEY = "<clave secreta>"
+   $env:SUPABASE_SECRET_KEY = (New-Object System.Net.NetworkCredential("", (Read-Host "Clave secreta" -AsSecureString))).Password
    ```
 
 3. Ejecuta la acción. Para confirmar el correo:
@@ -136,8 +137,10 @@ que salta RLS. Úsala solo en una máquina de confianza y **nunca** la guardes e
    node -e "const {createClient}=require('@supabase/supabase-js');const s=createClient(process.env.SUPABASE_URL,process.env.SUPABASE_SECRET_KEY,{auth:{persistSession:false}});s.auth.admin.updateUserById(process.argv[1],{email_confirm:true}).then(r=>console.log(r.error?r.error.message:'Cuenta confirmada'))" "<id-de-la-cuenta>"
    ```
 
-   Para bloquear 24 horas, cambia `{email_confirm:true}` por `{ban_duration:'24h'}`.
-4. Cierra la terminal (o borra las variables) al terminar.
+   Para bloquear 24 horas, cambia `{email_confirm:true}` por `{ban_duration:'24h'}` (otros formatos
+   válidos: `'30m'`, `'2h45m'`). Para **quitar un bloqueo** antes de que venza, usa
+   `{ban_duration:'none'}`.
+4. Cierra la terminal (o ejecuta `Remove-Item Env:SUPABASE_SECRET_KEY`) al terminar.
 
 Referencia: [`auth.admin.updateUserById`](https://supabase.com/docs/reference/javascript/auth-admin-updateuserbyid).
 

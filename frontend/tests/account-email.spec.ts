@@ -16,16 +16,20 @@ test("an unconfirmed account can ask for a new confirmation link, then must wait
   await page.getByRole("button", { name: "Iniciar sesión", exact: true }).click();
   await expect(notice(page)).toContainText("Confirma tu correo antes de iniciar sesión");
 
+  // Count resend requests: a click while waiting must not send a second one.
+  let resends = 0;
+  page.on("request", (request) => {
+    if (request.url().includes("/auth/v1/resend")) resends++;
+  });
   const resend = page.getByRole("button", { name: "Reenviar confirmación" });
   await resend.click();
   await expect(notice(page)).toContainText("Si la cuenta existe y falta confirmarla");
   const waiting = page.locator(".auth-resend");
   await expect(waiting).toHaveText(/Reenviar en \d+ s/);
   await expect(waiting).toHaveAttribute("aria-disabled", "true");
-  // A click while waiting must not send again: the fixture would answer 429 and the notice would
-  // switch to "Espera un momento…".
   await waiting.click({ force: true });
   await page.waitForTimeout(500);
+  expect(resends).toBe(1);
   await expect(notice(page)).toContainText("Si la cuenta existe y falta confirmarla");
   await expect(page).toHaveURL(/\/login$/);
 });
