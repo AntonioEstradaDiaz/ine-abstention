@@ -167,10 +167,10 @@ export function AuthScreen({
         <aside className="auth-hero" aria-label="Bienvenida del INE">
           <img
             className="auth-logo"
-            src="/design-top/logo-ine.png"
+            src="/brand/ine-institucional.png"
             alt="INE · Instituto Nacional Electoral"
-            width={2172}
-            height={724}
+            width={960}
+            height={296}
           />
           <div className="auth-hero-text">
             <h2>
