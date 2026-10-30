@@ -14,9 +14,9 @@ export function ElectoralKpis({ states = [], selected }: { states?: Prediction[]
     { title: "Banda de abstención 2027", icon: MoveHorizontal, reference: "Sin cobertura futura garantizada" },
   ];
   return (
-    <div className={styles.grid} data-name="Indicadores clave">
+    <div className={styles.grid} data-name="Indicadores clave" data-kpi-layout="pastel">
       {metrics.map((metric, index) => (
-        <article data-name="Indicador electoral" className={`${styles.card} ${index === 1 ? styles.featured : ""}`} key={metric.title} aria-label={metric.title}>
+        <article data-name="Indicador electoral" data-kpi-layout="pastel" className={`${styles.card} ${index === 1 ? styles.featured : ""}`} key={metric.title} aria-label={metric.title}>
           <header className={styles.header}>
             <p>{metric.title}</p>
             <span className={styles.icon} aria-hidden="true"><metric.icon size={24} strokeWidth={2} /></span>

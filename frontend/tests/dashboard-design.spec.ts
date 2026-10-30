@@ -149,6 +149,13 @@ test("ZIP header assets and four cards fit phone, tablet and desktop widths", as
     await expect(page.locator('[data-name="Indicador electoral"]')).toHaveCount(
       4,
     );
+    for (const card of await page.locator('[data-name="Indicador electoral"]').all()) {
+      const header = await card.locator("header").boundingBox();
+      const value = await card.locator("strong").first().boundingBox();
+      expect(header).not.toBeNull();
+      expect(value).not.toBeNull();
+      expect(value!.y).toBeGreaterThanOrEqual(header!.y + header!.height);
+    }
     await expect(
       page.getByRole("button", { name: "Filtros", exact: true }),
     ).toBeVisible();
