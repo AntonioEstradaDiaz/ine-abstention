@@ -1142,4 +1142,5 @@ small.ai-quota {
   .prediction-details .section-bars li > strong { grid-column: 2; grid-row: 2; text-align: left; white-space: normal; }
   .prediction-details .section-bars li > i { grid-column: 2; grid-row: 3; }
 }
-`n.prediction-details .model-stats > div { width: 100%; min-width: 0; }
+
+.prediction-details .model-stats > div { width: 100%; min-width: 0; }
