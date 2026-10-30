@@ -128,9 +128,20 @@ export async function callQuotaRpc<T>(
 ): Promise<T> {
   if (!client) throw new Error("Autenticación sin configurar");
   signal.throwIfAborted();
-  const { data, error } = await client.rpc(fn, args).abortSignal(signal);
-  if (signal.aborted || error || data == null) throw new Error("Cuota no disponible");
-  return data as T;
+  // The client may wait before its request starts (e.g. a session refresh) and only honours the
+  // signal once fetching, so the signal also races the whole call.
+  let onAbort = () => {};
+  const aborted = new Promise<never>((_, reject) => {
+    onAbort = () => reject(new Error("Cuota no disponible"));
+    signal.addEventListener("abort", onAbort, { once: true });
+  });
+  try {
+    const { data, error } = await Promise.race([client.rpc(fn, args).abortSignal(signal), aborted]);
+    if (signal.aborted || error || data == null) throw new Error("Cuota no disponible");
+    return data as T;
+  } finally {
+    signal.removeEventListener("abort", onAbort);
+  }
 }
 
 /**

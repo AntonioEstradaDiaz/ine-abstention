@@ -170,6 +170,8 @@ test("running out of time releases the quota and reports a timeout", async () =>
     assert.equal(result.response.status, 504);
     assert.equal(result.response.body.code, "provider_timeout");
     assert.match(result.response.body.detail, new RegExp(`más de ${AI_BUDGET_MS / 1000} segundos`));
+    // The harness confirms the refund (updated: true), so the note must be there.
+    assert.match(result.response.body.detail, /No se descontó de tu cuota\.$/);
   }
 });
 
@@ -295,4 +297,13 @@ test("'not charged' is only said when the refund was confirmed", async () => {
       assert.deepEqual(result.response.body.quota, quota);
     }
   }
+});
+
+test("the limit also cuts waits the client does not cancel (e.g. a stuck session refresh)", { timeout: 2_000 }, async () => {
+  // Ignores the signal entirely, like supabase-js awaiting a token refresh before its fetch starts.
+  const deafClient: QuotaRpcClient = { rpc: () => ({ abortSignal: () => new Promise(() => {}) }) };
+  const started = Date.now();
+  await assert.rejects(callQuotaRpc(deafClient, "pulso_ai_reserve", {}, AbortSignal.timeout(30)));
+  assert.ok(Date.now() - started < 1_000);
+  assert.equal(await readQuotaStatus(deafClient, 30), null);
 });
