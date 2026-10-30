@@ -24,6 +24,11 @@ const secondaryUser = {
   id: "00000000-0000-4000-8000-000000000002",
   email: "browser-second@example.invalid",
 };
+// Test-only account that registered but never confirmed its email.
+const unconfirmedEmail = "browser-unconfirmed@example.invalid";
+// Test-only email links: `ok-confirm-…` / `ok-recovery-…` are valid once, like Supabase tokens.
+const usedTokens = new Set();
+const lastResend = new Map();
 const encode = (value) =>
   Buffer.from(JSON.stringify(value)).toString("base64url");
 function session(account = user) {
@@ -119,6 +124,13 @@ const server = createServer(async (req, res) => {
     }
     if (
       url.searchParams.get("grant_type") === "password" &&
+      body.email === unconfirmedEmail &&
+      body.password === "Browser-test-only-123!"
+    )
+      // Without the API version header, auth-js reads the code from `error_code`.
+      return send(400, { error_code: "email_not_confirmed", msg: "Email not confirmed" });
+    if (
+      url.searchParams.get("grant_type") === "password" &&
       (body.email === user.email || body.email === secondaryUser.email) &&
       body.password === "Browser-test-only-123!"
     ) {
@@ -137,6 +149,47 @@ const server = createServer(async (req, res) => {
       code: "invalid_credentials",
       msg: "Invalid test credentials",
     });
+  }
+  const readBody = async () => {
+    let raw = "";
+    for await (const chunk of req) raw += chunk;
+    try {
+      return JSON.parse(raw || "{}");
+    } catch {
+      return {};
+    }
+  };
+  if (url.pathname === "/auth/v1/signup" && req.method === "POST") {
+    const body = await readBody();
+    // Email confirmation on: a new account comes back without a session.
+    return send(200, {
+      ...user,
+      id: randomUUID(),
+      email: String(body.email ?? ""),
+      email_confirmed_at: null,
+      identities: [{}],
+    });
+  }
+  if (url.pathname === "/auth/v1/resend" && req.method === "POST") {
+    const email = String((await readBody()).email ?? "");
+    if (Date.now() - (lastResend.get(email) ?? 0) < 60_000)
+      return send(429, {
+        error_code: "over_email_send_rate_limit",
+        msg: "For security purposes, you can only request this after 60 seconds.",
+      });
+    lastResend.set(email, Date.now());
+    return send(200, {});
+  }
+  if (url.pathname === "/auth/v1/verify" && req.method === "POST") {
+    const body = await readBody();
+    const hash = String(body.token_hash ?? "");
+    const valid =
+      (hash.startsWith("ok-confirm-") && body.type === "email") ||
+      (hash.startsWith("ok-recovery-") && body.type === "recovery");
+    if (!valid || usedTokens.has(hash))
+      return send(403, { error_code: "otp_expired", msg: "Email link is invalid or has expired" });
+    usedTokens.add(hash);
+    return send(200, session(user));
   }
   return send(404, { msg: "Unsupported Auth fixture operation" });
 });
