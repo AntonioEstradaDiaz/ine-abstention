@@ -659,6 +659,10 @@
   font-size: 11px;
   color: var(--sp-muted);
 }
+small.ai-quota {
+  display: block;
+  margin-top: 4px;
+}
 .ai-quota[data-empty] {
   color: #8a4d00;
   font-weight: 600;
