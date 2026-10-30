@@ -101,6 +101,9 @@ NEXT_PUBLIC_APP_URL=https://TU_DOMINIO
 
 Solo usar clave **publishable**, nunca `service_role` ni una clave secret. Estas dos variables públicas se incluyen en la compilación; después de agregarlas, reconstruir/redeploy. La clave privada de Groq sigue siendo solo del servidor. Los usuarios se gestionan en Auth. El historial de escenarios utiliza además `public.pulso_scenarios`, con RLS por propietario y sin clave administrativa; ver [entrega del hackathon](../docs/hackathon-delivery.md).
 
+El asistente de IA necesita además `PULSO_AI_QUOTA_SECRET`, solo en el servidor; ver
+[Cuotas del asistente de IA](#cuotas-del-asistente-de-ia).
+
 ## Configuración en el proyecto
 
 1. Authentication → Providers: habilitar Email y confirmar que la confirmación de correo esté activada. Configurar contraseña mínima de 8 caracteres o superior.
@@ -122,11 +125,63 @@ Solo usar clave **publishable**, nunca `service_role` ni una clave secret. Estas
 
 Las pruebas de aceptación con correo real requieren el proyecto y el servicio de email de Antonio.
 
+## Cuotas del asistente de IA
+
+Cada cuenta puede hacer hasta **30 consultas de IA por día** y **5 por minuto**, con un tope de
+**500 consultas por día** para todo el servicio. El día se reinicia a las 00:00 de Ciudad de México.
+Si el proveedor de IA falla o tarda más de 45 s, la consulta no se descuenta de la cuenta (sí cuenta
+para el ritmo y el tope global). Las dos cuentas de demo son compartidas: su límite de 30 se reparte
+entre todas las personas que las usen.
+
+El conteo vive en Supabase (`docs/sql/ai_quota.sql`): la tabla `public.pulso_ai_usage` no se puede
+leer ni escribir directamente y solo guarda cuenta, día, estado y hora; nunca el texto de preguntas
+o respuestas. Reservar y cerrar una consulta exige un secreto que solo conoce el servidor de Next.js
+(`PULSO_AI_QUOTA_SECRET`); Supabase guarda solo su hash SHA-256. No se usa `service_role`.
+
+### Despliegue (en este orden)
+
+1. Generar el secreto fuera de Supabase; el comando imprime el valor y su hash:
+
+   ```powershell
+   node -e "const c=require('crypto');const s=c.randomBytes(32).toString('base64url');console.log('PULSO_AI_QUOTA_SECRET='+s);console.log('sha256='+c.createHash('sha256').update(s).digest('hex'))"
+   ```
+
+2. En el SQL Editor de Supabase, ejecutar `docs/sql/ai_quota.sql` (una sola vez).
+3. Guardar **solo el hash** (no el secreto):
+
+   ```sql
+   insert into pulso_private.settings(key, value) values ('ai_quota_secret_sha256', '<sha256>')
+   on conflict (key) do update set value = excluded.value;
+   ```
+
+4. Ejecutar `docs/sql/ai_quota_checks.sql`. Corre en una transacción que se revierte y usa las
+   cuentas QA; el resultado esperado es una fila `ai_quota_checks: todo OK`.
+5. Definir `PULSO_AI_QUOTA_SECRET` en Vercel (variable de servidor, sin `NEXT_PUBLIC_`) y en el
+   `.env.local` de quien desarrolle contra ese proyecto.
+6. Desplegar el frontend.
+
+Si el código llega antes que el SQL o el secreto, el asistente responde "No pudimos verificar tu
+cuota" y muestra la lectura automática; el resto de la aplicación funciona igual.
+
+### Rotar el secreto
+
+Generar uno nuevo (paso 1), actualizar el hash en Supabase (paso 3) y la variable en Vercel, y volver
+a desplegar. Entre ambos cambios el asistente no estará disponible unos minutos. Rotar ante cualquier
+sospecha de exposición.
+
+### Comprobación tras desplegar
+
+- Sin sesión, `/api/assistant` responde 401.
+- Con sesión, el asistente muestra "Te quedan N de 30 consultas hoy" y el número baja al responder.
+- Consumo del día: consulta comentada al final de `docs/sql/ai_quota.sql` (SQL Editor).
+- Para revertir: instrucciones al final de `docs/sql/ai_quota.sql`.
+
 ## Pruebas de navegador sin credenciales reales
 
 Playwright inicia `tests/fixtures/auth-server.mjs`, un servicio de prueba limitado a
-`127.0.0.1:54321`. Simula únicamente login con contraseña, consulta del usuario, renovación
-y logout. No es Supabase real ni valida correos, registro, recuperación o políticas RLS.
+`127.0.0.1:54321`. Simula únicamente login con contraseña, consulta del usuario, renovación,
+logout y las funciones de cuota de IA (solo el límite diario). No es Supabase real ni valida correos,
+registro, recuperación, políticas RLS ni los límites por minuto y global.
 Sus usuarios, claves y tokens son sintéticos; nunca se usan en producción.
 
 El proyecto `setup` inicia sesión desde `/login` con los clientes Supabase de la aplicación
