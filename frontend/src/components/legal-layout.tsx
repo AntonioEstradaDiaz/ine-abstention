@@ -41,12 +41,12 @@ export function LegalLayout({
       </a>
       <header className="legal-header">
         <div className="legal-header-inner">
-          <Link className="legal-brand" href="/" aria-label="Pulso electoral, ir al panel">
+          <Link className="legal-brand" href="/" aria-label="Atlas De La Participación, ir al panel">
             <span className="legal-brand-symbol" aria-hidden="true">
               <Activity size={23} strokeWidth={2.5} />
             </span>
             <span className="legal-brand-name">
-              PULSO <span>electoral</span>
+              Atlas <span>De La Participación</span>
             </span>
           </Link>
           <nav className="legal-top-nav" aria-label="Información y acceso">
@@ -73,7 +73,7 @@ export function LegalLayout({
           <div className="legal-hero-copy">
             <span className="legal-eyebrow">
               <Sparkles size={14} aria-hidden="true" />
-              Centro de información PULSO
+              Centro de información Atlas De La Participación
             </span>
             <h1 id="legal-title">{title}</h1>
             <p className="legal-hero-subtitle">{subtitle}</p>
@@ -102,7 +102,7 @@ export function LegalLayout({
               <span className="legal-sidebar-icon" aria-hidden="true">
                 <Info size={19} />
               </span>
-              <h2>Acerca de PULSO</h2>
+              <h2>Acerca de Atlas De La Participación</h2>
               <p>
                 Plataforma independiente para explorar datos públicos de participación
                 electoral y estimaciones experimentales. No es un servicio oficial del INE.
@@ -135,7 +135,7 @@ export function LegalLayout({
 
       <footer className="legal-footer">
         <div className="legal-footer-inner">
-          <span>PULSO electoral · 2026 · Proyecto independiente del INE</span>
+          <span>Atlas De La Participación · 2026 · Proyecto independiente del INE</span>
           <nav aria-label="Documentos del proyecto">
             {navigation.map(({ href, label }) => (
               <Link href={href} key={href}>

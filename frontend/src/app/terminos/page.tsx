@@ -3,8 +3,8 @@ import { FileCheck2, FileText, LockKeyhole, ShieldAlert } from "lucide-react";
 import { LegalLayout, LegalNotice, LegalSection } from "@/components/legal-layout";
 
 export const metadata: Metadata = {
-  title: "Términos | Pulso electoral",
-  description: "Condiciones informativas de la demostración Pulso electoral.",
+  title: "Términos | Atlas De La Participación",
+  description: "Condiciones informativas de la demostración Atlas De La Participación.",
 };
 
 export default function TerminosPage() {
@@ -21,7 +21,7 @@ export default function TerminosPage() {
 
       <LegalSection id="alcance" title="Alcance del proyecto" icon={<FileText size={21} />}>
         <p>
-          Pulso electoral es un prototipo independiente de análisis territorial,
+          Atlas De La Participación es un prototipo independiente de análisis territorial,
           no una plataforma oficial del INE. Sus resultados no están preparados
           para fundamentar decisiones electorales operativas.
         </p>

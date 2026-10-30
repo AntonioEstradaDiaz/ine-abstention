@@ -586,7 +586,7 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
               <Link href="/terminos">Términos</Link>
               <Link href="/soporte">Soporte</Link>
             </nav>
-            <span>Pulso electoral / 2026 · Proyecto independiente del INE</span>
+            <span>Atlas De La Participación / 2026 · Proyecto independiente del INE</span>
           </footer>
         </main>
       </div>

@@ -173,7 +173,7 @@ test("reports preview the chosen state on the shared republic map", async ({
     .getByRole("button", { name: "Descargar reporte", exact: true })
     .click();
   const pdf = await pdfDownload;
-  expect(pdf.suggestedFilename()).toBe("pulso-reporte-02-2027.pdf");
+  expect(pdf.suggestedFilename()).toBe("atlas-participacion-reporte-02-2027.pdf");
   await expect(page.locator(".report-recent tbody tr")).toHaveCount(1);
   await expect(
     page.getByRole("button", { name: "Nacional", exact: true }),
@@ -200,7 +200,7 @@ test("reports preview the chosen state on the shared republic map", async ({
     .getByRole("button", { name: "Descargar reporte", exact: true })
     .click();
   expect((await excelDownload).suggestedFilename()).toBe(
-    "pulso-reporte-02-2027.xlsx",
+    "atlas-participacion-reporte-02-2027.xlsx",
   );
   await expect(page.locator(".report-recent tbody tr")).toHaveCount(2);
 });
@@ -310,7 +310,7 @@ test("data explorer filters, downloads and excludes unverified municipal data", 
   const download = page.waitForEvent("download");
   await page.getByRole("menuitem", { name: /CSV/ }).click();
   const file = await download;
-  expect(file.suggestedFilename()).toBe("pulso-datos-estatal-2024.csv");
+  expect(file.suggestedFilename()).toBe("atlas-participacion-datos-estatal-2024.csv");
   await page.getByLabel("Buscar en los datos").fill("");
   await expect(page.getByRole("radio", { name: /Municipal/ })).toBeDisabled();
   await expect(
@@ -332,11 +332,11 @@ test("national comparison exports official-history PDFs and Excel", async ({ pag
   await expect(downloadButton).toBeEnabled();
   const pdfPromise = page.waitForEvent("download");
   await downloadButton.click();
-  expect((await pdfPromise).suggestedFilename()).toBe("pulso-reporte-nacional-2027.pdf");
+  expect((await pdfPromise).suggestedFilename()).toBe("atlas-participacion-reporte-nacional-2027.pdf");
   await page.getByRole("radio", { name: "Excel", exact: true }).check();
   const excelPromise = page.waitForEvent("download");
   await downloadButton.click();
-  expect((await excelPromise).suggestedFilename()).toBe("pulso-reporte-nacional-2027.xlsx");
+  expect((await excelPromise).suggestedFilename()).toBe("atlas-participacion-reporte-nacional-2027.xlsx");
   await page.getByRole("button", { name: "Volver al reporte estatal" }).click();
   await expect(page.getByRole("heading", { name: "Configura tu reporte" })).toBeVisible();
 });

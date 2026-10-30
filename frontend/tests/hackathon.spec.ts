@@ -63,5 +63,5 @@ test("multi-state comparison renders two states without saving to history", asyn
   await expect(section.getByRole("row")).toHaveCount(3);
   const csv = page.waitForEvent("download");
   await section.getByRole("button", { name: "Descargar CSV" }).click();
-  expect((await csv).suggestedFilename()).toBe("pulso-comparativo-escenarios-2027.csv");
+  expect((await csv).suggestedFilename()).toBe("atlas-participacion-comparativo-escenarios-2027.csv");
 });

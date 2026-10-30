@@ -36,7 +36,7 @@ export async function reportPdf(report: StateReport): Promise<Uint8Array> {
   const { PDFDocument, StandardFonts, rgb } = await import("pdf-lib");
   const doc = await PDFDocument.create();
   doc.setTitle(`${report.title} · ${report.state.name}`);
-  doc.setAuthor("Pulso electoral");
+  doc.setAuthor("Atlas De La Participación");
   if (report.visualCover) {
     const cover = await doc.embedPng(report.visualCover);
     const page = doc.addPage([595.28, 841.89]);
@@ -52,7 +52,7 @@ export async function reportPdf(report: StateReport): Promise<Uint8Array> {
     const p = doc.addPage([595.28, 841.89]);
     p.drawRectangle({ x: 0, y: 0, width: 595.28, height: 841.89, color: rgb(0.97, 0.98, 0.99) });
     p.drawRectangle({ x: 28, y: 54, width: 539.28, height: 700, color: rgb(1, 1, 1), borderColor: rgb(0.9, 0.92, 0.95), borderWidth: 0.7 });
-    p.drawText("PULSO ELECTORAL", { x: 40, y: 800, size: 10, font: bold, color: pink });
+    p.drawText("Atlas De La Participaci??n", { x: 40, y: 800, size: 10, font: bold, color: pink });
     p.drawText(report.state.name, { x: 40, y: 778, size: 17, font: bold, color: ink });
     p.drawLine({ start: { x: 40, y: 765 }, end: { x: 555, y: 765 }, color: pink, thickness: 2 });
     return p;
@@ -196,7 +196,7 @@ export async function reportPdf(report: StateReport): Promise<Uint8Array> {
   doc
     .getPages()
     .forEach((p, i, all) =>
-      p.drawText(`Pulso electoral · ${i + 1} / ${all.length}`, {
+      p.drawText(`Atlas De La Participación · ${i + 1} / ${all.length}`, {
         x: 52,
         y: 30,
         size: 8,
@@ -210,11 +210,11 @@ export async function reportPdf(report: StateReport): Promise<Uint8Array> {
 export async function reportExcel(report: StateReport): Promise<Uint8Array> {
   const { default: ExcelJS } = await import("exceljs");
   const book = new ExcelJS.Workbook();
-  book.creator = "Pulso electoral";
+  book.creator = "Atlas De La Participación";
   book.created = new Date(report.createdAt);
   const summary = book.addWorksheet("Resumen");
   summary.addRows([
-    ["Pulso electoral", report.title],
+    ["Atlas De La Participación", report.title],
     ["Entidad", report.state.name],
     ["Código de entidad", report.state.state_code],
     ["Generado", report.createdAt],
@@ -309,7 +309,7 @@ export async function downloadStateReport(
   const url = URL.createObjectURL(blob),
     a = document.createElement("a");
   a.href = url;
-  a.download = `pulso-reporte-${report.state.state_code}-${report.forecast.target_year}.${format}`;
+  a.download = `atlas-participacion-reporte-${report.state.state_code}-${report.forecast.target_year}.${format}`;
   document.body.appendChild(a);
   a.click();
   a.remove();
