@@ -339,7 +339,7 @@ export function PredictionsView({
         </SectionCard>
         <AiAssistant context={assistantContext} />
       </div>
-      <div className="section-grid-4">
+      <div className="section-grid-4 prediction-details">
         <section
           className="section-card forecast-card"
           aria-labelledby="forecast-territory-title"
@@ -462,7 +462,7 @@ export function PredictionsView({
                   <strong>{ppAbs(model.metrics.holdout_2024.mae_pp)}</strong>
                 </div>
               </div>
-              <table className="section-table compact">
+              <div className="prediction-model-table"><table className="section-table compact">
                 <thead>
                   <tr>
                     <th>Modelo</th>
@@ -484,7 +484,7 @@ export function PredictionsView({
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </table></div>
             </>
           )}
           <p className="section-card-note">

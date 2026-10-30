@@ -1081,3 +1081,65 @@ small.ai-quota {
 .ai-projection-result { padding: 14px; border: 1px solid #f4cfe4; border-radius: 14px; background: #fff6fa; font-size: 13px; }
 .ai-projection-result p { margin: 6px 0; }
 .ai-projection-result small { color: #596d8d; }
+
+/* Prediction details: readable cards sized to their content, not the tallest sibling. */
+.section-page .prediction-details {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 20px;
+}
+.prediction-details > .section-card {
+  padding: 24px;
+  gap: 18px;
+  border: 1px solid #f5dce9;
+  border-radius: 22px;
+  box-shadow: 0 6px 20px #c4006b08;
+}
+.prediction-details .section-card-heading { align-items: center; gap: 14px; }
+.prediction-details .section-card-icon {
+  box-sizing: content-box;
+  width: 24px;
+  height: 24px;
+  padding: 12px;
+  margin: 0;
+  flex: 0 0 24px;
+  overflow: visible;
+  background: #fce7f2;
+  border-radius: 16px;
+  stroke-width: 1.8;
+}
+.section-page .prediction-details .section-card-heading h2 { font-size: 20px; }
+.prediction-details .section-card-heading p { line-height: 1.5; }
+.prediction-details .section-card-note { margin: 0; padding: 12px 14px; border-radius: 12px; background: #fff5fa; font-size: 12px; overflow-wrap: anywhere; }
+.prediction-details .forecast-gauge { min-height: 210px; padding-top: 70px; background: #fff9fc; border-color: #f5dce9; border-radius: 16px; }
+.prediction-details .forecast-gauge svg { width: 280px; top: 12px; overflow: visible; }
+.section-page .prediction-details .forecast-value { font-size: 40px; }
+.prediction-details .forecast-gauge > span { font-size: 13px; }
+.prediction-details .forecast-risk { gap: 16px; flex-wrap: wrap; padding: 8px 0; }
+.prediction-details .note { padding: 12px; line-height: 1.6; }
+.prediction-details .note svg { flex-shrink: 0; overflow: visible; }
+.section-page .prediction-details .formula { padding: 20px; flex-wrap: wrap; }
+.section-page .prediction-details .formula strong { font-size: 30px; }
+.prediction-details .formula svg { flex-shrink: 0; overflow: visible; }
+.prediction-details .section-facts { gap: 14px; }
+.prediction-details .section-facts > div { padding: 20px; background: #fff9fc; border-color: #f5dce9; border-radius: 14px; min-width: 0; }
+.prediction-details .section-facts dt { font-size: 13px; }
+.prediction-details .section-facts dd { font-size: clamp(20px, 2vw, 28px); overflow-wrap: anywhere; }
+.prediction-details .section-bars { gap: 12px; }
+.prediction-details .section-bars li { grid-template-columns: 40px minmax(0, 1fr) auto; gap: 8px 12px; padding: 14px; background: #fff7fb; border: 1px solid #fae3ef; border-radius: 14px; font-size: 14px; }
+.prediction-details .section-bars li > svg { box-sizing: content-box; width: 20px; height: 20px; padding: 10px; background: #fce4f0; border-radius: 12px; grid-row: 1 / 3; overflow: visible; }
+.prediction-details .section-bars li > strong { grid-column: 3; grid-row: 1; font-size: 14px; }
+.prediction-details .section-bars li > i { grid-column: 2 / 4; grid-row: 2; height: 10px; background: #f5d9e7; }
+.prediction-details .section-bars li > i > b { background: linear-gradient(90deg, #ef76b5, #c4006b); }
+.prediction-details .model-stats > div { border-radius: 14px; padding: 16px; }
+.prediction-details .prediction-model-table { overflow-x: auto; border: 1px solid #f5dce9; border-radius: 14px; }
+.prediction-details .section-table { width: 100%; min-width: 380px; }
+.prediction-details .section-table th, .prediction-details .section-table td { padding: 12px; }
+@media (max-width: 800px) {
+  .section-page .prediction-details { grid-template-columns: minmax(0, 1fr); }
+  .prediction-details > .section-card { padding: 18px; }
+  .prediction-details .section-bars li { grid-template-columns: 40px minmax(0, 1fr); }
+  .prediction-details .section-bars li > strong { grid-column: 2; grid-row: 2; text-align: left; white-space: normal; }
+  .prediction-details .section-bars li > i { grid-column: 2; grid-row: 3; }
+}
+`n.prediction-details .model-stats > div { width: 100%; min-width: 0; }
