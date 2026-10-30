@@ -26,3 +26,6 @@ test("caller's time budget replaces the fixed timeout", async () => {
  budget.abort();
  await assert.rejects(generateGeminiReply({ ...input, signal: budget.signal }, (async (_url, init) => { if (init!.signal!.aborted) throw new DOMException("Aborted", "AbortError"); return Response.json({}); }) as typeof fetch), /tardó demasiado/);
 });
+test("a non-JSON body is reported in Spanish, never as a raw parser error", async () => {
+ await assert.rejects(generateGeminiReply(input, (async () => new Response("<html>gateway</html>", { status: 200 })) as typeof fetch), (e: Error) => /^Gemini devolvió una respuesta inválida\.$/.test(e.message));
+});

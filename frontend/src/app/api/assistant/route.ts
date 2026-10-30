@@ -324,7 +324,9 @@ async function generateReply(
     throw new Error("Ollama tardó demasiado o no está disponible.");
   });
   if (!response.ok) throw new Error("Ollama no pudo responder.");
-  const result = (await response.json()) as {
+  const result = (await response.json().catch(() => {
+    throw new Error("Ollama devolvió una respuesta inválida.");
+  })) as {
     message?: { content?: string };
   };
   const answer = result.message?.content?.trim();

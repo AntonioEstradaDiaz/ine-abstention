@@ -23,7 +23,7 @@ export async function generateGeminiReply({ apiKey, model, system, messages, sig
     if ([400, 401, 403].includes(response.status)) throw new Error("Revisa la clave y los permisos de Gemini en el servidor.");
     throw new Error("Gemini no pudo responder. Revisa el modelo configurado o intenta nuevamente.");
   }
-  const data = await response.json() as { candidates?: Array<{ content?: { parts?: Array<{ text?: string; thought?: boolean }> } }> };
+  const data = await response.json().catch(() => { throw new Error("Gemini devolvió una respuesta inválida."); }) as { candidates?: Array<{ content?: { parts?: Array<{ text?: string; thought?: boolean }> } }> };
   const answer = data.candidates?.[0]?.content?.parts?.filter((part) => !part.thought).map((part) => part.text ?? "").join("").trim();
   if (!answer) throw new Error("Gemini no devolvió una respuesta. Reformula la pregunta.");
   return answer;
