@@ -161,13 +161,30 @@ correos reales en español, en vez de depender de las dos cuentas de demo compar
 | `docs/auth/plantillas/` | Plantillas "Confirma tu cuenta de Atlas" y "Restablece tu contraseña de Atlas" |
 | `docs/punto1-cuentas-correo.md`, `frontend/AUTH.md` | Runbook: correo, DNS, Supabase, prueba con buzones reales y administración |
 
-Commits: `380d212`, `7d79925`, `4cc27e3`, `19c6be7`, `a6debb7`.
+Commits: `380d212`, `7d79925`, `4cc27e3`, `19c6be7`, `a6debb7` (implementación) y `f9e66c1`,
+`c183a03`, `f0e3197`, `4c06fab` (correcciones tras la revisión, ver abajo).
+
+### Correcciones tras la revisión
+
+Una revisión contra la especificación encontró un problema grave antes de publicar nada:
+
+- **Redirección de los correos (alto):** la primera versión cambiaba la redirección a
+  `/auth/confirm`. Con las plantillas que Supabase tiene hoy, eso rompía la recuperación de
+  contraseña si el código se desplegaba antes de pegar las plantillas nuevas. La redirección volvió a
+  `/auth/callback` y ahora **el orden entre desplegar y cambiar las plantillas no importa**
+  (`f9e66c1`). Se agregó la prueba del camino completo de recuperación.
+- **Confirmar una cuenta a mano:** la guía documenta cómo hacerlo con la API de administración
+  (`email_confirm`), sin guardar la clave secreta (`4c06fab`).
+- **Botón de reenvío:** funciona sin Supabase configurado, no bloquea tras un error de conexión, usa
+  el correo escrito y solo aparece en sus tres casos (`c183a03`).
+- **Origen de las peticiones:** `/auth/confirm` compara también el protocolo (`f0e3197`).
 
 ### Verificación realizada
 
-- Pruebas unitarias del frontend: 37/37. `typecheck` y `build` sin errores.
-- E2E de acceso en Chrome con la fixture: 6/6 nuevas (reenvío, enlace que no se gasta al abrirlo,
-  confirmación que entra al dashboard, enlaces vencidos y rechazos) y las de login/logout existentes.
+- Pruebas unitarias del frontend: 39/39. `typecheck` y `build` sin errores.
+- E2E de acceso en Chrome con la fixture: 9/9 de `account-email` (reenvío y su espera, botón solo en
+  sus casos, enlace que no se gasta al abrirlo, confirmación que entra al dashboard, recuperación
+  completa, enlaces vencidos y rechazos) y las de login/logout existentes.
 - **No verificado todavía:** la suite E2E completa (correrá en el CI del PR) y la prueba con buzones
   reales en Gmail y Outlook, que necesita la configuración de correo.
 
@@ -178,7 +195,7 @@ Todo está en `docs/punto1-cuentas-correo.md` (llega con la misma rama):
 1. Elegir dominio y proveedor de correo; publicar SPF, DKIM y DMARC; desactivar el seguimiento de
    enlaces del proveedor.
 2. En Supabase: SMTP propio, subir el límite de correos por hora (con SMTP propio empieza en 30),
-   pegar las dos plantillas, URLs `/auth/confirm` y contraseña mínima de 8.
+   pegar las dos plantillas, Redirect URLs `/auth/callback` y contraseña mínima de 8.
 3. Prueba con buzones reales (Gmail y Outlook).
 
 La protección contra contraseñas filtradas solo existe en el plan Pro o superior de Supabase; si el
