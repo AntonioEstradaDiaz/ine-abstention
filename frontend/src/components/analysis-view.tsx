@@ -29,6 +29,7 @@ import {
   participationChange,
 } from "@/lib/analysis";
 import { number, pct, pp, riskLabels } from "@/lib/utils";
+import { quotaSummary, type QuotaInfo } from "@/lib/ai-quota";
 import type {
   Election,
   Forecast,
@@ -219,6 +220,7 @@ export function AnalysisView({
     context: string;
     text: string;
     model?: string;
+    quota?: QuotaInfo;
   } | null>(null);
   const [asking, setAsking] = useState(false);
   const answer = reply?.context === context ? reply : null;
@@ -815,6 +817,7 @@ export function AnalysisView({
                             context,
                             text: result.answer,
                             model: result.model,
+                            quota: result.quota,
                           });
                         } catch (failure) {
                           setReply({
@@ -851,6 +854,11 @@ export function AnalysisView({
                       <div role="status" aria-label="Respuesta del asistente de IA">
                         <p>{answer.text}</p>
                         {answer.model && <small>IA · {answer.model}</small>}
+                        {answer.quota && (
+                          <small className="ai-quota">
+                            {quotaSummary(answer.quota)}
+                          </small>
+                        )}
                       </div>
                     )}
                     <button className="analysis-ask" onClick={onLaboratory}>

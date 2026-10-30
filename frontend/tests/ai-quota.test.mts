@@ -4,6 +4,7 @@ import {
   AI_BUDGET_MS,
   formatResetTime,
   quotaErrorResponse,
+  quotaSummary,
   runWithQuota,
   type FinishResult,
   type ReserveResult,
@@ -65,6 +66,18 @@ test("daily and global limits explain when the quota resets", () => {
   const global = quotaErrorResponse("global_limit", { resetsAt: resets });
   assert.match(global.body.detail, /todos los usuarios/);
   assert.match(global.body.detail, /00:00/);
+});
+
+test("the counter tells how many queries are left and when they reset", () => {
+  assert.equal(
+    quotaSummary({ remaining: 29, limit: 30, resets_at: resets }),
+    "Te quedan 29 de 30 consultas hoy · se reinician a las 00:00 (hora del centro)",
+  );
+  assert.match(quotaSummary({ remaining: 1, limit: 30, resets_at: resets }), /^Te queda 1 de 30 consultas hoy/);
+  assert.equal(
+    quotaSummary({ remaining: 0, limit: 30, resets_at: resets }),
+    "Usaste tus 30 consultas de hoy · se reinician a las 00:00 (hora del centro)",
+  );
 });
 
 test("the reset instant is shown as Mexico City local time", () => {

@@ -56,6 +56,13 @@ export function formatResetTime(iso: string): string | null {
   return Number.isNaN(date.getTime()) ? null : resetFormat.format(date);
 }
 
+/** Counter shown next to the assistant, e.g. "Te quedan 29 de 30 consultas hoy · …". */
+export function quotaSummary({ remaining, limit, resets_at }: QuotaInfo): string {
+  const reset = `se reinician a las ${formatResetTime(resets_at) ?? "00:00"} (hora del centro)`;
+  if (remaining <= 0) return `Usaste tus ${limit} consultas de hoy · ${reset}`;
+  return `${remaining === 1 ? "Te queda" : "Te quedan"} ${remaining} de ${limit} consultas hoy · ${reset}`;
+}
+
 const quotaInfo = ({ remaining, limit, resets_at }: QuotaInfo): QuotaInfo => ({
   remaining,
   limit,
