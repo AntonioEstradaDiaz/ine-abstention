@@ -1,4 +1,4 @@
-/* Punto 9: identidad visual PULSO · magenta INE, pasteles, superficies claras. */
+/* Punto 9: identidad visual Atlas De La Participación · magenta INE, pasteles, superficies claras. */
 :where(a, button, input, textarea, select, [role="combobox"], [tabindex]):focus-visible {
   outline: 3px solid #a9005d;
   outline-offset: 3px;

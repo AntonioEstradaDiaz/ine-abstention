@@ -1,5 +1,5 @@
 "use client";
-import { useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useRouter } from "next/navigation";
@@ -17,15 +17,34 @@ import {
 } from "lucide-react";
 import { authBrowser } from "@/lib/supabase/browser";
 import { authConfigured } from "@/lib/supabase/config";
+import {
+  RESEND_COOLDOWN_MS,
+  RESEND_NEEDS_EMAIL,
+  emailRedirect,
+  loginErrorNotice,
+  recoverNotice,
+  registerNotice,
+  resendLabel,
+  resendNotice,
+  resendStartsCooldown,
+  resendWaitSeconds,
+  type AuthErrorLike,
+  type AuthNotice,
+} from "@/lib/auth-flow";
 type Mode = "login" | "register" | "recover" | "reset";
+const NOT_CONFIGURED =
+  "El acceso aún no está configurado. Contacta al administrador del dashboard.";
 export function AuthScreen({
   mode,
   initialNotice = "",
   initialError = false,
+  allowResend = false,
 }: {
   mode: Mode;
   initialNotice?: string;
   initialError?: boolean;
+  /** Offer "Reenviar confirmación" from the start (expired confirmation link). */
+  allowResend?: boolean;
 }) {
   const router = useRouter();
   const [visible, setVisible] = useState(false),
@@ -34,15 +53,62 @@ export function AuthScreen({
     [busy, setBusy] = useState(false),
     [notice, setNotice] = useState(initialNotice),
     [failed, setFailed] = useState(initialError),
-    [info, setInfo] = useState<"privacy" | "terms" | "help" | null>(null);
+    [info, setInfo] = useState<"privacy" | "terms" | "help" | null>(null),
+    // Resend is offered after registering, after "email not confirmed" and on expired links.
+    [resendOffered, setResendOffered] = useState(allowResend),
+    [resendEmail, setResendEmail] = useState(""),
+    [resendAt, setResendAt] = useState(0),
+    [now, setNow] = useState(0),
+    [resending, setResending] = useState(false);
+  const form = useRef<HTMLFormElement>(null);
   const configured = authConfigured();
   const register = mode === "register",
     passwordMode = register || mode === "reset";
+  const resendWait = resendWaitSeconds(resendAt, now);
+  useEffect(() => {
+    if (resendWait <= 0) return;
+    const timer = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(timer);
+  }, [resendWait]);
+  const show = ({ text, error }: AuthNotice) => {
+    setFailed(error);
+    setNotice(text);
+  };
+  async function resend() {
+    if (resending || resendWait > 0) return;
+    if (!configured) return show({ text: NOT_CONFIGURED, error: true });
+    // What is typed now wins: the person may have corrected the address.
+    const typed = form.current?.elements.namedItem("email");
+    const email =
+      (typed instanceof HTMLInputElement ? typed.value.trim() : "") || resendEmail;
+    if (!email) return show(RESEND_NEEDS_EMAIL);
+    setResending(true);
+    let error: AuthErrorLike;
+    try {
+      ({ error } = await authBrowser().auth.resend({
+        type: "signup",
+        email,
+        options: { emailRedirectTo: emailRedirect(window.location.origin, "confirmation") },
+      }));
+    } catch (thrown) {
+      error = thrown as AuthErrorLike;
+    } finally {
+      setResending(false);
+    }
+    show(resendNotice(error));
+    if (resendStartsCooldown(error)) {
+      const started = Date.now();
+      setNow(started);
+      setResendAt(started + RESEND_COOLDOWN_MS);
+    }
+  }
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (busy) return;
     setNotice("");
     setFailed(false);
+    // The resend button reappears only if this attempt calls for it.
+    setResendOffered(false);
     const fields = new FormData(event.currentTarget),
       email = String(fields.get("email") ?? "").trim(),
       password = String(fields.get("password") ?? "");
@@ -53,9 +119,7 @@ export function AuthScreen({
     }
     if (!configured) {
       setFailed(true);
-      setNotice(
-        "El acceso aún no está configurado. Contacta al administrador del dashboard.",
-      );
+      setNotice(NOT_CONFIGURED);
       return;
     }
     setBusy(true);
@@ -68,52 +132,46 @@ export function AuthScreen({
           email,
           password,
         });
-        if (error)
-          throw new Error(
-            error.code === "email_not_confirmed"
-              ? "Confirma tu correo antes de iniciar sesión."
-              : error.status === 429
-                ? "Demasiados intentos. Espera unos minutos."
-                : "No pudimos iniciar sesión. Revisa tu correo y contraseña.",
-          );
+        if (error) {
+          const result = loginErrorNotice(error);
+          show(result);
+          if (result.canResend) {
+            setResendEmail(email);
+            setResendOffered(true);
+          }
+          return;
+        }
         router.replace("/");
         router.refresh();
       } else if (register) {
+        // Atlas templates link to /auth/confirm themselves; see emailRedirect.
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
-            emailRedirectTo: `${origin}/auth/callback`,
+            emailRedirectTo: emailRedirect(origin, "confirmation"),
             data: {
               first_name: String(fields.get("first_name") ?? "").trim(),
               last_name: String(fields.get("last_name") ?? "").trim(),
             },
           },
         });
-        if (error)
-          throw new Error(
-            error.status === 429
-              ? "Se alcanzó el límite de registros. Intenta más tarde."
-              : "No se pudo crear la cuenta. Revisa los datos o contacta al administrador.",
-          );
-        if (data.session) {
+        if (!error && data.session) {
           router.replace("/");
           router.refresh();
-        } else
-          setNotice(
-            "Si el correo permite el registro, recibirás un enlace para confirmar tu cuenta. Revisa también la carpeta de spam.",
-          );
+          return;
+        }
+        const result = registerNotice(error);
+        show(result);
+        if (result.canResend) {
+          setResendEmail(email);
+          setResendOffered(true);
+        }
       } else if (mode === "recover") {
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: `${origin}/auth/callback?next=/reset-password`,
+          redirectTo: emailRedirect(origin, "recovery"),
         });
-        if (error)
-          throw new Error(
-            "No se pudo solicitar la recuperación. Intenta más tarde.",
-          );
-        setNotice(
-          "Si existe una cuenta con ese correo, recibirás un enlace para restablecer tu contraseña.",
-        );
+        show(recoverNotice(error));
       } else {
         const { error } = await supabase.auth.updateUser({ password });
         if (error)
@@ -167,10 +225,10 @@ export function AuthScreen({
         <aside className="auth-hero" aria-label="Bienvenida del INE">
           <img
             className="auth-logo"
-            src="/design-top/logo-ine.png"
+            src="/brand/ine-institucional.png"
             alt="INE · Instituto Nacional Electoral"
-            width={2172}
-            height={724}
+            width={960}
+            height={296}
           />
           <div className="auth-hero-text">
             <h2>
@@ -199,7 +257,7 @@ export function AuthScreen({
               acceso.
             </p>
           )}
-          <form onSubmit={submit}>
+          <form ref={form} onSubmit={submit}>
             {register && (
               <div className="auth-name-row">
                 <label>
@@ -336,6 +394,16 @@ export function AuthScreen({
                 {!failed && <Check size={18} />} {notice}
               </p>
             )}
+            {resendOffered && (mode === "login" || register) && (
+              <button
+                className="auth-resend"
+                type="button"
+                onClick={resend}
+                aria-disabled={resending || resendWait > 0}
+              >
+                {resending ? "Enviando…" : resendLabel(resendWait)}
+              </button>
+            )}
             <button
               className="auth-primary"
               type="submit"
@@ -406,7 +474,7 @@ export function AuthScreen({
             {info === "terms" ? (
               <>
                 <p>
-                  Pulso electoral es un prototipo analítico con datos abiertos
+                  Atlas De La Participación es un prototipo analítico con datos abiertos
                   del INE. Sus estimaciones son experimentales, no son un
                   producto oficial del INE y no deben usarse para decisiones
                   operativas.

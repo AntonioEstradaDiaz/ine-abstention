@@ -62,6 +62,8 @@ export function Trends({
       },
       legend: {
         bottom: 0,
+        type: "scroll",
+        itemGap: 28,
         textStyle: { color: "#596D8D", fontSize: 11 },
         icon: "circle",
         itemWidth: 8,

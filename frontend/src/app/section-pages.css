@@ -654,6 +654,19 @@
   width: 12px;
   height: 12px;
 }
+.ai-quota {
+  margin: 0;
+  font-size: 11px;
+  color: var(--sp-muted);
+}
+small.ai-quota {
+  display: block;
+  margin-top: 4px;
+}
+.ai-quota[data-empty] {
+  color: #8a4d00;
+  font-weight: 600;
+}
 .ai-offline-notice,
 .ai-error-notice {
   margin: 0;
@@ -1062,8 +1075,8 @@
 /* Forecast controls stay usable within the assistant column. */
 .ai-assistant .ai-horizon-controls { display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0; }
 .ai-assistant .ai-horizon-controls label { display: flex; flex: 1 1 130px; flex-direction: column; align-items: stretch; gap: 6px; font-size: 12px; }
-.ai-horizon-controls input, .ai-horizon-controls select { width: 100%; min-width: 0; padding: 10px; border: 1px solid #efc9df; border-radius: 10px; background: white; color: #0d172f; }
-.ai-horizon-controls button { border: 0; border-radius: 10px; padding: 10px 14px; background: #c4006b; color: white; cursor: pointer; }
+.ai-horizon-controls input, .ai-horizon-controls .dashboard-select-trigger { width: 100%; min-width: 0; padding: 10px; border: 1px solid #efc9df; border-radius: 10px; background: white; color: #0d172f; }
+.ai-horizon-controls button[type="submit"] { border: 0; border-radius: 10px; padding: 10px 14px; background: #c4006b; color: white; cursor: pointer; }
 .ai-horizon-controls button:disabled { opacity: .5; cursor: default; }
 .ai-projection-result { padding: 14px; border: 1px solid #f4cfe4; border-radius: 14px; background: #fff6fa; font-size: 13px; }
 .ai-projection-result p { margin: 6px 0; }

@@ -10,3 +10,16 @@ test("safe quota and authentication errors",async()=>{
  for (const [status,message] of [[429,/límite/],[401,/clave/],[404,/modelo/]] as const) await assert.rejects(generateGroqReply(input,(async()=>Response.json({secret:"test-secret"},{status})) as typeof fetch),message);
 });
 test("empty replies are rejected",async()=>{await assert.rejects(generateGroqReply(input,(async()=>Response.json({choices:[]})) as typeof fetch),/no devolvió/);});
+test("caller's time budget replaces the fixed timeout",async()=>{
+ const budget=new AbortController();
+ const fake=(async(_url,init)=>{assert.equal(init!.signal,budget.signal);return Response.json({choices:[{message:{content:"Respuesta"}}]});}) as typeof fetch;
+ assert.equal(await generateGroqReply({...input,signal:budget.signal},fake),"Respuesta");
+ budget.abort();
+ await assert.rejects(generateGroqReply({...input,signal:budget.signal},(async(_url,init)=>{if(init!.signal!.aborted)throw new DOMException("Aborted","AbortError");return Response.json({});}) as typeof fetch),/tardó demasiado/);
+});
+test("a non-JSON body is reported in Spanish, never as a raw parser error",async()=>{
+ await assert.rejects(generateGroqReply(input,(async()=>new Response("<html>gateway</html>",{status:200})) as typeof fetch),(e:Error)=>/^Groq devolvió una respuesta inválida\.$/.test(e.message));
+});
+test("a JSON null body is reported in Spanish, never as a raw TypeError",async()=>{
+ await assert.rejects(generateGroqReply(input,(async()=>Response.json(null)) as typeof fetch),/^Error: Groq no devolvió una respuesta/);
+});

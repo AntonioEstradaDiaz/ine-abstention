@@ -1,4 +1,4 @@
-# Dashboard Pulso electoral
+# Dashboard Atlas De La Participación
 
 ## Actualización visual del dashboard
 

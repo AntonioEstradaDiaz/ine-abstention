@@ -7,6 +7,27 @@ const secret = randomBytes(32);
 const sessions = new Map();
 // Test-only PostgREST stand-in. Production uses the real table and RLS policies.
 const scenarios = [];
+// Test-only stand-in for the AI quota RPCs (docs/sql/ai_quota.sql). Daily limit only;
+// per-minute and global limits are verified against the SQL itself.
+const aiUsage = [];
+const aiDailyLimit = 30;
+// Next 00:00 in Mexico City (UTC-6, no daylight saving time since 2022).
+const aiResetsAt = () => {
+  const local = new Date(Date.now() - 6 * 3600e3);
+  local.setUTCHours(24, 0, 0, 0);
+  return new Date(local.getTime() + 6 * 3600e3).toISOString();
+};
+const aiStatus = (userId) => {
+  const used = aiUsage.filter(
+    (u) => u.user_id === userId && u.status !== "failed",
+  ).length;
+  return {
+    limit: aiDailyLimit,
+    remaining: Math.max(0, aiDailyLimit - used),
+    resets_at: aiResetsAt(),
+    global_exhausted: false,
+  };
+};
 const user = {
   id: "00000000-0000-4000-8000-000000000001",
   aud: "authenticated",
@@ -24,6 +45,11 @@ const secondaryUser = {
   id: "00000000-0000-4000-8000-000000000002",
   email: "browser-second@example.invalid",
 };
+// Test-only account that registered but never confirmed its email.
+const unconfirmedEmail = "browser-unconfirmed@example.invalid";
+// Test-only email links: `ok-confirm-…` / `ok-recovery-…` are valid once, like Supabase tokens.
+const usedTokens = new Set();
+const lastResend = new Map();
 const encode = (value) =>
   Buffer.from(JSON.stringify(value)).toString("base64url");
 function session(account = user) {
@@ -57,7 +83,7 @@ const server = createServer(async (req, res) => {
     "Access-Control-Allow-Headers",
     "authorization, apikey, content-type, x-client-info, x-supabase-api-version",
   );
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS");
   res.setHeader("Cache-Control", "no-store");
   const send = (status, body) => {
     res.writeHead(status, { "Content-Type": "application/json" });
@@ -70,6 +96,31 @@ const server = createServer(async (req, res) => {
     return send(401, { msg: "Invalid fixture key" });
   const token = req.headers.authorization?.replace(/^Bearer /, "");
   const active = sessions.get(token);
+  if (url.pathname.startsWith("/rest/v1/rpc/pulso_ai_") && req.method === "POST") {
+    if (!active) return send(401, { message: "Invalid test session" });
+    let raw = "";
+    for await (const chunk of req) raw += chunk;
+    const args = raw ? JSON.parse(raw) : {};
+    const fn = url.pathname.slice("/rest/v1/rpc/".length);
+    if (fn === "pulso_ai_quota_status") return send(200, aiStatus(active.user.id));
+    if (typeof args.p_secret !== "string" || args.p_secret.length < 32)
+      return send(401, { code: "28000", message: "pulso_ai: secreto inválido" });
+    if (fn === "pulso_ai_reserve") {
+      const status = aiStatus(active.user.id);
+      if (status.remaining === 0)
+        return send(200, { ok: false, code: "daily_limit", ...status });
+      const id = randomUUID();
+      aiUsage.push({ id, user_id: active.user.id, status: "reserved" });
+      return send(200, { ok: true, reservation_id: id, ...status, remaining: status.remaining - 1 });
+    }
+    if (fn === "pulso_ai_finish") {
+      const row = aiUsage.find(
+        (u) => u.id === args.p_reservation && u.user_id === active.user.id && u.status === "reserved",
+      );
+      if (row) row.status = args.p_succeeded ? "succeeded" : "failed";
+      return send(200, { ...aiStatus(active.user.id), updated: !!row });
+    }
+  }
   if (url.pathname === "/rest/v1/pulso_scenarios") {
     if (!active) return send(401, { message: "Invalid test session" });
     if (req.method === "POST") {
@@ -104,6 +155,13 @@ const server = createServer(async (req, res) => {
       ? send(200, active.user)
       : send(401, { code: "bad_jwt", msg: "Invalid test session" });
   }
+  // Password change after a recovery link; the fixture does not store passwords.
+  if (url.pathname === "/auth/v1/user" && req.method === "PUT") {
+    for await (const _ of req);
+    return active && active.expires_at > Date.now() / 1000
+      ? send(200, active.user)
+      : send(401, { code: "bad_jwt", msg: "Invalid test session" });
+  }
   if (url.pathname === "/auth/v1/logout" && req.method === "POST") {
     sessions.delete(token);
     return send(200, {});
@@ -117,6 +175,13 @@ const server = createServer(async (req, res) => {
     } catch {
       return send(400, { msg: "Invalid JSON" });
     }
+    if (
+      url.searchParams.get("grant_type") === "password" &&
+      body.email === unconfirmedEmail &&
+      body.password === "Browser-test-only-123!"
+    )
+      // Without the API version header, auth-js reads the code from `error_code`.
+      return send(400, { error_code: "email_not_confirmed", msg: "Email not confirmed" });
     if (
       url.searchParams.get("grant_type") === "password" &&
       (body.email === user.email || body.email === secondaryUser.email) &&
@@ -137,6 +202,47 @@ const server = createServer(async (req, res) => {
       code: "invalid_credentials",
       msg: "Invalid test credentials",
     });
+  }
+  const readBody = async () => {
+    let raw = "";
+    for await (const chunk of req) raw += chunk;
+    try {
+      return JSON.parse(raw || "{}");
+    } catch {
+      return {};
+    }
+  };
+  if (url.pathname === "/auth/v1/signup" && req.method === "POST") {
+    const body = await readBody();
+    // Email confirmation on: a new account comes back without a session.
+    return send(200, {
+      ...user,
+      id: randomUUID(),
+      email: String(body.email ?? ""),
+      email_confirmed_at: null,
+      identities: [{}],
+    });
+  }
+  if (url.pathname === "/auth/v1/resend" && req.method === "POST") {
+    const email = String((await readBody()).email ?? "");
+    if (Date.now() - (lastResend.get(email) ?? 0) < 60_000)
+      return send(429, {
+        error_code: "over_email_send_rate_limit",
+        msg: "For security purposes, you can only request this after 60 seconds.",
+      });
+    lastResend.set(email, Date.now());
+    return send(200, {});
+  }
+  if (url.pathname === "/auth/v1/verify" && req.method === "POST") {
+    const body = await readBody();
+    const hash = String(body.token_hash ?? "");
+    const valid =
+      (hash.startsWith("ok-confirm-") && body.type === "email") ||
+      (hash.startsWith("ok-recovery-") && body.type === "recovery");
+    if (!valid || usedTokens.has(hash))
+      return send(403, { error_code: "otp_expired", msg: "Email link is invalid or has expired" });
+    usedTokens.add(hash);
+    return send(200, session(user));
   }
   return send(404, { msg: "Unsupported Auth fixture operation" });
 });

@@ -88,7 +88,7 @@ const variables = [
     label: "Riesgo estimado 2027",
     description:
       "Semáforo relativo de la abstención estimada para la intermedia de 2027. No es un estándar oficial del INE.",
-    source: "Modelo Pulso electoral · baseline_last",
+    source: "Modelo Atlas De La Participación · baseline_last",
   },
 ];
 const glossary = [
@@ -394,7 +394,7 @@ export function DataSources({
   const exportRows = checked.length
     ? filtered.filter((r) => checked.includes(r.id))
     : filtered;
-  const file = `pulso-datos-${{ national: "nacional", state: "estatal", municipal: "municipal" }[applied.level]}-${applied.level === "national" ? "2009-2024" : applied.year}`;
+  const file = `atlas-participacion-datos-${{ national: "nacional", state: "estatal", municipal: "municipal" }[applied.level]}-${applied.level === "national" ? "2009-2024" : applied.year}`;
   const download = (format: "csv" | "json") => {
     setMenu(false);
     if (format === "csv")
@@ -563,7 +563,7 @@ export function DataSources({
             >
               <option value="all">Todas</option>
               <option value="ine">INE · CCPC</option>
-              <option value="model">Modelo Pulso 2027</option>
+              <option value="model">Modelo Atlas De La Participación 2027</option>
             </DashboardSelect>
           </label>
           <div className="data-filter-actions">

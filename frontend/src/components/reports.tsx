@@ -544,11 +544,11 @@ export function Reports({
             <div className="report-cover">
               <div className="report-cover-text">
                 <img
-                  src="/design-top/logo-ine.png"
+                  src="/brand/ine-institucional.png"
                   alt="INE · Instituto Nacional Electoral"
                   className="report-logo"
-                  width={2172}
-                  height={724}
+                  width={960}
+                  height={296}
                 />
                 <span className="report-process">Proceso Electoral {year}</span>
                 <h3>

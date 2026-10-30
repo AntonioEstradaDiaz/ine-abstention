@@ -32,7 +32,7 @@ export function MultiStateComparison({
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `pulso-comparativo-escenarios-${forecast.target_year}.csv`;
+    a.download = `atlas-participacion-comparativo-escenarios-${forecast.target_year}.csv`;
     document.body.appendChild(a);
     a.click();
     a.remove();

@@ -44,6 +44,6 @@ estatales originales y escenarios guardados separados entre cuentas.
 Las pruebas de exportación no constituyen validación estadística operativa.
 
 ## UI
-Paleta existente PULSO: blanco, magenta `#e5007e`, rosa pastel
+Paleta existente Atlas De La Participación: blanco, magenta `#e5007e`, rosa pastel
 `#fce7f2`, azules oscuros para lectura, tarjetas y bordes redondeados;
 comportamiento responsivo con tablas desplazables horizontalmente.

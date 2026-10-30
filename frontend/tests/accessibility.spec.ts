@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-test.describe("Documentación pública con identidad PULSO", () => {
+test.describe("Documentación pública con identidad Atlas De La Participación", () => {
   test.use({ storageState: { cookies: [], origins: [] } });
 
   for (const [url, title] of [

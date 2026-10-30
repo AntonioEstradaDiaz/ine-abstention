@@ -148,7 +148,7 @@ function Laboratory({
       );
     download(
       "\uFEFF" + columns.join("\r\n"),
-      `pulso-ml-${model.name}-${report.target_year}.csv`,
+      `atlas-participacion-ml-${model.name}-${report.target_year}.csv`,
       "text/csv;charset=utf-8",
     );
   };

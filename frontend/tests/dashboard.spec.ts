@@ -141,7 +141,7 @@ test("dashboard uses live backend data, maps and historical periods", async ({
   const download = page.waitForEvent("download");
   await page.getByRole("menuitem", { name: /CSV/ }).click();
   const file = await download;
-  expect(file.suggestedFilename()).toBe("pulso-datos-estatal-2024.csv");
+  expect(file.suggestedFilename()).toBe("atlas-participacion-datos-estatal-2024.csv");
   const stream = await file.createReadStream();
   const chunks: Buffer[] = [];
   for await (const chunk of stream!) chunks.push(Buffer.from(chunk));
