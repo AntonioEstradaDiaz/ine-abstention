@@ -363,7 +363,7 @@ export function AnalysisView({
       <div className="analysis-heading">
         <div>
           <div className="analysis-title-line">
-            <h1>Entiende la participación electoral</h1>
+            <h1>Entiende la participación <span className="analysis-title-highlight">electoral</span></h1>
             <span className="analysis-chip">
               {estimated ? "Estimación experimental" : "Datos oficiales INE"}
             </span>
