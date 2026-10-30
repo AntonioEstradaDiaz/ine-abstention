@@ -20,7 +20,12 @@ export async function POST(request: NextRequest) {
   const origin = request.headers.get("origin");
   if (origin) {
     try {
-      if (new URL(origin).host !== request.headers.get("host"))
+      // Same check as /api/backend: host and protocol must match.
+      const parsed = new URL(origin);
+      if (
+        parsed.host !== request.headers.get("host") ||
+        parsed.protocol !== request.nextUrl.protocol
+      )
         return new NextResponse(null, { status: 403 });
     } catch {
       return new NextResponse(null, { status: 403 });
