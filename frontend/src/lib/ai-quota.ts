@@ -137,7 +137,9 @@ export async function runWithQuota<T>({
   const id = reservation.reservation_id;
   // A failed confirmation leaves the slot counted (conservative); the user still gets the answer.
   const settle = (succeeded: boolean) =>
-    finish(id, succeeded).then(quotaInfo, () => null);
+    Promise.resolve()
+      .then(() => finish(id, succeeded))
+      .then(quotaInfo, () => null);
   try {
     const value = await call(signal);
     return { ok: true, value, quota: (await settle(true)) ?? quotaInfo(reservation) };

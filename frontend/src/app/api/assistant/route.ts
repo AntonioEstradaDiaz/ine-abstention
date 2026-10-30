@@ -14,6 +14,15 @@ import type { Indicator, ModelMetrics, Page, Predictions } from "@/lib/types";
 export const dynamic = "force-dynamic";
 import { generateGroqReply } from "@/lib/groq";
 import { generateGeminiReply } from "@/lib/gemini";
+import { authServer } from "@/lib/supabase/server";
+import {
+  AI_BUDGET_MS,
+  runWithQuota,
+  type FinishResult,
+  type QuotaErrorResponse,
+  type QuotaInfo,
+  type ReserveResult,
+} from "@/lib/ai-quota";
 const provider = () =>
   process.env.AI_PROVIDER === "ollama"
     ? "ollama"
@@ -25,6 +34,45 @@ const geminiModel = () => process.env.GEMINI_MODEL || "gemini-2.5-flash";
 const ollamaUrl = () => process.env.OLLAMA_URL || "http://127.0.0.1:11434";
 const detail = (message: string, status: number) =>
   NextResponse.json({ detail: message }, { status });
+
+type Supabase = NonNullable<Awaited<ReturnType<typeof authServer>>>;
+
+// Quota RPCs run with the user's session; changing counts also requires the
+// server-only secret, so the browser cannot reserve or release slots itself.
+async function quotaRpc<T>(
+  supabase: Supabase | null,
+  fn: string,
+  args?: Record<string, unknown>,
+): Promise<T> {
+  if (!supabase) throw new Error("Autenticación sin configurar");
+  const { data, error } = await supabase.rpc(fn, args);
+  if (error || data == null) throw new Error("Cuota no disponible");
+  return data as T;
+}
+
+function quotaSecret() {
+  const secret = process.env.PULSO_AI_QUOTA_SECRET;
+  if (!secret || secret.length < 32) throw new Error("Falta PULSO_AI_QUOTA_SECRET");
+  return secret;
+}
+
+async function quotaStatus(): Promise<QuotaInfo | null> {
+  try {
+    const { remaining, limit, resets_at } = await quotaRpc<QuotaInfo>(
+      await authServer(),
+      "pulso_ai_quota_status",
+    );
+    return { remaining, limit, resets_at };
+  } catch {
+    return null;
+  }
+}
+
+function quotaFailure({ status, body, headers }: QuotaErrorResponse) {
+  // Code only: no user id, question or answer in logs.
+  console.warn(JSON.stringify({ event: "ai_quota", code: body.code }));
+  return NextResponse.json(body, { status, headers });
+}
 
 async function installedModels(): Promise<string[] | null> {
   try {
@@ -49,6 +97,7 @@ const defaultModel = (models: string[]) => {
 };
 
 export async function GET() {
+  const quota = quotaStatus();
   if (provider() === "groq") {
     return NextResponse.json(
       {
@@ -56,6 +105,7 @@ export async function GET() {
         reachable: !!process.env.GROQ_API_KEY,
         models: [groqModel()],
         defaultModel: groqModel(),
+        quota: await quota,
       },
       { headers: { "Cache-Control": "no-store" } },
     );
@@ -67,6 +117,7 @@ export async function GET() {
         reachable: !!process.env.GEMINI_API_KEY,
         models: [geminiModel()],
         defaultModel: geminiModel(),
+        quota: await quota,
       },
       { headers: { "Cache-Control": "no-store" } },
     );
@@ -77,25 +128,26 @@ export async function GET() {
     reachable: models != null,
     models: models ?? [],
     defaultModel: models ? defaultModel(models) : null,
+    quota: await quota,
   };
   return NextResponse.json(status, {
     headers: { "Cache-Control": "no-store" },
   });
 }
 
-async function backend<T>(path: string): Promise<T> {
+async function backend<T>(path: string, budget: AbortSignal): Promise<T> {
   const base = process.env.BACKEND_URL || "http://127.0.0.1:8001";
   const response = await fetch(new URL(`/api/v1/${path}`, base), {
     headers: { Accept: "application/json", ...backendInternalHeaders() },
     cache: "no-store",
-    signal: AbortSignal.timeout(15_000),
+    signal: AbortSignal.any([budget, AbortSignal.timeout(15_000)]),
   });
   if (!response.ok) throw new Error(`Backend ${response.status}`);
   return (await response.json()) as T;
 }
 
 // INE facts are read on the server, never trusted from the browser.
-async function ineData(stateCode: string) {
+async function ineData(stateCode: string, budget: AbortSignal) {
   if (process.env.PULSO_PREVIEW === "1")
     return {
       predictions: snapshot.predictions as Predictions,
@@ -106,13 +158,16 @@ async function ineData(stateCode: string) {
     };
   const predictions = await backend<Predictions>(
     "predictions?target_year=2027&limit=100",
+    budget,
   );
   const [history, metrics] = await Promise.all([
     backend<Page<Indicator>>(
       `participation/history?territory_type=state&state_code=${stateCode}&limit=100`,
+      budget,
     ),
     backend<ModelMetrics>(
       `models/metrics?run_id=${encodeURIComponent(predictions.forecast.provenance.model_run_id)}`,
+      budget,
     ).catch(() => null),
   ]);
   return { predictions, history: history.items, metrics };
@@ -187,9 +242,11 @@ export async function POST(req: NextRequest) {
     model = selectedModel;
   }
 
+  // One 45 s budget for the whole request: INE data lookup plus the AI provider.
+  const budget = AbortSignal.timeout(AI_BUDGET_MS);
   let data: Awaited<ReturnType<typeof ineData>>;
   try {
-    data = await ineData(stateCode);
+    data = await ineData(stateCode, budget);
   } catch {
     return detail("No se pudieron consultar los datos del INE.", 503);
   }
@@ -225,71 +282,74 @@ export async function POST(req: NextRequest) {
       422,
     );
   }
-  if (provider() === "groq") {
-    try {
-      const answer = await generateGroqReply({
-        apiKey: process.env.GROQ_API_KEY!,
-        model,
-        system: systemPrompt(context),
-        messages,
-      });
-      return NextResponse.json(
-        { answer, model },
-        { headers: { "Cache-Control": "no-store" } },
-      );
-    } catch (error) {
-      return detail(
-        error instanceof Error ? error.message : "Groq no está disponible.",
-        502,
-      );
-    }
-  }
-  if (provider() === "gemini") {
-    try {
-      const answer = await generateGeminiReply({
-        apiKey: process.env.GEMINI_API_KEY!,
-        model,
-        system: systemPrompt(context),
-        messages,
-      });
-      return NextResponse.json(
-        { answer, model },
-        { headers: { "Cache-Control": "no-store" } },
-      );
-    } catch (error) {
-      return detail(
-        error instanceof Error ? error.message : "Gemini no está disponible.",
-        502,
-      );
-    }
-  }
-  try {
-    const response = await fetch(new URL("/api/chat", ollamaUrl()), {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model,
-        stream: false,
-        options: { temperature: 0.2 },
-        messages: [
-          { role: "system", content: systemPrompt(context) },
-          ...messages,
-        ],
+  const system = systemPrompt(context);
+  const supabase = await authServer();
+  const outcome = await runWithQuota({
+    reserve: () =>
+      quotaRpc<ReserveResult>(supabase, "pulso_ai_reserve", {
+        p_secret: quotaSecret(),
       }),
-      cache: "no-store",
-      signal: AbortSignal.timeout(120_000),
+    finish: (id, succeeded) =>
+      quotaRpc<FinishResult>(supabase, "pulso_ai_finish", {
+        p_secret: quotaSecret(),
+        p_reservation: id,
+        p_succeeded: succeeded,
+      }),
+    call: (signal) => generateReply(model, system, messages, signal),
+    signal: budget,
+  });
+  if (!outcome.ok) return quotaFailure(outcome.response);
+  const reply: AssistantReply = {
+    answer: outcome.value,
+    model,
+    quota: outcome.quota,
+  };
+  return NextResponse.json(reply, {
+    headers: { "Cache-Control": "no-store" },
+  });
+}
+
+async function generateReply(
+  model: string,
+  system: string,
+  messages: NonNullable<ReturnType<typeof validMessages>>,
+  signal: AbortSignal,
+): Promise<string> {
+  if (provider() === "groq")
+    return generateGroqReply({
+      apiKey: process.env.GROQ_API_KEY!,
+      model,
+      system,
+      messages,
+      signal,
     });
-    if (!response.ok) return detail("Ollama no pudo responder.", 502);
-    const result = (await response.json()) as {
-      message?: { content?: string };
-    };
-    const answer = result.message?.content?.trim();
-    if (!answer) return detail("Ollama devolvió una respuesta vacía.", 502);
-    const reply: AssistantReply = { answer, model };
-    return NextResponse.json(reply, {
-      headers: { "Cache-Control": "no-store" },
+  if (provider() === "gemini")
+    return generateGeminiReply({
+      apiKey: process.env.GEMINI_API_KEY!,
+      model,
+      system,
+      messages,
+      signal,
     });
-  } catch {
-    return detail("Ollama tardó demasiado o no está disponible.", 504);
-  }
+  const response = await fetch(new URL("/api/chat", ollamaUrl()), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      model,
+      stream: false,
+      options: { temperature: 0.2 },
+      messages: [{ role: "system", content: system }, ...messages],
+    }),
+    cache: "no-store",
+    signal,
+  }).catch(() => {
+    throw new Error("Ollama tardó demasiado o no está disponible.");
+  });
+  if (!response.ok) throw new Error("Ollama no pudo responder.");
+  const result = (await response.json()) as {
+    message?: { content?: string };
+  };
+  const answer = result.message?.content?.trim();
+  if (!answer) throw new Error("Ollama devolvió una respuesta vacía.");
+  return answer;
 }

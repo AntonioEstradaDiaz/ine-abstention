@@ -110,6 +110,18 @@ test("if confirming fails after a reply, the user still gets the answer", async 
   if (result.ok) assert.deepEqual(result.quota, { remaining: 7, limit: 30, resets_at: resets });
 });
 
+test("a confirmation that throws synchronously still returns the answer", async () => {
+  const h = harness(async () => reserved);
+  const result = await runWithQuota({
+    ...h,
+    finish: () => { throw new Error("Falta PULSO_AI_QUOTA_SECRET"); },
+    call: async () => "Respuesta",
+    signal: new AbortController().signal,
+  });
+  assert.equal(result.ok, true);
+  if (result.ok) assert.equal(result.value, "Respuesta");
+});
+
 test("a provider error releases the quota and says it was not charged", async () => {
   const h = harness(async () => reserved);
   const result = await runWithQuota({
