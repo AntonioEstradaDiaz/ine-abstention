@@ -16,7 +16,7 @@ export function ElectoralKpis({ states = [], selected }: { states?: Prediction[]
   return (
     <div className={styles.grid} data-name="Indicadores clave">
       {metrics.map((metric, index) => (
-        <article className={`${styles.card} ${index === 1 ? styles.featured : ""}`} key={metric.title} aria-label={metric.title}>
+        <article data-name="Indicador electoral" className={`${styles.card} ${index === 1 ? styles.featured : ""}`} key={metric.title} aria-label={metric.title}>
           <header className={styles.header}>
             <p>{metric.title}</p>
             <span className={styles.icon} aria-hidden="true"><metric.icon size={24} strokeWidth={2} /></span>

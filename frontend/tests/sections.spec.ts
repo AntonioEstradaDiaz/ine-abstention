@@ -272,7 +272,7 @@ test("map KPI cards follow the selected forecast instead of design placeholders"
     const forecast = items.find(
       (item: { state_code: string }) => item.state_code === code,
     );
-    const cards = page.locator(".reference-kpis");
+    const cards = page.locator('[data-name="Indicadores clave"]');
     await expect(
       cards.getByRole("article", {
         name: "Abstención estimada 2027",

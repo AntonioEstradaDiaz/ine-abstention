@@ -109,7 +109,7 @@ test("official analysis agrees with observed map, forecasts and weighted nationa
       .click();
     await page.getByRole("button", { name: "Estimación", exact: true }).click();
     await expect(
-      page.locator(".reference-kpis").getByRole("article", {
+      page.locator('[data-name="Indicadores clave"]').getByRole("article", {
         name: "Abstención estimada 2027",
         exact: true,
       }),
