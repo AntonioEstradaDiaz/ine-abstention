@@ -1005,3 +1005,7 @@
 .analysis-disclaimer > svg {
   flex-shrink: 0;
 }
+
+.analysis-screen .analysis-heading h1 .analysis-title-highlight {
+  color: #e5007e;
+}
