@@ -5,6 +5,7 @@ import type { Forecast, Prediction } from "@/lib/types";
 import { pct, pp, riskLabels } from "@/lib/utils";
 import { compareStateScenarios, comparisonCsv } from "@/lib/scenario-comparison";
 import { Button } from "./ui/button";
+import { DashboardSelect } from "./ui/dashboard-select";
 
 export function MultiStateComparison({
   states, forecast, primary,
@@ -44,15 +45,15 @@ export function MultiStateComparison({
         <header className="multi-compare-header">
           <div className="multi-compare-icon"><Scale size={23} aria-hidden="true" /></div>
           <div>
-            <p className="multi-compare-overline">Análisis comparativo · Punto 7</p>
-            <h2 id="multi-compare-title">Comparar escenarios entre varios estados</h2>
+            <p className="multi-compare-overline">Análisis comparativo</p>
+            <h2 id="multi-compare-title">Comparar escenarios <span>entre varios estados</span></h2>
             <p>Selecciona de dos a seis entidades y aplica el mismo supuesto para evaluar diferencias simultáneas.</p>
           </div>
         </header>
         <div className="multi-compare-controls">
           <label>
             <span>Agregar entidad</span>
-            <select
+            <DashboardSelect
               value=""
               aria-label="Agregar entidad al comparativo"
               disabled={codes.length >= 6}
@@ -65,7 +66,7 @@ export function MultiStateComparison({
               {remaining.map((item) => (
                 <option key={item.state_code} value={item.state_code}>{item.name}</option>
               ))}
-            </select>
+            </DashboardSelect>
           </label>
           <label>
             <span>Cambio de participación (pp)</span>
@@ -77,7 +78,7 @@ export function MultiStateComparison({
               onChange={(event) => setInput(event.target.value)}
             />
           </label>
-          <Button variant="outline" disabled={!comparison.length} onClick={download}>
+          <Button className="multi-compare-download" variant="outline" disabled={!comparison.length} onClick={download}>
             <Download size={16} aria-hidden="true" /> Descargar CSV
           </Button>
         </div>
