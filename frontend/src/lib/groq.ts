@@ -20,8 +20,8 @@ export async function generateGroqReply({ apiKey, model, system, messages, signa
     if ([400, 404].includes(response.status)) throw new Error("Revisa el modelo GROQ_MODEL y su disponibilidad en tu cuenta.");
     throw new Error("Groq no pudo responder. Intenta nuevamente.");
   }
-  const data = await response.json().catch(() => { throw new Error("Groq devolvió una respuesta inválida."); }) as { choices?: Array<{ message?: { content?: string }; finish_reason?: string }> };
-  const answer = data.choices?.[0]?.message?.content?.trim();
+  const data = await response.json().catch(() => { throw new Error("Groq devolvió una respuesta inválida."); }) as { choices?: Array<{ message?: { content?: string }; finish_reason?: string }> } | null;
+  const answer = data?.choices?.[0]?.message?.content?.trim();
   if (!answer) throw new Error("Groq no devolvió una respuesta. Reformula la pregunta.");
   return answer;
 }

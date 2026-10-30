@@ -29,3 +29,6 @@ test("caller's time budget replaces the fixed timeout", async () => {
 test("a non-JSON body is reported in Spanish, never as a raw parser error", async () => {
  await assert.rejects(generateGeminiReply(input, (async () => new Response("<html>gateway</html>", { status: 200 })) as typeof fetch), (e: Error) => /^Gemini devolvió una respuesta inválida\.$/.test(e.message));
 });
+test("a JSON null body is reported in Spanish, never as a raw TypeError", async () => {
+ await assert.rejects(generateGeminiReply(input, (async () => Response.json(null)) as typeof fetch), /^Error: Gemini no devolvió una respuesta/);
+});

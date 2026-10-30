@@ -329,7 +329,7 @@ async function generateReply(
   })) as {
     message?: { content?: string };
   };
-  const answer = result.message?.content?.trim();
+  const answer = result?.message?.content?.trim();
   if (!answer) throw new Error("Ollama devolvió una respuesta vacía.");
   return answer;
 }
