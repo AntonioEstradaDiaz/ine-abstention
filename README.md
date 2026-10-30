@@ -1,11 +1,28 @@
 # Atlas De La Participación
 
-Aplicación para explorar participación y abstención electoral en México, comparar entidades,
-revisar modelos y calcular escenarios hipotéticos con datos abiertos del INE.
-Es un **prototipo experimental**, sin aval institucional del INE y sin validación para decisiones operativas.
+Dashboard de participación y abstención electoral en México que reúne datos abiertos del
+INE, mapas estatales, análisis histórico, modelos de machine learning, proyecciones y reportes.
+Su objetivo es hacer visibles las cifras, su procedencia y sus límites en una misma interfaz.
 
-**Demo:** [pulso-electoral-demo.vercel.app](https://pulso-electoral-demo.vercel.app).
-Requiere una cuenta confirmada de Supabase Auth. El login es público; el dashboard y sus APIs requieren sesión.
+**Estado documental: 30 de octubre de 2026.** Basado en la integración `266bf0e` (PR #52).
+El código integrado no acredita por sí solo que las variables, migraciones y servicios remotos
+ya estén configurados. Es un prototipo experimental independiente, sin aval institucional del INE.
+
+[Demo](https://pulso-electoral-demo.vercel.app) · [Instalación](docs/installation.md) ·
+[Datos y metodología](docs/phase2.md) · [Resultados ML](docs/phase4_results.md) ·
+[Galería](docs/dashboard-gallery.md)
+
+## Contenido
+
+- [Qué permite hacer](#qué-permite-hacer)
+- [Recorrido del usuario](#recorrido-del-usuario)
+- [Datos y fórmulas](#datos-y-fórmulas)
+- [Machine learning y predicción](#machine-learning-y-predicción)
+- [Diseño e identidad visual](#diseño-e-identidad-visual)
+- [Arquitectura](#arquitectura)
+- [Incorporaciones recientes](#incorporaciones-recientes)
+- [Validación y pendientes](#validación-y-pendientes)
+- [Ejecutar en local](#ejecutar-en-local)
 
 ### Acceso de prueba para el hackathon
 
@@ -21,212 +38,238 @@ del hackathon. No guardar información personal en sus escenarios. Los correos s
 reciben enlaces de recuperación. La creación y las pruebas de acceso están documentadas en
 [Auth](frontend/AUTH.md).
 
+## Qué permite hacer
 
-## Guía del proyecto · actualización documental del 29 de octubre de 2026
-
-**Atlas De La Participación** es el nombre del producto. El repositorio, el dominio de
-la demo, los usuarios de prueba y los identificadores internos conservan sus nombres
-anteriores por compatibilidad. Las credenciales demo de esta página permanecen sin cambios.
-
-- [Machine learning, predicciones y límites](docs/machine-learning.md).
-- [Galería del dashboard](docs/dashboard-gallery.md).
-- [Instalación](docs/installation.md), [autenticación](frontend/AUTH.md) y [estado del proyecto](docs/project-status.md).
-- [Reportes nacionales y escenarios](docs/punto7-reportes-escenarios.md).
-
-Las secciones de pruebas fechadas más abajo son registros históricos de esas versiones,
-no certificaciones del despliegue actual. Una rama subida no equivale a una funcionalidad
-fusionada ni desplegada. Las capturas conservan la apariencia de la versión fotografiada.
-
-## Estado de la demo y límites
-
-La demo corre en Vercel Hobby con Next.js, Supabase Auth y Groq reales. Usa `PULSO_PREVIEW=1`:
-los datos y pronósticos son una instantánea versionada del repositorio. **No hay FastAPI ni
-PostgreSQL del backend FastAPI desplegados detrás de esta demo.** Los escenarios calculados
-se guardan en Supabase, asociados al usuario autenticado, y se recuperan desde Escenarios.
-
-La implementación completa del backend sí existe en este repositorio y puede ejecutarse en Docker
-local o conectarse a PostgreSQL/PostGIS en Supabase. En ese modo, la API conserva simulaciones.
-El guardado web usa la tabla `public.pulso_scenarios`, independiente del historial del backend local.
-RLS permite a cada usuario insertar y consultar únicamente sus propios escenarios.
-
-La entrega del hackathon incorpora PDF/Excel estatales y retira la muestra municipal de Datos.
-[Alcance y validación de la entrega](docs/hackathon-delivery.md).
-
-La revisión funcional del 26 de octubre de 2026 recorrió las ocho secciones. Encontró errores de
-presentación de datos y controles de Reportes; las correcciones y el alcance de las pruebas están en
-[la auditoría de la app publicada](docs/published-app-audit.md). Las correcciones se publicaron
-tras el merge del PR #17, commit `014961e`; navegación móvil, tarjetas y Reportes se comprobaron
-en producción. Las pruebas reales de IA y sus límites de cuota se detallan en la auditoría.
-
-## Secciones y alcance real
-
-| Sección | Disponible | Límites y pendientes |
+| Apartado | Qué representa y para qué sirve | Alcance |
 | --- | --- | --- |
-| Mapa de riesgo | Cartografía de los 32 estados, selección territorial, estimación 2027, histórico y detalle con cuatro pestañas. | Los límites INEGI son geoestadísticos, no electorales históricos. Los indicadores superiores se corrigieron para usar pronósticos reales del estado seleccionado. |
-| Tendencias | Comparación de hasta tres estados, participación/abstención y tabla de procedencia. | Se separan intermedias y presidenciales; no hay series municipales homologadas. Acceso desde «Comparar históricos» en el mapa. |
-| Análisis IA | Histórico oficial estatal, nacional ponderado, estimación 2027, búsqueda, CSV trazable y consulta estatal a Groq. | Comparte estado/año y APIs con el mapa; el pronóstico usa la misma corrida que Predicciones. No muestra cifras municipales sin homologación. |
-| Laboratorio de modelos | Dos referencias y cuatro modelos ML, métricas temporales, pronósticos para 32 estados, importancia global y escenarios locales. Exporta CSV/JSON. | Entrenamiento previo, no por solicitud. La síntesis automática no es una consulta a IA. Acceso desde Análisis → Preguntar a la IA → Abrir laboratorio de modelos. |
-| Predicciones | Baseline estatal 2027, banda, contexto histórico, errores temporales y asistente Groq. | Las bandas no garantizan cobertura futura; no predice municipios ni efectos de intervenciones. |
-| Escenarios | Cambio supuesto de participación, límites 0–100%, comparación, guardado privado y recuperación del historial. | Cálculo sobre la instantánea en demo; el historial muestra los últimos 20 escenarios de la entidad. Corridas anteriores no se restauran sobre una base distinta. |
-| Reportes | Reporte estatal descargable en PDF y Excel, entidad, variable, comparación nacional ponderada, histórico, hallazgos y metodología. PDF incluye gráficas opcionales; Excel conserva conteos y tasas numéricas. | Comparativo nacional disponible; PowerPoint, envíos automáticos y detalle municipal pendientes. Las últimas cinco descargas se pueden repetir durante la sesión de la sección; no hay archivo persistente de reportes. |
-| Datos | Filtros, búsqueda, orden, paginación, selección de filas, CSV/JSON, diccionario y procedencia. | Datos nacionales/estatales oficiales; muestra municipal retirada y opción deshabilitada hasta homologar fuentes. Subir archivos está pendiente. Actualizar fuentes vuelve a consultar los datos disponibles; no descarga nuevas elecciones del INE. |
+| **Mapa** | Distribución territorial, selección de estado, indicadores principales y detalle con Resumen, Histórico, Factores y Recomendaciones. | Cartografía INEGI contextual; estados, no límites electorales históricos homologados. |
+| **Análisis** | Participación y abstención observadas, comparación nacional ponderada, ranking estatal y tabla con fuentes. | Compara elecciones equivalentes; distingue observaciones y estimaciones. |
+| **Tendencias** | Comparación histórica de entidades y observaciones trazables. | Separa intermedias y presidenciales. |
+| **Predicciones** | Pronóstico registrado, rango, contexto, auditoría temporal y asistente con año seleccionable hasta 2029. | Escenarios futuros experimentales, no resultados oficiales. |
+| **Laboratorio ML** | Compara seis estimadores, métricas y escenarios del modelo. | Artefactos entrenados previamente; no reentrena los seis modelos en cada consulta. |
+| **Escenarios** | Explora cambios supuestos de participación, comparación multiestado y guardado privado. | Simulación aritmética; no demuestra efectos de una intervención. |
+| **Reportes** | Vista previa y exportación estatal/nacional PDF y Excel, hallazgos, histórico y procedencia. | PowerPoint y envíos programados pendientes; no crea un pronóstico nacional ponderado inexistente. |
+| **Datos** | Filtros, búsqueda, tablas, diccionario, procedencia y exportaciones CSV/JSON. | La homologación municipal, distrital y seccional sigue pendiente. |
 
-Mapa, Análisis, Predicciones y Escenarios comparten estado seleccionado; Análisis y el histórico del
-mapa también comparten año. El laboratorio usa la selección territorial del dashboard.
-La corrección móvil incorpora un selector con las ocho secciones, porque la barra de escritorio
-se oculta en pantallas estrechas.
-Los avisos de notificaciones y varios elementos visuales siguen siendo referencias del diseño.
+El menú superior resalta en rosa el texto y el icono del apartado activo. Mapa, Análisis,
+Predicciones y Escenarios comparten la selección territorial; el histórico identifica el año observado.
 
-![Dashboard corregido y verificado en local](docs/screenshots/audit-dashboard-20261026.png)
+## Recorrido del usuario
 
-[Vista móvil con selector de secciones](docs/screenshots/audit-mobile-20261026.png).
-Estas capturas corresponden a la versión local corregida, no a un nuevo despliegue.
+```mermaid
+flowchart LR
+    A[Iniciar sesión] --> B[Elegir entidad y apartado]
+    B --> C[Consultar histórico observado]
+    C --> D[Comparar elecciones del mismo tipo]
+    D --> E[Elegir horizonte hasta 2029]
+    E --> F[Calcular estimación y rango]
+    F --> G[Consultar explicación y límites]
+    G --> H[Explorar escenarios]
+    H --> I[Exportar reporte con fuentes]
+```
 
-### Actualización de Análisis con datos oficiales
+## Datos y fórmulas
 
-La nueva implementación elimina `municipalDemo`, las tasas nacionales fijas y los cambios de
-participación inventados de Análisis. Usa `/api/backend/statistics/territories`,
-`participation/history` y `statistics/summary`; funciona tanto con FastAPI como con la instantánea
-oficial de la demo. No se descarga ni entrena un conjunto nuevo por solicitud.
+El histórico versionado cubre **seis elecciones de 2009 a 2024**, con 32 entidades.
+Las intermedias son 2009/2015/2021; las presidenciales, 2012/2018/2024.
 
-- **Histórico observado:** participación `SV/(SV+NV)`, abstención `NV/(SV+NV)` y NS separado.
-  Cambios y gráficas comparan exclusivamente elecciones del mismo tipo: presidenciales
-  2012/2018/2024 o intermedias 2009/2015/2021. El nacional suma conteos, no promedia porcentajes estatales.
-- **Estimación 2027:** usa exactamente las tasas, banda, categoría y corrida que Mapa y Predicciones;
-  se identifica como experimental. No inventa un pronóstico nacional ponderado.
-- Seleccionar una entidad en Análisis actualiza la selección del mapa y Predicciones. La búsqueda,
-  comparación y exportación son estatales; el CSV incluye conteos/fuente para observaciones o
-  corrida/modelo/banda para estimaciones. La lectura automática se distingue de una respuesta de IA.
-- Las tasas observadas de 2024 no deben igualarse al pronóstico de 2027: para Morelos son
-  38.6% de abstención observada frente a 48.1% estimada. Coinciden al comparar el mismo modo,
-  estado y año entre secciones. Ante errores o datos ausentes no se sustituyen cifras ilustrativas.
-
-El alcance de verificación de esta actualización es local: API Docker e instantánea del repositorio.
-Las pruebas reales de producción de la siguiente sección describen el despliegue anterior a este cambio.
-
-Consistencia comprobada al seleccionar la misma entidad y modo en Análisis, Mapa y Predicciones:
-
-| Entidad | Participación observada 2024 | Abstención observada 2024 | Abstención estimada 2027 |
-| --- | --- | --- | --- |
-| Morelos | 61.4% | 38.6% | 48.1% |
-| Baja California | 47.0% | 53.0% | 62.4% |
-| Guerrero | 56.7% | 43.3% | 43.7% |
-
-Se contrastaron los conteos de las 32 entidades, el nacional ponderado, periodos comparables,
-exportación de CSV y errores sin sustitución por datos ficticios.
-[Análisis oficial en escritorio](docs/screenshots/analysis-official-desktop.png) ·
-[Versión móvil](docs/screenshots/analysis-official-mobile.png).
-
-## Pruebas reales en producción
-
-Verificadas el **26 de octubre de 2026** sobre la demo:
-
-- Login con Supabase Auth y carga de 32 entidades; logout y denegación de acceso privado sin sesión.
-- Mapa: selección de Baja California, detalle histórico, factores y recomendaciones.
-- Tendencias: series intermedias 2009/2015/2021 y presidenciales 2012/2018/2024.
-- Análisis: filtro por Acapulco y respuesta real de Groq sobre Guerrero.
-- Laboratorio: seis estimadores y escenario XGBoost de Baja California, 53.6% → 50.6% al sumar 3 pp de participación.
-- Predicciones: datos de Baja California; prueba previa de Groq en Morelos identificada como `IA · qwen/qwen3.8-27b`.
-- Escenarios: Baja California −3 pp, abstención 62.4% → 65.4%; cambiar el supuesto invalida el resultado.
-- Datos: búsqueda «baja», dos filas estatales, descarga CSV y muestra municipal identificada como ilustrativa.
-- Reportes: vista previa y reproducción de los errores de alcance nacional y paginación, corregidos en código local.
-- Metodología: fórmulas, fuentes, límites del semáforo y cartografía visibles.
-
-Esto no sustituye pruebas de carga, auditoría de accesibilidad completa ni validación con usuarios.
-El detalle de cobertura y regresiones está en [la auditoría](docs/published-app-audit.md).
-
-## Acceso con Supabase Auth
-
-Proyecto `ine-abstention` (`npzgdyyzdcsdadtfxhmr`). Se crearon dos usuarios QA mediante Auth Admin,
-con confirmación individual, sin desactivar la confirmación global ni habilitar acceso anónimo:
-
-| Usuario de prueba | Estado probado |
+| Sigla o medida | Significado / cálculo |
 | --- | --- |
-| `pulso.qa.20261025.1@example.com` | Confirmado; login y logout reales, incluida la demo publicada. |
-| `pulso.qa.20261025.2@example.com` | Confirmado; login y logout reales en la prueba local previa. |
+| SV | Registros con marca de voto. |
+| NV | Registros sin marca de voto. |
+| NS | Participación no especificada por falta de información/disponibilidad. |
+| LN | Lista nominal; identidad validada: SV + NV + NS. |
+| Participación observada | SV / (SV + NV). |
+| Abstención observada | NV / (SV + NV). |
+| Sin especificar | NS / LN, informado por separado. |
+| Nacional ponderado | Suma de conteos nacionales antes de dividir; no promedio simple de porcentajes estatales. |
+| Puntos porcentuales (pp) | Diferencia entre tasas expresadas como porcentajes. |
 
-Las credenciales públicas para evaluadores están en [Acceso de prueba para el hackathon](#acceso-de-prueba-para-el-hackathon).
-Estos buzones ficticios no reciben mensajes; si se cambia la contraseña en Supabase, actualizar también
-la tabla de acceso de este README.
+La ingesta documentada validó 54,872,712 filas originales y cargó 14,971 registros
+territoriales y 139,653 desgloses. Son cifras del backend completo, no del tamaño de la
+instantánea web. Consulte [inventario y calidad](docs/phase2.md).
 
-Site URL: `https://pulso-electoral-demo.vercel.app`. Callbacks autorizados:
+## Machine learning y predicción
 
-- `https://pulso-electoral-demo.vercel.app/auth/callback`
-- `https://pulso-electoral-demo.vercel.app/auth/callback?next=/reset-password`
+### Dos capas con responsabilidades distintas
 
-Registro y recuperación tienen interfaz, pero **el ciclo completo por correo sigue pendiente**.
-El proveedor rechazó las direcciones ficticias con HTTP 400; crear usuarios con Auth Admin no prueba
-registro público ni recepción de correo. SMTP personalizado sigue deshabilitado.
-Se necesitan buzones reales controlados y un servicio de correo adecuado.
-[Configuración y resultados completos de Auth](frontend/AUTH.md).
+**El motor estadístico calcula; el asistente conversacional explica.** Groq, Gemini u Ollama
+reciben contexto del servidor. Cambiar el modelo de conversación no reentrena los modelos
+electorales ni acredita que todas sus respuestas sean correctas.
 
-## Arquitectura y modos de ejecución
-
-```text
-Demo publicada
-Navegador → Supabase Auth
-          → Next.js en Vercel → instantánea del repositorio
-                              → Groq desde el servidor
-                              → Supabase: escenarios privados con RLS
-
-Backend conectado
-INE CCPC → validación e ingesta → PostgreSQL/PostGIS
-                                     ↕
-                         FastAPI /api/v1 + modelos materializados
-                                     ↕
-                     Next.js /api/backend → dashboard React
+```mermaid
+flowchart TD
+    A[Conteos oficiales y fuentes] --> B[Validación de calidad y periodos]
+    B --> C[Observaciones comparables por entidad]
+    C --> D[Entrenamiento y evaluación temporal]
+    D --> E[Modelo y métricas versionados]
+    C --> F[Proyección del horizonte seleccionado]
+    E --> F
+    F --> G[Estimación, rango, método y año]
+    G --> H[Dashboard y exportaciones]
+    G --> I[Contexto para el asistente IA]
+    I --> J[Explicación o lectura automática de respaldo]
 ```
 
-El navegador nunca recibe la clave de Groq, credenciales PostgreSQL ni claves administrativas de
-Supabase. La URL y clave publicable de Supabase sí son configuración pública del cliente.
-El login protege las APIs Next.js; una futura API FastAPI pública requiere su propia protección.
+### Modelos del experimento documentado
 
-### Variables de la demo
+| Modelo | Función | MAE de prueba 2024 (pp) |
+| --- | --- | ---: |
+| baseline_last | Repite la última tasa comparable. | 3.492 |
+| baseline_mean | Media de tasas comparables previas. | 3.325 |
+| Ridge | Regresión regularizada. | 4.681 |
+| Random Forest | Conjunto de árboles. | 3.014 |
+| XGBoost | Árboles con boosting. | 2.947 |
+| LightGBM | Boosting de árboles. | 2.881 |
 
-En Vercel, Production y Preview:
+Estos resultados pertenecen al [experimento de fase 4](docs/phase4_results.md), no son una
+medición nueva ni una garantía para 2025–2029. Se eligió **baseline_last** con desarrollo
+2018/2021 y se reservó 2024 para prueba final. No se cambia retrospectivamente el ganador
+porque otro algoritmo haya obtenido menor error en la prueba. El laboratorio web tiene su
+propio artefacto y sus métricas no deben confundirse con ese experimento.
 
-```env
-PULSO_PREVIEW=1
-AI_PROVIDER=groq
-GROQ_MODEL=qwen/qwen3.8-27b
-NEXT_PUBLIC_SUPABASE_URL=https://TU_PROYECTO.supabase.co
-NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=TU_CLAVE_PUBLICABLE
-GROQ_API_KEY=TU_CLAVE_PRIVADA
+### Horizonte seleccionable: máximo 2029
+
+1. Se seleccionan entidad, año posterior al último observado y tipo de elección.
+2. Se validan los conteos y se rechazan duplicados o datos inválidos.
+3. Se compara una regresión temporal con la última tasa conocida, pronosticando cortes
+   históricos únicamente a partir de observaciones anteriores.
+4. Se usa la tendencia cuando mejora el error en los cortes comparables; en otro caso se
+   conserva la referencia constante. Tasas iguales para varios años pueden ser un resultado válido.
+5. El pronóstico registrado se reutiliza cuando corresponde al horizonte, tipo, corte y
+   conteos de referencia, y no se eligió la tendencia.
+6. Se muestra participación complementaria, abstención, rango, fuente y método.
+   Interfaz y servidor rechazan años posteriores a **2029**.
+
+Con el histórico actual hay solo tres elecciones por tipo. La selección de tendencia tiene
+muy pocos cortes; no constituye una evaluación independiente de su precisión futura.
+Elegir 2025, 2026, 2028 o 2029 representa un escenario condicionado al tipo elegido,
+no confirma la existencia de una elección comparable en ese año.
+
+### Qué representa la banda
+
+| Resultado | Procedencia del rango | Cómo interpretarlo |
+| --- | --- | --- |
+| Pronóstico registrado compatible | Banda almacenada en la corrida. | Banda empírica con soporte limitado. |
+| Proyección calculada | Máximo de errores históricos de referencia y tendencia, aplicado alrededor de la estimación y limitado a 0–100%. | Rango descriptivo de sensibilidad, no intervalo de confianza con cobertura garantizada. |
+| Histórico insuficiente | No se inventa un rango. | Se informa la limitación de datos. |
+
+No se usan predicciones anteriores como si fueran observaciones reales para alimentar el
+entrenamiento. Nuevos datos oficiales requieren validación e incorporación a la fuente o
+instantánea antes de recalcular. La recarga de pantalla no descarga nuevas elecciones del INE.
+
+### Asistente y cuotas
+
+El servidor consulta los datos y construye el contexto; no acepta estadísticas arbitrarias del
+navegador. La respuesta automática de respaldo conserva el horizonte seleccionado. Las propuestas
+son mejoras generales de datos, evaluación o accesibilidad: no se atribuyen causas ni se prometen
+efectos sobre los votos.
+
+La integración reciente incorpora límites de **30 consultas por cuenta/día**, **5 por minuto**
+y **500 diarias globales**, con reinicio a medianoche de Ciudad de México. Si el proveedor falla,
+se libera el consumo diario de la cuenta según la política implementada. No se almacena el texto
+del chat en el registro de cuotas. Las cuentas demo compartidas también comparten su cuota.
+La activación exige ejecutar [la migración](docs/sql/ai_quota.sql) y configurar los secretos;
+el código integrado no confirma que esas tareas remotas estén hechas.
+
+## Diseño e identidad visual
+
+| Elemento | Color / criterio | Significado |
+| --- | --- | --- |
+| Magenta principal | `#E5007E` | Énfasis, títulos divididos, selección del menú y series destacadas. |
+| Rosa pastel | `#FCE7F2` | Fondos de iconos, controles activos y superficies suaves. |
+| Rosa muy claro | `#FFF5FA` | Tarjetas auxiliares e indicadores de contexto. |
+| Texto principal | `#0D172F` | Títulos, cifras y contenido de mayor jerarquía. |
+| Texto secundario | `#596D8D` | Etiquetas, fuentes y explicaciones. |
+| Superficies | Blanco con bordes claros | Agrupación de datos y separación visual. |
+
+Tipografía Nunito, iconos Lucide, gráficas ECharts y mapas MapLibre. Los títulos combinan
+texto oscuro con una parte magenta. Las tarjetas principales incorporan miniaturas basadas
+en datos; los paneles de comparativa y pronóstico ajustan su altura al contenido. Los indicadores
+territoriales usan barras más grandes y las tablas históricas reciben encabezados pastel.
+El color decorativo rosa no sustituye la categoría textual de riesgo.
+
+El logo institucional suministrado está centralizado en
+[`frontend/public/brand/ine-institucional.png`](frontend/public/brand/ine-institucional.png)
+y se utiliza en acceso, encabezado y vista de reportes. Su presencia no implica aval del INE.
+El nombre del producto es **Atlas De La Participación**; se mantienen dominio e identificadores
+internos anteriores por compatibilidad.
+
+### Imágenes del dashboard
+
+Las siguientes capturas ya existían en el repositorio: muestran versiones anteriores y no son
+una certificación visual del despliegue integrado del 30 de octubre.
+
+![Mapa y detalle territorial](docs/screenshots/audit-dashboard-20261026.png)
+
+![Análisis de datos oficiales](docs/screenshots/analysis-official-desktop.png)
+
+| Predicciones | Reportes |
+| --- | --- |
+| ![Predicciones](docs/screenshots/sections/predictions.png) | ![Reportes](docs/screenshots/sections/reports.png) |
+
+[Galería completa](docs/dashboard-gallery.md).
+
+## Arquitectura
+
+```mermaid
+flowchart LR
+    U[Navegador] --> N[Next.js en Vercel o local]
+    N --> A[Supabase Auth]
+    N --> Q[Supabase: escenarios y cuotas]
+    N --> S[Instantánea del repositorio en modo demo]
+    N --> F[FastAPI en modo backend conectado]
+    F --> P[PostgreSQL y PostGIS]
+    N --> L[Groq, Gemini u Ollama]
 ```
 
-En Production: `NEXT_PUBLIC_APP_URL=https://pulso-electoral-demo.vercel.app`.
-Guardar `GROQ_API_KEY` como secreto de servidor, nunca con prefijo `NEXT_PUBLIC_` ni en Git.
-En Preview, configurar el origen y callbacks exactos si se probarán flujos de email.
-Después de cambiar variables, reconstruir el despliegue.
-Proyecto Vercel `pulso-electoral-demo`, raíz `frontend`, build `npm run build`, con acceso a
-archivos fuera de la raíz para importar `data/samples/ml_laboratory.json`.
-[Guía de Groq y despliegue](frontend/GROQ.md).
+| Capa | Tecnología / responsabilidad |
+| --- | --- |
+| Interfaz | Next.js 16.4.3, React, TypeScript, TanStack Query. |
+| Visualización | ECharts, MapLibre GL, SVG e iconos Lucide. |
+| Exportación | pdf-lib, html-to-image y ExcelJS; CSV/JSON según apartado. |
+| Backend | FastAPI, validación, estadísticas, modelos y simulaciones. |
+| Datos | PostgreSQL/PostGIS; Supabase para autenticación y persistencia web. |
+| IA | Proveedores invocados desde servidor; claves privadas fuera del cliente. |
+| Calidad | GitHub Actions, pruebas unitarias/integración, compilación y Playwright. |
 
-## Datos, modelos y límites metodológicos
+La demo documentada usa `PULSO_PREVIEW=1`: sirve datos versionados, con Supabase para
+Auth y escenarios. El despliegue remoto de FastAPI y su base sigue siendo una tarea de
+operación; disponer del código Docker no significa que ese servicio esté publicado.
 
-- CCPC 2009, 2012, 2015, 2018, 2021 y 2024; inventario y checksum SHA-256.
-- En la ingesta completa se validaron 54,872,712 filas originales y se cargaron 14,971 registros
-  territoriales y 139,653 desgloses demográficos. Son cifras del backend, no del tamaño de la instantánea web.
-- Participación: `SV/(SV+NV)`; abstención: `NV/(SV+NV)`. `NS` se conserva por separado.
-  El nacional suma conteos; la media estatal da el mismo peso a cada entidad.
-- Referencia elegida: `baseline_last`, repetición de la intermedia 2021. MAE de prueba 2024: **3.49 pp**.
-- Desarrollo temporal: 2018/2021; prueba reservada: 2024. No se elige retrospectivamente el modelo con esa prueba.
-- Laboratorio web: 192 observaciones estatales y 128 ejemplos supervisados; Ridge, Random Forest,
-  XGBoost y LightGBM, además de las dos referencias. Usa agregados sin desgloses demográficos;
-  sus métricas no sustituyen las del experimento original con variables adicionales.
-- Bandas empíricas calibradas con un bloque intermedio: soporte limitado, sin cobertura futura garantizada.
-  El semáforo es relativo y no es un estándar oficial del INE.
-- Escenarios aritméticos, sin interpretación causal, recomendación de campañas ni predicción de sus efectos.
+## Incorporaciones recientes
 
-Para regenerar el laboratorio:
+Integradas mediante el PR #52, junto con las ramas de correo y cuotas:
 
-```powershell
-uv sync --group ml --group dev --locked
-uv run python scripts/train_web_ml.py
-```
+| Incorporación | Cambio visible o funcional |
+| --- | --- |
+| Identidad Atlas | Nombre en interfaz, metadatos, asistente y exportaciones. |
+| Reportes PDF | Portada capturada desde la vista previa; páginas de detalle con encabezados, bloques y gráficas ampliadas. |
+| Proyecciones hasta 2029 | Restricción en cliente y API, selección de referencia/tendencia y rango histórico. |
+| Controles de predicción | Selector consistente con el dashboard; rango visible en la tarjeta. |
+| Distribución visual | Menos estiramiento vertical, contexto territorial legible y leyendas separadas. |
+| Navegación | Texto e icono del apartado activo en rosa. |
+| Título de Análisis | Parte inicial oscura y «electoral» en magenta. |
+| Logo | Sustitución del recurso institucional y proporciones corregidas. |
+| Cuotas de IA | Reserva y cierre de consumo, límites y mensajes de disponibilidad. |
+| Correo de cuentas | Código de registro/recuperación mejorado; SMTP, dominio y pruebas reales pendientes de configuración. |
+| Documentación | Guías, galería y conservación de cuentas demo. |
 
-El informe se guarda en `data/samples/ml_laboratory.json`; pesos locales en `artifacts/models/`,
-ignorados por Git. La API sirve el informe sin entrenar por petición.
+## Validación y pendientes
+
+| Evidencia | Qué comprueba | Qué no demuestra |
+| --- | --- | --- |
+| 320 combinaciones de proyección | 32 estados × 2 tipos × 5 años, valores y rangos acotados. | Exactitud futura. |
+| Prueba de tendencia sintética | Ajuste y extrapolación de una serie lineal conocida. | Generalización a elecciones reales. |
+| Playwright del asistente | Login, cambio de horizonte, rango, limpieza de chat y rechazo de 2030. | Calidad de una respuesta real de Groq. |
+| CI de ramas anteriores | Backend, frontend, compilación y pruebas automatizadas aprobadas en sus revisiones. | Ausencia absoluta de errores o validación visual del conjunto integrado. |
+
+Pendientes: revisión visual completa de escritorio/móvil y PDF integrado; contraste de respuestas
+reales de IA con los cálculos; más evidencia temporal independiente; configuración remota de cuotas
+y SMTP; backend remoto; homologación territorial; actualización de fuentes y ensayo multiusuario.
+Las guías históricas enlazadas conservan resultados y estados de su fecha, que pueden preceder
+la integración actual. Consulte [correo](docs/punto1-cuentas-correo.md),
+[cuotas y operación](docs/avance-puntos-1-5.md) y [CI](docs/ci.md).
 
 ## Ejecutar en local
 
