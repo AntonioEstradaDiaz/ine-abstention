@@ -170,8 +170,11 @@ La integración reciente incorpora límites de **30 consultas por cuenta/día**,
 y **500 diarias globales**, con reinicio a medianoche de Ciudad de México. Si el proveedor falla,
 se libera el consumo diario de la cuenta según la política implementada. No se almacena el texto
 del chat en el registro de cuotas. Las cuentas demo compartidas también comparten su cuota.
-La activación exige ejecutar [la migración](docs/sql/ai_quota.sql) y configurar los secretos;
-el código integrado no confirma que esas tareas remotas estén hechas.
+La configuración de producción se verificó el **30 de octubre de 2026**: migración aplicada en
+Supabase, hash del secreto guardado en el esquema privado y variable sensible de servidor en Vercel.
+Una consulta real respondió HTTP 200 y redujo la cuota de la cuenta de 30 a 29; otra cuenta conservó
+30. Las pruebas SQL de límites y aislamiento se revirtieron sin dejar datos de prueba.
+Para otros entornos, ejecutar [la migración](docs/sql/ai_quota.sql) y configurar su secreto.
 
 ## Diseño e identidad visual
 
@@ -286,8 +289,8 @@ Integradas mediante el PR #52, junto con las ramas de correo y cuotas:
 | CI de ramas anteriores | Backend, frontend, compilación y pruebas automatizadas aprobadas en sus revisiones. | Ausencia absoluta de errores o validación visual del conjunto integrado. |
 
 Pendientes: revisión visual completa de escritorio/móvil y PDF integrado; contraste de respuestas
-reales de IA con los cálculos; más evidencia temporal independiente; configuración remota de cuotas
-y SMTP; backend remoto; homologación territorial; actualización de fuentes y ensayo multiusuario.
+reales de IA con los cálculos; más evidencia temporal independiente; configuración de
+SMTP; backend remoto; homologación territorial; actualización de fuentes y ensayo multiusuario.
 Las guías históricas enlazadas conservan resultados y estados de su fecha, que pueden preceder
 la integración actual. Consulte [correo](docs/punto1-cuentas-correo.md),
 [cuotas y operación](docs/avance-puntos-1-5.md) y [CI](docs/ci.md).
@@ -381,7 +384,7 @@ su operación real. No se marcan como pendientes de desarrollo funciones que ya 
 | **2** | **Backend y base de datos en producción** | FastAPI, PostgreSQL/PostGIS, Docker y controles de acceso interno. | Desplegar FastAPI y su base, conectar el dashboard sin `PULSO_PREVIEW=1` y verificar protección del acceso directo. Cierre: recorrido remoto completo con datos de la API y rechazo del acceso no autorizado. |
 | **3** | **Datos territoriales completos** | Estadísticas estatales y nacionales disponibles. | Homologar municipios, distritos y secciones entre elecciones e incorporar estadísticas y cartografía. Mantener deshabilitados niveles sin datos comparables. Cierre: correspondencias documentadas y conteos conservados. |
 | **4** | **Actualización de datos** | Ingesta, comprobaciones y procedencia documentadas; demo basada en instantánea. | Definir nuevas publicaciones INE, automatizar validaciones y detección de errores, mostrar fecha y versión de datos. Cierre: actualización reproducible, trazable y con rechazo de entradas inválidas. |
-| **5** | **IA preparada para varios usuarios** | Cuotas por cuenta/globales, manejo de errores y tiempos de espera integrados. | Configurar migración y secretos remotos, comprobar consumo y costos, evaluar respuestas contra estado, periodo y fuentes. Cierre: ensayo con varias cuentas, límites y respuestas cotejadas. |
+| **5** | **IA preparada para varios usuarios** | Cuotas por cuenta/globales, manejo de errores y tiempos de espera integrados. | Migración y secreto de producción configurados y consulta real verificada el 30/10/2026. Ampliar comprobaciones de consumo y costos y evaluar respuestas contra estado, periodo y fuentes. Cierre: ensayo con varias cuentas, límites y respuestas cotejadas. |
 | **6** | **Validación de los pronósticos** | Evaluación temporal, sensibilidad NS, diagnóstico y proyecciones hasta 2029. | Ampliar evaluación temporal y externa, estudiar registros sin especificar y mejorar calibración de incertidumbre. Cierre: evidencia independiente documentada; por ahora el modelo sigue siendo experimental. |
 | **7** | **Reportes y escenarios** | PDF/Excel estatales y nacionales, historial privado y comparación multiestado. | Reportes municipales tras homologación, PowerPoint y envíos programados; comprobar diseño del PDF y funcionamiento combinado. Cierre: exportaciones legibles y trazables, con alcance y supuestos claros. |
 | **8** | **Operación y seguridad** | Controles del backend, herramientas de monitoreo, respaldo y pruebas técnicas. | Configurar alertas y registros de errores, ensayar copias/restauración, carga, concurrencia y aislamiento entre cuentas; revisar dependencias y secretos. Cierre: evidencias de funcionamiento en el entorno real. |
@@ -389,7 +392,7 @@ su operación real. No se marcan como pendientes de desarrollo funciones que ya 
 
 ### Prioridad para el hackatón
 
-1. Activar y probar **límites de IA** para proteger el servicio compartido.
+1. Mantener y supervisar los **límites de IA**, ya activos en producción.
 2. Configurar **correos de acceso** y probar con buzones reales.
 3. Completar la **prueba del despliegue** y su conexión al backend.
 4. Ejecutar un **ensayo con varias cuentas**, desde el acceso hasta la exportación.
