@@ -20,6 +20,7 @@ import "./auth.css";
 import "./punto7.css";
 import "./punto6.css";
 import "./accessibility.css";
+import "./spacing-navigation.css";
 
 export const metadata: Metadata = {
   title: "Pulso electoral · Participación territorial",
