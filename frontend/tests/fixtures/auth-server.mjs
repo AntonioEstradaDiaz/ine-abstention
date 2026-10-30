@@ -7,6 +7,27 @@ const secret = randomBytes(32);
 const sessions = new Map();
 // Test-only PostgREST stand-in. Production uses the real table and RLS policies.
 const scenarios = [];
+// Test-only stand-in for the AI quota RPCs (docs/sql/ai_quota.sql). Daily limit only;
+// per-minute and global limits are verified against the SQL itself.
+const aiUsage = [];
+const aiDailyLimit = 30;
+// Next 00:00 in Mexico City (UTC-6, no daylight saving time since 2022).
+const aiResetsAt = () => {
+  const local = new Date(Date.now() - 6 * 3600e3);
+  local.setUTCHours(24, 0, 0, 0);
+  return new Date(local.getTime() + 6 * 3600e3).toISOString();
+};
+const aiStatus = (userId) => {
+  const used = aiUsage.filter(
+    (u) => u.user_id === userId && u.status !== "failed",
+  ).length;
+  return {
+    limit: aiDailyLimit,
+    remaining: Math.max(0, aiDailyLimit - used),
+    resets_at: aiResetsAt(),
+    global_exhausted: false,
+  };
+};
 const user = {
   id: "00000000-0000-4000-8000-000000000001",
   aud: "authenticated",
@@ -70,6 +91,31 @@ const server = createServer(async (req, res) => {
     return send(401, { msg: "Invalid fixture key" });
   const token = req.headers.authorization?.replace(/^Bearer /, "");
   const active = sessions.get(token);
+  if (url.pathname.startsWith("/rest/v1/rpc/pulso_ai_") && req.method === "POST") {
+    if (!active) return send(401, { message: "Invalid test session" });
+    let raw = "";
+    for await (const chunk of req) raw += chunk;
+    const args = raw ? JSON.parse(raw) : {};
+    const fn = url.pathname.slice("/rest/v1/rpc/".length);
+    if (fn === "pulso_ai_quota_status") return send(200, aiStatus(active.user.id));
+    if (typeof args.p_secret !== "string" || args.p_secret.length < 32)
+      return send(401, { code: "28000", message: "pulso_ai: secreto inválido" });
+    if (fn === "pulso_ai_reserve") {
+      const status = aiStatus(active.user.id);
+      if (status.remaining === 0)
+        return send(200, { ok: false, code: "daily_limit", ...status });
+      const id = randomUUID();
+      aiUsage.push({ id, user_id: active.user.id, status: "reserved" });
+      return send(200, { ok: true, reservation_id: id, ...status, remaining: status.remaining - 1 });
+    }
+    if (fn === "pulso_ai_finish") {
+      const row = aiUsage.find(
+        (u) => u.id === args.p_reservation && u.user_id === active.user.id && u.status === "reserved",
+      );
+      if (row) row.status = args.p_succeeded ? "succeeded" : "failed";
+      return send(200, { ...aiStatus(active.user.id), updated: !!row });
+    }
+  }
   if (url.pathname === "/rest/v1/pulso_scenarios") {
     if (!active) return send(401, { message: "Invalid test session" });
     if (req.method === "POST") {

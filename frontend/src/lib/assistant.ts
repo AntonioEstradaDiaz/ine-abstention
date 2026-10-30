@@ -1,4 +1,5 @@
 import type { AssistantProjection } from "./assistant-projection";
+import type { QuotaInfo } from "./ai-quota";
 import type { Forecast, Indicator, Prediction, Risk } from "./types";
 
 // Shared by the browser fallback and the Ollama route: one source of facts.
@@ -12,10 +13,13 @@ export interface AssistantStatus {
   reachable: boolean;
   models: string[];
   defaultModel: string | null;
+  /** Remaining AI queries for the signed-in account; null if it cannot be read. */
+  quota?: QuotaInfo | null;
 }
 export interface AssistantReply {
   answer: string;
   model: string;
+  quota?: QuotaInfo;
 }
 export interface AssistantContext {
   forecast: Forecast;

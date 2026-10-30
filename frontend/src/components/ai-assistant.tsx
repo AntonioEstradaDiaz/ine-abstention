@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Bot,
   Cpu,
@@ -20,6 +20,7 @@ import {
   type AssistantStatus,
 } from "@/lib/assistant";
 import { projectHorizon } from "@/lib/assistant-projection";
+import { quotaSummary } from "@/lib/ai-quota";
 import type { ElectionType } from "@/lib/types";
 import { DashboardSelect } from "./ui/dashboard-select";
 
@@ -102,6 +103,8 @@ export function AiAssistant({
     retry: false,
     staleTime: 30_000,
   });
+  const queryClient = useQueryClient();
+  const quota = status.data?.quota ?? null;
   const [chosenModel, setChosenModel] = useState<string | null>(null);
   const [draft, setDraft] = useState("");
   const [chat, setChat] = useState<ChatEntry[]>([]);
@@ -158,6 +161,15 @@ export function AiAssistant({
           .map(({ role, content }) => ({ role, content })),
       },
       {
+        // The counter follows the server: reuse the quota sent with the reply,
+        // or re-read it after an error (a provider failure does not charge it).
+        onSettled: (reply) => {
+          if (reply?.quota)
+            queryClient.setQueryData<AssistantStatus>(["assistant-status"], (old) =>
+              old ? { ...old, quota: reply.quota } : old,
+            );
+          else queryClient.invalidateQueries({ queryKey: ["assistant-status"] });
+        },
         onSuccess: (reply) => {
           if (activeCode.current !== code) return;
           setNotice(null);
@@ -322,6 +334,15 @@ export function AiAssistant({
           </li>
           <li>Horizonte {projection?.targetYear ?? "—"}</li>
         </ul>
+        {quota && (
+          <p
+            className="ai-quota"
+            data-empty={quota.remaining <= 0 || undefined}
+            aria-live="polite"
+          >
+            {quotaSummary(quota)}
+          </p>
+        )}
       </div>
       {!status.isPending && !online && (
         <p className="ai-offline-notice">

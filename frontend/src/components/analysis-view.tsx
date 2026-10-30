@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { useQueries, useQuery } from "@tanstack/react-query";
+import { useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
 import * as Dialog from "@radix-ui/react-dialog";
 import {
   ArrowUpRight,
@@ -29,6 +29,8 @@ import {
   participationChange,
 } from "@/lib/analysis";
 import { number, pct, pp, riskLabels } from "@/lib/utils";
+import { quotaSummary, type QuotaInfo } from "@/lib/ai-quota";
+import type { AssistantStatus } from "@/lib/assistant";
 import type {
   Election,
   Forecast,
@@ -219,8 +221,17 @@ export function AnalysisView({
     context: string;
     text: string;
     model?: string;
+    quota?: QuotaInfo;
   } | null>(null);
   const [asking, setAsking] = useState(false);
+  const queryClient = useQueryClient();
+  // Keep the Predictions counter in step: reuse the quota sent by the server, or re-read it.
+  const syncQuota = (quota?: QuotaInfo | null) =>
+    quota
+      ? queryClient.setQueryData<AssistantStatus>(["assistant-status"], (old) =>
+          old ? { ...old, quota } : old,
+        )
+      : queryClient.invalidateQueries({ queryKey: ["assistant-status"] });
   const answer = reply?.context === context ? reply : null;
   const reset = () => {
     setMode("observed");
@@ -792,6 +803,7 @@ export function AnalysisView({
                         if (asking || !question.trim()) return;
                         setAsking(true);
                         setReply(null);
+                        let quota: QuotaInfo | null | undefined;
                         try {
                           const response = await fetch("/api/assistant", {
                             method: "POST",
@@ -807,6 +819,7 @@ export function AnalysisView({
                             }),
                           });
                           const result = await response.json();
+                          quota = result.quota;
                           if (!response.ok)
                             throw new Error(
                               result.detail ?? "No se pudo consultar la IA.",
@@ -815,6 +828,7 @@ export function AnalysisView({
                             context,
                             text: result.answer,
                             model: result.model,
+                            quota: result.quota,
                           });
                         } catch (failure) {
                           setReply({
@@ -826,6 +840,7 @@ export function AnalysisView({
                           });
                         } finally {
                           setAsking(false);
+                          syncQuota(quota);
                         }
                       }}
                     >
@@ -851,6 +866,11 @@ export function AnalysisView({
                       <div role="status" aria-label="Respuesta del asistente de IA">
                         <p>{answer.text}</p>
                         {answer.model && <small>IA · {answer.model}</small>}
+                        {answer.quota && (
+                          <small className="ai-quota">
+                            {quotaSummary(answer.quota)}
+                          </small>
+                        )}
                       </div>
                     )}
                     <button className="analysis-ask" onClick={onLaboratory}>

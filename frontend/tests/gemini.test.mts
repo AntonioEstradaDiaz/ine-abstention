@@ -19,3 +19,16 @@ test("quota failure is actionable and never exposes upstream details", async () 
 test("empty or blocked response is not presented as an answer", async () => {
  await assert.rejects(generateGeminiReply(input, (async()=>Response.json({candidates:[]})) as typeof fetch), /no devolvió/);
 });
+test("caller's time budget replaces the fixed timeout", async () => {
+ const budget = new AbortController();
+ const ok = (async (_url, init) => { assert.equal(init!.signal, budget.signal); return Response.json({candidates:[{content:{parts:[{text:"Respuesta"}]}}]}); }) as typeof fetch;
+ assert.equal(await generateGeminiReply({ ...input, signal: budget.signal }, ok), "Respuesta");
+ budget.abort();
+ await assert.rejects(generateGeminiReply({ ...input, signal: budget.signal }, (async (_url, init) => { if (init!.signal!.aborted) throw new DOMException("Aborted", "AbortError"); return Response.json({}); }) as typeof fetch), /tardó demasiado/);
+});
+test("a non-JSON body is reported in Spanish, never as a raw parser error", async () => {
+ await assert.rejects(generateGeminiReply(input, (async () => new Response("<html>gateway</html>", { status: 200 })) as typeof fetch), (e: Error) => /^Gemini devolvió una respuesta inválida\.$/.test(e.message));
+});
+test("a JSON null body is reported in Spanish, never as a raw TypeError", async () => {
+ await assert.rejects(generateGeminiReply(input, (async () => Response.json(null)) as typeof fetch), /^Error: Gemini no devolvió una respuesta/);
+});
