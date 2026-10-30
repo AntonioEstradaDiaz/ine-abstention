@@ -2,7 +2,7 @@
 .grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; width: 100%; padding: 8px 0 18px; }
 .card { min-width: 0; container-type: inline-size; display: flex; flex-direction: column; padding: 26px; border: 1px solid #f8d5e8; border-radius: 28px; background: #fff; color: #35102a; box-shadow: 0 12px 30px #d0007010; }
 .header { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 46px; }
-.header p { margin: 0; font-size: 14px; font-weight: 700; line-height: 1.4; color: #733454; }
+.grid .card .header p { margin: 0; font-size: 16px; font-weight: 700; line-height: 1.4; color: #733454; }
 .icon { display: grid; place-items: center; flex: 0 0 44px; height: 44px; border-radius: 15px; color: #e5007e; background: #fce4f1; }
 .value { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 22px; min-height: 50px; }
 .value strong { font-size: clamp(30px, 12cqi, 48px); font-weight: 800; line-height: 1.15; letter-spacing: -1.4px; }
@@ -18,9 +18,9 @@
 .dots { display: grid; grid-template-columns: repeat(16, minmax(0, 1fr)); gap: 4px; }
 .dots i { aspect-ratio: 1; border-radius: 50%; background: #f9d9e9; }
 .dots i[data-active="true"] { background: #d00070; }
-.reference { margin: 18px 0 0; color: #874266; font-size: 14px; font-weight: 500; line-height: 1.5; }
+.grid .card .reference { margin: 18px 0 0; color: #874266; font-size: 16px; font-weight: 500; line-height: 1.5; }
 .featured { background: linear-gradient(125deg, #d00078, #ad0064); border-color: #d00078; box-shadow: 0 14px 32px #c4006b26; color: #fff; }
-.featured .header p, .featured .reference { color: #fff; }
+.grid .featured .header p, .grid .featured .reference { color: #fff; }
 .featured .icon { color: #fff; background: #ffffff30; }
 .featured .track { background: #ffffff40; }
 .featured .fill { background: #fff; }
