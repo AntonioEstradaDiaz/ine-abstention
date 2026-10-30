@@ -22,7 +22,7 @@ export function ElectoralKpis({ states = [], selected }: { states?: Prediction[]
             <span className={styles.icon} aria-hidden="true"><metric.icon size={24} strokeWidth={2} /></span>
           </header>
           <div className={`${styles.value} ${index === 3 ? styles.rangeValue : ""}`}>
-            {index === 2 ? <><strong>{states.length ? high : "—"}</strong>{states.length > 0 && <span>de {states.length}</span>}</>
+            {index === 2 ? <><strong>{states.length ? high : "—"}</strong>{states.length > 0 && <span> de {states.length}</span>}</>
               : index === 3 ? <strong>{state ? <>{pct(state.lower)} <em>–</em> {pct(state.upper)}</> : "—"}</strong>
               : <strong>{state ? pct(index === 0 ? 1 - state.predicted : state.predicted) : "—"}</strong>}
             {index === 1 && <span className={styles.badge}><i />{state ? `Riesgo ${riskLabels[state.risk_level].toLowerCase()}` : "Sin estimación"}</span>}
