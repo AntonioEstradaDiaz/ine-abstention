@@ -101,7 +101,7 @@ export function TerritoryMetrics({
       icon: ChartNoAxesCombined,
     },
     {
-      label: `Sin especificar · ${year}`,
+      label: `Participación no especificada · ${year}`,
       value: actual?.unspecified_rate,
       display: pct(actual?.unspecified_rate),
       icon: Users,
@@ -384,6 +384,7 @@ export function TerritoryMetrics({
                 <span>Datos históricos</span>
               </div>
               {contextRows}
+              <p className="territory-unspecified-help">Participación no especificada (NS): registros donde no se indica si la persona votó. No se cuentan como abstención y se excluyen del cálculo NV / (SV + NV).</p>
               <div className="territory-inline-note">
                 <ShieldCheck size={15} />
                 <p>
