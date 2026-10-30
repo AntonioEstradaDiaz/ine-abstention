@@ -480,6 +480,29 @@
   background: #fcdded;
   color: #b9005e;
 }
+/* /confirmar: second step of email links, a single-column card. */
+.auth-card-single {
+  grid-template-columns: minmax(0, 1fr);
+  width: min(560px, 100%);
+  min-height: auto;
+}
+/* "Reenviar confirmación": secondary action under the notice. */
+.auth-resend {
+  justify-self: start;
+  padding: 4px 0;
+  border: 0;
+  background: none;
+  color: #b9005e;
+  font: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.auth-resend[aria-disabled="true"] {
+  color: #7a6b73;
+  text-decoration: none;
+  cursor: default;
+}
 .auth-page :is(a, button, input):focus-visible,
 .auth-logout:focus-visible {
   outline: 2px solid #b9005e;

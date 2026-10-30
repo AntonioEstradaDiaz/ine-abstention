@@ -1,0 +1,24 @@
+<!--
+  Atlas · Equipo Pumpkin — Plantilla "Reset password" de Supabase Auth.
+  Asunto: Restablece tu contraseña de Atlas
+  Pegar en Authentication → Email Templates → Reset password (ver docs/punto1-cuentas-correo.md).
+  El enlace usa token_hash y pasa por la página /confirmar antes de verificarse.
+-->
+<div style="font-family: Arial, Helvetica, sans-serif; max-width: 560px; margin: 0 auto; color: #1f1a1d; line-height: 1.5">
+  <h1 style="font-size: 22px; margin: 0 0 16px">Restablece tu contraseña de Atlas</h1>
+  <p>Hola:</p>
+  <p>Recibimos una solicitud para restablecer la contraseña de tu cuenta de Atlas. Para elegir una nueva:</p>
+  <p style="margin: 24px 0">
+    <a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=recovery"
+       style="background: #b9005e; color: #ffffff; padding: 12px 20px; border-radius: 8px; text-decoration: none; font-weight: bold">
+      Elegir una contraseña nueva
+    </a>
+  </p>
+  <p>Si el botón no funciona, copia y pega este enlace en tu navegador:<br />
+    <span style="word-break: break-all">{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&amp;type=recovery</span>
+  </p>
+  <p>El enlace vence en 1 hora y solo se puede usar una vez. Si venció, pide uno nuevo desde "¿Olvidaste tu contraseña?".</p>
+  <p>Si no lo solicitaste, ignora este correo: tu contraseña actual sigue funcionando.</p>
+  <hr style="border: 0; border-top: 1px solid #f0d5e3; margin: 24px 0" />
+  <p style="font-size: 12px; color: #6b5a63">Atlas es un prototipo independiente con datos abiertos; no es una plataforma oficial del INE.</p>
+</div>
