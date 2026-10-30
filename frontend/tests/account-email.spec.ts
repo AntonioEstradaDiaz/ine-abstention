@@ -22,7 +22,24 @@ test("an unconfirmed account can ask for a new confirmation link, then must wait
   const waiting = page.locator(".auth-resend");
   await expect(waiting).toHaveText(/Reenviar en \d+ s/);
   await expect(waiting).toHaveAttribute("aria-disabled", "true");
+  // A click while waiting must not send again: the fixture would answer 429 and the notice would
+  // switch to "Espera un momento…".
+  await waiting.click({ force: true });
+  await page.waitForTimeout(500);
+  await expect(notice(page)).toContainText("Si la cuenta existe y falta confirmarla");
   await expect(page).toHaveURL(/\/login$/);
+});
+
+test("the resend button only stays for its three cases", async ({ page }) => {
+  await page.goto("/login?error=confirmation");
+  await expect(page.getByRole("button", { name: "Reenviar confirmación" })).toBeVisible();
+  await page
+    .getByRole("textbox", { name: "Correo electrónico" })
+    .fill("browser-test@example.invalid");
+  await page.locator('input[name="password"]').fill("wrong-password");
+  await page.getByRole("button", { name: "Iniciar sesión", exact: true }).click();
+  await expect(notice(page)).toContainText("No pudimos iniciar sesión");
+  await expect(page.locator(".auth-resend")).toHaveCount(0);
 });
 
 test("registering offers to resend the confirmation without revealing anything", async ({ page }) => {

@@ -26,11 +26,14 @@ import {
   registerNotice,
   resendLabel,
   resendNotice,
+  resendStartsCooldown,
   resendWaitSeconds,
   type AuthErrorLike,
   type AuthNotice,
 } from "@/lib/auth-flow";
 type Mode = "login" | "register" | "recover" | "reset";
+const NOT_CONFIGURED =
+  "El acceso aún no está configurado. Contacta al administrador del dashboard.";
 export function AuthScreen({
   mode,
   initialNotice = "",
@@ -73,26 +76,30 @@ export function AuthScreen({
   };
   async function resend() {
     if (resending || resendWait > 0) return;
+    if (!configured) return show({ text: NOT_CONFIGURED, error: true });
+    // What is typed now wins: the person may have corrected the address.
     const typed = form.current?.elements.namedItem("email");
     const email =
-      resendEmail ||
-      (typed instanceof HTMLInputElement ? typed.value.trim() : "");
+      (typed instanceof HTMLInputElement ? typed.value.trim() : "") || resendEmail;
     if (!email) return show(RESEND_NEEDS_EMAIL);
     setResending(true);
+    let error: AuthErrorLike;
     try {
-      const { error } = await authBrowser()
-        .auth.resend({
-          type: "signup",
-          email,
-          options: { emailRedirectTo: emailRedirect(window.location.origin, "confirmation") },
-        })
-        .catch((thrown: AuthErrorLike) => ({ error: thrown }));
-      show(resendNotice(error));
+      ({ error } = await authBrowser().auth.resend({
+        type: "signup",
+        email,
+        options: { emailRedirectTo: emailRedirect(window.location.origin, "confirmation") },
+      }));
+    } catch (thrown) {
+      error = thrown as AuthErrorLike;
+    } finally {
+      setResending(false);
+    }
+    show(resendNotice(error));
+    if (resendStartsCooldown(error)) {
       const started = Date.now();
       setNow(started);
       setResendAt(started + RESEND_COOLDOWN_MS);
-    } finally {
-      setResending(false);
     }
   }
   async function submit(event: FormEvent<HTMLFormElement>) {
@@ -100,6 +107,8 @@ export function AuthScreen({
     if (busy) return;
     setNotice("");
     setFailed(false);
+    // The resend button reappears only if this attempt calls for it.
+    setResendOffered(false);
     const fields = new FormData(event.currentTarget),
       email = String(fields.get("email") ?? "").trim(),
       password = String(fields.get("password") ?? "");
@@ -110,9 +119,7 @@ export function AuthScreen({
     }
     if (!configured) {
       setFailed(true);
-      setNotice(
-        "El acceso aún no está configurado. Contacta al administrador del dashboard.",
-      );
+      setNotice(NOT_CONFIGURED);
       return;
     }
     setBusy(true);

@@ -56,6 +56,11 @@ export function resendNotice(error: AuthErrorLike): AuthNotice {
   return { text: RESEND_SENT, error: false };
 }
 
+/** The 60 s wait starts only if the server answered (429 included); a lost connection can retry. */
+export function resendStartsCooldown(error: AuthErrorLike): boolean {
+  return !error || answered(error);
+}
+
 export const RESEND_NEEDS_EMAIL: AuthNotice = {
   text: "Escribe tu correo para que te enviemos un nuevo enlace.",
   error: true,

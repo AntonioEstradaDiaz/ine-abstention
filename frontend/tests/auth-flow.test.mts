@@ -14,6 +14,7 @@ import {
   registerNotice,
   resendLabel,
   resendNotice,
+  resendStartsCooldown,
   resendWaitSeconds,
 } from "../src/lib/auth-flow.ts";
 
@@ -108,4 +109,13 @@ test("emails redirect to /auth/callback, so default Supabase templates keep work
     emailRedirect("https://atlas.example", "recovery"),
     "https://atlas.example/auth/callback?next=/reset-password",
   );
+});
+
+test("the resend wait starts only when the server answered", () => {
+  assert.equal(resendStartsCooldown(null), true);
+  assert.equal(resendStartsCooldown({ status: 400 }), true);
+  assert.equal(resendStartsCooldown({ status: 429 }), true);
+  // A lost connection must not lock the button for a minute.
+  assert.equal(resendStartsCooldown({ name: "AuthRetryableFetchError" }), false);
+  assert.equal(resendStartsCooldown({ status: 0 }), false);
 });
