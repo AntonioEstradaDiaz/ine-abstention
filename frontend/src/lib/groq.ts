@@ -1,16 +1,18 @@
 // Server-side only: credentials must never reach the browser.
-export async function generateGroqReply({ apiKey, model, system, messages }: {
+export async function generateGroqReply({ apiKey, model, system, messages, signal }: {
   apiKey: string;
   model: string;
   system: string;
   messages: Array<{ role: "user" | "assistant"; content: string }>;
+  /** Caller's time budget; replaces the default 45 s timeout. */
+  signal?: AbortSignal;
 }, fetcher: typeof fetch = fetch): Promise<string> {
   const response = await fetcher("https://api.groq.com/openai/v1/chat/completions", {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
     body: JSON.stringify({ model, messages: [{ role: "system", content: system }, ...messages], temperature: 0.2, max_completion_tokens: 1024, stream: false }),
     cache: "no-store",
-    signal: AbortSignal.timeout(45_000),
+    signal: signal ?? AbortSignal.timeout(45_000),
   }).catch(() => { throw new Error("Groq no está disponible o tardó demasiado. Intenta nuevamente."); });
   if (!response.ok) {
     if (response.status === 429) throw new Error("Se alcanzó el límite de Groq. Espera antes de volver a consultar.");
