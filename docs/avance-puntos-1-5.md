@@ -1,8 +1,10 @@
 # Atlas · Equipo Pumpkin · Avance de los puntos 1–5
 
-Base de desarrollo: `main` ecab6b5. Actualizado: 29 de octubre de 2026.
-Estado: el punto 5 está implementado en la rama `feat/ia-cuotas`, pendiente de PR, CI y revisión
-del equipo. Los puntos 1–4 siguen pendientes. Los puntos 6–9 ya se entregaron (ver `docs/punto*.md`).
+Base de desarrollo: `main` ecab6b5. Actualizado: 30 de octubre de 2026.
+Estado: el punto 5 está en el PR #49 (CI en verde), pendiente de la configuración en Supabase y
+Vercel y de revisión del equipo. El código del punto 1 está en la rama `feat/auth-correo`, pendiente
+de PR y de la configuración de correo. Los puntos 2–4 siguen pendientes. Los puntos 6–9 ya se
+entregaron (ver `docs/punto*.md`).
 
 Prioridad acordada para el hackatón: **5 (cuotas de IA) → 1 (correos) → 2 (despliegue del
 backend) → ensayo con varias cuentas**. Los puntos 3 y 4 quedan como siguiente etapa.
@@ -12,7 +14,7 @@ backend) → ensayo con varias cuentas**. Los puntos 3 y 4 quedan como siguiente
 | Punto | Tema | Estado | Qué lo bloquea |
 |-------|------|--------|----------------|
 | 5 | IA preparada para varios usuarios | Implementado en `feat/ia-cuotas` | Acceso a Supabase y Vercel para desplegar |
-| 1 | Registro y recuperación de cuentas | Pendiente | Acceso a Supabase y un proveedor SMTP |
+| 1 | Registro y recuperación de cuentas | Código en `feat/auth-correo` | Dominio y proveedor SMTP; acceso a Supabase y al DNS |
 | 2 | Backend y base de datos en producción | Pendiente | Decidir dónde se aloja FastAPI y su base |
 | 3 | Datos territoriales completos | Siguiente etapa | Homologar municipios, distritos y secciones |
 | 4 | Actualización de datos | Siguiente etapa | Definir el proceso de nuevas publicaciones del INE |
@@ -130,15 +132,59 @@ Los pasos 1–3 requieren acceso al proyecto de Supabase; el 4, a Vercel.
 
 ## Punto 1 · Registro y recuperación de cuentas
 
-Pendiente. Las pantallas de registro, confirmación y recuperación ya existen. Falta configuración:
+### Objetivo
 
-- SMTP propio en Supabase. Sin él, el correo incorporado limita destinatarios y frecuencia.
-- Plantillas de confirmación y recuperación con `{{ .SiteURL }}/auth/confirm?token_hash=...`.
-- Probar con buzones reales: registro, confirmación, recuperación y nueva contraseña.
-- Activar la protección contra contraseñas filtradas (aviso de Supabase Advisors).
-- Definir si hace falta un rol de administrador. Hoy todas las cuentas son `authenticated`.
+Que cualquier persona del jurado cree su propia cuenta, la confirme y recupere su contraseña con
+correos reales en español, en vez de depender de las dos cuentas de demo compartidas.
 
-**Bloquea:** acceso al proyecto de Supabase y elegir un proveedor SMTP. Detalle en `frontend/AUTH.md`.
+### Decisiones
+
+- **Registro abierto** con confirmación por correo; las cuotas de IA del punto 5 acotan el abuso.
+- **Sin rol de administrador** en Atlas: el equipo administra desde el panel de Supabase con una guía.
+- **Botón "Reenviar confirmación"** tras registrarse, al intentar entrar sin confirmar y cuando el
+  enlace venció; espera 60 s entre envíos y nunca revela si un correo tiene cuenta.
+- **Correos en español** con el nombre Atlas, sin logotipo ni aval del INE, desde un remitente del
+  equipo.
+- **Enlaces que funcionan en cualquier dispositivo:** antes el enlace de registro solo funcionaba en
+  el mismo navegador donde se hizo el registro.
+- **Confirmación en dos pasos:** abrir el enlace muestra una página con un botón, y el enlace solo se
+  usa al pulsarlo. Así los escáneres de correo (como Safe Links de Outlook) no lo gastan.
+
+### Cambios (rama `feat/auth-correo`)
+
+| Archivo | Cambio |
+|---------|--------|
+| `frontend/src/lib/auth-flow.ts` | Nuevo. Mensajes neutros, espera de reenvío y destino tras verificar un enlace |
+| `frontend/src/app/auth/confirm/route.ts`, `frontend/src/app/confirmar/page.tsx` | Confirmación en dos pasos; un POST de otro origen se rechaza |
+| `frontend/src/components/auth-screen.tsx`, `frontend/src/app/login/page.tsx`, `frontend/src/app/recuperar/page.tsx` | Botón de reenvío, enlaces a `/auth/confirm` y mensajes de enlace vencido |
+| `frontend/tests/` | Pruebas unitarias, E2E de acceso y fixture de Auth extendida |
+| `docs/auth/plantillas/` | Plantillas "Confirma tu cuenta de Atlas" y "Restablece tu contraseña de Atlas" |
+| `docs/punto1-cuentas-correo.md`, `frontend/AUTH.md` | Runbook: correo, DNS, Supabase, prueba con buzones reales y administración |
+
+Commits: `380d212`, `7d79925`, `4cc27e3`, `19c6be7`, `a6debb7`.
+
+### Verificación realizada
+
+- Pruebas unitarias del frontend: 37/37. `typecheck` y `build` sin errores.
+- E2E de acceso en Chrome con la fixture: 6/6 nuevas (reenvío, enlace que no se gasta al abrirlo,
+  confirmación que entra al dashboard, enlaces vencidos y rechazos) y las de login/logout existentes.
+- **No verificado todavía:** la suite E2E completa (correrá en el CI del PR) y la prueba con buzones
+  reales en Gmail y Outlook, que necesita la configuración de correo.
+
+### Pasos externos pendientes
+
+Todo está en `docs/punto1-cuentas-correo.md` (llega con la misma rama):
+
+1. Elegir dominio y proveedor de correo; publicar SPF, DKIM y DMARC; desactivar el seguimiento de
+   enlaces del proveedor.
+2. En Supabase: SMTP propio, subir el límite de correos por hora (con SMTP propio empieza en 30),
+   pegar las dos plantillas, URLs `/auth/confirm` y contraseña mínima de 8.
+3. Prueba con buzones reales (Gmail y Outlook).
+
+La protección contra contraseñas filtradas solo existe en el plan Pro o superior de Supabase; si el
+proyecto está en el plan gratuito, queda como riesgo aceptado.
+
+**Bloquea:** dominio y proveedor SMTP, y acceso a Supabase y al DNS.
 
 ## Punto 2 · Backend y base de datos en producción
 
