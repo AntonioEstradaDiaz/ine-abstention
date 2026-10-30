@@ -54,13 +54,14 @@ Pasos con el proveedor:
      [`docs/auth/plantillas/confirmar-cuenta.html`](auth/plantillas/confirmar-cuenta.html).
    - **Reset password**: asunto "Restablece tu contraseña de Atlas"; cuerpo de
      [`docs/auth/plantillas/restablecer-contrasena.html`](auth/plantillas/restablecer-contrasena.html).
-   - Pegar solo el `<div>` (el comentario del inicio es para el repositorio). Si el panel no muestra
-     el campo de asunto, se puede fijar por la API de administración (`mailer_subjects_confirmation`,
-     `mailer_subjects_recovery`).
+   - Pegar solo el `<div>` (el comentario del inicio es para el repositorio) y escribir el asunto en
+     el campo de asunto de cada plantilla.
    - Verificar después de pegar: enviar un correo de prueba y comparar con el archivo del repositorio.
-4. **URL Configuration**: Site URL = URL de producción. En Redirect URLs, agregar
-   `https://<producción>/auth/confirm` y `https://<producción>/auth/callback` (este último solo para
-   enlaces antiguos), más sus equivalentes con `http://127.0.0.1:3000` para desarrollo.
+4. **URL Configuration**: Site URL = URL de producción (las plantillas arman su enlace con ella). En
+   Redirect URLs, autorizar `https://<producción>/auth/callback` y
+   `https://<producción>/auth/callback?next=/reset-password`, más sus equivalentes con
+   `http://127.0.0.1:3000` para desarrollo. Es la redirección que envía la app; la usan las
+   plantillas predeterminadas de Supabase.
 5. **Email provider**:
    - Confirmación de correo obligatoria (ya está activa) y registro anónimo deshabilitado.
    - Longitud mínima de contraseña: 8 o más.
@@ -69,9 +70,14 @@ Pasos con el proveedor:
      superior** ([Password security](https://supabase.com/docs/guides/auth/password-security)).
      Si el proyecto está en el plan gratuito, queda como riesgo aceptado.
 
-El orden entre desplegar el código y cambiar las plantillas no rompe nada: `/auth/confirm` en
-`main` ya verifica `token_hash`, y los enlaces antiguos siguen yendo a `/auth/callback`. La
-protección contra escáneres llega con el código nuevo.
+El orden entre desplegar el código y cambiar las plantillas no rompe nada:
+
+- La app sigue enviando `/auth/callback` como redirección. Con las plantillas predeterminadas, los
+  enlaces funcionan como hoy (abriéndolos en el mismo navegador del registro).
+- Las plantillas nuevas enlazan a `/auth/confirm` por su cuenta, y `/auth/confirm` en `main` ya
+  verifica `token_hash`.
+- La protección contra escáneres de correo y los enlaces que funcionan en cualquier dispositivo
+  están completos cuando ya están las dos cosas: el código nuevo y las plantillas nuevas.
 
 ## 3. Prueba con buzones reales
 
@@ -101,13 +107,39 @@ Todas las cuentas de Atlas son iguales; el equipo administra desde el panel de S
 |-------|------|------|
 | Ver cuentas | Authentication → Users | También: `select id, email, created_at, email_confirmed_at from auth.users;` (solo lectura) |
 | Borrar una cuenta | Authentication → Users → la cuenta → borrar | Las sesiones ya abiertas siguen válidas hasta que vence su token (por defecto, 1 hora). Borra también sus escenarios y su uso de IA (`on delete cascade`) |
-| Bloquear temporalmente | API de administración (`ban_duration` con `auth.admin.updateUserById`) | Requiere la clave secreta, solo desde una máquina de confianza. Un bloqueo no cierra las sesiones abiertas. Si el panel ofrece "Ban user", usarlo |
-| Confirmar a mano | Pedir a la persona que use "Reenviar confirmación" | La documentación consultada no confirma esta acción en el panel; no escribir en el esquema `auth` |
-| Forzar recuperación | Pedir a la persona que use "¿Olvidaste tu contraseña?" | |
+| Confirmar a mano | API de administración: `auth.admin.updateUserById(id, { email_confirm: true })` (ver abajo) | Documentado por Supabase. Si el panel ofrece confirmar, también sirve. No escribir en el esquema `auth` |
+| Bloquear temporalmente | API de administración: `auth.admin.updateUserById(id, { ban_duration: "24h" })` (ver abajo) | Un bloqueo impide iniciar sesión, pero no cierra las sesiones abiertas. Si el panel ofrece bloquear, también sirve |
+| Forzar recuperación | Pedir a la persona que use "¿Olvidaste tu contraseña?" | Si el panel ofrece enviar el correo de recuperación, usarlo; la documentación consultada no lo describe |
 | Consumo de IA | Consulta comentada al final de `docs/sql/ai_quota.sql` (SQL Editor) | Disponible cuando se aplique el punto 5 (PR #49) |
 
 Ante un abuso durante el hackatón, lo más rápido es borrar la cuenta; los límites de registro por IP
 (30 solicitudes cada 5 minutos, por defecto) y las cuotas de IA ya acotan el daño.
+
+### Ejecutar una acción de la API de administración
+
+La API de administración usa la **clave secreta** del proyecto (`sb_secret_…`, antes `service_role`),
+que salta RLS. Úsala solo en una máquina de confianza y **nunca** la guardes en el repositorio, en un
+`.env` versionado ni en el navegador.
+
+1. Copia el identificador (`id`) de la cuenta desde Authentication → Users.
+2. En una terminal, dentro de `frontend/` (ahí está instalado `@supabase/supabase-js`), define las dos
+   variables solo para esa sesión (PowerShell):
+
+   ```powershell
+   $env:SUPABASE_URL = "https://<ref>.supabase.co"
+   $env:SUPABASE_SECRET_KEY = "<clave secreta>"
+   ```
+
+3. Ejecuta la acción. Para confirmar el correo:
+
+   ```powershell
+   node -e "const {createClient}=require('@supabase/supabase-js');const s=createClient(process.env.SUPABASE_URL,process.env.SUPABASE_SECRET_KEY,{auth:{persistSession:false}});s.auth.admin.updateUserById(process.argv[1],{email_confirm:true}).then(r=>console.log(r.error?r.error.message:'Cuenta confirmada'))" "<id-de-la-cuenta>"
+   ```
+
+   Para bloquear 24 horas, cambia `{email_confirm:true}` por `{ban_duration:'24h'}`.
+4. Cierra la terminal (o borra las variables) al terminar.
+
+Referencia: [`auth.admin.updateUserById`](https://supabase.com/docs/reference/javascript/auth-admin-updateuserbyid).
 
 ## 5. Reversión
 
