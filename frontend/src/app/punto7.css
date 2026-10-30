@@ -1,22 +1,18 @@
 /* Punto 7: reportes nacionales en el mismo lenguaje visual Atlas De La Participación. */
-.national-report-intro { display:flex;align-items:center;justify-content:space-between;gap:20px;padding:32px;background:linear-gradient(110deg,#fff 0%,#fff5fa 63%,#fce7f2 100%);border:1px solid #f6d5e7;border-radius:22px;overflow:hidden; }
-.national-report-intro-copy { min-width:0;position:relative;z-index:1; }
-.national-report-overline { display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:6px 12px;color:#a9005d;background:#fff;border:1px solid #f4c4dd;font-size:12px;font-weight:700; }
-.national-report-intro h2 { color:#0d172f;font-size:clamp(23px,2.8vw,33px);font-weight:800;margin:16px 0 10px; }
-.national-report-intro p { max-width:720px;color:#50617d;font-size:14px;line-height:1.7; }
-.national-report-decoration { width:120px;height:120px;flex-shrink:0;display:grid;place-items:center;color:#b90064;border-radius:36px;background:linear-gradient(145deg,#fff,#f7cce4);border:1px solid #f3bdd9;box-shadow:0 12px 30px #ac327522; }
-.national-back { margin-top:18px;display:inline-flex;gap:8px;align-items:center;color:#990051;border:1px solid #f2cadd;background:#fff;border-radius:10px;padding:9px 13px;font-weight:650; }
-.national-back:hover { background:#fce7f2; }
-.national-report-config { display:flex;flex-wrap:wrap;align-items:end;gap:18px;margin:18px 0;padding:18px 22px;border-radius:18px; }
-.national-report-config label { display:flex;flex-direction:column;align-items:flex-start;gap:6px;font-size:12px;font-weight:600;color:#485873; }
-.national-report-config select { min-width:190px;border:1px solid #dce2eb;background:#fff;border-radius:9px;padding:10px 12px;color:#0d172f; }
-.national-report-config fieldset { display:flex;align-items:center;gap:14px;padding:0;border:0; }
-.national-report-config fieldset legend { font-size:12px;font-weight:600;color:#485873;margin-bottom:4px; }
-.national-report-config fieldset label { display:inline-flex;flex-direction:row;gap:7px;align-items:center;min-height:40px; }
-.national-report-config input[type=radio] { accent-color:#c4006b; }
-.national-report-config button { margin-left:auto;min-height:42px; }
-.national-report-grid { display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:18px;margin-bottom:18px; }
-.national-report-grid > .section-card,.national-reports-page > .section-card { min-width:0;border-radius:18px; }
+.national-reports-page { width:100%; min-width:0; }
+.national-reports-page .national-report-intro { flex-direction:row; align-items:flex-start; justify-content:space-between; gap:24px; padding:20px; background:#fff; border:1px solid var(--sp-line); border-radius:15px; }
+.national-report-intro-copy { flex:1; min-width:0; }
+.national-reports-page .national-report-intro h2 { margin:0; font-size:20px; line-height:1.3; font-weight:700; color:var(--sp-text); }
+.national-report-intro p { max-width:760px; margin:6px 0 0; color:var(--sp-muted); font-size:13px; line-height:1.6; }
+.national-report-intro .national-back { flex-shrink:0; margin:0; min-height:42px; }
+.national-reports-page .national-report-config { display:grid; grid-template-columns:minmax(220px,1fr) minmax(180px,auto) auto; align-items:end; gap:24px; margin:0; padding:20px; border-radius:15px; }
+.national-report-config > .data-field { min-width:0; }
+.national-report-config fieldset { display:flex; flex-wrap:wrap; align-items:center; gap:14px; padding:0; margin:0; border:0; }
+.national-report-config fieldset legend { margin-bottom:7px; }
+.national-report-config fieldset label { min-height:40px; }
+.national-report-config .national-report-download { min-height:40px; }
+.national-report-grid { display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:18px;margin-bottom:0; }
+.national-report-grid > .section-card,.national-reports-page > .section-card { min-width:0;border-radius:15px; }
 .national-report-title { display:flex;align-items:flex-start;gap:12px;margin-bottom:18px; }
 .national-report-title > svg { flex-shrink:0;color:#c4006b; }
 .national-report-title h3 { font-size:17px;font-weight:750;color:#0d172f; }
@@ -39,9 +35,16 @@
 .national-report-note svg { flex-shrink:0;color:#c4006b; }
 .national-report-error { padding:10px 14px;border-radius:12px;color:#9b234e;background:#fff0f7; }
 .national-muted { font-size:12px;color:#64748b; }
-@media(max-width:900px) { .national-report-grid { grid-template-columns:minmax(0,1fr); } .national-report-config button { margin-left:0; } }
-@media(max-width:570px) { .national-report-intro { padding:22px; } .national-report-decoration { display:none; } .national-report-config { padding:17px; } }
-
+@media(max-width:1000px) {
+  .national-report-grid { grid-template-columns:minmax(0,1fr); }
+  .national-reports-page .national-report-config { grid-template-columns:minmax(0,1fr) minmax(0,1fr); }
+  .national-report-config .national-report-download { grid-column:1 / -1; justify-self:start; }
+}
+@media(max-width:600px) {
+  .national-reports-page .national-report-intro { flex-direction:column; gap:16px; }
+  .national-reports-page .national-report-config { grid-template-columns:minmax(0,1fr); gap:18px; }
+  .national-report-config .national-report-download { width:100%; justify-self:stretch; white-space:normal; }
+}
 /* Comparador multiestado */
 .multi-compare-section { margin-top: 20px; }
 .multi-compare-card { border-radius: 20px; border: 1px solid #f5dce9; background: #fff; padding: 25px; }

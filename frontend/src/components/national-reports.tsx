@@ -11,6 +11,7 @@ import type { Election, Forecast, Prediction, Risk } from "@/lib/types";
 import { pct, riskLabels } from "@/lib/utils";
 import { Button } from "./ui/button";
 import { Status } from "./shared";
+import { DashboardSelect } from "./ui/dashboard-select";
 
 const kinds = { midterm: "Intermedia", presidential: "Presidencial" };
 const priority: Risk[] = ["high", "medium", "low"];
@@ -74,49 +75,46 @@ export function NationalReports({
   return (
     <div className="section-page national-reports-page">
       <section className="section-card national-report-intro" aria-labelledby="national-report-title">
-        <div className="national-report-intro-copy">
-          <span className="national-report-overline">
-            <MapPinned size={15} aria-hidden="true" /> Comparativo nacional
-          </span>
+        <header className="section-card-heading national-report-intro-copy">
+          <MapPinned className="section-card-icon" aria-hidden="true" />
+          <div>
           <h2 id="national-report-title">Panorama de las 32 entidades</h2>
           <p>
             Consulta los totales históricos oficiales y compara las estimaciones
             estatales de {forecast.target_year}. Las tasas estatales no se promedian
             para construir una predicción nacional.
           </p>
-          <button type="button" className="national-back" onClick={onBack}>
-            <ArrowLeft size={16} aria-hidden="true" /> Volver al reporte estatal
-          </button>
-        </div>
-        <span className="national-report-decoration" aria-hidden="true">
-          <BarChart3 size={68} strokeWidth={1.2} />
-        </span>
+          </div>
+        </header>
+        <Button type="button" variant="outline" className="national-back" onClick={onBack}>
+          <ArrowLeft size={16} aria-hidden="true" /> Volver al reporte estatal
+        </Button>
       </section>
 
       <div className="national-report-config section-card">
-        <label>
+        <label className="data-field">
           <span>Variable para comparar entidades</span>
-          <select
+          <DashboardSelect
             aria-label="Variable nacional"
             value={variable}
             onChange={(event) => setVariable(event.target.value as "abstention" | "participation")}
           >
             <option value="abstention">Abstención estatal</option>
             <option value="participation">Participación estatal</option>
-          </select>
+          </DashboardSelect>
         </label>
         <fieldset>
           <legend>Formato de descarga</legend>
-          <label>
+          <label className="data-radio">
             <input type="radio" name="national-format" checked={format === "pdf"} onChange={() => setFormat("pdf")} />
             PDF
           </label>
-          <label>
+          <label className="data-radio">
             <input type="radio" name="national-format" checked={format === "xlsx"} onChange={() => setFormat("xlsx")} />
             Excel
           </label>
         </fieldset>
-        <Button onClick={() => void download()} disabled={!loaded || generating}>
+        <Button className="national-report-download" onClick={() => void download()} disabled={!loaded || generating}>
           <Download size={16} aria-hidden="true" />
           {generating ? "Generando…" : "Descargar comparativo nacional"}
         </Button>
