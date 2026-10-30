@@ -246,14 +246,14 @@
   letter-spacing: 0;
 }
 
-[data-name="Indicadores clave"] {
+[data-name="Indicadores clave"]:not([data-kpi-layout="pastel"]) {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   align-items: stretch;
   gap: 12px;
 }
 
-[data-name="Indicadores clave"] > [data-name="Indicador electoral"] {
+[data-name="Indicadores clave"]:not([data-kpi-layout="pastel"]) > [data-name="Indicador electoral"]:not([data-kpi-layout="pastel"]) {
   display: grid;
   grid-template-columns: 58px minmax(0, 1fr) 84px;
   align-items: start;
@@ -265,11 +265,11 @@
   padding: 16px 14px 12px 22px;
 }
 
-[data-name="Indicador electoral"] > [data-name="Símbolo del indicador"] {
+[data-name="Indicador electoral"]:not([data-kpi-layout="pastel"]) > [data-name="Símbolo del indicador"] {
   grid-column: 1;
 }
 
-[data-name="Indicador electoral"] > [data-name="Datos del indicador"] {
+[data-name="Indicador electoral"]:not([data-kpi-layout="pastel"]) > [data-name="Datos del indicador"] {
   grid-column: 2;
   width: 100%;
   min-width: 0;
@@ -281,7 +281,7 @@
   white-space: nowrap;
 }
 
-[data-name="Indicador electoral"] > [data-name="Evolución"] {
+[data-name="Indicador electoral"]:not([data-kpi-layout="pastel"]) > [data-name="Evolución"] {
   position: relative;
   inset: auto;
   grid-column: 3;
@@ -418,11 +418,11 @@ button {
     width: auto;
   }
 
-  [data-name="Indicadores clave"] {
+  [data-name="Indicadores clave"]:not([data-kpi-layout="pastel"]) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  [data-name="Indicadores clave"] > [data-name="Indicador electoral"] {
+  [data-name="Indicadores clave"]:not([data-kpi-layout="pastel"]) > [data-name="Indicador electoral"]:not([data-kpi-layout="pastel"]) {
     min-width: 0;
   }
 
@@ -545,11 +545,11 @@ button {
     width: 96px;
   }
 
-  [data-name="Indicadores clave"] > [data-name="Indicador electoral"] {
+  [data-name="Indicadores clave"]:not([data-kpi-layout="pastel"]) > [data-name="Indicador electoral"]:not([data-kpi-layout="pastel"]) {
     min-width: 0;
   }
 
-  [data-name="Indicadores clave"] {
+  [data-name="Indicadores clave"]:not([data-kpi-layout="pastel"]) {
     grid-template-columns: 1fr;
   }
 
@@ -788,18 +788,18 @@ button {
 }
 
 @media (max-width: 360px) {
-  [data-name="Indicadores clave"] > [data-name="Indicador electoral"] {
+  [data-name="Indicadores clave"]:not([data-kpi-layout="pastel"]) > [data-name="Indicador electoral"]:not([data-kpi-layout="pastel"]) {
     grid-template-columns: 52px minmax(0, 1fr) 72px;
     gap: 10px;
     padding-inline: 14px 12px;
   }
 
-  [data-name="Indicador electoral"] > [data-name="Símbolo del indicador"] {
+  [data-name="Indicador electoral"]:not([data-kpi-layout="pastel"]) > [data-name="Símbolo del indicador"] {
     width: 52px;
     height: 52px;
   }
 
-  [data-name="Indicador electoral"] > [data-name="Evolución"] {
+  [data-name="Indicador electoral"]:not([data-kpi-layout="pastel"]) > [data-name="Evolución"] {
     width: 72px;
   }
 
@@ -917,7 +917,7 @@ button {
 .design-top [data-name="Notificaciones"] {
   cursor: default;
 }
-.design-top [data-name="Indicador electoral"] p {
+.design-top [data-name="Indicador electoral"]:not([data-kpi-layout="pastel"]) p {
   line-height: normal;
 }
 .design-data-note {
@@ -1020,7 +1020,7 @@ button {
 }
 
 /* Equal metric cards: title, value, reference and change use shared rows. */
-.design-top [data-name="Indicadores clave"] {
+.design-top [data-name="Indicadores clave"]:not([data-kpi-layout="pastel"]) {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   align-items: stretch;
@@ -1028,8 +1028,8 @@ button {
   width: 100%;
 }
 .design-top
-  [data-name="Indicadores clave"]
-  > [data-name="Indicador electoral"] {
+  [data-name="Indicadores clave"]:not([data-kpi-layout="pastel"])
+  > [data-name="Indicador electoral"]:not([data-kpi-layout="pastel"]) {
   display: grid;
   grid-template-columns: 48px minmax(0, 1fr);
   align-items: start;
@@ -1042,7 +1042,7 @@ button {
   box-sizing: border-box;
 }
 .design-top
-  [data-name="Indicador electoral"]
+  [data-name="Indicador electoral"]:not([data-kpi-layout="pastel"])
   > [data-name="Símbolo del indicador"] {
   width: 48px;
   height: 48px;
@@ -1050,7 +1050,7 @@ button {
   border-radius: 14px;
 }
 .design-top
-  [data-name="Indicador electoral"]
+  [data-name="Indicador electoral"]:not([data-kpi-layout="pastel"])
   > [data-name="Datos del indicador"] {
   display: grid;
   grid-template-rows: 48px 30px 18px 22px;
@@ -1108,7 +1108,7 @@ button {
   flex-shrink: 1;
   overflow-wrap: break-word;
 }
-.design-top [data-name="Indicador electoral"] > [data-name="Evolución"] {
+.design-top [data-name="Indicador electoral"]:not([data-kpi-layout="pastel"]) > [data-name="Evolución"] {
   position: absolute;
   right: 16px;
   bottom: 46px;
@@ -1118,22 +1118,22 @@ button {
   pointer-events: none;
 }
 @media (max-width: 1199px) {
-  .design-top [data-name="Indicadores clave"] {
+  .design-top [data-name="Indicadores clave"]:not([data-kpi-layout="pastel"]) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 @media (max-width: 600px) {
-  .design-top [data-name="Indicadores clave"] {
+  .design-top [data-name="Indicadores clave"]:not([data-kpi-layout="pastel"]) {
     grid-template-columns: minmax(0, 1fr);
   }
   .design-top
-    [data-name="Indicadores clave"]
-    > [data-name="Indicador electoral"] {
+    [data-name="Indicadores clave"]:not([data-kpi-layout="pastel"])
+    > [data-name="Indicador electoral"]:not([data-kpi-layout="pastel"]) {
     min-height: 176px;
   }
 }
 
-.design-top [data-name="Indicador electoral"] > [data-name="Evolución"] {
+.design-top [data-name="Indicador electoral"]:not([data-kpi-layout="pastel"]) > [data-name="Evolución"] {
   gap: 2px;
 }
 .design-top [data-name="Evolución"] > [data-name="Barra de tendencia"] {
@@ -1145,22 +1145,22 @@ button {
 
 /* Compact primary metrics, with less space between title and values. */
 .design-top
-  [data-name="Indicadores clave"]
-  > [data-name="Indicador electoral"] {
+  [data-name="Indicadores clave"]:not([data-kpi-layout="pastel"])
+  > [data-name="Indicador electoral"]:not([data-kpi-layout="pastel"]) {
   min-height: 132px;
   padding: 14px;
   grid-template-columns: 44px minmax(0, 1fr);
   gap: 12px;
 }
 .design-top
-  [data-name="Indicador electoral"]
+  [data-name="Indicador electoral"]:not([data-kpi-layout="pastel"])
   > [data-name="Símbolo del indicador"] {
   width: 44px;
   height: 44px;
   border-radius: 12px;
 }
 .design-top
-  [data-name="Indicador electoral"]
+  [data-name="Indicador electoral"]:not([data-kpi-layout="pastel"])
   > [data-name="Datos del indicador"] {
   grid-template-rows: 32px 28px 16px 18px;
   gap: 2px;
@@ -1172,7 +1172,7 @@ button {
 .design-top [data-name="Datos del indicador"] > p:nth-child(3) {
   line-height: 16px;
 }
-.design-top [data-name="Indicador electoral"] > [data-name="Evolución"] {
+.design-top [data-name="Indicador electoral"]:not([data-kpi-layout="pastel"]) > [data-name="Evolución"] {
   right: 14px;
   bottom: 34px;
   width: 44px;
