@@ -100,6 +100,17 @@ export function resendLabel(waitSeconds: number): string {
 
 export type LinkKind = "confirmation" | "recovery";
 
+/**
+ * `emailRedirectTo` / `redirectTo` for Supabase. Only the default templates ({{ .ConfirmationURL }},
+ * PKCE) use it, and they need /auth/callback; Atlas templates link to /auth/confirm themselves.
+ * Keeping it here makes deploy order and template changes independent.
+ */
+export function emailRedirect(origin: string, kind: LinkKind): string {
+  return kind === "recovery"
+    ? `${origin}/auth/callback?next=/reset-password`
+    : `${origin}/auth/callback`;
+}
+
 /** Email link `type`: `email` (and legacy `signup`) confirm an account; `recovery` resets a password. */
 export function linkKind(type: string | null | undefined): LinkKind | null {
   if (type === "email" || type === "signup") return "confirmation";

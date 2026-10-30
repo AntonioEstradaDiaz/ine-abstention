@@ -7,6 +7,7 @@ import {
   RESEND_COOLDOWN_MS,
   RESEND_NEEDS_EMAIL,
   confirmRedirectPath,
+  emailRedirect,
   linkKind,
   loginErrorNotice,
   recoverNotice,
@@ -97,4 +98,14 @@ test("expired links and the confirmation page speak plain Spanish", () => {
 test("a resend without an email asks for it", () => {
   assert.equal(RESEND_NEEDS_EMAIL.error, true);
   assert.match(RESEND_NEEDS_EMAIL.text, /^Escribe tu correo/);
+});
+
+test("emails redirect to /auth/callback, so default Supabase templates keep working", () => {
+  // New templates build their own /auth/confirm link from {{ .SiteURL }} and ignore this value;
+  // the default ones ({{ .ConfirmationURL }}, PKCE) need /auth/callback (design §3, §12).
+  assert.equal(emailRedirect("https://atlas.example", "confirmation"), "https://atlas.example/auth/callback");
+  assert.equal(
+    emailRedirect("https://atlas.example", "recovery"),
+    "https://atlas.example/auth/callback?next=/reset-password",
+  );
 });

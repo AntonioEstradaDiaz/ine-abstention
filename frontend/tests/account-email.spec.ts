@@ -79,3 +79,15 @@ test("unknown link types and cross-site posts are rejected", async ({ request })
   });
   expect(crossSite.status()).toBe(403);
 });
+
+test("a valid recovery link leads to a new password and back to login", async ({ page }) => {
+  await page.goto(`/auth/confirm?token_hash=ok-recovery-${unique()}&type=recovery`);
+  await expect(page).toHaveURL(/\/confirmar\?/);
+  await page.getByRole("button", { name: "Continuar" }).click();
+  await expect(page).toHaveURL(/\/reset-password$/);
+  await page.locator('input[name="password"]').fill("Nueva-clave-segura-123!");
+  await page.locator('input[name="confirm"]').fill("Nueva-clave-segura-123!");
+  await page.getByRole("button", { name: "Guardar contraseña", exact: true }).click();
+  await expect(page).toHaveURL(/\/login\?updated=1$/);
+  await expect(notice(page)).toContainText("Contraseña actualizada");
+});

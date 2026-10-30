@@ -62,7 +62,7 @@ const server = createServer(async (req, res) => {
     "Access-Control-Allow-Headers",
     "authorization, apikey, content-type, x-client-info, x-supabase-api-version",
   );
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS");
   res.setHeader("Cache-Control", "no-store");
   const send = (status, body) => {
     res.writeHead(status, { "Content-Type": "application/json" });
@@ -105,6 +105,13 @@ const server = createServer(async (req, res) => {
     }
   }
   if (url.pathname === "/auth/v1/user" && req.method === "GET") {
+    return active && active.expires_at > Date.now() / 1000
+      ? send(200, active.user)
+      : send(401, { code: "bad_jwt", msg: "Invalid test session" });
+  }
+  // Password change after a recovery link; the fixture does not store passwords.
+  if (url.pathname === "/auth/v1/user" && req.method === "PUT") {
+    for await (const _ of req);
     return active && active.expires_at > Date.now() / 1000
       ? send(200, active.user)
       : send(401, { code: "bad_jwt", msg: "Invalid test session" });

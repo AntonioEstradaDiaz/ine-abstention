@@ -20,6 +20,7 @@ import { authConfigured } from "@/lib/supabase/config";
 import {
   RESEND_COOLDOWN_MS,
   RESEND_NEEDS_EMAIL,
+  emailRedirect,
   loginErrorNotice,
   recoverNotice,
   registerNotice,
@@ -83,7 +84,7 @@ export function AuthScreen({
         .auth.resend({
           type: "signup",
           email,
-          options: { emailRedirectTo: `${window.location.origin}/auth/confirm` },
+          options: { emailRedirectTo: emailRedirect(window.location.origin, "confirmation") },
         })
         .catch((thrown: AuthErrorLike) => ({ error: thrown }));
       show(resendNotice(error));
@@ -136,12 +137,12 @@ export function AuthScreen({
         router.replace("/");
         router.refresh();
       } else if (register) {
-        // Email links go to /auth/confirm (token_hash), which works on any device.
+        // Atlas templates link to /auth/confirm themselves; see emailRedirect.
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
-            emailRedirectTo: `${origin}/auth/confirm`,
+            emailRedirectTo: emailRedirect(origin, "confirmation"),
             data: {
               first_name: String(fields.get("first_name") ?? "").trim(),
               last_name: String(fields.get("last_name") ?? "").trim(),
@@ -161,7 +162,7 @@ export function AuthScreen({
         }
       } else if (mode === "recover") {
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: `${origin}/auth/confirm`,
+          redirectTo: emailRedirect(origin, "recovery"),
         });
         show(recoverNotice(error));
       } else {
