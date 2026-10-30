@@ -34,8 +34,10 @@ y para todo el servicio, y la persona siempre sabe por qué no puede consultar.
   ritmo por minuto y para el total diario, porque la consulta llegó al proveedor.
 - **Si no se puede comprobar la cuota, la consulta se rechaza** (por ejemplo, si Supabase no
   responde). Protege la cuota y el costo; mientras tanto se muestra la lectura automática.
-- **Tiempo máximo de 45 s** para toda la consulta (datos del INE más el proveedor). Antes podía
-  llegar a 60 s con Groq, 75 s con Gemini y 135 s con Ollama.
+- **Tiempo máximo de 45 s** para la consulta: datos del INE, reserva de la cuota y respuesta del
+  proveedor. Después, cerrar la reserva tiene su propio tope de 5 s (así el cupo se puede devolver
+  aunque se hayan agotado los 45 s), y leer la cuota restante se corta a los 3 s. Antes podía
+  llegar a 60 s con Groq, 75 s con Gemini y 135 s con Ollama, o no terminar si Supabase se colgaba.
 - **Sin `service_role`.** Reservar y cerrar una consulta exige un secreto que solo conoce el
   servidor (`PULSO_AI_QUOTA_SECRET`); Supabase guarda solo su hash. Así nadie puede devolverse
   consultas llamando a la base desde la consola del navegador.
@@ -53,28 +55,47 @@ y para todo el servicio, y la persona siempre sabe por qué no puede consultar.
 | `docs/sql/ai_quota_checks.sql` | Nuevo. Comprobaciones con las cuentas QA, en una transacción que se revierte |
 | `frontend/src/lib/ai-quota.ts` | Nuevo. Mensajes en español, hora de reinicio y la lógica reservar → llamar a la IA → confirmar o liberar |
 | `frontend/src/app/api/assistant/route.ts` | Aplica la cuota en POST, agrega la cuota restante en GET y el límite de 45 s |
-| `frontend/src/lib/groq.ts`, `frontend/src/lib/gemini.ts` | Aceptan el límite de tiempo de la consulta |
+| `frontend/src/lib/groq.ts`, `frontend/src/lib/gemini.ts` | Aceptan el límite de tiempo de la consulta; una respuesta que no es JSON se informa en español |
 | `frontend/src/components/ai-assistant.tsx`, `frontend/src/components/analysis-view.tsx` | Contador "Te quedan N de 30 consultas hoy" y mensajes por causa |
 | `frontend/AUTH.md`, `frontend/.env.example` | Guía de despliegue, rotación del secreto y nueva variable |
 | `frontend/tests/` | Pruebas nuevas y fixture de pruebas con las funciones de cuota |
 
-Commits: `80df496`, `4a693ee`, `8d02be2`, `7495118`, `50dd4ae`, `6d5204b`.
+Commits: `80df496`, `4a693ee`, `8d02be2`, `7495118`, `50dd4ae`, `6d5204b` (implementación) y
+`6ab5c07`, `13015fa`, `51b15d7`, `9717d6e` (correcciones tras la revisión, ver abajo).
 
 ### Qué ve la persona
 
 - En Predicciones: "Te quedan 30 de 30 consultas hoy · se reinician a las 00:00 (hora del centro)".
-  El número baja después de cada respuesta.
+  El número baja después de cada respuesta, también si la consulta se hizo desde Análisis IA.
 - Al superar un límite, un mensaje específico: cuota diaria agotada, "vas muy rápido, espera N
-  segundos", límite del servicio alcanzado, falla del proveedor o tiempo agotado. Debajo sigue
-  apareciendo la lectura automática.
+  segundos", límite del servicio alcanzado, falla del proveedor o tiempo agotado. En Predicciones
+  aparece además la lectura automática; en el diálogo de Análisis IA se muestra el mensaje.
+- "No se descontó de tu cuota" solo aparece cuando la base de datos confirmó la devolución.
+
+### Correcciones tras la revisión
+
+Una revisión contra la spec dio "aprobado con pendientes" (ningún hallazgo crítico ni alto). Se
+corrigieron:
+
+- **Supabase colgado (medio):** antes, la consulta podía no terminar. Ahora se aplican los topes de
+  45 s, 5 s y 3 s descritos arriba (`6ab5c07`).
+- **Mensaje "No se descontó":** ya no se afirma si la devolución no se confirmó (`13015fa`).
+- **Respuestas que no son JSON:** "Groq/Gemini/Ollama devolvió una respuesta inválida." en vez de
+  un error técnico (`51b15d7`).
+- **Contador desfasado:** consultar en Análisis IA actualiza el contador de Predicciones; el
+  contador del diálogo ya no queda pegado al nombre del modelo (`9717d6e`).
+
+Riesgo aceptado: mientras el proveedor de IA esté fallando, las fallas no descuentan cuota diaria,
+así que una sola cuenta (a 5 por minuto) podría agotar el tope global de 500 en unos 100 minutos.
 
 ### Verificación realizada
 
-- Pruebas unitarias del frontend: 40/40. `typecheck` y `build` de producción sin errores.
+- Pruebas unitarias del frontend: 50/50. `typecheck` y `build` de producción sin errores.
 - SQL en un Postgres local (PGlite) que imita los roles y `auth.uid()` de Supabase: 12/12
   comprobaciones. Un control con el límite alterado sí falla, como debe.
-- Prueba de la ruta compilada con la fixture de pruebas y un proveedor de IA simulado: 7/7.
-- Revisión en Chrome de la interfaz compilada: 3/3, con capturas revisadas.
+- Prueba de la ruta compilada con la fixture de pruebas y un proveedor de IA simulado: 7/7, más
+  6/6 con Supabase colgado y respuestas inválidas (45,0 s, 3,0 s y 45,0 s medidos).
+- Revisión en Chrome de la interfaz compilada: 4/4, con capturas revisadas.
 - **No verificado todavía:** la suite E2E completa (necesita el backend en Docker; correrá en el
   CI del PR), la ejecución del SQL en Supabase real y el tiempo agregado por la cuota (objetivo
   menor a 0,5 s).
