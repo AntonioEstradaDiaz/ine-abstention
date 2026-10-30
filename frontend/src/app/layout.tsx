@@ -20,6 +20,7 @@ import "./auth.css";
 import "./punto7.css";
 import "./punto6.css";
 import "./accessibility.css";
+import "./visual-consistency.css";
 
 export const metadata: Metadata = {
   title: "Atlas De La Participación · Participación territorial",

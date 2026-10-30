@@ -609,7 +609,7 @@ export function AnalysisView({
                     max: 100,
                     axisLabel: { formatter: "{value}%" },
                   },
-                  legend: { bottom: 5 },
+                  legend: { bottom: 5, type: "scroll", itemGap: 28, itemWidth: 12, itemHeight: 12, textStyle: { fontSize: 12, padding: [0, 8, 0, 4] } },
                   series: [
                     {
                       name: `${territory} · observado`,
