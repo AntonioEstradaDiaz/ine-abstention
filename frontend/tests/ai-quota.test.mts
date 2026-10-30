@@ -272,3 +272,27 @@ test("the status read returns null instead of hanging", async () => {
     { remaining: 4, limit: 30, resets_at: resets },
   );
 });
+
+test("'not charged' is only said when the refund was confirmed", async () => {
+  const notCharged = /No se descontó de tu cuota/;
+  const cases: Array<{ finish: () => Promise<FinishResult>; quota: unknown }> = [
+    { finish: async () => ({ ...finished(7), updated: false }), quota: { remaining: 7, limit: 30, resets_at: resets } },
+    { finish: async () => { throw new Error("Supabase colgado"); }, quota: null },
+  ];
+  for (const { finish, quota } of cases) {
+    for (const timeout of [false, true]) {
+      const budget = new AbortController();
+      const result = await runWithQuota({
+        reserve: async () => reserved,
+        finish,
+        call: async () => { if (timeout) budget.abort(); throw new Error("Groq no pudo responder."); },
+        signal: budget.signal,
+      });
+      assert.equal(result.ok, false);
+      if (result.ok) continue;
+      assert.equal(result.response.body.code, timeout ? "provider_timeout" : "provider_error");
+      assert.doesNotMatch(result.response.body.detail, notCharged);
+      assert.deepEqual(result.response.body.quota, quota);
+    }
+  }
+});

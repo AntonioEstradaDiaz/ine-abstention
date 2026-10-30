@@ -77,18 +77,20 @@ export function quotaErrorResponse(
     retryAfterSeconds?: number;
     providerMessage?: string;
     quota?: QuotaInfo | null;
+    /** Provider failures only: the slot was confirmed as returned to the daily quota. */
+    refunded?: boolean;
   } = {},
 ): QuotaErrorResponse {
   const at = `${(options.resetsAt && formatResetTime(options.resetsAt)) ?? "00:00"} (hora del centro de México)`;
   const seconds = Math.max(1, Math.ceil(options.retryAfterSeconds ?? 60));
-  const notCharged = "No se descontó de tu cuota.";
+  const notCharged = options.refunded ? " No se descontó de tu cuota." : "";
   const copy: Record<QuotaErrorCode, [number, string]> = {
     daily_limit: [429, `Usaste tus ${options.limit ?? 30} consultas de hoy. Se reinician a las ${at}.`],
     rate_limit: [429, `Vas muy rápido: espera ${seconds} ${seconds === 1 ? "segundo" : "segundos"} antes de volver a preguntar.`],
     global_limit: [429, `El asistente alcanzó su límite diario para todos los usuarios. Vuelve después de las ${at}.`],
     quota_unavailable: [503, "No pudimos verificar tu cuota. El asistente no está disponible por ahora."],
-    provider_error: [502, `${options.providerMessage ?? "La IA no pudo responder."} ${notCharged}`],
-    provider_timeout: [504, `La IA tardó más de ${AI_BUDGET_MS / 1000} segundos. ${notCharged}`],
+    provider_error: [502, `${options.providerMessage ?? "La IA no pudo responder."}${notCharged}`],
+    provider_timeout: [504, `La IA tardó más de ${AI_BUDGET_MS / 1000} segundos.${notCharged}`],
   };
   const [status, detail] = copy[code];
   const body: QuotaErrorBody = { detail, code };
@@ -211,19 +213,25 @@ export async function runWithQuota<T>({
   const settle = (succeeded: boolean) =>
     Promise.resolve()
       .then(() => finish(id, succeeded))
-      .then(quotaInfo, () => null);
+      .catch(() => null);
   try {
     const value = await call(signal);
-    return { ok: true, value, quota: (await settle(true)) ?? quotaInfo(reservation) };
+    const finished = await settle(true);
+    return { ok: true, value, quota: quotaInfo(finished ?? reservation) };
   } catch (error) {
-    const quota = await settle(false);
+    const finished = await settle(false);
+    // Only claim "not charged" when the database confirmed the refund.
+    const options = {
+      quota: finished && quotaInfo(finished),
+      refunded: finished?.updated === true,
+    };
     return {
       ok: false,
       response: signal.aborted
-        ? quotaErrorResponse("provider_timeout", { quota })
+        ? quotaErrorResponse("provider_timeout", options)
         : quotaErrorResponse("provider_error", {
+            ...options,
             providerMessage: error instanceof Error ? error.message : undefined,
-            quota,
           }),
     };
   }
