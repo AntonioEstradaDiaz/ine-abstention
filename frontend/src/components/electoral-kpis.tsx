@@ -42,7 +42,7 @@ export function ElectoralKpis({
   ];
   return (
     <div className="reference-kpis" data-name="Indicadores clave">
-      {metrics.map((metric) => (
+      {metrics.map((metric, index) => (
         <article
           className="reference-kpi"
           data-name="Indicador electoral"
@@ -60,6 +60,12 @@ export function ElectoralKpis({
                 <span>{metric.reference}</span>
               </div>
             </div>
+          </div>
+          <div className="kpi-mini-chart" aria-hidden="true">
+            {index === 2 ? <div className="kpi-dot-grid">{states.map((item) => <i key={item.state_code} data-active={item.risk_level === "high"} />)}</div> : <svg viewBox="0 0 100 50">
+              <rect x="0" y="20" width="100" height="12" rx="6" fill="#fce7f2" />
+              {state && <rect x={index === 3 ? state.lower * 100 : 0} y="20" width={(index === 3 ? state.upper - state.lower : index === 0 ? 1-state.predicted : state.predicted) * 100} height="12" rx="6" fill="#d00070" />}
+            </svg>}
           </div>
         </article>
       ))}

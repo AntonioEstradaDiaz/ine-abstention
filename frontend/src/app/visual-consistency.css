@@ -1,0 +1,31 @@
+/* Shared pastel surfaces and content-driven panel sizing. */
+.design-top .reference-kpis > .reference-kpi[data-name] { min-height: 108px; padding: 16px; gap: 12px; align-items: center; border-radius: 12px; background: linear-gradient(120deg,#fff,#fff9fc); }
+.design-top .reference-kpi-title { min-height: 0; margin-bottom: 8px; font-size: 12px; }
+.design-top .reference-kpi-details { grid-template-columns: minmax(0,1fr); }
+.design-top .reference-kpi-value strong { font-size: clamp(20px,1.5vw,28px); line-height: 1.2; }
+.design-top .reference-kpi-icon { width: 42px; height: 46px; flex-basis: 42px; border-radius: 10px; }
+.kpi-mini-chart { flex: 0 0 68px; border-left: 1px solid #f3ddea; padding-left: 10px; }
+.kpi-mini-chart svg { width: 100%; display: block; }
+.kpi-dot-grid { display: grid; grid-template-columns: repeat(8,1fr); gap: 3px; }
+.kpi-dot-grid i { aspect-ratio: 1; border-radius: 50%; background: #f8d2e6; }
+.kpi-dot-grid i[data-active="true"] { background: #ce006b; }
+.territory-metrics .territory-metrics-body[data-tab="Resumen"] { display: flex; flex-direction: column; gap: 16px; justify-content: flex-start; }
+.territory-metrics .territory-metric-grid { flex: 0 0 auto; min-height: 170px; }
+.territory-metrics .territory-gauge { min-height: 170px !important; }
+.territory-metrics .territory-context-rows { height: auto !important; gap: 12px !important; grid-auto-rows: auto !important; }
+.territory-metrics .territory-context-rows > div { grid-template-columns: 20px minmax(0,1fr) 70px; gap: 8px; padding: 10px; border-radius: 10px; background: #fff5fa; }
+.territory-metrics .territory-context-rows > div > span:nth-child(2), .territory-metrics .territory-context-rows strong { font-size: 12px; }
+.territory-metrics .territory-context-rows strong { grid-column: 3; grid-row: 1; }
+.territory-metrics .territory-context-track { grid-column: 2 / -1; grid-row: 2; height: 12px; }
+.analysis-bottom-grid { align-items: start; }
+.analysis-bottom-grid > .analysis-comparison { min-height: 0; height: auto; }
+.predictions-main { align-items: start; }
+.predictions-main > .forecast-chart-card { min-height: 0; height: auto; }
+.forecast-chart-card .section-card-note { margin-top: 16px; }
+.forecast-strip > div { background: #fff5fa; border-color: #f3d9e8; }
+.app-shell .panel table thead th { background: #fce7f2; color: #6f244d; border-bottom: 1px solid #efc9df; }
+.app-shell .panel table tbody td, .app-shell .panel table tbody td strong { color: #25344c; }
+.app-shell .panel table tbody tr:nth-child(even) { background: #fff8fc; }
+.app-shell .panel table tbody small { color: #5e6d85; }
+@media(max-width: 1250px) { .design-top .reference-kpis[data-name] { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+@media(max-width: 600px) { .design-top .reference-kpis[data-name] { grid-template-columns: 1fr; } }
