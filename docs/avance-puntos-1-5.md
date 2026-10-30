@@ -33,7 +33,8 @@ y para todo el servicio, y la persona siempre sabe por qué no puede consultar.
 - **Una falla del proveedor no se descuenta** de la cuota diaria de la cuenta. Sí cuenta para el
   ritmo por minuto y para el total diario, porque la consulta llegó al proveedor.
 - **Si no se puede comprobar la cuota, la consulta se rechaza** (por ejemplo, si Supabase no
-  responde). Protege la cuota y el costo; mientras tanto se muestra la lectura automática.
+  responde). Protege la cuota y el costo; mientras tanto, Predicciones muestra la lectura
+  automática y el diálogo de Análisis IA muestra el mensaje.
 - **Tiempo máximo de 45 s** para la consulta: datos del INE, reserva de la cuota y respuesta del
   proveedor. Después, cerrar la reserva tiene su propio tope de 5 s (así el cupo se puede devolver
   aunque se hayan agotado los 45 s), y leer la cuota restante se corta a los 3 s. Antes podía
@@ -61,7 +62,8 @@ y para todo el servicio, y la persona siempre sabe por qué no puede consultar.
 | `frontend/tests/` | Pruebas nuevas y fixture de pruebas con las funciones de cuota |
 
 Commits: `80df496`, `4a693ee`, `8d02be2`, `7495118`, `50dd4ae`, `6d5204b` (implementación) y
-`6ab5c07`, `13015fa`, `51b15d7`, `9717d6e` (correcciones tras la revisión, ver abajo).
+`6ab5c07`, `13015fa`, `51b15d7`, `9717d6e`, `9c70d8a`, `ac77149` (correcciones tras las
+revisiones, ver abajo).
 
 ### Qué ve la persona
 
@@ -85,12 +87,19 @@ corrigieron:
 - **Contador desfasado:** consultar en Análisis IA actualiza el contador de Predicciones; el
   contador del diálogo ya no queda pegado al nombre del modelo (`9717d6e`).
 
+Una segunda revisión dio de nuevo "aprobado con pendientes", solo con hallazgos bajos, también
+corregidos:
+
+- **Renovación de la sesión:** los topes de tiempo cortan también la espera previa a la petición a
+  Supabase (por ejemplo, si su servicio de autenticación se cuelga al renovar la sesión) (`9c70d8a`).
+- **Cuerpo `null` del proveedor:** se informa en español en vez de con un error técnico (`ac77149`).
+
 Riesgo aceptado: mientras el proveedor de IA esté fallando, las fallas no descuentan cuota diaria,
 así que una sola cuenta (a 5 por minuto) podría agotar el tope global de 500 en unos 100 minutos.
 
 ### Verificación realizada
 
-- Pruebas unitarias del frontend: 50/50. `typecheck` y `build` de producción sin errores.
+- Pruebas unitarias del frontend: 53/53. `typecheck` y `build` de producción sin errores.
 - SQL en un Postgres local (PGlite) que imita los roles y `auth.uid()` de Supabase: 12/12
   comprobaciones. Un control con el límite alterado sí falla, como debe.
 - Prueba de la ruta compilada con la fixture de pruebas y un proveedor de IA simulado: 7/7, más
