@@ -1,7 +1,5 @@
 /* Panels follow their content instead of stretching to their neighbours. */
-.app-shell .analysis-bottom-grid,
 .app-shell .predictions-main { align-items: start; }
-.app-shell .analysis-bottom-grid > .analysis-comparison,
 .app-shell .predictions-main > .forecast-chart-card { height: auto; min-height: 0; align-self: start; }
 .app-shell .forecast-chart-card .section-card-note { margin: 8px 0 0; }
 .app-shell .territory-metrics .territory-metrics-body[data-tab="Resumen"] {
@@ -36,3 +34,25 @@
 .app-shell .territory-metrics-body[data-tab="Factores"] .territory-context-track > span { background: #d00070; }
 .app-shell .territory-metrics-body[data-tab="Factores"] .territory-inline-note { position: static; margin: 0; }
 .territory-unspecified-help { padding: 12px; margin: 0; border: 1px solid #f5d1e5; border-radius: 12px; background: #fff2f9; color: #733454; font-size: 12px; line-height: 1.6; }
+
+/* Match the detail table height and distribute the comparison rows evenly. */
+.app-shell .analysis-bottom-grid { align-items: stretch; }
+.app-shell .analysis-bottom-grid > .analysis-comparison {
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+  height: auto;
+  min-height: 0;
+  gap: 16px;
+}
+.app-shell .analysis-comparison > header { flex-shrink: 0; }
+.app-shell .analysis-comparison .analysis-bars {
+  flex: 1;
+  display: grid;
+  grid-template-rows: repeat(5, minmax(38px, 1fr));
+  gap: 12px;
+  padding: 4px 0;
+}
+.app-shell .analysis-comparison .analysis-bars > div { min-height: 38px; }
+.app-shell .analysis-comparison .analysis-bars > div > div { height: 18px; }
+.app-shell .analysis-comparison > .section-card-note { margin: 0; padding-top: 4px; line-height: 1.5; }
