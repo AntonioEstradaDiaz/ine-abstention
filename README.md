@@ -22,6 +22,7 @@ ya estén configurados. Es un prototipo experimental independiente, sin aval ins
 - [Arquitectura](#arquitectura)
 - [Incorporaciones recientes](#incorporaciones-recientes)
 - [Validación y pendientes](#validación-y-pendientes)
+- [Hoja de ruta: los nueve puntos](#hoja-de-ruta-los-nueve-puntos-del-sistema)
 - [Ejecutar en local](#ejecutar-en-local)
 
 ### Acceso de prueba para el hackathon
@@ -200,13 +201,33 @@ internos anteriores por compatibilidad.
 Las siguientes capturas ya existían en el repositorio: muestran versiones anteriores y no son
 una certificación visual del despliegue integrado del 30 de octubre.
 
+**Mapa y estadísticas principales.** La selección territorial relaciona los indicadores con
+el estado consultado; el detalle distingue histórico observado y estimación.
+
 ![Mapa y detalle territorial](docs/screenshots/audit-dashboard-20261026.png)
+
+**Análisis estadístico.** Presenta series comparables, conteos y tasas para interpretar
+las diferencias sin confundir un promedio estatal con el nacional ponderado.
 
 ![Análisis de datos oficiales](docs/screenshots/analysis-official-desktop.png)
 
-| Predicciones | Reportes |
-| --- | --- |
-| ![Predicciones](docs/screenshots/sections/predictions.png) | ![Reportes](docs/screenshots/sections/reports.png) |
+**Predicciones y machine learning.** El panel reúne resultados del modelo, contexto y
+asistente. Esta captura histórica precede al selector hasta 2029 y a la banda descriptiva actual.
+
+![Panel de predicciones y contexto](docs/screenshots/sections/predictions.png)
+
+**Reportes.** La vista previa organiza el contenido exportable. El trabajo reciente añade
+portada visual y diseño de páginas de detalle; la imagen muestra una versión anterior.
+
+![Vista previa y opciones de reportes](docs/screenshots/sections/reports.png)
+
+**Escenarios.** Permite explorar supuestos y comparar resultados sin atribuir efectos causales.
+
+![Exploración de escenarios](docs/screenshots/sections/scenarios.png)
+
+**Datos.** Tablas, filtros y procedencia permiten revisar las estadísticas que alimentan el dashboard.
+
+![Consulta y exportación de datos](docs/screenshots/sections/data.png)
 
 [Galería completa](docs/dashboard-gallery.md).
 
@@ -348,22 +369,45 @@ compilación y navegador). Vercel genera previews de ramas y despliega `main` au
 Tras el merge del PR #16, commit `5be0ab3`, ambos jobs de CI y Vercel aprobaron; se verificaron
 HTTP 200 en login, redirección 307 al entrar sin sesión y 401 en las dos APIs privadas.
 
-## Qué falta para completar el producto
+## Hoja de ruta: los nueve puntos del sistema
 
-1. **Correo y acceso de evaluadores:** SMTP, registro/confirmación/recuperación con buzones reales,
-   revisión del aviso de privacidad, ayuda y términos; roles y permisos si habrá usuarios con distinto acceso.
-2. **Datos en producción:** desplegar FastAPI y proteger su API si se requiere actualizar datos
-   desde una base activa. La demo usa una instantánea; el historial privado de escenarios ya usa Supabase.
-3. **Cobertura municipal:** incorporar registros homologados antes de habilitar ese nivel; la muestra
-   ilustrativa fue retirada. Retirar también notificaciones ficticias del diseño.
-4. **Ampliación de reportes:** PowerPoint, contenido nacional/municipal, historial persistente,
-   factores y programación de envíos. PDF y Excel estatales ya están implementados.
-5. **Operación:** límites de solicitudes y cuota por usuario para IA, monitoreo de errores,
-   alertas, copias/restauración verificadas y pruebas de carga. HTTPS y secretos de servidor ya existen en Vercel.
-6. **Calidad y método:** WCAG con tecnologías de asistencia, prueba con usuarios, más bloques electorales,
-   validación externa, auditoría de fechas de publicación y sesgo por registros NS.
-7. **Mantenimiento:** optimizar cartografía de 28.8 MB con trazabilidad, automatizar actualización validada
-   de fuentes y elegir licencia para el código.
+Esta es la lista global de trabajo acordada. **Implementado** significa que existe código
+integrado; **pendiente de configuración o validación** significa que aún debe comprobarse
+su operación real. No se marcan como pendientes de desarrollo funciones que ya se incorporaron.
+
+| # | Punto | Avance integrado | Trabajo pendiente y criterio de cierre |
+| --- | --- | --- | --- |
+| **1** | **Registro y recuperación de cuentas** | Supabase Auth, cuentas demo y flujos de registro/recuperación. | Configurar SMTP y dominio; probar registro, confirmación y recuperación con correos reales; revisar permisos de usuarios y administradores. Cierre: recorrido completo y permisos comprobados. |
+| **2** | **Backend y base de datos en producción** | FastAPI, PostgreSQL/PostGIS, Docker y controles de acceso interno. | Desplegar FastAPI y su base, conectar el dashboard sin `PULSO_PREVIEW=1` y verificar protección del acceso directo. Cierre: recorrido remoto completo con datos de la API y rechazo del acceso no autorizado. |
+| **3** | **Datos territoriales completos** | Estadísticas estatales y nacionales disponibles. | Homologar municipios, distritos y secciones entre elecciones e incorporar estadísticas y cartografía. Mantener deshabilitados niveles sin datos comparables. Cierre: correspondencias documentadas y conteos conservados. |
+| **4** | **Actualización de datos** | Ingesta, comprobaciones y procedencia documentadas; demo basada en instantánea. | Definir nuevas publicaciones INE, automatizar validaciones y detección de errores, mostrar fecha y versión de datos. Cierre: actualización reproducible, trazable y con rechazo de entradas inválidas. |
+| **5** | **IA preparada para varios usuarios** | Cuotas por cuenta/globales, manejo de errores y tiempos de espera integrados. | Configurar migración y secretos remotos, comprobar consumo y costos, evaluar respuestas contra estado, periodo y fuentes. Cierre: ensayo con varias cuentas, límites y respuestas cotejadas. |
+| **6** | **Validación de los pronósticos** | Evaluación temporal, sensibilidad NS, diagnóstico y proyecciones hasta 2029. | Ampliar evaluación temporal y externa, estudiar registros sin especificar y mejorar calibración de incertidumbre. Cierre: evidencia independiente documentada; por ahora el modelo sigue siendo experimental. |
+| **7** | **Reportes y escenarios** | PDF/Excel estatales y nacionales, historial privado y comparación multiestado. | Reportes municipales tras homologación, PowerPoint y envíos programados; comprobar diseño del PDF y funcionamiento combinado. Cierre: exportaciones legibles y trazables, con alcance y supuestos claros. |
+| **8** | **Operación y seguridad** | Controles del backend, herramientas de monitoreo, respaldo y pruebas técnicas. | Configurar alertas y registros de errores, ensayar copias/restauración, carga, concurrencia y aislamiento entre cuentas; revisar dependencias y secretos. Cierre: evidencias de funcionamiento en el entorno real. |
+| **9** | **Experiencia y entrega** | Diseño, páginas informativas, documentación y manuales iniciales. | Auditoría completa de accesibilidad, pruebas con usuarios, privacidad y soporte definitivos, licencia aprobada y manual de instalación validado por el equipo receptor. Cierre: incidencias resueltas y entrega reproducible. |
+
+### Prioridad para el hackatón
+
+1. Activar y probar **límites de IA** para proteger el servicio compartido.
+2. Configurar **correos de acceso** y probar con buzones reales.
+3. Completar la **prueba del despliegue** y su conexión al backend.
+4. Ejecutar un **ensayo con varias cuentas**, desde el acceso hasta la exportación.
+
+El detalle municipal y la validación para uso operativo corresponden a una siguiente etapa
+identificada expresamente. No se ofrecen como funciones terminadas durante la demostración.
+Las credenciales demo de este README se mantienen para evaluación; al ser cuentas compartidas,
+sus escenarios y cuotas también se comparten entre quienes las utilicen.
+
+```mermaid
+flowchart LR
+    A[Cuotas de IA] --> B[Correo y acceso]
+    B --> C[Backend y despliegue completo]
+    C --> D[Ensayo con varias cuentas]
+    D --> E[Entrega del hackatón]
+    E --> F[Homologación territorial y actualización de datos]
+    F --> G[Mayor validación predictiva y operativa]
+```
 
 ## Estructura y guías
 
@@ -386,11 +430,11 @@ data/, artifacts/    Datos y pesos; algunos informes/muestras sí están version
 - [Hoja de ruta histórica](docs/project-status.md): consultar junto con esta auditoría; algunas prioridades
   preceden al despliegue y a la incorporación de Supabase Auth.
 
-## Punto 7 · Reportes y escenarios (rama de trabajo)
+## Referencias del punto 7 · Reportes y escenarios
 
 Consulte [documentación del punto 7](docs/punto7-reportes-escenarios.md):
-comparativos nacionales PDF/Excel y comparador multiestado exploratorio,
-pendientes de CI. Se conservan los reportes estatales y los escenarios privados.
+comparativos nacionales PDF/Excel y comparador multiestado exploratorio ya integrados.
+Su revisión de operación y diseño forma parte del cierre del punto 7. Se conservan los reportes estatales y los escenarios privados.
 No están habilitados todavía PowerPoint, envíos programados ni reportes municipales.
 
 ## Punto 9 · Experiencia y entrega (octubre de 2026)
