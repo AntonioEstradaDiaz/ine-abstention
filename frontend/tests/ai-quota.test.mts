@@ -2,11 +2,15 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
   AI_BUDGET_MS,
+  callQuotaRpc,
   formatResetTime,
   quotaErrorResponse,
+  quotaRpcs,
   quotaSummary,
+  readQuotaStatus,
   runWithQuota,
   type FinishResult,
+  type QuotaRpcClient,
   type ReserveResult,
 } from "../src/lib/ai-quota.ts";
 
@@ -182,4 +186,89 @@ test("if the budget is already spent, nothing is reserved", async () => {
   assert.equal(reserved_, 0);
   assert.equal(result.ok, false);
   if (!result.ok) assert.equal(result.response.body.code, "provider_timeout");
+});
+
+// Supabase client stand-ins: answers immediately, or hangs until its signal aborts.
+function rpcClient(reply: () => { data: unknown; error: unknown }, seen: Array<{ fn: string; args?: Record<string, unknown>; signal: AbortSignal }> = []): QuotaRpcClient {
+  return {
+    rpc: (fn, args) => ({
+      abortSignal: (signal) => {
+        seen.push({ fn, args, signal });
+        return Promise.resolve(reply());
+      },
+    }),
+  };
+}
+const hangingClient: QuotaRpcClient = {
+  rpc: () => ({
+    abortSignal: (signal) =>
+      new Promise((_, reject) => signal.addEventListener("abort", () => reject(signal.reason), { once: true })),
+  }),
+};
+
+test("quota RPCs pass the caller's signal and return the data", async () => {
+  const seen: Array<{ fn: string; signal: AbortSignal }> = [];
+  const signal = new AbortController().signal;
+  const data = await callQuotaRpc(rpcClient(() => ({ data: { remaining: 3 }, error: null }), seen), "pulso_ai_quota_status", undefined, signal);
+  assert.deepEqual(data, { remaining: 3 });
+  assert.equal(seen[0].signal, signal);
+});
+
+test("quota RPCs fail on errors, empty data or a missing client", async () => {
+  const signal = new AbortController().signal;
+  await assert.rejects(callQuotaRpc(rpcClient(() => ({ data: null, error: { message: "boom" } })), "f", undefined, signal));
+  await assert.rejects(callQuotaRpc(rpcClient(() => ({ data: null, error: null })), "f", undefined, signal));
+  await assert.rejects(callQuotaRpc(null, "f", undefined, signal));
+});
+
+test("a hanging Supabase call is cut off by its signal", async () => {
+  const started = Date.now();
+  await assert.rejects(callQuotaRpc(hangingClient, "pulso_ai_reserve", {}, AbortSignal.timeout(30)));
+  assert.ok(Date.now() - started < 1_000);
+});
+
+test("reserve uses the request budget; finish has its own limit even after the budget ran out", async () => {
+  const seen: Array<{ fn: string; args?: Record<string, unknown>; signal: AbortSignal }> = [];
+  const budget = new AbortController();
+  const rpcs = quotaRpcs(
+    rpcClient(() => ({ data: { remaining: 1, limit: 30, resets_at: resets, updated: true }, error: null }), seen),
+    () => "s".repeat(40),
+    budget.signal,
+  );
+  await rpcs.reserve();
+  assert.equal(seen[0].fn, "pulso_ai_reserve");
+  assert.equal(seen[0].signal, budget.signal);
+  assert.deepEqual(seen[0].args, { p_secret: "s".repeat(40) });
+  budget.abort();
+  await rpcs.finish("r-1", false);
+  assert.equal(seen[1].fn, "pulso_ai_finish");
+  assert.notEqual(seen[1].signal, budget.signal);
+  assert.equal(seen[1].signal.aborted, false);
+  assert.deepEqual(seen[1].args, { p_secret: "s".repeat(40), p_reservation: "r-1", p_succeeded: false });
+});
+
+test("finish gives up after its own short limit", async () => {
+  const rpcs = quotaRpcs(hangingClient, () => "s".repeat(40), new AbortController().signal, 30);
+  const started = Date.now();
+  await assert.rejects(rpcs.finish("r-1", true));
+  assert.ok(Date.now() - started < 1_000);
+});
+
+test("a missing secret makes the reservation fail without calling Supabase", async () => {
+  const seen: Array<{ fn: string; signal: AbortSignal }> = [];
+  const rpcs = quotaRpcs(rpcClient(() => ({ data: {}, error: null }), seen), () => { throw new Error("Falta PULSO_AI_QUOTA_SECRET"); }, new AbortController().signal);
+  const result = await runWithQuota({ ...rpcs, call: async () => "no", signal: new AbortController().signal });
+  assert.equal(seen.length, 0);
+  assert.equal(result.ok, false);
+  if (!result.ok) assert.equal(result.response.body.code, "quota_unavailable");
+});
+
+test("the status read returns null instead of hanging", async () => {
+  const started = Date.now();
+  assert.equal(await readQuotaStatus(hangingClient, 30), null);
+  assert.ok(Date.now() - started < 1_000);
+  assert.deepEqual(
+    await readQuotaStatus(rpcClient(() => ({ data: { remaining: 4, limit: 30, resets_at: resets, global_exhausted: false }, error: null }))),
+    { remaining: 4, limit: 30, resets_at: resets },
+  );
 });

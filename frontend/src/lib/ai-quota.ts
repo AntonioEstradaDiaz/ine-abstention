@@ -103,6 +103,71 @@ export function quotaErrorResponse(
   return { status, body, headers };
 }
 
+/** Limits for quota RPCs that run outside the request budget (design TD-005). */
+export const QUOTA_FINISH_TIMEOUT_MS = 5_000;
+export const QUOTA_STATUS_TIMEOUT_MS = 3_000;
+
+/** The part of the Supabase client used for quota RPCs; a structural type keeps this module testable. */
+export interface QuotaRpcClient {
+  rpc(
+    fn: string,
+    args?: Record<string, unknown>,
+  ): {
+    abortSignal(signal: AbortSignal): PromiseLike<{ data: unknown; error: unknown }>;
+  };
+}
+
+/** Calls a quota RPC, cut off by `signal`; throws on any error, empty data or cancellation. */
+export async function callQuotaRpc<T>(
+  client: QuotaRpcClient | null,
+  fn: string,
+  args: Record<string, unknown> | undefined,
+  signal: AbortSignal,
+): Promise<T> {
+  if (!client) throw new Error("Autenticación sin configurar");
+  signal.throwIfAborted();
+  const { data, error } = await client.rpc(fn, args).abortSignal(signal);
+  if (signal.aborted || error || data == null) throw new Error("Cuota no disponible");
+  return data as T;
+}
+
+/**
+ * Reserve and finish bound to one request. Reserving shares the request budget; finishing gets
+ * its own short limit so a slot can still be released after the budget has run out.
+ */
+export function quotaRpcs(
+  client: QuotaRpcClient | null,
+  secret: () => string,
+  budget: AbortSignal,
+  finishTimeoutMs = QUOTA_FINISH_TIMEOUT_MS,
+) {
+  return {
+    reserve: () =>
+      callQuotaRpc<ReserveResult>(client, "pulso_ai_reserve", { p_secret: secret() }, budget),
+    finish: (reservationId: string, succeeded: boolean) =>
+      callQuotaRpc<FinishResult>(
+        client,
+        "pulso_ai_finish",
+        { p_secret: secret(), p_reservation: reservationId, p_succeeded: succeeded },
+        AbortSignal.timeout(finishTimeoutMs),
+      ),
+  };
+}
+
+/** Remaining quota for the signed-in account, or null if it cannot be read in time. */
+export async function readQuotaStatus(
+  client: QuotaRpcClient | null,
+  timeoutMs = QUOTA_STATUS_TIMEOUT_MS,
+): Promise<QuotaInfo | null> {
+  try {
+    return quotaInfo(
+      await callQuotaRpc<QuotaInfo>(client, "pulso_ai_quota_status", undefined, AbortSignal.timeout(timeoutMs)),
+    );
+  } catch {
+    return null;
+  }
+}
+
 export type QuotaOutcome<T> =
   | { ok: true; value: T; quota: QuotaInfo }
   | { ok: false; response: QuotaErrorResponse };

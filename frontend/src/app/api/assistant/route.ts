@@ -17,11 +17,11 @@ import { generateGeminiReply } from "@/lib/gemini";
 import { authServer } from "@/lib/supabase/server";
 import {
   AI_BUDGET_MS,
+  quotaRpcs,
+  readQuotaStatus,
   runWithQuota,
-  type FinishResult,
   type QuotaErrorResponse,
-  type QuotaInfo,
-  type ReserveResult,
+  type QuotaRpcClient,
 } from "@/lib/ai-quota";
 const provider = () =>
   process.env.AI_PROVIDER === "ollama"
@@ -35,19 +35,11 @@ const ollamaUrl = () => process.env.OLLAMA_URL || "http://127.0.0.1:11434";
 const detail = (message: string, status: number) =>
   NextResponse.json({ detail: message }, { status });
 
-type Supabase = NonNullable<Awaited<ReturnType<typeof authServer>>>;
-
 // Quota RPCs run with the user's session; changing counts also requires the
 // server-only secret, so the browser cannot reserve or release slots itself.
-async function quotaRpc<T>(
-  supabase: Supabase | null,
-  fn: string,
-  args?: Record<string, unknown>,
-): Promise<T> {
-  if (!supabase) throw new Error("Autenticación sin configurar");
-  const { data, error } = await supabase.rpc(fn, args);
-  if (error || data == null) throw new Error("Cuota no disponible");
-  return data as T;
+async function quotaClient(): Promise<QuotaRpcClient | null> {
+  const supabase = await authServer();
+  return supabase && { rpc: (fn, args) => supabase.rpc(fn, args) };
 }
 
 function quotaSecret() {
@@ -56,13 +48,9 @@ function quotaSecret() {
   return secret;
 }
 
-async function quotaStatus(): Promise<QuotaInfo | null> {
+async function quotaStatus() {
   try {
-    const { remaining, limit, resets_at } = await quotaRpc<QuotaInfo>(
-      await authServer(),
-      "pulso_ai_quota_status",
-    );
-    return { remaining, limit, resets_at };
+    return await readQuotaStatus(await quotaClient());
   } catch {
     return null;
   }
@@ -283,18 +271,8 @@ export async function POST(req: NextRequest) {
     );
   }
   const system = systemPrompt(context);
-  const supabase = await authServer();
   const outcome = await runWithQuota({
-    reserve: () =>
-      quotaRpc<ReserveResult>(supabase, "pulso_ai_reserve", {
-        p_secret: quotaSecret(),
-      }),
-    finish: (id, succeeded) =>
-      quotaRpc<FinishResult>(supabase, "pulso_ai_finish", {
-        p_secret: quotaSecret(),
-        p_reservation: id,
-        p_succeeded: succeeded,
-      }),
+    ...quotaRpcs(await quotaClient(), quotaSecret, budget),
     call: (signal) => generateReply(model, system, messages, signal),
     signal: budget,
   });
