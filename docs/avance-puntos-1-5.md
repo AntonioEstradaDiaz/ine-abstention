@@ -156,13 +156,13 @@ correos reales en español, en vez de depender de las dos cuentas de demo compar
 |---------|--------|
 | `frontend/src/lib/auth-flow.ts` | Nuevo. Mensajes neutros, espera de reenvío y destino tras verificar un enlace |
 | `frontend/src/app/auth/confirm/route.ts`, `frontend/src/app/confirmar/page.tsx` | Confirmación en dos pasos; un POST de otro origen se rechaza |
-| `frontend/src/components/auth-screen.tsx`, `frontend/src/app/login/page.tsx`, `frontend/src/app/recuperar/page.tsx` | Botón de reenvío, enlaces a `/auth/confirm` y mensajes de enlace vencido |
+| `frontend/src/components/auth-screen.tsx`, `frontend/src/app/login/page.tsx`, `frontend/src/app/recuperar/page.tsx` | Botón de reenvío y mensajes de enlace vencido; las redirecciones de los correos siguen en `/auth/callback` |
 | `frontend/tests/` | Pruebas unitarias, E2E de acceso y fixture de Auth extendida |
 | `docs/auth/plantillas/` | Plantillas "Confirma tu cuenta de Atlas" y "Restablece tu contraseña de Atlas" |
 | `docs/punto1-cuentas-correo.md`, `frontend/AUTH.md` | Runbook: correo, DNS, Supabase, prueba con buzones reales y administración |
 
 Commits: `380d212`, `7d79925`, `4cc27e3`, `19c6be7`, `a6debb7` (implementación) y `f9e66c1`,
-`c183a03`, `f0e3197`, `4c06fab` (correcciones tras la revisión, ver abajo).
+`c183a03`, `f0e3197`, `4c06fab`, `37f6cac` (correcciones tras las revisiones, ver abajo).
 
 ### Correcciones tras la revisión
 
@@ -175,9 +175,16 @@ Una revisión contra la especificación encontró un problema grave antes de pub
   (`f9e66c1`). Se agregó la prueba del camino completo de recuperación.
 - **Confirmar una cuenta a mano:** la guía documenta cómo hacerlo con la API de administración
   (`email_confirm`), sin guardar la clave secreta (`4c06fab`).
-- **Botón de reenvío:** funciona sin Supabase configurado, no bloquea tras un error de conexión, usa
-  el correo escrito y solo aparece en sus tres casos (`c183a03`).
+- **Botón de reenvío:** sin Supabase configurado muestra el aviso de acceso no configurado (antes
+  fallaba sin mensaje), no bloquea tras un error de conexión, usa el correo escrito y solo aparece en
+  sus tres casos (`c183a03`).
 - **Origen de las peticiones:** `/auth/confirm` compara también el protocolo (`f0e3197`).
+
+Una segunda revisión dio "aprobado con pendientes", solo con hallazgos bajos, también corregidos
+(`37f6cac`): la prueba del clic durante la espera cuenta las peticiones; el runbook pide la clave
+secreta sin que quede en el historial de la terminal y explica cómo quitar un bloqueo. Queda como
+observación aceptada: si Supabase responde con un error 5xx al reenviar, se muestra el mensaje neutro
+y empieza la espera aunque quizá no se envió el correo.
 
 ### Verificación realizada
 
@@ -195,7 +202,8 @@ Todo está en `docs/punto1-cuentas-correo.md` (llega con la misma rama):
 1. Elegir dominio y proveedor de correo; publicar SPF, DKIM y DMARC; desactivar el seguimiento de
    enlaces del proveedor.
 2. En Supabase: SMTP propio, subir el límite de correos por hora (con SMTP propio empieza en 30),
-   pegar las dos plantillas, Redirect URLs `/auth/callback` y contraseña mínima de 8.
+   pegar las dos plantillas, Site URL de producción (las plantillas arman su enlace con ella),
+   Redirect URLs `/auth/callback` y contraseña mínima de 8.
 3. Prueba con buzones reales (Gmail y Outlook).
 
 La protección contra contraseñas filtradas solo existe en el plan Pro o superior de Supabase; si el
