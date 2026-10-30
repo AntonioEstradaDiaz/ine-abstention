@@ -24,6 +24,17 @@
 .design-top [data-name="Secciones"] [data-name="Sección"][aria-current="page"] { color: #e5007e; background: #fce7f2; border-bottom-color: #e5007e; }
 .design-top .nav-section-icon { display: block; width: 18px; height: 18px; stroke: currentColor; }
 
+/* Factor rows must keep their own height; notes follow the complete list. */
+.app-shell .territory-metrics .territory-metrics-body[data-tab="Factores"] { display: block; overflow-y: auto; padding-bottom: 28px; scrollbar-width: thin; }
+.app-shell .territory-metrics-body[data-tab="Factores"] .territory-tab-view { display: flex; flex-direction: column; height: auto; min-height: 0; gap: 14px; }
+.app-shell .territory-metrics-body[data-tab="Factores"] .territory-tab-view > * { flex-shrink: 0; }
+.app-shell .territory-metrics-body[data-tab="Factores"] .territory-context-rows { flex: none; height: auto; min-height: 0; grid-auto-rows: auto; gap: 12px; }
+.app-shell .territory-metrics-body[data-tab="Factores"] .territory-context-rows > div { min-height: 70px; padding: 12px; grid-template-columns: 20px minmax(0,1fr) auto; gap: 10px; }
+.app-shell .territory-metrics-body[data-tab="Factores"] .territory-context-track { grid-column: 2 / 4; grid-row: 2; height: 10px; background: #f7dce9; }
+.app-shell .territory-metrics-body[data-tab="Factores"] .territory-context-track > span { background: #d00070; }
+.app-shell .territory-metrics-body[data-tab="Factores"] .territory-inline-note { position: static; margin: 0; }
+.territory-unspecified-help { padding: 12px; margin: 0; border: 1px solid #f5d1e5; border-radius: 12px; background: #fff2f9; color: #733454; font-size: 12px; line-height: 1.6; }
+
 /* Match the detail table height and distribute the comparison rows evenly. */
 .app-shell .analysis-bottom-grid { align-items: stretch; }
 .app-shell .analysis-bottom-grid > .analysis-comparison {
