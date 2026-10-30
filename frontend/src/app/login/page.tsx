@@ -1,17 +1,20 @@
 import { AuthScreen } from "@/components/auth-screen";
+import { EXPIRED_CONFIRMATION_NOTICE } from "@/lib/auth-flow";
 export default async function LoginPage({
   searchParams,
 }: {
   searchParams: Promise<{ error?: string; updated?: string }>;
 }) {
   const params = await searchParams;
+  const expired = params.error === "confirmation";
   return (
     <AuthScreen
       mode="login"
-      initialError={params.error === "confirmation"}
+      initialError={expired}
+      allowResend={expired}
       initialNotice={
-        params.error === "confirmation"
-          ? "El enlace no es válido o ya expiró. Solicita uno nuevo o inicia sesión si ya confirmaste tu correo."
+        expired
+          ? EXPIRED_CONFIRMATION_NOTICE
           : params.updated === "1"
             ? "Contraseña actualizada. Inicia sesión con tu nueva contraseña."
             : ""

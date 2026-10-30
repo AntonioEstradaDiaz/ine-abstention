@@ -5,6 +5,7 @@ import {
   EXPIRED_CONFIRMATION_NOTICE,
   EXPIRED_RECOVERY_NOTICE,
   RESEND_COOLDOWN_MS,
+  RESEND_NEEDS_EMAIL,
   confirmRedirectPath,
   linkKind,
   loginErrorNotice,
@@ -91,4 +92,9 @@ test("expired links and the confirmation page speak plain Spanish", () => {
   assert.match(EXPIRED_RECOVERY_NOTICE, /venció o ya se usó/);
   assert.equal(CONFIRM_PAGE_COPY.confirmation.title, "Confirma tu cuenta de Atlas");
   assert.ok(CONFIRM_PAGE_COPY.recovery.action.length > 0);
+});
+
+test("a resend without an email asks for it", () => {
+  assert.equal(RESEND_NEEDS_EMAIL.error, true);
+  assert.match(RESEND_NEEDS_EMAIL.text, /^Escribe tu correo/);
 });

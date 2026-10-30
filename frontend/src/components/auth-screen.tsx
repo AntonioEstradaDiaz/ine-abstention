@@ -1,5 +1,5 @@
 "use client";
-import { useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useRouter } from "next/navigation";
@@ -17,15 +17,30 @@ import {
 } from "lucide-react";
 import { authBrowser } from "@/lib/supabase/browser";
 import { authConfigured } from "@/lib/supabase/config";
+import {
+  RESEND_COOLDOWN_MS,
+  RESEND_NEEDS_EMAIL,
+  loginErrorNotice,
+  recoverNotice,
+  registerNotice,
+  resendLabel,
+  resendNotice,
+  resendWaitSeconds,
+  type AuthErrorLike,
+  type AuthNotice,
+} from "@/lib/auth-flow";
 type Mode = "login" | "register" | "recover" | "reset";
 export function AuthScreen({
   mode,
   initialNotice = "",
   initialError = false,
+  allowResend = false,
 }: {
   mode: Mode;
   initialNotice?: string;
   initialError?: boolean;
+  /** Offer "Reenviar confirmación" from the start (expired confirmation link). */
+  allowResend?: boolean;
 }) {
   const router = useRouter();
   const [visible, setVisible] = useState(false),
@@ -34,10 +49,51 @@ export function AuthScreen({
     [busy, setBusy] = useState(false),
     [notice, setNotice] = useState(initialNotice),
     [failed, setFailed] = useState(initialError),
-    [info, setInfo] = useState<"privacy" | "terms" | "help" | null>(null);
+    [info, setInfo] = useState<"privacy" | "terms" | "help" | null>(null),
+    // Resend is offered after registering, after "email not confirmed" and on expired links.
+    [resendOffered, setResendOffered] = useState(allowResend),
+    [resendEmail, setResendEmail] = useState(""),
+    [resendAt, setResendAt] = useState(0),
+    [now, setNow] = useState(0),
+    [resending, setResending] = useState(false);
+  const form = useRef<HTMLFormElement>(null);
   const configured = authConfigured();
   const register = mode === "register",
     passwordMode = register || mode === "reset";
+  const resendWait = resendWaitSeconds(resendAt, now);
+  useEffect(() => {
+    if (resendWait <= 0) return;
+    const timer = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(timer);
+  }, [resendWait]);
+  const show = ({ text, error }: AuthNotice) => {
+    setFailed(error);
+    setNotice(text);
+  };
+  async function resend() {
+    if (resending || resendWait > 0) return;
+    const typed = form.current?.elements.namedItem("email");
+    const email =
+      resendEmail ||
+      (typed instanceof HTMLInputElement ? typed.value.trim() : "");
+    if (!email) return show(RESEND_NEEDS_EMAIL);
+    setResending(true);
+    try {
+      const { error } = await authBrowser()
+        .auth.resend({
+          type: "signup",
+          email,
+          options: { emailRedirectTo: `${window.location.origin}/auth/confirm` },
+        })
+        .catch((thrown: AuthErrorLike) => ({ error: thrown }));
+      show(resendNotice(error));
+      const started = Date.now();
+      setNow(started);
+      setResendAt(started + RESEND_COOLDOWN_MS);
+    } finally {
+      setResending(false);
+    }
+  }
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (busy) return;
@@ -68,52 +124,46 @@ export function AuthScreen({
           email,
           password,
         });
-        if (error)
-          throw new Error(
-            error.code === "email_not_confirmed"
-              ? "Confirma tu correo antes de iniciar sesión."
-              : error.status === 429
-                ? "Demasiados intentos. Espera unos minutos."
-                : "No pudimos iniciar sesión. Revisa tu correo y contraseña.",
-          );
+        if (error) {
+          const result = loginErrorNotice(error);
+          show(result);
+          if (result.canResend) {
+            setResendEmail(email);
+            setResendOffered(true);
+          }
+          return;
+        }
         router.replace("/");
         router.refresh();
       } else if (register) {
+        // Email links go to /auth/confirm (token_hash), which works on any device.
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
-            emailRedirectTo: `${origin}/auth/callback`,
+            emailRedirectTo: `${origin}/auth/confirm`,
             data: {
               first_name: String(fields.get("first_name") ?? "").trim(),
               last_name: String(fields.get("last_name") ?? "").trim(),
             },
           },
         });
-        if (error)
-          throw new Error(
-            error.status === 429
-              ? "Se alcanzó el límite de registros. Intenta más tarde."
-              : "No se pudo crear la cuenta. Revisa los datos o contacta al administrador.",
-          );
-        if (data.session) {
+        if (!error && data.session) {
           router.replace("/");
           router.refresh();
-        } else
-          setNotice(
-            "Si el correo permite el registro, recibirás un enlace para confirmar tu cuenta. Revisa también la carpeta de spam.",
-          );
+          return;
+        }
+        const result = registerNotice(error);
+        show(result);
+        if (result.canResend) {
+          setResendEmail(email);
+          setResendOffered(true);
+        }
       } else if (mode === "recover") {
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: `${origin}/auth/callback?next=/reset-password`,
+          redirectTo: `${origin}/auth/confirm`,
         });
-        if (error)
-          throw new Error(
-            "No se pudo solicitar la recuperación. Intenta más tarde.",
-          );
-        setNotice(
-          "Si existe una cuenta con ese correo, recibirás un enlace para restablecer tu contraseña.",
-        );
+        show(recoverNotice(error));
       } else {
         const { error } = await supabase.auth.updateUser({ password });
         if (error)
@@ -199,7 +249,7 @@ export function AuthScreen({
               acceso.
             </p>
           )}
-          <form onSubmit={submit}>
+          <form ref={form} onSubmit={submit}>
             {register && (
               <div className="auth-name-row">
                 <label>
@@ -335,6 +385,16 @@ export function AuthScreen({
               >
                 {!failed && <Check size={18} />} {notice}
               </p>
+            )}
+            {resendOffered && (mode === "login" || register) && (
+              <button
+                className="auth-resend"
+                type="button"
+                onClick={resend}
+                aria-disabled={resending || resendWait > 0}
+              >
+                {resending ? "Enviando…" : resendLabel(resendWait)}
+              </button>
             )}
             <button
               className="auth-primary"

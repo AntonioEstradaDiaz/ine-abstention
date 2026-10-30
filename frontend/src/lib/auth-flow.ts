@@ -56,6 +56,11 @@ export function resendNotice(error: AuthErrorLike): AuthNotice {
   return { text: RESEND_SENT, error: false };
 }
 
+export const RESEND_NEEDS_EMAIL: AuthNotice = {
+  text: "Escribe tu correo para que te enviemos un nuevo enlace.",
+  error: true,
+};
+
 export function recoverNotice(error: AuthErrorLike): AuthNotice {
   if (!error)
     return {
