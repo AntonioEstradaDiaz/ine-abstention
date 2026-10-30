@@ -97,7 +97,7 @@ test("official analysis agrees with observed map, forecasts and weighted nationa
     await page
       .getByRole("button", { name: "Predicciones", exact: true })
       .click();
-    await expect(page.locator(".forecast-territory-name")).toHaveText(forecast.name);
+    await expect(page.locator(".prediction-state-name")).toHaveText(forecast.name);
     await expect(
       page.getByRole("article", {
         name: "Abstención estimada 2027",
