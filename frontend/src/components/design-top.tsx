@@ -71,11 +71,11 @@ export function DesignTop({
           data-name="Instituto Nacional Electoral"
         >
           <img
-            src="/design-top/logo-ine.png"
+            src="/brand/ine-institucional.png"
             alt="INE · Instituto Nacional Electoral"
             className="ine-brand-logo"
-            width={2172}
-            height={724}
+            width={960}
+            height={296}
           />
         </div>
         <nav
