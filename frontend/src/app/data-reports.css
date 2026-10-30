@@ -1099,3 +1099,60 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* Data summary: institutional magenta accent and clear numeric hierarchy. */
+.data-center .page-kpis[aria-label="Resumen de datos"] { gap: 16px; align-items: stretch; }
+.data-center .page-kpis[aria-label="Resumen de datos"] .page-kpi {
+  position: relative;
+  display: block;
+  container-type: inline-size;
+  min-width: 0;
+  min-height: 190px;
+  padding: 22px 18px;
+  border: 1px solid #f9d9ea;
+  border-top: 3px solid #ed008c;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #fff 70%, #fff9fc);
+  box-shadow: 0 8px 24px #ce006b0c;
+}
+.data-center .page-kpis[aria-label="Resumen de datos"] .page-kpi-icon {
+  position: absolute;
+  top: 18px;
+  right: 16px;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  color: #e5007e;
+  background: #fff0f7;
+}
+.data-center .page-kpis[aria-label="Resumen de datos"] .page-kpi-icon svg { width: 28px; height: 28px; stroke-width: 1.8; }
+.data-center .page-kpis[aria-label="Resumen de datos"] .page-kpi-title {
+  min-height: 48px;
+  padding-right: 54px;
+  margin: 0 0 12px;
+  color: #91476e;
+  font-size: 14px;
+  line-height: 1.4;
+}
+.data-center .page-kpis[aria-label="Resumen de datos"] .page-kpi-details { display: block; }
+.data-center .page-kpis[aria-label="Resumen de datos"] .page-kpi-value { gap: 12px; }
+.data-center .page-kpis[aria-label="Resumen de datos"] .page-kpi-value strong {
+  color: #650d43;
+  font-size: clamp(36px, 20cqi, 54px);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -1px;
+  overflow-wrap: normal;
+}
+.data-center .page-kpis[aria-label="Resumen de datos"] .page-kpi:last-child .page-kpi-value strong {
+  font-size: clamp(22px, 11cqi, 34px);
+  letter-spacing: -0.6px;
+}
+.data-center .page-kpis[aria-label="Resumen de datos"] .page-kpi-value > span {
+  color: #91476e;
+  font-size: 13px;
+  line-height: 1.5;
+}
+@media (min-width: 1001px) and (max-width: 1500px) {
+  .data-center .page-kpis[aria-label="Resumen de datos"] { grid-template-columns: repeat(2,minmax(0,1fr)); }
+}

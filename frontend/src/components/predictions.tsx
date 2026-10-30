@@ -3,6 +3,8 @@ import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   ArrowRight,
+  CalendarDays,
+  FileText,
   ChartSpline,
   GitBranch,
   Gauge,
@@ -339,7 +341,7 @@ export function PredictionsView({
         </SectionCard>
         <AiAssistant context={assistantContext} />
       </div>
-      <div className="section-grid-4">
+      <div className="section-grid-4 prediction-details">
         <section
           className="section-card forecast-card"
           aria-labelledby="forecast-territory-title"
@@ -347,8 +349,8 @@ export function PredictionsView({
           <header className="section-card-heading">
             <MapPin className="section-card-icon" aria-hidden="true" />
             <div>
-              <span className="section-eyebrow">Estimación territorial</span>
-              <h2 id="forecast-territory-title">{p.name}</h2>
+              <h2 id="forecast-territory-title">Estimación territorial</h2>
+              <p className="prediction-state-name">{p.name}</p>
             </div>
           </header>
           <div className="forecast-gauge">
@@ -372,13 +374,9 @@ export function PredictionsView({
             <span>Nivel de riesgo</span>
             <RiskBadge risk={p.risk_level} />
           </div>
-          <div className="forecast-risk">
+          <div className="prediction-risk-options">
             <span>Posibles en la banda</span>
-            <strong>
-              {p.uncertainty.risk_levels_possible
-                .map((r) => riskLabels[r])
-                .join(" · ")}
-            </strong>
+            <div>{p.uncertainty.risk_levels_possible.map((risk) => <RiskBadge key={risk} risk={risk} />)}</div>
           </div>
           <Note>
             {p.uncertainty.classification_uncertain
@@ -389,7 +387,7 @@ export function PredictionsView({
         <SectionCard
           id="explanation-title"
           icon={GitBranch}
-          title="Qué sostiene esta estimación"
+          title="Qué sostiene la estimación"
           subtitle={`Última elección del mismo tipo · ${p.explanation.reference_year}`}
         >
           <div className="formula">
@@ -399,11 +397,11 @@ export function PredictionsView({
           </div>
           <dl className="section-facts">
             <div>
-              <dt>No votantes (NV)</dt>
+              <Users aria-hidden="true" /><dt>No votantes (NV)</dt>
               <dd>{number(p.explanation.nonvoter_count)}</dd>
             </div>
             <div>
-              <dt>Participación conocida</dt>
+              <ChartSpline aria-hidden="true" /><dt>Participación conocida</dt>
               <dd>
                 {number(
                   p.explanation.voter_count + p.explanation.nonvoter_count,
@@ -413,7 +411,7 @@ export function PredictionsView({
           </dl>
           <SourceLink id={p.explanation.source_id} sources={sources} />
           <p className="section-card-note">
-            Identidad exacta del baseline; no es un efecto causal.
+            <FileText size={20} aria-hidden="true" /> Identidad exacta del baseline; no es un efecto causal.
           </p>
         </SectionCard>
         <SectionCard
@@ -427,22 +425,19 @@ export function PredictionsView({
               <li key={row.label}>
                 <row.icon aria-hidden="true" />
                 <span>{row.label}</span>
-                <i aria-hidden="true">
-                  <b style={{ width: `${Math.max(2, row.bar * 100)}%` }} />
-                </i>
                 <strong>{row.value}</strong>
               </li>
             ))}
           </ul>
           <p className="section-card-note">
-            {context.same_type_history_count} elecciones comparables en el
+            <ChartSpline size={20} aria-hidden="true" /> {context.same_type_history_count} elecciones comparables en el
             histórico.
           </p>
         </SectionCard>
         <SectionCard
           id="validation-title"
           icon={Target}
-          title="Modelo y validación temporal"
+          title="Modelo y validación"
           subtitle="Desarrollo 2018/2021 · prueba final 2024"
         >
           <Status
@@ -454,15 +449,15 @@ export function PredictionsView({
             <>
               <div className="model-stats">
                 <div>
-                  <span>Modelo seleccionado</span>
+                  <Target size={20} aria-hidden="true" /><span>Modelo seleccionado</span>
                   <strong>{model.model_name}</strong>
                 </div>
                 <div>
-                  <span>MAE · 2024</span>
+                  <ChartSpline size={20} aria-hidden="true" /><span>MAE · 2024</span>
                   <strong>{ppAbs(model.metrics.holdout_2024.mae_pp)}</strong>
                 </div>
               </div>
-              <table className="section-table compact">
+              <div className="prediction-model-table"><table className="section-table compact">
                 <thead>
                   <tr>
                     <th>Modelo</th>
@@ -484,11 +479,11 @@ export function PredictionsView({
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </table></div>
             </>
           )}
           <p className="section-card-note">
-            Generado el{" "}
+            <CalendarDays size={20} aria-hidden="true" /> Generado el{" "}
             {new Date(forecast.created_at).toLocaleDateString("es-MX", {
               day: "2-digit",
               month: "short",

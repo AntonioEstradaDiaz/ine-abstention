@@ -199,7 +199,7 @@ test("trends compare only matching elections and retain territorial selection", 
     fullPage: true,
   });
   await page.getByRole("button", { name: "Predicciones", exact: true }).click();
-  await expect(page.locator(".forecast-card h2")).toHaveText("BAJA CALIFORNIA");
+  await expect(page.locator(".prediction-state-name")).toHaveText("BAJA CALIFORNIA");
   await expect(
     page.getByText("MAE prueba 2024", { exact: true }),
   ).toBeVisible();
