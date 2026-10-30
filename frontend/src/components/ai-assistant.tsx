@@ -253,7 +253,7 @@ export function AiAssistant({
               aria-label="Año objetivo del asistente"
               type="number"
               min={cutoff + 1}
-              max={2100}
+              max={2029}
               step={1}
               value={
                 yearInput ?? String(baseContext?.forecast.target_year ?? "")
@@ -264,7 +264,7 @@ export function AiAssistant({
           </label>
           <label>
             Tipo de referencia
-            <select
+            <DashboardSelect
               aria-label="Tipo de elección del asistente"
               value={
                 electionType ?? baseContext?.forecast.election_type ?? "midterm"
@@ -273,7 +273,7 @@ export function AiAssistant({
             >
               <option value="midterm">Intermedia</option>
               <option value="presidential">Presidencial</option>
-            </select>
+            </DashboardSelect>
           </label>
           <button type="submit" disabled={!baseContext}>
             Calcular proyección
@@ -304,6 +304,10 @@ export function AiAssistant({
               Referencia {projection.referenceYear} · Corte{" "}
               {projection.cutoffYear} · INE CCPC, fuente {projection.sourceId}
             </small>
+            {projection.lower != null && projection.upper != null && (
+              <p className="ai-projection-band">Rango de abstención: {(projection.lower * 100).toFixed(1)}% – {(projection.upper * 100).toFixed(1)}%</p>
+            )}
+            <p>{projection.method}</p>
             <p>{projection.warning}</p>
           </div>
         )}

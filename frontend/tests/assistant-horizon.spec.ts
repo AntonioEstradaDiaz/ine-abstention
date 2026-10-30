@@ -25,15 +25,16 @@ test("assistant calculates a selected horizon and clears the previous conversati
   await expect(assistant.getByLabel("Proyección del asistente")).toContainText(
     "2027",
   );
-  await assistant.getByLabel("Año objetivo del asistente").fill("2030");
+  await assistant.getByLabel("Año objetivo del asistente").fill("2028");
   await assistant
     .getByLabel("Tipo de elección del asistente")
-    .selectOption("presidential");
+    .click();
+  await page.getByRole("option", { name: "Presidencial", exact: true }).click();
   await assistant
     .getByRole("button", { name: "Calcular proyección", exact: true })
     .click();
   const result = assistant.getByLabel("Proyección del asistente");
-  await expect(result).toContainText("Proyección de referencia · 2030");
+  await expect(result).toContainText("Proyección de referencia · 2028");
   await expect(result).toContainText(
     `${((100 * row.nonvoter_count) / (row.voter_count + row.nonvoter_count)).toFixed(1)}%`,
   );
@@ -45,15 +46,21 @@ test("assistant calculates a selected horizon and clears the previous conversati
     .click();
   await expect(
     assistant.locator('.ai-message[data-role="assistant"]').last(),
-  ).toContainText("2030");
-  await assistant.getByLabel("Año objetivo del asistente").fill("2036");
+  ).toContainText("2028");
+  await assistant.getByLabel("Año objetivo del asistente").fill("2029");
   await assistant
     .getByRole("button", { name: "Calcular proyección", exact: true })
     .click();
   await expect(assistant.locator('.ai-message[data-role="user"]')).toHaveCount(
     0,
   );
-  await expect(result).toContainText("2036");
+  await expect(result).toContainText("2029");
+  await expect(result).toContainText("Rango de abstención:");
+  await expect(result).not.toContainText("no hay banda");
+  await assistant.getByLabel("Año objetivo del asistente").fill("2030");
+  await assistant.getByRole("button", {name: "Calcular proyección", exact: true}).click();
+  await expect(result).toContainText("2029");
+  await expect(assistant.getByLabel("Año objetivo del asistente")).toHaveAttribute("max", "2029");
 });
 
 test("assistant rejects malformed horizons before contacting an AI provider", async ({
@@ -61,8 +68,9 @@ test("assistant rejects malformed horizons before contacting an AI provider", as
 }) => {
   for (const payload of [
     { target_year: 2020 },
-    { target_year: 2030.5 },
-    { target_year: 2030, election_type: "invalid" },
+    { target_year: 2030 },
+    { target_year: 2028.5 },
+    { target_year: 2028, election_type: "invalid" },
   ]) {
     const response = await request.post("/api/assistant", {
       data: {
