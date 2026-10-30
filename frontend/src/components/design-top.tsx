@@ -1,17 +1,12 @@
 "use client";
+import { Map, PersonStanding, Route, Milestone, FileText, ClipboardList } from "lucide-react";
 import { Notifications, type Notice } from "./notifications";
 import { ElectoralKpis } from "./electoral-kpis";
 import { DashboardSelect } from "./ui/dashboard-select";
 import type { Prediction } from "@/lib/types";
 const imgBell = "/design-top/7872e.svg";
 const imgCalendarDays = "/design-top/b20a3.svg";
-const imgClipboardList = "/design-top/e1ab8.svg";
-const imgFileText = "/design-top/18de6.svg";
-const imgMap = "/design-top/0a096.svg";
-const imgMilestone = "/design-top/21e47.svg";
 const imgNotificacionNueva = "/design-top/4054b.svg";
-const imgPersonStanding = "/design-top/bffeb.svg";
-const imgRoute = "/design-top/aed99.svg";
 const imgSearch = "/design-top/9128a.svg";
 const imgSlidersHorizontal = "/design-top/d692b.svg";
 type View =
@@ -103,11 +98,7 @@ export function DesignTop({
               data-node-id="10:13385"
               data-name="map"
             >
-              <img
-                alt=""
-                className="absolute block inset-0 max-w-none size-full"
-                src={imgMap}
-              />
+              <Map className="nav-section-icon" aria-hidden="true" />
             </div>
             <p
               className="[word-break:break-word] font-['Roboto:Regular'] font-normal leading-[normal] relative shrink-0 text-[#e5007e] text-[12px] whitespace-nowrap"
@@ -133,11 +124,7 @@ export function DesignTop({
               data-node-id="10:13388"
               data-name="person-standing"
             >
-              <img
-                alt=""
-                className="absolute block inset-0 max-w-none size-full"
-                src={imgPersonStanding}
-              />
+              <PersonStanding className="nav-section-icon" aria-hidden="true" />
             </div>
             <p
               className="[word-break:break-word] font-['Roboto:Regular'] font-normal leading-[normal] relative shrink-0 text-[#101016] text-[12px] whitespace-nowrap"
@@ -161,11 +148,7 @@ export function DesignTop({
               data-node-id="10:13391"
               data-name="route"
             >
-              <img
-                alt=""
-                className="absolute block inset-0 max-w-none size-full"
-                src={imgRoute}
-              />
+              <Route className="nav-section-icon" aria-hidden="true" />
             </div>
             <p
               className="[word-break:break-word] font-['Roboto:Regular'] font-normal leading-[normal] relative shrink-0 text-[#101016] text-[12px] whitespace-nowrap"
@@ -189,11 +172,7 @@ export function DesignTop({
               data-node-id="10:13394"
               data-name="milestone"
             >
-              <img
-                alt=""
-                className="absolute block inset-0 max-w-none size-full"
-                src={imgMilestone}
-              />
+              <Milestone className="nav-section-icon" aria-hidden="true" />
             </div>
             <p
               className="[word-break:break-word] font-['Roboto:Regular'] font-normal leading-[normal] relative shrink-0 text-[#101016] text-[12px] whitespace-nowrap"
@@ -217,11 +196,7 @@ export function DesignTop({
               data-node-id="10:13397"
               data-name="file-text"
             >
-              <img
-                alt=""
-                className="absolute block inset-0 max-w-none size-full"
-                src={imgFileText}
-              />
+              <FileText className="nav-section-icon" aria-hidden="true" />
             </div>
             <p
               className="[word-break:break-word] font-['Roboto:Regular'] font-normal leading-[normal] relative shrink-0 text-[#101016] text-[12px] whitespace-nowrap"
@@ -245,11 +220,7 @@ export function DesignTop({
               data-node-id="10:13400"
               data-name="clipboard-list"
             >
-              <img
-                alt=""
-                className="absolute block inset-0 max-w-none size-full"
-                src={imgClipboardList}
-              />
+              <ClipboardList className="nav-section-icon" aria-hidden="true" />
             </div>
             <p
               className="[word-break:break-word] font-['Roboto:Regular'] font-normal leading-[normal] relative shrink-0 text-[#101016] text-[12px] whitespace-nowrap"

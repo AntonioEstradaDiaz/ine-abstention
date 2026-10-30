@@ -1,0 +1,27 @@
+/* Panels follow their content instead of stretching to their neighbours. */
+.app-shell .analysis-bottom-grid,
+.app-shell .predictions-main { align-items: start; }
+.app-shell .analysis-bottom-grid > .analysis-comparison,
+.app-shell .predictions-main > .forecast-chart-card { height: auto; min-height: 0; align-self: start; }
+.app-shell .forecast-chart-card .section-card-note { margin: 8px 0 0; }
+.app-shell .territory-metrics .territory-metrics-body[data-tab="Resumen"] {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 16px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+.app-shell .territory-metrics-body[data-tab="Resumen"] > * { flex-shrink: 0; }
+.app-shell .territory-metrics-body[data-tab="Resumen"] .territory-metric-grid { min-height: 170px; margin: 0; }
+.app-shell .territory-metrics-body[data-tab="Resumen"] .territory-gauge { min-height: 170px; }
+.app-shell .territory-metrics-body[data-tab="Resumen"] > .territory-context-rows { height: auto; grid-auto-rows: auto; gap: 14px; }
+.app-shell .territory-context-rows > div { grid-template-columns: 20px minmax(0,1fr) 70px; gap: 8px; padding: 10px; border-radius: 10px; background: #fff5fa; }
+.app-shell .territory-context-rows > div > span:nth-child(2),
+.app-shell .territory-context-rows strong { font-size: 12px; }
+.app-shell .territory-context-rows strong { grid-column: 3; grid-row: 1; }
+.app-shell .territory-context-track { grid-column: 2 / -1; grid-row: 2; height: 12px; }
+.design-top [data-name="Secciones"] [data-name="Sección"] { color: #182237; border-bottom: 3px solid transparent; background: transparent; }
+.design-top [data-name="Secciones"] [data-name="Sección"] p { color: inherit; }
+.design-top [data-name="Secciones"] [data-name="Sección"][aria-current="page"] { color: #e5007e; background: #fce7f2; border-bottom-color: #e5007e; }
+.design-top .nav-section-icon { display: block; width: 18px; height: 18px; stroke: currentColor; }
