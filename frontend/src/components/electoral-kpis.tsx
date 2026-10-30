@@ -1,72 +1,40 @@
 "use client";
-import { UsersRound, TriangleAlert, Building2, BetweenHorizontalStart } from "lucide-react";
+import { UsersRound, TriangleAlert, Building2, MoveHorizontal } from "lucide-react";
 import type { Prediction } from "@/lib/types";
 import { pct, riskLabels } from "@/lib/utils";
+import styles from "./electoral-kpis.module.css";
 
-export function ElectoralKpis({
-  states = [],
-  selected,
-}: {
-  states?: Prediction[];
-  selected?: string;
-}) {
+export function ElectoralKpis({ states = [], selected }: { states?: Prediction[]; selected?: string }) {
   const state = states.find((item) => item.state_code === selected);
   const high = states.filter((item) => item.risk_level === "high").length;
   const metrics = [
-    {
-      title: "Participación estimada 2027",
-      value: state ? pct(1 - state.predicted) : "—",
-      reference: state?.name ?? "Consultando territorio",
-      icon: UsersRound,
-    },
-    {
-      title: "Abstención estimada 2027",
-      value: state ? pct(state.predicted) : "—",
-      reference: state
-        ? `Riesgo ${riskLabels[state.risk_level].toLowerCase()}`
-        : "Sin estimación",
-      icon: TriangleAlert,
-    },
-    {
-      title: "Entidades en riesgo alto",
-      value: states.length ? `${high} de ${states.length}` : "—",
-      reference: "Clasificación estatal relativa",
-      icon: Building2,
-    },
-    {
-      title: "Banda de abstención 2027",
-      value: state ? `${pct(state.lower)} – ${pct(state.upper)}` : "—",
-      reference: "Sin cobertura futura garantizada",
-      icon: BetweenHorizontalStart,
-    },
+    { title: "Participación estimada 2027", icon: UsersRound, reference: state?.name ?? "Consultando territorio" },
+    { title: "Abstención estimada 2027", icon: TriangleAlert, reference: "Complemento de la participación" },
+    { title: "Entidades en riesgo alto", icon: Building2, reference: "Clasificación estatal relativa" },
+    { title: "Banda de abstención 2027", icon: MoveHorizontal, reference: "Sin cobertura futura garantizada" },
   ];
   return (
-    <div className="reference-kpis" data-name="Indicadores clave">
+    <div className={styles.grid} data-name="Indicadores clave">
       {metrics.map((metric, index) => (
-        <article
-          className="reference-kpi"
-          data-name="Indicador electoral"
-          key={metric.title}
-          aria-label={metric.title}
-        >
-          <div className="reference-kpi-icon reference-kpi-icon-line" aria-hidden="true">
-            <metric.icon className="reference-kpi-symbol" strokeWidth={2} />
+        <article className={`${styles.card} ${index === 1 ? styles.featured : ""}`} key={metric.title} aria-label={metric.title}>
+          <header className={styles.header}>
+            <p>{metric.title}</p>
+            <span className={styles.icon} aria-hidden="true"><metric.icon size={24} strokeWidth={2} /></span>
+          </header>
+          <div className={`${styles.value} ${index === 3 ? styles.rangeValue : ""}`}>
+            {index === 2 ? <><strong>{states.length ? high : "—"}</strong>{states.length > 0 && <span>de {states.length}</span>}</>
+              : index === 3 ? <strong>{state ? <>{pct(state.lower)} <em>–</em> {pct(state.upper)}</> : "—"}</strong>
+              : <strong>{state ? pct(index === 0 ? 1 - state.predicted : state.predicted) : "—"}</strong>}
+            {index === 1 && <span className={styles.badge}><i />{state ? `Riesgo ${riskLabels[state.risk_level].toLowerCase()}` : "Sin estimación"}</span>}
           </div>
-          <div className="reference-kpi-body">
-            <p className="reference-kpi-title">{metric.title}</p>
-            <div className="reference-kpi-details">
-              <div className="reference-kpi-value">
-                <strong>{metric.value}</strong>
-                <span>{metric.reference}</span>
-              </div>
-            </div>
+          <div className={styles.visual} aria-hidden="true">
+            {index === 2 ? <div className={styles.dots}>{Array.from({ length: states.length }, (_, i) => <i key={i} data-active={i < high} />)}</div>
+              : <div className={styles.track}>
+                {state && <span className={index === 3 ? styles.interval : styles.fill} style={{ left: `${index === 3 ? state.lower * 100 : 0}%`, width: `${(index === 3 ? state.upper - state.lower : index === 0 ? 1 - state.predicted : state.predicted) * 100}%` }} />}
+                {index === 3 && state && <i className={styles.marker} style={{ left: `${state.predicted * 100}%` }} />}
+              </div>}
           </div>
-          <div className="kpi-mini-chart" aria-hidden="true">
-            {index === 2 ? <div className="kpi-dot-grid">{states.map((item) => <i key={item.state_code} data-active={item.risk_level === "high"} />)}</div> : <svg viewBox="0 0 100 50">
-              <rect x="0" y="20" width="100" height="12" rx="6" fill="#fce7f2" />
-              {state && <rect x={index === 3 ? state.lower * 100 : 0} y="20" width={(index === 3 ? state.upper - state.lower : index === 0 ? 1-state.predicted : state.predicted) * 100} height="12" rx="6" fill="#d00070" />}
-            </svg>}
-          </div>
+          <p className={styles.reference}>{metric.reference}</p>
         </article>
       ))}
     </div>
