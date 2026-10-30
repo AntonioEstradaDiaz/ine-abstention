@@ -52,7 +52,7 @@ export async function reportPdf(report: StateReport): Promise<Uint8Array> {
     const p = doc.addPage([595.28, 841.89]);
     p.drawRectangle({ x: 0, y: 0, width: 595.28, height: 841.89, color: rgb(0.97, 0.98, 0.99) });
     p.drawRectangle({ x: 28, y: 54, width: 539.28, height: 700, color: rgb(1, 1, 1), borderColor: rgb(0.9, 0.92, 0.95), borderWidth: 0.7 });
-    p.drawText("Atlas De La Participaci??n", { x: 40, y: 800, size: 10, font: bold, color: pink });
+    p.drawText("Atlas De La Participaci\u00f3n", { x: 40, y: 800, size: 10, font: bold, color: pink });
     p.drawText(report.state.name, { x: 40, y: 778, size: 17, font: bold, color: ink });
     p.drawLine({ start: { x: 40, y: 765 }, end: { x: 555, y: 765 }, color: pink, thickness: 2 });
     return p;
