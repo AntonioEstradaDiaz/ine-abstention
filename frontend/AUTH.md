@@ -103,10 +103,13 @@ Solo usar clave **publishable**, nunca `service_role` ni una clave secret. Estas
 
 ## Configuración en el proyecto
 
+Los pasos completos (proveedor de correo, DNS, Supabase, prueba con buzones reales y administración
+de cuentas) están en [`docs/punto1-cuentas-correo.md`](../docs/punto1-cuentas-correo.md). Resumen:
+
 1. Authentication → Providers: habilitar Email y confirmar que la confirmación de correo esté activada. Configurar contraseña mínima de 8 caracteres o superior.
-2. Authentication → URL Configuration: establecer Site URL como la URL de producción. Autorizar las redirecciones exactas `https://TU_DOMINIO/auth/callback` y `https://TU_DOMINIO/auth/callback?next=/reset-password`. Para desarrollo, agregar sus equivalentes con `http://127.0.0.1:3000`.
-3. Para confirmación de correo, se puede usar una plantilla con `{{ .RedirectTo }}` y el flujo PKCE del proveedor. Alternativa recomendada para confirmar en otro navegador: plantilla de confirmación con `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=signup` y plantilla de recuperación con `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=recovery`.
-4. Configurar SMTP propio para enviar a los evaluadores. El correo incorporado de Supabase tiene restricciones de destinatarios y frecuencia; no asumir que puede registrar a cualquier dirección sin SMTP.
+2. Authentication → URL Configuration: establecer Site URL como la URL de producción. Autorizar `https://TU_DOMINIO/auth/confirm` y, para enlaces antiguos, `https://TU_DOMINIO/auth/callback`. Para desarrollo, agregar sus equivalentes con `http://127.0.0.1:3000`.
+3. Plantillas de correo en español: pegar [`docs/auth/plantillas/confirmar-cuenta.html`](../docs/auth/plantillas/confirmar-cuenta.html) en "Confirm sign up" y [`docs/auth/plantillas/restablecer-contrasena.html`](../docs/auth/plantillas/restablecer-contrasena.html) en "Reset password". Sus enlaces usan `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email` (o `type=recovery`): funcionan en cualquier navegador y pasan por la página `/confirmar`, así que los escáneres de correo no gastan el enlace.
+4. Configurar SMTP propio para enviar a los evaluadores. El correo incorporado de Supabase solo envía a miembros del equipo del proyecto y como máximo 2 correos por hora; con SMTP propio el límite inicial es de 30 por hora y se ajusta en Rate Limits.
 5. Publicar el aviso de privacidad final y el contacto de ayuda de la instalación antes de abrir el registro. El texto de la interfaz es informativo para el prototipo, no un aviso institucional definitivo.
 6. Mantener deshabilitado el registro anónimo. No hace falta desactivar la confirmación por correo.
 
