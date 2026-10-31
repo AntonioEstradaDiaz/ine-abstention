@@ -181,6 +181,10 @@ export function Reports({
     `La tendencia descriptiva de su abstención es ${pp(context.abstention_trend_pp_per_year)} por año.`,
     `La banda de referencia va de ${pct(state.lower)} a ${pct(state.upper)}; no garantiza cobertura.`,
   ];
+  // The legend sits below the year labels: reserve one line per legend row so they never
+  // overlap. Up to four short entries fit in two rows on a phone-width card.
+  const legendRows = compare === "national" ? 2 : 1;
+  const chartBottom = 30 + legendRows * 18;
   const chart = {
     tooltip: {
       ...chartTooltip,
@@ -191,9 +195,12 @@ export function Reports({
       icon: "circle",
       itemWidth: 8,
       itemHeight: 8,
+      itemGap: 12,
       textStyle: { color: "#596D8D", fontSize: 10 },
+      // The state is already in the chart subtitle; the tooltip keeps the full name.
+      formatter: (series: string) => series.replace(`${name} · `, ""),
     },
-    grid: { left: 34, right: 22, top: 24, bottom: 40 },
+    grid: { left: 34, right: 22, top: 24, bottom: chartBottom },
     xAxis: {
       ...chartAxis,
       type: "category",
@@ -648,7 +655,7 @@ export function Reports({
                     <Chart
                       option={chart}
                       label={`Evolución de la ${variable === "abstention" ? "abstención" : "participación"} en ${name}`}
-                      height={200}
+                      height={160 + chartBottom}
                     />
                   )}
                 </section>
