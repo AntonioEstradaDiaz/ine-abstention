@@ -75,7 +75,9 @@ uv run python scripts/demo_bundle.py export
 uv run python scripts/export_source_provenance.py
 ```
 
-- `data/demo/` (paquete de demo) **no** se versiona.
+- `data/demo/` (paquete de demo) **no** se versiona como carpeta. Una copia verificada del paquete
+  actual viene en `tests/fixtures/ci.tar.gz` (la usa el CI); para obtenerla sin acceso a Supabase:
+  `uv run python scripts/ci_fixtures.py restore`.
 - `data/samples/ccpc_sources.json` **sí** se versiona: es la procedencia que muestra la app
   (huella, fechas, validación y versión del procesamiento, sin rutas locales).
 

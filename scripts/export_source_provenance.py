@@ -1,6 +1,7 @@
 """Exportar la procedencia de las fuentes CCPC del paquete de demo a un manifiesto versionado.
 
 Lee `data_sources` de `data/demo/snapshot.jsonl.gz` y escribe `data/samples/ccpc_sources.json`.
+El paquete se restaura con `scripts/ci_fixtures.py restore` (copia verificada que usa el CI).
 No exporta rutas locales (`local_archive`) ni el inventario de miembros del ZIP.
 """
 
