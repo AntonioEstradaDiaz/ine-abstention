@@ -253,6 +253,90 @@
 .data-explorer {
   gap: 12px;
 }
+/* Punto 4: versión y procedencia de los datos. */
+.data-provenance {
+  gap: 12px;
+}
+.data-provenance-origin {
+  margin: 0;
+  padding: 8px 12px;
+  border-radius: 9px;
+  background: #fdf3f9;
+  color: #596d8d;
+  font-size: 12px;
+}
+.data-provenance-origin strong {
+  color: #162b49;
+  font-weight: 600;
+}
+.data-provenance-scroll {
+  /* Contains the absolutely positioned .sr-only hashes so they cannot widen the page. */
+  position: relative;
+  max-height: none;
+}
+.data-provenance-scroll:focus-visible {
+  outline: 2px solid #e5007e;
+  outline-offset: 2px;
+}
+.section-page .data-provenance-table th[scope="row"] {
+  background: transparent;
+  border-radius: 0;
+  color: #162b49;
+  font-size: 12px;
+  border-bottom: 1px solid #f0f2f6;
+  white-space: nowrap;
+}
+.data-provenance-table td {
+  white-space: nowrap;
+}
+.section-page .data-provenance-table thead th {
+  white-space: normal;
+  vertical-align: bottom;
+}
+.data-provenance-table td small {
+  display: block;
+  margin-top: 2px;
+  color: #6d7e96;
+  font-size: 11px;
+}
+.data-provenance-table a {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  color: #d00072;
+}
+.data-provenance-dataset {
+  white-space: normal;
+}
+.data-provenance-hash {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.data-provenance-hash code {
+  font-size: 11px;
+  color: #162b49;
+}
+.data-provenance-hash button {
+  display: inline-flex;
+  padding: 4px;
+  border: 1px solid #dce2eb;
+  border-radius: 6px;
+  background: #fff;
+  color: #596d8d;
+  cursor: pointer;
+}
+.data-provenance-hash button:hover,
+.data-provenance-hash button:focus-visible {
+  border-color: #e5007e;
+  color: #d00072;
+}
+.data-provenance-copied {
+  min-height: 1em;
+  margin: 0;
+  color: #596d8d;
+  font-size: 12px;
+}
 .data-search {
   display: flex;
   align-items: center;
