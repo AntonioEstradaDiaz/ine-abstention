@@ -92,7 +92,7 @@ test("each link outcome goes to a fixed screen", () => {
 test("expired links and the confirmation page speak plain Spanish", () => {
   assert.match(EXPIRED_CONFIRMATION_NOTICE, /no es válido o ya expiró/);
   assert.match(EXPIRED_RECOVERY_NOTICE, /venció o ya se usó/);
-  assert.equal(CONFIRM_PAGE_COPY.confirmation.title, "Confirma tu cuenta de Atlas");
+  assert.equal(CONFIRM_PAGE_COPY.confirmation.title, "Confirma tu cuenta de Atlas De La Participación");
   assert.ok(CONFIRM_PAGE_COPY.recovery.action.length > 0);
 });
 

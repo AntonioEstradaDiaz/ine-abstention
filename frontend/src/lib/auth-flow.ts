@@ -83,7 +83,7 @@ export const EXPIRED_RECOVERY_NOTICE =
 
 export const CONFIRM_PAGE_COPY = {
   confirmation: {
-    title: "Confirma tu cuenta de Atlas",
+    title: "Confirma tu cuenta de Atlas De La Participación",
     text: "Pulsa el botón para terminar de confirmar tu correo y entrar.",
     action: "Confirmar mi cuenta",
   },

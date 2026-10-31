@@ -1,4 +1,4 @@
-# Punto 1 · Cuentas y correos (Atlas · Equipo Pumpkin)
+# Punto 1 · Cuentas y correos (Atlas De La Participación · Equipo Pumpkin)
 
 Runbook para dejar el registro, la confirmación y la recuperación de cuentas funcionando con
 correos reales, y para administrar cuentas desde Supabase.
@@ -9,7 +9,7 @@ el 30 de octubre de 2026.
 
 ## Qué cambia para la persona usuaria
 
-- Se registra con su correo y recibe un correo en español: "Confirma tu cuenta de Atlas".
+- Se registra con su correo y recibe un correo en español: "Confirma tu cuenta de Atlas De La Participación".
 - El enlace funciona en cualquier navegador o dispositivo. Abre la página `/confirmar` con un botón;
   el enlace solo se usa al pulsar el botón, así que los escáneres de correo (como Safe Links de
   Outlook) no lo gastan.
@@ -44,15 +44,15 @@ Pasos con el proveedor:
 ## 2. Supabase Auth
 
 1. **SMTP** (Authentication → SMTP Settings): activar el SMTP propio con host, puerto (normalmente
-   587), usuario, contraseña, remitente `no-responder@<dominio>` y nombre del remitente **Atlas**.
+   587), usuario, contraseña, remitente `no-responder@<dominio>` y nombre del remitente **Atlas De La Participación**.
 2. **Rate Limits** (Authentication → Rate Limits): al activar SMTP propio el límite inicial es de
    **30 correos por hora**. Subirlo según lo esperado en el hackatón (p. ej. 100 por hora). Los
    intervalos por usuario de confirmación y recuperación son de 60 s por defecto: dejarlos así,
    coinciden con la espera del botón de reenvío.
 3. **Email Templates** (Authentication → Email Templates):
-   - **Confirm sign up**: asunto "Confirma tu cuenta de Atlas"; cuerpo de
+   - **Confirm sign up**: asunto "Confirma tu cuenta de Atlas De La Participación"; cuerpo de
      [`docs/auth/plantillas/confirmar-cuenta.html`](auth/plantillas/confirmar-cuenta.html).
-   - **Reset password**: asunto "Restablece tu contraseña de Atlas"; cuerpo de
+   - **Reset password**: asunto "Restablece tu contraseña de Atlas De La Participación"; cuerpo de
      [`docs/auth/plantillas/restablecer-contrasena.html`](auth/plantillas/restablecer-contrasena.html).
    - Pegar solo el `<div>` (el comentario del inicio es para el repositorio) y escribir el asunto en
      el campo de asunto de cada plantilla.
@@ -85,9 +85,9 @@ Dos personas del equipo, una con Gmail y otra con Outlook, después de desplegar
 
 1. Registrarse en `/registro`.
 2. Comprobar que el correo llega a la **bandeja de entrada** (no a spam) en menos de 2 minutos, en
-   español, con el nombre Atlas y sin logotipo del INE.
+   español, con el nombre Atlas De La Participación y sin logotipo del INE.
 3. Abrir el enlace **en otro dispositivo** (p. ej. el celular): debe mostrar "Confirma tu cuenta de
-   Atlas" y, tras el botón, entrar al dashboard.
+   Atlas De La Participación" y, tras el botón, entrar al dashboard.
 4. Antes de confirmar, intentar iniciar sesión: debe pedir confirmar el correo y ofrecer el reenvío.
 5. Pedir el reenvío dos veces seguidas: la segunda debe esperar.
 6. Abrir de nuevo un enlace ya usado: debe volver al inicio de sesión con el mensaje de enlace
@@ -99,9 +99,9 @@ Dos personas del equipo, una con Gmail y otra con Outlook, después de desplegar
 Las cuentas de demo del README usan correos ficticios: siguen entrando con su contraseña, pero no
 pueden recuperar la contraseña por correo.
 
-## 4. Administración de cuentas (sin rol de administrador en Atlas)
+## 4. Administración de cuentas (sin rol de administrador en Atlas De La Participación)
 
-Todas las cuentas de Atlas son iguales; el equipo administra desde el panel de Supabase.
+Todas las cuentas de Atlas De La Participación son iguales; el equipo administra desde el panel de Supabase.
 
 | Tarea | Cómo | Nota |
 |-------|------|------|
