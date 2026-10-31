@@ -114,7 +114,8 @@ for r in rows("territorial_predictions.csv"):
             ),
         )
     )
-sources = json.loads((root / "pipelines/ingestion/sources.json").read_text(encoding="utf-8"))
+# Provenance exported from the demo bundle by scripts/export_source_provenance.py.
+sources = json.loads((root / "data/samples/ccpc_sources.json").read_text(encoding="utf-8"))
 metrics = [
     dict(
         model_name=r["model_name"],
@@ -134,18 +135,8 @@ result = dict(
     history=history,
     predictions=dict(total=len(predictions), items=predictions, forecast=forecast),
     sources=dict(
-        total=6,
-        items=[
-            dict(
-                id=d["year"],
-                year=d["year"],
-                institution=sources["institution"],
-                dataset_name="CCPC " + str(d["year"]),
-                source_url=d["url"],
-                landing_url=sources["landing_url"],
-            )
-            for d in sources["datasets"]
-        ],
+        total=len(sources["sources"]),
+        items=[dict(id=d["year"], **d) for d in sources["sources"]],
     ),
     metrics=dict(run_id="preview-csv", selected_on_development="baseline_last", models=metrics),
 )
