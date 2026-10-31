@@ -19,7 +19,7 @@ export default async function ConfirmPage({
         <div className="auth-panel">
           <span className="auth-decor" aria-hidden="true" />
           <header>
-            <span className="auth-eyebrow">Atlas</span>
+            <span className="auth-eyebrow">Atlas De La Participación</span>
             <h1 id="confirm-title">{copy.title}</h1>
             <p>{copy.text}</p>
           </header>

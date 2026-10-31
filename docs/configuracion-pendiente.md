@@ -58,8 +58,9 @@ y como máximo 2 por hora**. Para que el jurado pueda registrarse con su propio 
 2. **En Supabase → Authentication:**
    - **SMTP Settings:** activar el SMTP propio con remitente "Atlas De La Participación".
    - **Rate Limits:** subir el límite de correos a unos 100 por hora (empieza en 30).
-   - **Email Templates:** pegar las plantillas "Confirma tu cuenta de Atlas" y "Restablece tu
-     contraseña de Atlas" de `docs/auth/plantillas/`.
+   - **Email Templates:** pegar las plantillas de `docs/auth/plantillas/`, con los asuntos
+     "Confirma tu cuenta de Atlas De La Participación" y "Restablece tu contraseña de Atlas De La
+     Participación".
    - **URL Configuration:** confirmar que la Site URL sea `https://pulso-electoral-demo.vercel.app` y
      autorizar en Redirect URLs `/auth/callback` y `/auth/callback?next=/reset-password`.
    - **Email provider:** contraseña mínima de 8 caracteres.
