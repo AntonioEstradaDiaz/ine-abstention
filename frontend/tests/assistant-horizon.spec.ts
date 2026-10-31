@@ -39,12 +39,7 @@ test("assistant calculates a selected horizon and clears the previous conversati
   await expect(result).toContainText(
     `${((100 * row.nonvoter_count) / (row.voter_count + row.nonvoter_count)).toFixed(1)}%`,
   );
-  await chat
-    .getByRole("button", {
-      name: "¿Cuál es la proyección del año seleccionado?",
-      exact: true,
-    })
-    .click();
+  await chat.locator(".ai-suggestions button").first().click();
   await expect(
     chat.locator('.ai-message[data-role="assistant"]').last(),
   ).toContainText("2028");

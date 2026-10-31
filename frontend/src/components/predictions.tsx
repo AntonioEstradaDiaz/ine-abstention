@@ -6,7 +6,6 @@ import {
   CalendarDays,
   FileText,
   ChartSpline,
-  GitBranch,
   Gauge,
   History,
   MapPin,
@@ -15,6 +14,7 @@ import {
   TrendingDown,
   Trophy,
   Users,
+  createLucideIcon,
 } from "lucide-react";
 import { api } from "@/lib/api";
 import { buildAssistantContext } from "@/lib/assistant";
@@ -27,6 +27,14 @@ import { ForecastValidation } from "./forecast-validation";
 import { SectionCard } from "./section-card";
 import { Note, RiskBadge, SourceLink, Status } from "./shared";
 
+// Lucide's current git-branch leaves the trunk without a top node, which reads as a cut-off icon.
+const BranchIcon = createLucideIcon("estimate-branch", [
+  ["circle", { cx: "6", cy: "5", r: "3", key: "top" }],
+  ["circle", { cx: "6", cy: "19", r: "3", key: "bottom" }],
+  ["circle", { cx: "18", cy: "7", r: "3", key: "side" }],
+  ["path", { d: "M6 8v8", key: "trunk" }],
+  ["path", { d: "M18 10a9 9 0 0 1-9 9", key: "branch" }],
+]);
 const ppAbs = (v: number | null | undefined) => pp(v).replace("+", "");
 export function PredictionsView({
   prediction: p,
@@ -390,7 +398,7 @@ export function PredictionsView({
         </section>
         <SectionCard
           id="explanation-title"
-          icon={GitBranch}
+          icon={BranchIcon}
           title="Qué sostiene la estimación"
           subtitle={`Última elección del mismo tipo · ${p.explanation.reference_year}`}
         >

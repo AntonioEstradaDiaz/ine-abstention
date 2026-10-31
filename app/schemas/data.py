@@ -23,6 +23,9 @@ class DataSourceRead(BaseModel):
     checksum: str
     byte_size: int
     license_notes: str
+    published_at: datetime | None = None
+    validation_status: str | None = None
+    pipeline_version: str | None = None
 
 
 class ElectionRead(BaseModel):

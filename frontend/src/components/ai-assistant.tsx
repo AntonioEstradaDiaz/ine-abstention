@@ -211,6 +211,7 @@ export function useAssistant(baseContext: AssistantContext | null) {
     baseContext,
     context,
     horizonError: horizon.error,
+    targetYear,
     cutoff,
     yearInput,
     setYearInput,
@@ -420,8 +421,9 @@ export function AssistantPanel({
 
 /** Full-width conversation card below the chart and the panel. */
 export function AssistantChat({ assistant }: { assistant: Assistant }) {
-  const { context, chat, notice, pending, online, status, provider } =
+  const { context, chat, notice, pending, online, status, provider, targetYear } =
     assistant;
+  const projection = context?.projection;
   const [draft, setDraft] = useState("");
   const log = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -529,7 +531,11 @@ export function AssistantChat({ assistant }: { assistant: Assistant }) {
       </div>
       {notice && <p className="ai-error-notice">{notice}</p>}
       <div className="ai-suggestions" aria-label="Preguntas sugeridas">
-        {suggestions.map((s) => (
+        {(context && projection && targetYear !== null ? [
+          `¿Cómo se calculó la estimación de ${context.state} para ${projection.targetYear} y qué datos la respaldan?`,
+          "¿Qué mecanismos de seguimiento permiten anticipar este escenario?",
+          "¿Qué señales de alerta debemos revisar y qué datos faltan?",
+        ] : suggestions).map((s) => (
           <button
             type="button"
             key={s}

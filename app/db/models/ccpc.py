@@ -1,4 +1,5 @@
 from datetime import date, datetime
+from email.utils import parsedate_to_datetime
 
 from sqlalchemy import (
     BigInteger,
@@ -38,6 +39,24 @@ class DataSource(Base):
     license_notes: Mapped[str] = mapped_column(Text)
     inventory: Mapped[dict] = mapped_column(JSONB)
     quality_report: Mapped[dict] = mapped_column(JSONB)
+
+    # Read-only provenance derived from the stored inventory and quality report.
+    @property
+    def published_at(self) -> datetime | None:
+        """Last-Modified reported by the INE server; not an official publication date."""
+        value = (self.inventory or {}).get("last_modified")
+        try:
+            return parsedate_to_datetime(value) if value else None
+        except (TypeError, ValueError):
+            return None
+
+    @property
+    def validation_status(self) -> str | None:
+        return (self.quality_report or {}).get("status")
+
+    @property
+    def pipeline_version(self) -> str | None:
+        return (self.quality_report or {}).get("pipeline_version")
 
 
 class Election(Base):

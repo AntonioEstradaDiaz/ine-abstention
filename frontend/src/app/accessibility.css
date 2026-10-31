@@ -597,59 +597,65 @@
   .legal-hero-icon, .legal-section-icon { border: 1px solid CanvasText; }
 }
 
-/* Shared footer typography and actions across dashboard sections. */
+/* Shared footer: one row of plain pink text; links and the methodology button have no box. */
 .app-shell .page-footer {
-  justify-content: flex-start;
+  justify-content: space-between;
   align-items: center;
-  gap: 12px 24px;
-  padding: 20px 16px;
-  color: #52647c;
+  gap: 8px 16px;
+  padding: 18px 16px;
+  color: #a9005d;
   font-family: inherit;
-  font-size: 12px;
-  line-height: 1.6;
+  font-size: 11px;
+  line-height: 1.5;
 }
-.app-shell .page-footer > span {
+.app-shell .page-footer > span,
+.app-shell .page-footer > span[role="status"] {
+  color: inherit;
   font-size: inherit;
   line-height: inherit;
-  overflow-wrap: anywhere;
+  white-space: nowrap;
 }
 .app-shell .page-footer > span:last-child {
-  margin-left: auto;
-  white-space: normal;
+  margin-left: 0;
 }
 .app-shell .page-footer > .button,
 .app-shell .page-footer .site-policy-links a {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  min-height: 40px;
-  padding: 8px 12px;
-  border: 1px solid #f6d3e6;
-  border-radius: 10px;
-  background: #fff7fb;
-  color: #92004d;
+  display: inline;
+  height: auto;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  color: inherit;
   font-family: inherit;
-  font-size: 12px;
+  font-size: inherit;
   font-weight: 600;
-  line-height: 1.6;
+  line-height: inherit;
   text-decoration: none;
+  white-space: nowrap;
+}
+.app-shell .page-footer > .button svg {
+  display: none;
 }
 .app-shell .page-footer > .button:hover,
 .app-shell .page-footer .site-policy-links a:hover {
-  background: #fce7f2;
-  border-color: #e9a9cc;
+  background: none;
+  color: #85004d;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 .app-shell .page-footer .site-policy-links {
-  gap: 8px;
+  gap: 16px;
 }
 @media (max-width: 720px) {
   .app-shell .page-footer {
     align-items: flex-start;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
   }
-  .app-shell .page-footer > span:last-child {
-    margin-left: 0;
+  .app-shell .page-footer > span {
+    white-space: normal;
   }
 }
