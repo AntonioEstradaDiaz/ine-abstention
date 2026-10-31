@@ -1,6 +1,7 @@
 import { AlertTriangle, CalendarClock, Database, FlaskConical, ShieldAlert } from "lucide-react";
-import type { Forecast, Prediction } from "@/lib/types";
+import type { Forecast, Prediction, Indicator } from "@/lib/types";
 import { matchesForecastAudit } from "@/lib/forecast-audit-match";
+import { evaluateHistoricalReference } from "@/lib/live-forecast-validation";
 import audit from "@/lib/forecast-validation.json";
 
 const format = (n: number) => new Intl.NumberFormat("es-MX", {
@@ -8,8 +9,9 @@ const format = (n: number) => new Intl.NumberFormat("es-MX", {
 }).format(n);
 
 export function ForecastValidation({
-  forecast, prediction,
-}: { forecast: Forecast; prediction: Prediction }) {
+  forecast, prediction, history = [],
+}: { forecast: Forecast; prediction: Prediction; history?: Indicator[] }) {
+  const live = evaluateHistoricalReference(history, prediction.state_code, forecast.election_type, forecast.as_of_year);
   const aligned = matchesForecastAudit(forecast, audit);
   const state = audit.state_diagnostics.find((x) => x.state_code === prediction.state_code);
   const midterm = audit.by_year.find((x) => x.year === 2021);
@@ -69,10 +71,30 @@ export function ForecastValidation({
           </div>
         </>
       ) : (
-        <p role="note" className="validation-warning">
-          La corrida o su calibración no coinciden con la auditoría congelada; sus errores históricos
-          no pueden atribuirse a esta predicción.
-        </p>
+        <>
+          <div className="validation-warning" role="note">
+            Evaluación histórica de referencia · {prediction.name}. Se reproduce el método de última elección comparable con los datos cargados. No sustituye la auditoría de la corrida actual.
+          </div>
+          {"error" in live ? <p role="status">{live.error}</p> : <>
+            <div className="validation-metrics">
+              <div className="validation-metric"><CalendarClock aria-hidden="true" /><span>Error absoluto medio · referencia</span><strong>{live.mae == null ? "Datos insuficientes" : `${format(live.mae)} pp`}</strong><p>{live.folds.length} comparaciones temporales; cada estimación utiliza exclusivamente la elección anterior del mismo tipo.</p></div>
+              <div className="validation-metric"><Database aria-hidden="true" /><span>Histórico comparable</span><strong>{live.rows.length} elecciones</strong><p>{live.rows.map(r=>r.year).join(" · ")} · Corte {forecast.as_of_year}</p></div>
+              <div className="validation-metric"><ShieldAlert aria-hidden="true" /><span>Registros sin participación especificada · {live.latest.year}</span><strong>{live.sensitivity ? `${format(live.sensitivity.unspecified)}%` : "No disponible"}</strong><p>No indican abstención confirmada; se excluyen de SV + NV.</p></div>
+            </div>
+            <div className="validation-details">
+              <div><h3>Comprobación temporal · {forecast.election_type === "midterm" ? "Intermedias" : "Presidenciales"}</h3>
+                {live.folds.map(f=><p key={f.year}>{f.referenceYear} → {f.year}: estimado <strong>{format(f.estimated)}%</strong>, observado <strong>{format(f.observed)}%</strong>; error <strong>{format(f.error)} pp</strong> · Fuente {f.sourceId}</p>)}
+                {!live.folds.length && <p>Se necesitan al menos dos elecciones del mismo tipo para medir un error histórico.</p>}
+                <small>Evaluación retrospectiva sobre la versión disponible de los datos; no mide el error futuro de {forecast.target_year}.</small>
+              </div>
+              <div><h3>Sensibilidad a NS · {live.latest.year}</h3>
+                <p>SV: {live.latest.voter_count.toLocaleString("es-MX")} · NV: {live.latest.nonvoter_count.toLocaleString("es-MX")}</p>
+                {live.sensitivity ? <p>Si todos los registros sin especificar fueran votantes o no votantes, la abstención sería <strong>{format(live.sensitivity.lower)}%–{format(live.sensitivity.upper)}%</strong>.</p> : <p>No hay conteos válidos de registros sin especificar para calcular esta sensibilidad.</p>}
+                <small>Son supuestos extremos; no es una banda predictiva. Fuente INE CCPC {live.latest.source_id}.</small>
+              </div>
+            </div>
+          </>}
+        </>
       )}
       <div className="validation-warning" role="note">
         <AlertTriangle size={19} aria-hidden="true" />
@@ -84,7 +106,7 @@ export function ForecastValidation({
         </p>
       </div>
       <p className="validation-source">
-        Auditoría {audit.version} · Entrenamiento {audit.training_run_id} ·
+        {aligned ? `Auditoría ${audit.version} · Entrenamiento ${audit.training_run_id}` : `Referencia recalculada · ${prediction.name} · Corte ${forecast.as_of_year}`} ·
         {forecast.provenance.model_run_id === "preview-csv"
           ? " Vista previa congelada" : " Evidencia de corrida histórica"}
       </p>

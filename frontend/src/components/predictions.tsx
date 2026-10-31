@@ -506,7 +506,7 @@ export function PredictionsView({
           </p>
         </SectionCard>
       </div>
-      <ForecastValidation forecast={forecast} prediction={p} />
+      <ForecastValidation forecast={forecast} prediction={p} history={history.data?.items} />
       <Note>
         Semáforo relativo: bajo &lt; {pct(thresholds[0])}; medio desde{" "}
         {pct(thresholds[0])} hasta menos de {pct(thresholds[1])}; alto desde{" "}

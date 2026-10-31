@@ -457,7 +457,10 @@ test("another forecast of the same model cannot inherit the frozen audit", async
   });
   await open(page, "Predicciones");
   const panel = page.getByRole("region", { name: "¿Qué tan validada está esta predicción?" });
-  await expect(panel).toContainText("no coinciden con la auditoría congelada");
-  await expect(panel.locator(".validation-metric")).toHaveCount(0);
+  await expect(panel).toContainText("Evaluación histórica de referencia");
+  await expect(panel.locator(".validation-metric")).toHaveCount(3);
+  await expect(panel).toContainText("2009 → 2015");
+  await expect(panel).toContainText("2015 → 2021");
+  await expect(panel).toContainText("No sustituye la auditoría de la corrida actual");
   await expect(panel).toContainText("Validación externa pendiente");
 });
