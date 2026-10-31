@@ -23,6 +23,12 @@ assert len(call("elections")) == 6
 assert call("statistics/summary?year=2021")["items"][0]["territory_count"] == 32
 assert len(call("participation/history?state_code=17")["items"]) == 6
 assert len(call("models/metrics")["models"]) == 6
+sources = call("data-sources?limit=100")["items"]
+assert len(sources) == 6
+for s in sources:
+    assert len(s["checksum"]) == 64 and int(s["checksum"], 16) >= 0
+    assert s["validation_status"] == "validated"
+    assert s["pipeline_version"] and s["retrieved_at"] and s["published_at"]
 for state in ["01", "02", "17", "32"]:
     for shift in [-100, 0, 3, 100]:
         b = {
@@ -53,5 +59,6 @@ except urllib.error.HTTPError as e:
 else:
     raise AssertionError("Invalid parameters accepted")
 print(
-    "Preview endpoints passed: 32 states, six elections, metrics, scenario limits and validation."
+    "Preview endpoints passed: 32 states, six elections, sources with provenance, metrics,"
+    " scenario limits and validation."
 )
