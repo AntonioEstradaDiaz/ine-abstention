@@ -1,4 +1,4 @@
-# Atlas · Equipo Pumpkin · Configuración pendiente en Supabase y Vercel
+# Atlas De La Participación · Equipo Pumpkin · Configuración pendiente en Supabase y Vercel
 
 Actualizado: 30 de octubre de 2026.
 
@@ -56,7 +56,7 @@ y como máximo 2 por hora**. Para que el jurado pueda registrarse con su propio 
    equipo para no caer en spam. Publicar SPF, DKIM y DMARC y **desactivar el seguimiento de enlaces**
    del proveedor.
 2. **En Supabase → Authentication:**
-   - **SMTP Settings:** activar el SMTP propio con remitente "Atlas".
+   - **SMTP Settings:** activar el SMTP propio con remitente "Atlas De La Participación".
    - **Rate Limits:** subir el límite de correos a unos 100 por hora (empieza en 30).
    - **Email Templates:** pegar las plantillas "Confirma tu cuenta de Atlas" y "Restablece tu
      contraseña de Atlas" de `docs/auth/plantillas/`.
