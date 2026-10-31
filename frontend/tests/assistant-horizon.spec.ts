@@ -22,6 +22,7 @@ test("assistant calculates a selected horizon and clears the previous conversati
   await page.goto("/");
   await page.getByRole("button", { name: "Predicciones", exact: true }).click();
   const assistant = page.locator(".ai-assistant");
+  const chat = page.locator(".ai-chat");
   await expect(assistant.getByLabel("Proyección del asistente")).toContainText(
     "2027",
   );
@@ -38,20 +39,20 @@ test("assistant calculates a selected horizon and clears the previous conversati
   await expect(result).toContainText(
     `${((100 * row.nonvoter_count) / (row.voter_count + row.nonvoter_count)).toFixed(1)}%`,
   );
-  await assistant
+  await chat
     .getByRole("button", {
       name: "¿Cuál es la proyección del año seleccionado?",
       exact: true,
     })
     .click();
   await expect(
-    assistant.locator('.ai-message[data-role="assistant"]').last(),
+    chat.locator('.ai-message[data-role="assistant"]').last(),
   ).toContainText("2028");
   await assistant.getByLabel("Año objetivo del asistente").fill("2029");
   await assistant
     .getByRole("button", { name: "Calcular proyección", exact: true })
     .click();
-  await expect(assistant.locator('.ai-message[data-role="user"]')).toHaveCount(
+  await expect(chat.locator('.ai-message[data-role="user"]')).toHaveCount(
     0,
   );
   await expect(result).toContainText("2029");
