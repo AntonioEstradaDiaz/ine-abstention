@@ -418,7 +418,11 @@ export function AiAssistant({
       </div>
       {notice && <p className="ai-error-notice">{notice}</p>}
       <div className="ai-suggestions" aria-label="Preguntas sugeridas">
-        {suggestions.map((s) => (
+        {(projection && targetYear !== null ? [
+          `¿Cómo se calculó la estimación de ${context.state} para ${projection.targetYear} y qué datos la respaldan?`,
+          "¿Qué mecanismos de seguimiento permiten anticipar este escenario?",
+          "¿Qué señales de alerta debemos revisar y qué datos faltan?",
+        ] : suggestions).map((s) => (
           <button
             type="button"
             key={s}

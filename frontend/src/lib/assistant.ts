@@ -1,3 +1,4 @@
+import { monitoringFacts, monitoringAnswer } from "./assistant-monitoring.ts";
 import type { AssistantProjection } from "./assistant-projection";
 import type { QuotaInfo } from "./ai-quota";
 import type { Forecast, Indicator, Prediction, Risk } from "./types";
@@ -159,10 +160,13 @@ export function systemPrompt(c: AssistantContext) {
     "Eres el asistente analítico de Atlas De La Participación, un prototipo que explora la abstención electoral en México con datos abiertos del INE.",
     "Responde en español con una conclusión, el año y método, los límites y, si se solicita, pasos generales verificables. Usa solo las cifras del bloque DATOS. Si algo no está en los datos, dilo. El horizonte activo es el elegido en el selector; si se pide otro, indica que debe cambiarlo. No inventes un pronóstico nuevo en el texto.",
     "No inventes cifras ni atribuyas causas: las variables son descriptivas. No recomiendes campañas, mensajes, segmentación ni intervenciones para aumentar o reducir la participación electoral de estados o grupos específicos. Puedes proponer mejoras generales de calidad de datos, accesibilidad del dashboard y evaluación del modelo, con responsable sugerido, plazo orientativo y criterio verificable; no prometas efectos sobre los votos.",
+    "Para anticipar escenarios, propone mecanismos analíticos: seguimiento de tasas y conteos por separado, comparación de elecciones del mismo tipo, revisión de NS y cobertura, actualización al publicarse datos oficiales y reevaluación temporal del modelo. Explica para cada mecanismo qué indicador observar, fuente disponible, momento de revisión y condición de alerta. No inventes umbrales validados: si faltan, propón definirlos y evaluarlos con históricos. Distingue una propuesta de seguimiento de una alerta automática implementada. Una proyección no demuestra causas ni garantiza el futuro. No conviertas mecanismos de anticipación en estrategias para modificar la participación de estados o grupos.",
     "Recuerda que la estimación es experimental y que la banda no garantiza cobertura.",
     "",
     "DATOS",
     contextFacts(c),
+    "ANÁLISIS CALCULADO PARA SEGUIMIENTO (no atribuir causas ni efectos de intervenciones):",
+    JSON.stringify(monitoringFacts(c)),
   ].join("\n");
 }
 
@@ -175,6 +179,8 @@ export function automaticAnswer(question: string, c: AssistantContext) {
     .normalize("NFD")
     .replace(/\p{Diacritic}/gu, "")
     .toLowerCase();
+  const monitoring = monitoringAnswer(c, question);
+  if (monitoring) return monitoring;
   const activeYear = c.projection?.targetYear ?? c.forecast.target_year;
   const requestedYears = q.match(/\b20\d{2}\b/g);
   if (
@@ -185,6 +191,8 @@ export function automaticAnswer(question: string, c: AssistantContext) {
     )
   )
     return `El horizonte seleccionado es ${activeYear}. Cambia el año en el selector y pulsa Calcular proyección para consultar otro; no trasladaré las cifras actuales a un año distinto.`;
+  if (mentions(q, ["anticipar", "seguimiento", "senales de alerta", "datos faltan"]))
+    return `Para revisar el escenario de ${c.state} en ${activeYear}, propongo estos mecanismos analíticos: 1) Seguimiento comparable: contrastar tasas de participación y conteos de votos por separado con elecciones del mismo tipo; una caída de votos no implica necesariamente una caída de tasa. 2) Control de calidad: revisar registros NS, cobertura y cambios de denominador antes de interpretar diferencias. 3) Actualización: repetir la proyección cuando se incorpore una nueva publicación oficial, conservando fecha, fuente y versión. 4) Alertas por evaluar: definir con históricos un criterio de cambio respecto a la última elección comparable y comprobar sus falsas alarmas mediante evaluación temporal. No hay aquí un umbral de alerta validado ni un servicio automático de vigilancia activado. Se necesitan nuevas observaciones comparables y verificar su procedencia para confirmar señales. Estos mecanismos ayudan a detectar cambios; no prueban sus causas ni aseguran que el escenario ocurrirá.`;
   if (
     mentions(q, [
       "solucion",
