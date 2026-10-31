@@ -73,6 +73,31 @@ test("redesigned sections share the map header and four live metric cards", asyn
   }
 });
 
+test("Predicciones splits the assistant into a settings panel and a full-width chat", async ({
+  page,
+}) => {
+  await offlineAssistant(page);
+  await open(page, "Predicciones");
+  const panel = page.locator(".ai-panel");
+  await expect(panel.getByLabel("Año objetivo del asistente")).toBeVisible();
+  await expect(panel.getByLabel("Proyección del asistente")).toContainText(
+    "2027",
+  );
+  await expect(
+    page.locator(".ai-chat").getByRole("button", { name: "Nueva conversación" }),
+  ).toBeDisabled();
+  await panel
+    .getByRole("button", { name: /Ver metodología y límites/ })
+    .click();
+  await expect(
+    page.getByRole("heading", {
+      name: "Laboratorio de modelos",
+      exact: true,
+      level: 1,
+    }),
+  ).toBeVisible();
+});
+
 test("assistant falls back to a labelled automatic reading without an AI model", async ({
   page,
 }) => {
