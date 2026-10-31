@@ -1240,3 +1240,14 @@
 @media (min-width: 1001px) and (max-width: 1500px) {
   .data-center .page-kpis[aria-label="Resumen de datos"] { grid-template-columns: repeat(2,minmax(0,1fr)); }
 }
+
+/* Reportes y Datos: las columnas terminan a la misma altura; la última tarjeta de cada columna crece. */
+.reports-layout,
+.data-layout {
+  align-items: stretch;
+}
+.report-side > :last-child,
+.data-center > :last-child,
+.data-side > :last-child {
+  flex: 1 1 auto;
+}
