@@ -1,12 +1,21 @@
 # Atlas De La Participación
 
-Dashboard de participación y abstención electoral en México que reúne datos abiertos del
-INE, mapas estatales, análisis histórico, modelos de machine learning, proyecciones y reportes.
-Su objetivo es hacer visibles las cifras, su procedencia y sus límites en una misma interfaz.
+Plataforma de análisis de participación y abstención electoral en México, centrada en
+**machine learning, procesamiento reproducible de datos e inteligencia artificial conversacional**.
+Transforma conteos abiertos del INE en estadísticas comparables, evalúa modelos con históricos,
+calcula proyecciones experimentales hasta 2029 y permite interpretar los resultados desde un chat.
+Los mapas, las gráficas y los reportes hacen visibles las cifras, su procedencia y sus límites.
 
-**Estado documental: 30 de octubre de 2026.** Basado en la integración `266bf0e` (PR #52).
-El código integrado no acredita por sí solo que las variables, migraciones y servicios remotos
-ya estén configurados. Es un prototipo experimental independiente, sin aval institucional del INE.
+El proyecto aborda el eje **Predicción y escenarios de riesgo**: analizar tendencias históricas
+para identificar riesgo relativo y proponer mecanismos que permitan anticipar escenarios mediante
+comparaciones, señales descriptivas y planes de seguimiento.
+
+**Estado documental: 30 de octubre de 2026.** Esta edición describe el código de la rama
+`feat/assistant-post-projection-guidance`, incluidos los cambios de IA de `79a653b`, en el
+[PR #69](https://github.com/AntonioEstradaDiaz/ine-abstention/pull/69).
+La disponibilidad en la demo depende de integrar y desplegar esa versión; el README no certifica
+su despliegue ni la configuración de servicios remotos. Es un prototipo experimental independiente,
+sin aval institucional del INE.
 
 [Demo](https://pulso-electoral-demo.vercel.app) · [Instalación](docs/installation.md) ·
 [Datos y metodología](docs/phase2.md) · [Resultados ML](docs/phase4_results.md) ·
@@ -18,6 +27,7 @@ ya estén configurados. Es un prototipo experimental independiente, sin aval ins
 - [Recorrido del usuario](#recorrido-del-usuario)
 - [Datos y fórmulas](#datos-y-fórmulas)
 - [Machine learning y predicción](#machine-learning-y-predicción)
+- [IA conversacional y mecanismos de anticipación](#ia-conversacional-y-mecanismos-de-anticipación)
 - [Diseño e identidad visual](#diseño-e-identidad-visual)
 - [Arquitectura](#arquitectura)
 - [Incorporaciones recientes](#incorporaciones-recientes)
@@ -46,7 +56,7 @@ reciben enlaces de recuperación. La creación y las pruebas de acceso están do
 | **Mapa** | Distribución territorial, selección de estado, indicadores principales y detalle con Resumen, Histórico, Factores y Recomendaciones. | Cartografía INEGI contextual; estados, no límites electorales históricos homologados. |
 | **Análisis** | Participación y abstención observadas, comparación nacional ponderada, ranking estatal y tabla con fuentes. | Compara elecciones equivalentes; distingue observaciones y estimaciones. |
 | **Tendencias** | Comparación histórica de entidades y observaciones trazables. | Separa intermedias y presidenciales. |
-| **Predicciones** | Pronóstico registrado, rango, contexto, auditoría temporal y asistente con año seleccionable hasta 2029. | Escenarios futuros experimentales, no resultados oficiales. |
+| **Predicciones y chat IA** | Pronóstico registrado, proyección seleccionable hasta 2029, comparación de años, cambios históricos, señales descriptivas y planes de seguimiento. | Cálculos del sistema e interpretación asistida; escenarios experimentales, sin vigilancia automática. |
 | **Laboratorio ML** | Compara seis estimadores, métricas y escenarios del modelo. | Artefactos entrenados previamente; no reentrena los seis modelos en cada consulta. |
 | **Escenarios** | Explora cambios supuestos de participación, comparación multiestado y guardado privado. | Simulación aritmética; no demuestra efectos de una intervención. |
 | **Reportes** | Vista previa y exportación estatal/nacional PDF y Excel, hallazgos, histórico y procedencia. | PowerPoint y envíos programados pendientes; no crea un pronóstico nacional ponderado inexistente. |
@@ -64,8 +74,10 @@ flowchart LR
     C --> D[Comparar elecciones del mismo tipo]
     D --> E[Elegir horizonte hasta 2029]
     E --> F[Calcular estimación y rango]
-    F --> G[Consultar explicación y límites]
-    G --> H[Explorar escenarios]
+    F --> G[Elegir una pregunta sugerida en el chat]
+    G --> J[Interpretar históricos y comparar proyecciones]
+    J --> K[Revisar señales y plan de seguimiento]
+    K --> H[Explorar escenarios]
     H --> I[Exportar reporte con fuentes]
 ```
 
@@ -92,25 +104,49 @@ instantánea web. Consulte [inventario y calidad](docs/phase2.md).
 
 ## Machine learning y predicción
 
-### Dos capas con responsabilidades distintas
+### Del dato a la explicación: tres responsabilidades
 
-**El motor estadístico calcula; el asistente conversacional explica.** Groq, Gemini u Ollama
-reciben contexto del servidor. Cambiar el modelo de conversación no reentrena los modelos
-electorales ni acredita que todas sus respuestas sean correctas.
+| Capa | Trabajo que realiza | Resultado verificable |
+| --- | --- | --- |
+| **Procesamiento de datos** | Ingesta, agregación, validación de conteos, procedencia y separación de elecciones comparables. | Tasas, conteos e históricos con fuente y periodo. |
+| **Estadística y machine learning** | Entrenamiento y evaluación temporal de modelos; cálculo del horizonte y de sus rangos. | Artefactos, errores de evaluación, estimaciones y método utilizado. |
+| **IA conversacional** | Recibe los resultados calculados y redacta explicaciones, comparaciones y propuestas de seguimiento. | Respuesta contextualizada al estado, tipo electoral y horizonte elegidos. |
+
+**El motor estadístico calcula; el asistente interpreta los resultados.** Groq, Gemini u Ollama
+reciben contexto construido en el servidor. Cambiar el proveedor de conversación no reentrena
+los modelos electorales. El procesamiento numérico y la validación se ejecutan en código;
+la IA ayuda a consultarlos y comprenderlos mediante lenguaje natural.
 
 ```mermaid
 flowchart TD
-    A[Conteos oficiales y fuentes] --> B[Validación de calidad y periodos]
-    B --> C[Observaciones comparables por entidad]
+    A[Conteos INE y fuentes] --> B[Validación y agregación]
+    B --> C[Históricos comparables por entidad y tipo]
     C --> D[Entrenamiento y evaluación temporal]
-    D --> E[Modelo y métricas versionados]
-    C --> F[Proyección del horizonte seleccionado]
+    D --> E[Modelos y métricas versionados]
+    C --> F[Motor de proyección hasta 2029]
     E --> F
-    F --> G[Estimación, rango, método y año]
-    G --> H[Dashboard y exportaciones]
-    G --> I[Contexto para el asistente IA]
-    I --> J[Explicación o lectura automática de respaldo]
+    F --> G[Estimación, rango, método y procedencia]
+    C --> H[Análisis de cambios y calidad]
+    G --> I[Contexto calculado para el chat]
+    H --> I
+    I --> J[Proveedor de IA]
+    I --> K[Lectura automática de respaldo]
+    J --> L[Explicación y propuesta de seguimiento]
+    K --> L
+    G --> M[Dashboard y reportes]
 ```
+
+### Entrenamiento y evaluación temporal
+
+El experimento documentado usa **128 ejemplos supervisados** y excluye 64 registros sin
+antecedente comparable. Entrena con elecciones anteriores y evalúa en cortes posteriores:
+2018 y 2021 para desarrollo, 2024 para prueba final. Los 32 estados de una elección no
+representan 32 periodos independientes. La selección del modelo se fija antes de consultar
+la prueba final; el detalle de cortes y artefactos está en [resultados ML](docs/phase4_results.md).
+
+La ampliación reciente del chat añade contexto calculado, instrucciones y respuestas de
+respaldo. **No realiza fine-tuning del modelo de lenguaje ni aprende nuevos pesos a partir de
+las conversaciones.** Tampoco incorpora automáticamente publicaciones nuevas del INE.
 
 ### Modelos del experimento documentado
 
@@ -159,12 +195,96 @@ No se usan predicciones anteriores como si fueran observaciones reales para alim
 entrenamiento. Nuevos datos oficiales requieren validación e incorporación a la fuente o
 instantánea antes de recalcular. La recarga de pantalla no descarga nuevas elecciones del INE.
 
-### Asistente y cuotas
+## IA conversacional y mecanismos de anticipación
 
-El servidor consulta los datos y construye el contexto; no acepta estadísticas arbitrarias del
-navegador. La respuesta automática de respaldo conserva el horizonte seleccionado. Las propuestas
-son mejoras generales de datos, evaluación o accesibilidad: no se atribuyen causas ni se prometen
-efectos sobre los votos.
+El chat existente concentra las nuevas funciones; utiliza los mismos controles, mensajes y
+botones de sugerencia del dashboard. El usuario conserva el control sobre qué consulta enviar.
+
+### Preguntas posteriores al cálculo
+
+Cuando hay una proyección válida y el usuario ha aplicado un año mediante **Calcular proyección**,
+las sugerencias del chat pasan a ser:
+
+1. «¿Cómo se calculó la estimación de **{estado}** para **{año}** y qué datos la respaldan?»
+2. «¿Qué mecanismos de seguimiento permiten anticipar este escenario?»
+3. «¿Qué señales de alerta debemos revisar y qué datos faltan?»
+
+Al pulsar una sugerencia se envía esa pregunta. También se puede escribir libremente.
+El contexto incluye estado, tipo de elección y horizonte; cuando cambia, se limpia la conversación
+para evitar mezclar resultados y se descartan respuestas pendientes del contexto anterior.
+Una comparación de años en el chat no modifica el año seleccionado en los controles.
+
+### Cuatro capacidades incorporadas
+
+| Capacidad | Pregunta de ejemplo | Cómo se obtiene la respuesta | Límite |
+| --- | --- | --- | --- |
+| **1. Cambios históricos** | ¿La participación está bajando? | Selecciona las dos últimas elecciones del mismo tipo y estado; calcula tasas sobre SV + NV, diferencia en pp y cambio absoluto de votantes. Informa años e identificadores de fuente. | Una caída de votos y una caída de tasa son fenómenos distintos; la comparación no identifica causas. |
+| **2. Comparación de proyecciones** | Compara 2027 y 2029. | Reutiliza el motor de proyección para los años posteriores al corte disponible, dentro de 2025–2029. Presenta participación, abstención, rango disponible y método. | Son escenarios condicionados al mismo tipo electoral, no elecciones anuales confirmadas; no se trasladan el riesgo ni el ranking del año activo. |
+| **3. Señales de revisión** | ¿Qué señales de alerta hay y qué datos faltan? | Describe la dirección del último cambio comparable, la cantidad de elecciones disponibles y los registros NS de la referencia. | No hay umbrales de alerta validados ni una etiqueta automática de anomalía; las señales requieren revisión. |
+| **4. Plan de seguimiento** | ¿Qué mecanismos de seguimiento permiten anticipar este escenario? | Propone verificar fuentes y conteos, comparar observaciones equivalentes, recalcular tras nuevas publicaciones y evaluar criterios de alerta mediante errores y falsas alarmas. | Es un plan orientativo con responsabilidades sugeridas; no ejecuta tareas ni activa vigilancia continua. |
+
+Por ejemplo, si los votantes pasan de 60 a 70 pero los registros SV + NV pasan de 100 a 140,
+el conteo sube en 10 mientras la participación baja de 60% a 50% (**−10 pp**). Este ejemplo
+sintético ilustra la distinción que calcula el sistema; no corresponde a un estado real.
+
+Los mecanismos de anticipación ayudan a decidir **qué observar, qué revisar y cuándo volver
+a calcular**. No demuestran efectos causales de intervenciones ni garantizan que una proyección
+ocurra. El asistente no recomienda campañas o estrategias dirigidas a modificar la participación
+electoral de estados o grupos específicos.
+
+### Estructura técnica del chat
+
+```mermaid
+sequenceDiagram
+    participant U as Usuario
+    participant C as Chat del dashboard
+    participant S as API privada
+    participant D as Backend o instantánea
+    participant M as Cálculos y contexto
+    participant L as Proveedor IA
+    U->>C: Calcular proyección y enviar pregunta
+    C->>S: Estado, año, tipo y mensajes
+    S->>S: Validar solicitud y controles de acceso
+    S->>D: Consultar históricos y pronóstico registrado
+    D-->>S: Datos y procedencia
+    S->>M: Calcular proyección y análisis de seguimiento
+    M-->>S: Hechos, comparaciones, señales y plan
+    S->>S: Comprobar y reservar cuota
+    S->>L: Instrucciones y contexto calculado
+    alt Respuesta disponible
+        L-->>S: Explicación
+        S-->>C: Respuesta y cuota
+    else Error del proveedor
+        S-->>C: Error identificado
+        C->>C: Generar lectura automática de respaldo
+    end
+    C-->>U: Respuesta identificada en el chat
+```
+
+Si el proveedor no está configurado o no está disponible, el cliente puede producir directamente
+la lectura automática con el contexto disponible. Esa lectura usa reglas y textos calculados;
+no equivale a una nueva inferencia del modelo de lenguaje y se identifica como respaldo.
+
+| Archivo | Responsabilidad |
+| --- | --- |
+| [ai-assistant.tsx](frontend/src/components/ai-assistant.tsx) | Estado de conversación, cálculo seleccionado, preguntas sugeridas, envío y respaldo. |
+| [assistant/route.ts](frontend/src/app/api/assistant/route.ts) | Validación de solicitudes, consulta de datos en servidor, contexto y llamada al proveedor con cuotas. |
+| [assistant-projection.ts](frontend/src/lib/assistant-projection.ts) | Cálculo y validación del horizonte, elección del método y rango. |
+| [assistant-monitoring.ts](frontend/src/lib/assistant-monitoring.ts) | Cambios históricos, proyecciones anuales, señales, plan y detección de consultas para el respaldo. |
+| [assistant.ts](frontend/src/lib/assistant.ts) | Contexto compartido, instrucciones al proveedor y respuestas deterministas. |
+| [groq.ts](frontend/src/lib/groq.ts) / [gemini.ts](frontend/src/lib/gemini.ts) | Adaptadores de proveedores; Ollama se integra desde la ruta del asistente. |
+| [ai-quota.ts](frontend/src/lib/ai-quota.ts) | Reserva y cierre de consumo, límites, tiempos y errores. |
+
+El servidor reconstruye las cifras desde sus fuentes; no acepta estadísticas arbitrarias del
+navegador como evidencia. El contexto de seguimiento incluye los cálculos disponibles, pero
+la redacción del proveedor sigue siendo generativa: **las instrucciones no son un verificador
+automático de cada afirmación**. Las respuestas reales deben contrastarse con los cálculos.
+
+Esta versión no incluye una biblioteca documental RAG, búsqueda web del asistente, entrenamiento
+con conversaciones, descarga automática de nuevas elecciones, alertas programadas ni estimación
+del efecto de intervenciones. Son alcances distintos del análisis contextual incorporado.
+
+### Proveedores, cuotas y disponibilidad
 
 La integración reciente incorpora límites de **30 consultas por cuenta/día**, **5 por minuto**
 y **500 diarias globales**, con reinicio a medianoche de Ciudad de México. Si el proveedor falla,
@@ -254,7 +374,7 @@ flowchart LR
 | Exportación | pdf-lib, html-to-image y ExcelJS; CSV/JSON según apartado. |
 | Backend | FastAPI, validación, estadísticas, modelos y simulaciones. |
 | Datos | PostgreSQL/PostGIS; Supabase para autenticación y persistencia web. |
-| IA | Proveedores invocados desde servidor; claves privadas fuera del cliente. |
+| IA y procesamiento analítico | Contexto numérico compartido, módulo de seguimiento, proveedores desde servidor y respaldo determinista; claves privadas fuera del cliente. |
 | Calidad | GitHub Actions, pruebas unitarias/integración, compilación y Playwright. |
 
 La demo documentada usa `PULSO_PREVIEW=1`: sirve datos versionados, con Supabase para
@@ -263,7 +383,9 @@ operación; disponer del código Docker no significa que ese servicio esté publ
 
 ## Incorporaciones recientes
 
-Integradas mediante el PR #52, junto con las ramas de correo y cuotas:
+La base histórica procede de la integración del PR #52 y de las mejoras posteriores de interfaz.
+Esta rama incorpora además el análisis conversacional del PR #69; su publicación no equivale a
+un despliegue de producción confirmado:
 
 | Incorporación | Cambio visible o funcional |
 | --- | --- |
@@ -277,7 +399,10 @@ Integradas mediante el PR #52, junto con las ramas de correo y cuotas:
 | Logo | Sustitución del recurso institucional y proporciones corregidas. |
 | Cuotas de IA | Reserva y cierre de consumo, límites y mensajes de disponibilidad. |
 | Correo de cuentas | Código de registro/recuperación mejorado; SMTP, dominio y pruebas reales pendientes de configuración. |
-| Documentación | Guías, galería y conservación de cuentas demo. |
+| Chat posterior a la proyección | Tres preguntas sugeridas usando el mismo diseño y envío a elección del usuario. |
+| Análisis conversacional | Cambios históricos, comparación hasta 2029, señales de revisión y plan de seguimiento a partir de cálculos compartidos. |
+| Controles del análisis IA | Rechazo de históricos comparables vacíos, conteos inválidos y años duplicados; límite de 2029 en las consultas de proyección. |
+| Documentación | Flujo de procesamiento, responsabilidades de ML e IA, galería y conservación de cuentas demo. |
 
 ## Validación y pendientes
 
@@ -286,6 +411,7 @@ Integradas mediante el PR #52, junto con las ramas de correo y cuotas:
 | 320 combinaciones de proyección | 32 estados × 2 tipos × 5 años, valores y rangos acotados. | Exactitud futura. |
 | Prueba de tendencia sintética | Ajuste y extrapolación de una serie lineal conocida. | Generalización a elecciones reales. |
 | Playwright del asistente | Login, cambio de horizonte, rango, limpieza de chat y rechazo de 2030. | Calidad de una respuesta real de Groq. |
+| Nuevas pruebas de seguimiento | Diferencia entre tasa y conteo, rechazo de datos ausentes/duplicados/inválidos, comparación de años y límite de 2029. | Comprensión de cualquier formulación en lenguaje natural ni calidad del proveedor real. |
 | CI de ramas anteriores | Backend, frontend, compilación y pruebas automatizadas aprobadas en sus revisiones. | Ausencia absoluta de errores o validación visual del conjunto integrado. |
 
 Pendientes: revisión visual completa de escritorio/móvil y PDF integrado; contraste de respuestas
@@ -362,7 +488,11 @@ Las de navegador requieren backend local y frontend con Auth de prueba configura
 Playwright levanta una fixture Auth local; **no demuestra que funcione el correo de Supabase real**.
 No apuntar esa fixture a producción ni publicar su estado de sesión.
 
-Validación local con Análisis oficial: **11 pruebas unitarias y 27 pruebas de navegador aprobadas**,
+La revisión local del código de IA `79a653b` aprobó **TypeScript y 71 pruebas unitarias**, incluidas
+las tres nuevas pruebas de seguimiento en [assistant-projection.test.mts](frontend/tests/assistant-projection.test.mts).
+No sustituye una evaluación de conversaciones reales ni una prueba completa del nuevo flujo en navegador.
+
+Como antecedente, la validación de Análisis oficial registró **11 pruebas unitarias y 27 pruebas de navegador aprobadas**,
 más **3 pruebas de navegador en modo instantánea**, compilación de producción y TypeScript correctos.
 Incluye consistencia entre secciones, nacional ponderado, CSV oficial, navegación móvil, errores,
 controles pendientes de Reportes y contexto de respuestas de IA.
@@ -374,31 +504,31 @@ HTTP 200 en login, redirección 307 al entrar sin sesión y 401 en las dos APIs 
 
 ## Hoja de ruta: los nueve puntos del sistema
 
-Esta es la lista global de trabajo acordada. **Implementado** significa que existe código
-integrado; **pendiente de configuración o validación** significa que aún debe comprobarse
-su operación real. No se marcan como pendientes de desarrollo funciones que ya se incorporaron.
+Esta es la lista global de trabajo acordada. El avance describe código disponible; las nuevas
+funciones del chat pertenecen al PR #69. **Pendiente de configuración o validación** significa
+que debe comprobarse su operación real. El estado de una rama no acredita su despliegue.
 
-| # | Punto | Avance integrado | Trabajo pendiente y criterio de cierre |
+| # | Punto | Avance disponible | Trabajo pendiente y criterio de cierre |
 | --- | --- | --- | --- |
 | **1** | **Registro y recuperación de cuentas** | Supabase Auth, cuentas demo y flujos de registro/recuperación. | Configurar SMTP y dominio; probar registro, confirmación y recuperación con correos reales; revisar permisos de usuarios y administradores. Cierre: recorrido completo y permisos comprobados. |
 | **2** | **Backend y base de datos en producción** | FastAPI, PostgreSQL/PostGIS, Docker y controles de acceso interno. | Desplegar FastAPI y su base, conectar el dashboard sin `PULSO_PREVIEW=1` y verificar protección del acceso directo. Cierre: recorrido remoto completo con datos de la API y rechazo del acceso no autorizado. |
 | **3** | **Datos territoriales completos** | Estadísticas estatales y nacionales disponibles. | Homologar municipios, distritos y secciones entre elecciones e incorporar estadísticas y cartografía. Mantener deshabilitados niveles sin datos comparables. Cierre: correspondencias documentadas y conteos conservados. |
 | **4** | **Actualización de datos** | Ingesta, comprobaciones y procedencia documentadas; demo basada en instantánea. | Definir nuevas publicaciones INE, automatizar validaciones y detección de errores, mostrar fecha y versión de datos. Cierre: actualización reproducible, trazable y con rechazo de entradas inválidas. |
-| **5** | **IA preparada para varios usuarios** | Cuotas por cuenta/globales, manejo de errores y tiempos de espera integrados. | Migración y secreto de producción configurados y consulta real verificada el 30/10/2026. Ampliar comprobaciones de consumo y costos y evaluar respuestas contra estado, periodo y fuentes. Cierre: ensayo con varias cuentas, límites y respuestas cotejadas. |
+| **5** | **IA preparada para varios usuarios** | Cuotas por cuenta/globales, manejo de errores y tiempos de espera; análisis de seguimiento en el PR #69. | Migración y secreto de producción configurados y consulta real verificada el 30/10/2026. Ampliar comprobaciones de consumo y costos y evaluar respuestas contra estado, periodo y fuentes. Cierre: ensayo con varias cuentas, límites y respuestas cotejadas. |
 | **6** | **Validación de los pronósticos** | Evaluación temporal, sensibilidad NS, diagnóstico y proyecciones hasta 2029. | Ampliar evaluación temporal y externa, estudiar registros sin especificar y mejorar calibración de incertidumbre. Cierre: evidencia independiente documentada; por ahora el modelo sigue siendo experimental. |
 | **7** | **Reportes y escenarios** | PDF/Excel estatales y nacionales, historial privado y comparación multiestado. | Reportes municipales tras homologación, PowerPoint y envíos programados; comprobar diseño del PDF y funcionamiento combinado. Cierre: exportaciones legibles y trazables, con alcance y supuestos claros. |
 | **8** | **Operación y seguridad** | Controles del backend, herramientas de monitoreo, respaldo y pruebas técnicas. | Configurar alertas y registros de errores, ensayar copias/restauración, carga, concurrencia y aislamiento entre cuentas; revisar dependencias y secretos. Cierre: evidencias de funcionamiento en el entorno real. |
 | **9** | **Experiencia y entrega** | Diseño, páginas informativas, documentación y manuales iniciales. | Auditoría completa de accesibilidad, pruebas con usuarios, privacidad y soporte definitivos, licencia aprobada y manual de instalación validado por el equipo receptor. Cierre: incidencias resueltas y entrega reproducible. |
 
-### Prioridad para el hackatón
+### Continuidad tras la entrega al hackatón
 
-1. Mantener y supervisar los **límites de IA**, ya activos en producción.
+1. Integrar y verificar el **nuevo flujo del chat con el proveedor real**, manteniendo las cuotas y contrastando cifras y fuentes.
 2. Configurar **correos de acceso** y probar con buzones reales.
 3. Completar la **prueba del despliegue** y su conexión al backend.
 4. Ejecutar un **ensayo con varias cuentas**, desde el acceso hasta la exportación.
 
 El detalle municipal y la validación para uso operativo corresponden a una siguiente etapa
-identificada expresamente. No se ofrecen como funciones terminadas durante la demostración.
+identificada expresamente. No se presentan como funciones operativas terminadas.
 Las credenciales demo de este README se mantienen para evaluación; al ser cuentas compartidas,
 sus escenarios y cuotas también se comparten entre quienes las utilicen.
 
