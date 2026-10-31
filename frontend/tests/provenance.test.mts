@@ -116,6 +116,7 @@ test("the manifest carries full hashes and uses null for missing values", () => 
   assert.equal(manifest.modo, "Copia fija de la demo");
   assert.equal(manifest.copia?.id, forecast.id);
   assert.equal(manifest.copia?.commit, forecast.provenance.source_commit);
+  assert.equal(manifest.copia?.prediccion_empaquetada, forecast.created_at);
   assert.equal(manifest.prediccion?.generada, forecast.created_at);
   assert.equal(manifest.fuentes.length, 6);
   for (const f of manifest.fuentes)

@@ -102,8 +102,8 @@ export function DataProvenance({
       <p className="data-provenance-origin">
         {preview ? (
           <>
-            <strong>Copia fija incluida en la demo</strong> · empaquetada el{" "}
-            {provenanceDate(forecast?.created_at)}
+            <strong>Copia fija incluida en la demo</strong> · predicción
+            empaquetada el {provenanceDate(forecast?.created_at)}
             {typeof commit === "string" && commit
               ? ` · commit ${commit.slice(0, 7)}`
               : ""}

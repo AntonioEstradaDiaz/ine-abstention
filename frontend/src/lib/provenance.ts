@@ -125,7 +125,7 @@ export function provenanceManifest({
       preview && forecast
         ? {
             id: forecast.id,
-            empaquetada: forecast.created_at,
+            prediccion_empaquetada: forecast.created_at,
             commit: typeof commit === "string" ? commit : null,
           }
         : null,

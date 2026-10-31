@@ -21,7 +21,7 @@ test("the provenance card lists six elections and the INEGI cartography", async 
     card.getByRole("heading", { name: "Versión de los datos" }),
   ).toBeVisible();
   await expect(card.locator(".data-provenance-origin")).toHaveText(
-    /Copia fija incluida en la demo · empaquetada el|Datos servidos por la API del proyecto/,
+    /Copia fija incluida en la demo · predicción empaquetada el|Datos servidos por la API del proyecto/,
   );
   const rows = card.locator("tbody tr");
   await expect(rows.locator("th")).toHaveText([
