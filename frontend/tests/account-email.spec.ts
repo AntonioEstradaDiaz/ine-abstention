@@ -68,7 +68,7 @@ test("opening an email link does not spend it; the button confirms and signs in"
   await expect(page).toHaveURL(/\/confirmar\?/);
   await page.goto(link);
   await expect(page).toHaveURL(/\/confirmar\?/);
-  await expect(page.getByRole("heading", { name: "Confirma tu cuenta de Atlas" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Confirma tu cuenta de Atlas De La Participación" })).toBeVisible();
   await page.getByRole("button", { name: "Confirmar mi cuenta" }).click();
   await expect(page.getByRole("button", { name: "Mapa de riesgo", exact: true })).toBeVisible();
 });
