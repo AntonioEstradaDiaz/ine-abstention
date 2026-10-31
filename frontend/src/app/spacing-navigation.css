@@ -8,7 +8,7 @@
   justify-content: flex-start;
   gap: 16px;
   overflow-y: auto;
-  scrollbar-width: thin;
+  scrollbar-width: none;
 }
 .app-shell .territory-metrics-body[data-tab="Resumen"] > * { flex-shrink: 0; }
 .app-shell .territory-metrics-body[data-tab="Resumen"] .territory-metric-grid { min-height: 170px; margin: 0; }
@@ -25,7 +25,7 @@
 .design-top .nav-section-icon { display: block; width: 18px; height: 18px; stroke: currentColor; }
 
 /* Factor rows must keep their own height; notes follow the complete list. */
-.app-shell .territory-metrics .territory-metrics-body[data-tab="Factores"] { display: block; overflow-y: auto; padding-bottom: 28px; scrollbar-width: thin; }
+.app-shell .territory-metrics .territory-metrics-body[data-tab="Factores"] { display: block; overflow-y: auto; padding-bottom: 28px; scrollbar-width: none; }
 .app-shell .territory-metrics-body[data-tab="Factores"] .territory-tab-view { display: flex; flex-direction: column; height: auto; min-height: 0; gap: 14px; }
 .app-shell .territory-metrics-body[data-tab="Factores"] .territory-tab-view > * { flex-shrink: 0; }
 .app-shell .territory-metrics-body[data-tab="Factores"] .territory-context-rows { flex: none; height: auto; min-height: 0; grid-auto-rows: auto; gap: 12px; }
@@ -56,3 +56,7 @@
 .app-shell .analysis-comparison .analysis-bars > div { min-height: 38px; }
 .app-shell .analysis-comparison .analysis-bars > div > div { height: 18px; }
 .app-shell .analysis-comparison > .section-card-note { margin: 0; padding-top: 4px; line-height: 1.5; }
+
+/* Hide only the scrollbar chrome; keep territory content scrollable. */
+.app-shell .territory-metrics .territory-metrics-body[data-tab] { scrollbar-width: none; }
+.app-shell .territory-metrics .territory-metrics-body[data-tab]::-webkit-scrollbar { display: none; width: 0; height: 0; }
