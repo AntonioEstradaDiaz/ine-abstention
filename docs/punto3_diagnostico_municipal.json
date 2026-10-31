@@ -1,0 +1,496 @@
+{
+  "fuente": {
+    "paquete": "data/demo/snapshot.jsonl.gz",
+    "sha256": "c8ffb954d34f1a455a628d1dc811f1557379722cc77625dbea0a4e789398553e",
+    "metodo": "Claves INE EDOCVE:MPIOCVE y nombres sin acentos ni puntuación"
+  },
+  "anios": [
+    2009,
+    2012,
+    2015,
+    2018,
+    2021,
+    2024
+  ],
+  "municipios_por_anio": {
+    "2009": 2458,
+    "2012": 2455,
+    "2015": 2458,
+    "2018": 2463,
+    "2021": 2468,
+    "2024": 2477
+  },
+  "transiciones": {
+    "2009-2012": {
+      "municipios_antes": 2458,
+      "municipios_despues": 2455,
+      "misma_clave": 2455,
+      "municipios_nuevos": [],
+      "claves_que_reaparecen": [],
+      "municipio_con_clave_nueva": [],
+      "claves_ausentes": [
+        {
+          "clave": "07:117",
+          "nombre": "San Andrés Duraznal"
+        },
+        {
+          "clave": "20:144",
+          "nombre": "San Francisco Nuxaño"
+        },
+        {
+          "clave": "20:218",
+          "nombre": "San Juan Teita"
+        }
+      ],
+      "clave_reasignada": [],
+      "cambio_de_nombre": []
+    },
+    "2012-2015": {
+      "municipios_antes": 2455,
+      "municipios_despues": 2458,
+      "misma_clave": 2455,
+      "municipios_nuevos": [],
+      "claves_que_reaparecen": [
+        {
+          "clave": "07:117",
+          "nombre": "San Andrés Duraznal"
+        },
+        {
+          "clave": "20:144",
+          "nombre": "San Francisco Nuxaño"
+        },
+        {
+          "clave": "20:218",
+          "nombre": "San Juan Teita"
+        }
+      ],
+      "municipio_con_clave_nueva": [],
+      "claves_ausentes": [],
+      "clave_reasignada": [],
+      "cambio_de_nombre": []
+    },
+    "2015-2018": {
+      "municipios_antes": 2458,
+      "municipios_despues": 2463,
+      "misma_clave": 2458,
+      "municipios_nuevos": [
+        {
+          "clave": "07:120",
+          "nombre": "Emiliano Zapata"
+        },
+        {
+          "clave": "07:121",
+          "nombre": "Mezcalapa"
+        },
+        {
+          "clave": "07:122",
+          "nombre": "El Parral"
+        },
+        {
+          "clave": "07:123",
+          "nombre": "Capitán Luis Ángel Vidal"
+        },
+        {
+          "clave": "07:124",
+          "nombre": "Rincón Chamula San Pedro"
+        }
+      ],
+      "claves_que_reaparecen": [],
+      "municipio_con_clave_nueva": [],
+      "claves_ausentes": [],
+      "clave_reasignada": [],
+      "cambio_de_nombre": []
+    },
+    "2018-2021": {
+      "municipios_antes": 2463,
+      "municipios_despues": 2468,
+      "misma_clave": 2463,
+      "municipios_nuevos": [
+        {
+          "clave": "04:012",
+          "nombre": "Dzitblache"
+        },
+        {
+          "clave": "04:013",
+          "nombre": "Seybaplaya"
+        },
+        {
+          "clave": "17:034",
+          "nombre": "Coatetelco"
+        },
+        {
+          "clave": "17:035",
+          "nombre": "Xoxocotla"
+        }
+      ],
+      "claves_que_reaparecen": [],
+      "municipio_con_clave_nueva": [
+        {
+          "clave": "07:119",
+          "nombre": "Capitán Luis Ángel Vidal",
+          "clave_anterior": "07:123"
+        }
+      ],
+      "claves_ausentes": [],
+      "clave_reasignada": [
+        {
+          "clave": "07:120",
+          "antes": "Emiliano Zapata",
+          "despues": "Rincón Chamula San Pedro"
+        },
+        {
+          "clave": "07:121",
+          "antes": "Mezcalapa",
+          "despues": "El Parral"
+        },
+        {
+          "clave": "07:122",
+          "antes": "El Parral",
+          "despues": "Emiliano Zapata"
+        },
+        {
+          "clave": "07:123",
+          "antes": "Capitán Luis Ángel Vidal",
+          "despues": "Mezcalapa"
+        },
+        {
+          "clave": "07:124",
+          "antes": "Rincón Chamula San Pedro",
+          "despues": "Honduras de la Sierra"
+        },
+        {
+          "clave": "16:065",
+          "antes": "Parácuaro",
+          "despues": "Paracho"
+        },
+        {
+          "clave": "16:066",
+          "antes": "Paracho",
+          "despues": "Parácuaro"
+        }
+      ],
+      "cambio_de_nombre": [
+        {
+          "clave": "07:114",
+          "antes": "Maravilla Tejenapa",
+          "despues": "Maravilla Tenejapa"
+        },
+        {
+          "clave": "08:008",
+          "antes": "Batopilas",
+          "despues": "Batopilas de Manuel Gómez Morín"
+        },
+        {
+          "clave": "17:013",
+          "antes": "Jonacatepec",
+          "despues": "Jonacatepec de Leandro Valle"
+        },
+        {
+          "clave": "20:043",
+          "antes": "Heroica Ciudad de Juchitán de Zaragoza",
+          "despues": "Juchitán de Zaragoza"
+        },
+        {
+          "clave": "20:208",
+          "antes": "San Juan Mixtepec",
+          "despues": "San Juan Mixtepec Dto 08"
+        },
+        {
+          "clave": "20:209",
+          "antes": "San Juan Mixtepec",
+          "despues": "San Juan Mixtepec Dto 26"
+        },
+        {
+          "clave": "20:316",
+          "antes": "San Pedro Mixtepec",
+          "despues": "San Pedro Mixtepec Dto 22"
+        },
+        {
+          "clave": "20:317",
+          "antes": "San Pedro Mixtepec",
+          "despues": "San Pedro Mixtepec Dto 26"
+        },
+        {
+          "clave": "20:332",
+          "antes": "Villa de Tututepec de Melchor Ocampo",
+          "despues": "Villa de Tututepec"
+        },
+        {
+          "clave": "20:459",
+          "antes": "Santiago Chazumba",
+          "despues": "Villa de Santiago Chazumba"
+        },
+        {
+          "clave": "20:549",
+          "antes": "Heroica Villa Tezoatlán de Segura y Luna, Cuna de",
+          "despues": "Heroica Villa Tezoatlán de Segura y Luna, Cuna de la Independencia de Oaxaca"
+        }
+      ]
+    },
+    "2021-2024": {
+      "municipios_antes": 2468,
+      "municipios_despues": 2477,
+      "misma_clave": 2468,
+      "municipios_nuevos": [
+        {
+          "clave": "02:006",
+          "nombre": "San Quintin"
+        },
+        {
+          "clave": "02:007",
+          "nombre": "San Felipe"
+        },
+        {
+          "clave": "12:082",
+          "nombre": "Ñuu Savi"
+        },
+        {
+          "clave": "12:083",
+          "nombre": "Las Vigas"
+        },
+        {
+          "clave": "12:084",
+          "nombre": "San Nicolás"
+        },
+        {
+          "clave": "12:085",
+          "nombre": "Santa Cruz del Rincón"
+        },
+        {
+          "clave": "17:036",
+          "nombre": "Hueyapan"
+        },
+        {
+          "clave": "25:019",
+          "nombre": "Eldorado"
+        },
+        {
+          "clave": "25:020",
+          "nombre": "Juan José Ríos"
+        }
+      ],
+      "claves_que_reaparecen": [],
+      "municipio_con_clave_nueva": [],
+      "claves_ausentes": [],
+      "clave_reasignada": [
+        {
+          "clave": "16:065",
+          "antes": "Paracho",
+          "despues": "Parácuaro"
+        },
+        {
+          "clave": "16:066",
+          "antes": "Parácuaro",
+          "despues": "Paracho"
+        }
+      ],
+      "cambio_de_nombre": [
+        {
+          "clave": "04:006",
+          "antes": "Hopelchén",
+          "despues": "Hopelche}én"
+        },
+        {
+          "clave": "04:012",
+          "antes": "Dzitblache",
+          "despues": "Dzitbalché"
+        },
+        {
+          "clave": "05:007",
+          "antes": "Cuatro Ciénegas",
+          "despues": "Cuatrociénegas"
+        },
+        {
+          "clave": "07:038",
+          "antes": "Huitiupán",
+          "despues": "Huitiupaán"
+        },
+        {
+          "clave": "07:107",
+          "antes": "Villa Comaltitlán",
+          "despues": "Villacomaltitlán"
+        },
+        {
+          "clave": "10:006",
+          "antes": "General Simón Bolívar",
+          "despues": "Simón Bolívar"
+        },
+        {
+          "clave": "13:050",
+          "antes": "San Agustín Metzquititlán",
+          "despues": "San Agustón Metzquititlán"
+        },
+        {
+          "clave": "17:013",
+          "antes": "Jonacatepec de Leandro Valle",
+          "despues": "Jonacatepec"
+        },
+        {
+          "clave": "19:010",
+          "antes": "El Carmen",
+          "despues": "Carmen"
+        },
+        {
+          "clave": "19:014",
+          "antes": "Doctor Arroyo",
+          "despues": "Dr. Arroyo"
+        },
+        {
+          "clave": "19:015",
+          "antes": "Doctor Coss",
+          "despues": "Dr. Coss"
+        },
+        {
+          "clave": "19:016",
+          "antes": "Doctor González",
+          "despues": "Dr. González"
+        },
+        {
+          "clave": "19:020",
+          "antes": "General Bravo",
+          "despues": "Gral. Bravo"
+        },
+        {
+          "clave": "19:021",
+          "antes": "General Escobedo",
+          "despues": "Gral. Escobedo"
+        },
+        {
+          "clave": "19:022",
+          "antes": "General Terán",
+          "despues": "Gral. Terán"
+        },
+        {
+          "clave": "19:023",
+          "antes": "General Treviño",
+          "despues": "Gral. Treviño"
+        },
+        {
+          "clave": "19:024",
+          "antes": "General Zaragoza",
+          "despues": "Gral. Zaragoza"
+        },
+        {
+          "clave": "19:025",
+          "antes": "General Zuazua",
+          "despues": "Gral. Zuazua"
+        },
+        {
+          "clave": "20:043",
+          "antes": "Juchitán de Zaragoza",
+          "despues": "Heroica Ciudad de Juchitán de Zaragoza"
+        },
+        {
+          "clave": "20:121",
+          "antes": "San Blas Atempa",
+          "despues": "Heroica Villa de San Blas Atempa"
+        },
+        {
+          "clave": "20:208",
+          "antes": "San Juan Mixtepec Dto 08",
+          "despues": "San Juan Mixtepec"
+        },
+        {
+          "clave": "20:209",
+          "antes": "San Juan Mixtepec Dto 26",
+          "despues": "San Juan Mixtepec"
+        },
+        {
+          "clave": "20:316",
+          "antes": "San Pedro Mixtepec Dto 22",
+          "despues": "San Pedro Mixtepec"
+        },
+        {
+          "clave": "20:317",
+          "antes": "San Pedro Mixtepec Dto 26",
+          "despues": "San Pedro Mixtepec"
+        },
+        {
+          "clave": "20:459",
+          "antes": "Villa de Santiago Chazumba",
+          "despues": "Santiago Chazumba"
+        },
+        {
+          "clave": "20:562",
+          "antes": "Villa Hidalgo",
+          "despues": "Villa Hidalgo Yalalag"
+        },
+        {
+          "clave": "29:037",
+          "antes": "Ziltlaltépec de Trinidad Sánchez Santos",
+          "despues": "Zitlaltépec de Trinidad Sánchez Santos"
+        },
+        {
+          "clave": "30:010",
+          "antes": "Alto Lucero de Gutiérrez Barrios",
+          "despues": "Alto Lucero de Gutiérrez Barios"
+        },
+        {
+          "clave": "30:047",
+          "antes": "Cosamaloapan de Carpio",
+          "despues": "Cosamaloapan"
+        }
+      ]
+    }
+  },
+  "claves_con_hueco": [
+    {
+      "clave": "07:117",
+      "nombre": "San Andrés Duraznal",
+      "anios_sin_dato": [
+        2012
+      ]
+    },
+    {
+      "clave": "20:144",
+      "nombre": "San Francisco Nuxaño",
+      "anios_sin_dato": [
+        2012
+      ]
+    },
+    {
+      "clave": "20:218",
+      "nombre": "San Juan Teita",
+      "anios_sin_dato": [
+        2012
+      ]
+    }
+  ],
+  "estables": {
+    "criterio": "Clave presente en las seis elecciones y nunca reasignada",
+    "municipios": 2453,
+    "de_total_ultimo_anio": 2477,
+    "lista_nominal_ultimo_anio": 97974192,
+    "lista_nominal_total_ultimo_anio": 98330348,
+    "proporcion_lista_nominal": 0.9964
+  },
+  "por_estado": {
+    "02": {
+      "municipios_nuevos": 2
+    },
+    "04": {
+      "municipios_nuevos": 2
+    },
+    "07": {
+      "municipios_nuevos": 5,
+      "municipio_con_clave_nueva": 1,
+      "clave_reasignada": 5,
+      "claves_con_hueco": 1
+    },
+    "12": {
+      "municipios_nuevos": 4
+    },
+    "16": {
+      "clave_reasignada": 4
+    },
+    "17": {
+      "municipios_nuevos": 3
+    },
+    "20": {
+      "claves_con_hueco": 2
+    },
+    "25": {
+      "municipios_nuevos": 2
+    }
+  }
+}

@@ -202,7 +202,7 @@ Ejecuta `npm ci` y `npm run preview` en `frontend/`. Abre http://127.0.0.1:3000.
 El modo usa los CSV de `data/samples/` empaquetados en `src/lib/preview-data.json`; el banner identifica la copia local.
 Mapa, búsqueda, CSV, tendencias, predicciones y cálculo aritmético de escenarios funcionan sin FastAPI. Los escenarios locales no se guardan.
 La selección de vista previa es explícita mediante `PULSO_PREVIEW=1`, solo en el servidor. `npm run dev` mantiene el proxy real y sus errores de conexión; no hay fallback automático.
-Para regenerar la copia, desde la raíz ejecuta `python scripts/build_web_preview.py`. El script verifica bandas y categorías contra la calibración del backend. Los identificadores `preview-*` no son corridas persistidas. La fecha de la copia identifica el empaquetado, no el entrenamiento original.
+Para regenerar la copia, desde la raíz ejecuta `python scripts/build_web_preview.py`. Las fuentes y su procedencia (huella, fechas, validación) salen de `data/samples/ccpc_sources.json`, que exporta `python scripts/export_source_provenance.py` del paquete de demo (`data/demo/`, que se restaura con `python scripts/ci_fixtures.py restore`); para una elección nueva, ver [`docs/punto4-actualizacion-datos.md`](../docs/punto4-actualizacion-datos.md). El script verifica bandas y categorías contra la calibración del backend. Los identificadores `preview-*` no son corridas persistidas. La fecha de la copia identifica el empaquetado, no el entrenamiento original.
 
 ## Análisis IA
 

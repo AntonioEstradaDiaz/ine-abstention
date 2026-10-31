@@ -88,6 +88,22 @@ export interface Source {
   year: number;
   source_url: string;
   landing_url: string;
+  retrieved_at?: string;
+  checksum?: string;
+  byte_size?: number;
+  license_notes?: string;
+  /** Last-Modified reported by the INE server; not an official publication date. */
+  published_at?: string | null;
+  validation_status?: string | null;
+  pipeline_version?: string | null;
+}
+/** Contents of public/geo/provenance.json (INEGI state cartography). */
+export interface Cartography {
+  source_url: string;
+  documentation_url?: string;
+  retrieved_at?: string;
+  stored_sha256?: string;
+  byte_size?: number;
 }
 export interface Summary {
   items: Array<
