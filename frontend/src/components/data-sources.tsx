@@ -26,6 +26,7 @@ import {
 import { api } from "@/lib/api";
 import type { Election, Forecast, Prediction, Risk, Source } from "@/lib/types";
 import { number, pct, riskLabels } from "@/lib/utils";
+import { DataProvenance } from "./data-provenance";
 import { PageKpis } from "./page-kpis";
 import { RiskBadge, Status } from "./shared";
 import { Button } from "./ui/button";
@@ -841,6 +842,7 @@ export function DataSources({
               </>
             )}
           </section>
+          <DataProvenance forecast={forecast} preview={preview} />
         </div>
 
         <div className="data-side">
