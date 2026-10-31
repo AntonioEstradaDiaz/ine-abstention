@@ -505,6 +505,7 @@ export function Dashboard({ preview = false }: { preview?: boolean }) {
               loading={predictions.isPending}
               error={predictions.error}
               retry={() => void predictions.refetch()}
+              onMethodology={() => setView("laboratory")}
             />
           )}
           {view === "scenarios" && (

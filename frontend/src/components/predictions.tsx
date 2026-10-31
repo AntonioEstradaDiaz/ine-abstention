@@ -20,7 +20,7 @@ import { api } from "@/lib/api";
 import { buildAssistantContext } from "@/lib/assistant";
 import type { Forecast, Prediction, Source } from "@/lib/types";
 import { number, pct, pp, riskLabels } from "@/lib/utils";
-import { AiAssistant } from "./ai-assistant";
+import { AssistantChat, AssistantPanel, useAssistant } from "./ai-assistant";
 import { Chart, chartAxis, chartTooltip } from "./chart";
 import { PageKpis } from "./page-kpis";
 import { ForecastValidation } from "./forecast-validation";
@@ -44,6 +44,7 @@ export function PredictionsView({
   loading,
   error,
   retry,
+  onMethodology,
 }: {
   prediction?: Prediction;
   states: Prediction[];
@@ -52,6 +53,7 @@ export function PredictionsView({
   loading: boolean;
   error: Error | null;
   retry: () => void;
+  onMethodology?: () => void;
 }) {
   const history = useQuery({
     queryKey: ["history", p?.state_code],
@@ -88,6 +90,7 @@ export function PredictionsView({
         : null,
     [p, states, forecast, history.data, model],
   );
+  const assistant = useAssistant(assistantContext);
   const option = useMemo(() => {
     const last = observations.at(-1);
     return {
@@ -126,7 +129,7 @@ export function PredictionsView({
       },
       series: [
         {
-          name: "Observado · intermedias",
+          name: "Observado · Intermedias",
           type: "line",
           symbolSize: 8,
           smooth: 0.25,
@@ -294,12 +297,7 @@ export function PredictionsView({
           icon={ChartSpline}
           title="Del registro histórico al escenario 2027"
           subtitle={`${p.name} · Abstención · Elecciones intermedias`}
-          actions={
-            <>
-              <span className="section-tag">2027 estimado</span>
-              <RiskBadge risk={p.risk_level} />
-            </>
-          }
+          actions={<span className="section-tag">2027 estimado</span>}
           className="forecast-chart-card"
         >
           <Status
@@ -312,7 +310,7 @@ export function PredictionsView({
             <Chart
               option={option}
               label={`Abstención de ${p.name}. Línea continua observada; línea discontinua estimada para 2027 con banda de referencia.`}
-              height={440}
+              height={390}
             />
           )}
           <div className="forecast-strip">
@@ -343,12 +341,18 @@ export function PredictionsView({
             </div>
           </div>
           <p className="section-card-note">
-            La franja de 2027 es una banda empírica, no una probabilidad ni una
-            garantía de cobertura. El trazo discontinuo identifica el futuro.
+            La banda es empírica; no garantiza cobertura futura.
           </p>
         </SectionCard>
-        <AiAssistant context={assistantContext} />
+        <AssistantPanel
+          assistant={assistant}
+          stateName={p.name
+            .toLocaleLowerCase("es-MX")
+            .replace(/(^|\s)\S/g, (c) => c.toLocaleUpperCase("es-MX"))}
+          onMethodology={onMethodology}
+        />
       </div>
+      <AssistantChat assistant={assistant} />
       <div className="section-grid-4 prediction-details">
         <section
           className="section-card forecast-card"

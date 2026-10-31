@@ -2,13 +2,15 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-  Bot,
-  Cpu,
-  Database,
+  ArrowRight,
+  ChartColumn,
+  FileText,
   MapPin,
+  MessageSquareText,
+  PlusCircle,
   SendHorizontal,
   Sparkles,
-  Trash2,
+  UserRound,
 } from "lucide-react";
 import {
   automaticAnswer,
@@ -22,6 +24,7 @@ import {
 import { projectHorizon } from "@/lib/assistant-projection";
 import { quotaSummary } from "@/lib/ai-quota";
 import type { ElectionType } from "@/lib/types";
+import { pct } from "@/lib/utils";
 import { DashboardSelect } from "./ui/dashboard-select";
 
 const suggestions = [
@@ -64,11 +67,11 @@ async function ask(body: {
   return data as AssistantReply;
 }
 
-export function AiAssistant({
-  context: baseContext,
-}: {
-  context: AssistantContext | null;
-}) {
+const providerName = (provider?: string) =>
+  provider === "groq" ? "Groq" : provider === "gemini" ? "Gemini" : "Ollama";
+
+/** Connection, chosen model, horizon and conversation shared by the assistant panel and the chat card. */
+export function useAssistant(baseContext: AssistantContext | null) {
   const [yearInput, setYearInput] = useState<string | null>(null);
   const [targetYear, setTargetYear] = useState<number | null>(null);
   const [electionType, setElectionType] = useState<ElectionType | null>(null);
@@ -92,7 +95,6 @@ export function AiAssistant({
     }
   }, [baseContext, targetYear, electionType]);
   const context = horizon.context;
-  const projection = context?.projection;
   const cutoff = baseContext
     ? Math.max(...baseContext.observedHistory.map((h) => h.year))
     : 2024;
@@ -106,16 +108,15 @@ export function AiAssistant({
   const queryClient = useQueryClient();
   const quota = status.data?.quota ?? null;
   const [chosenModel, setChosenModel] = useState<string | null>(null);
-  const [draft, setDraft] = useState("");
   const [chat, setChat] = useState<ChatEntry[]>([]);
   const [notice, setNotice] = useState<string | null>(null);
-  const log = useRef<HTMLDivElement>(null);
   const models = status.data?.models ?? [];
   const model =
     chosenModel && models.includes(chosenModel)
       ? chosenModel
       : (status.data?.defaultModel ?? null);
   const online = !!status.data?.reachable && !!model;
+  const provider = status.data?.provider;
   const code = JSON.stringify(context);
   const activeCode = useRef(code);
   activeCode.current = code;
@@ -124,19 +125,12 @@ export function AiAssistant({
     setChat([]);
     setNotice(null);
   }, [code]);
-  useEffect(() => {
-    log.current?.scrollTo({
-      top: log.current.scrollHeight,
-      behavior: "smooth",
-    });
-  }, [chat.length]);
   const mutation = useMutation({ mutationFn: ask });
   const send = (text: string) => {
     const question = text.trim().slice(0, MAX_MESSAGE_LENGTH);
-    if (!question || !context || mutation.isPending) return;
+    if (!question || !context || mutation.isPending) return false;
     const next: ChatEntry[] = [...chat, { role: "user", content: question }];
     setChat(next);
-    setDraft("");
     const fallback = (reason?: string) => {
       if (activeCode.current !== code) return;
       setNotice(reason ?? null);
@@ -149,7 +143,10 @@ export function AiAssistant({
         },
       ]);
     };
-    if (!online || !model) return fallback();
+    if (!online || !model) {
+      fallback();
+      return true;
+    }
     mutation.mutate(
       {
         state_code: context.stateCode,
@@ -165,10 +162,12 @@ export function AiAssistant({
         // or re-read it after an error (a provider failure does not charge it).
         onSettled: (reply) => {
           if (reply?.quota)
-            queryClient.setQueryData<AssistantStatus>(["assistant-status"], (old) =>
-              old ? { ...old, quota: reply.quota } : old,
+            queryClient.setQueryData<AssistantStatus>(
+              ["assistant-status"],
+              (old) => (old ? { ...old, quota: reply.quota } : old),
             );
-          else queryClient.invalidateQueries({ queryKey: ["assistant-status"] });
+          else
+            queryClient.invalidateQueries({ queryKey: ["assistant-status"] });
         },
         onSuccess: (reply) => {
           if (activeCode.current !== code) return;
@@ -187,39 +186,84 @@ export function AiAssistant({
           fallback(`${error.message} Se muestra una lectura automática.`),
       },
     );
+    return true;
   };
   const connection = status.isPending
     ? { label: "Comprobando…", tone: "pending" }
     : online
       ? {
           label:
-            status.data?.provider === "groq"
-              ? "Groq configurado"
-              : status.data?.provider === "gemini"
-                ? "Gemini configurado"
-                : "Ollama conectado",
+            provider === "groq" || provider === "gemini"
+              ? `${providerName(provider)} configurado`
+              : "Ollama conectado",
           tone: "online",
         }
       : status.data?.reachable
         ? { label: "Sin modelo instalado", tone: "offline" }
         : {
             label:
-              status.data?.provider === "groq"
-                ? "Groq sin configurar"
-                : status.data?.provider === "gemini"
-                  ? "Gemini sin configurar"
-                  : "Ollama sin conexión",
+              provider === "groq" || provider === "gemini"
+                ? `${providerName(provider)} sin configurar`
+                : "Ollama sin conexión",
             tone: "offline",
           };
+  return {
+    baseContext,
+    context,
+    horizonError: horizon.error,
+    targetYear,
+    cutoff,
+    yearInput,
+    setYearInput,
+    electionType,
+    setElectionType,
+    applyYear: () =>
+      setTargetYear(Number(yearInput ?? baseContext?.forecast.target_year)),
+    status,
+    quota,
+    models,
+    model,
+    setModel: setChosenModel,
+    online,
+    connection,
+    provider,
+    chat,
+    notice,
+    pending: mutation.isPending,
+    send,
+    reset: () => {
+      setChat([]);
+      setNotice(null);
+    },
+  };
+}
+type Assistant = ReturnType<typeof useAssistant>;
+
+/** Right-hand panel: AI model, horizon settings and the resulting projection. */
+export function AssistantPanel({
+  assistant,
+  stateName,
+  onMethodology,
+}: {
+  assistant: Assistant;
+  stateName: string;
+  onMethodology?: () => void;
+}) {
+  const { baseContext, context, cutoff, models, model, connection, quota } =
+    assistant;
+  const projection = context?.projection;
   return (
-    <section className="section-card ai-assistant" aria-labelledby="ai-title">
+    <section
+      className="section-card ai-assistant ai-panel"
+      aria-labelledby="ai-title"
+    >
       <header className="section-card-heading ai-assistant-heading">
         <span className="ai-assistant-avatar" aria-hidden="true">
           <Sparkles />
         </span>
         <div>
           <h2 id="ai-title">Asistente IA</h2>
-          <p>Consulta proyecciones y sus límites con datos del INE</p>
+          <p>Configura y consulta la proyección</p>
         </div>
         <span
           className="ai-connection"
@@ -230,15 +274,20 @@ export function AiAssistant({
           {connection.label}
         </span>
       </header>
-      <div className="ai-assistant-config">
-        <label>
-          <Cpu aria-hidden="true" />
+      <form
+        className="ai-fields"
+        onSubmit={(e) => {
+          e.preventDefault();
+          assistant.applyYear();
+        }}
+      >
+        <div className="ai-field ai-field-wide">
           <span>Modelo de IA</span>
           {models.length ? (
             <DashboardSelect
               aria-label="Modelo de IA"
               value={model ?? ""}
-              onChange={(e) => setChosenModel(e.target.value)}
+              onChange={(e) => assistant.setModel(e.target.value)}
             >
               {models.map((m) => (
                 <option key={m} value={m}>
@@ -247,112 +296,179 @@ export function AiAssistant({
               ))}
             </DashboardSelect>
           ) : (
-            <strong>Por definir</strong>
+            <strong className="ai-field-empty">Por definir</strong>
           )}
+        </div>
+        <label className="ai-field">
+          <span>Año objetivo</span>
+          <input
+            aria-label="Año objetivo del asistente"
+            type="number"
+            min={cutoff + 1}
+            max={2029}
+            step={1}
+            value={
+              assistant.yearInput ??
+              String(baseContext?.forecast.target_year ?? "")
+            }
+            onChange={(e) => assistant.setYearInput(e.target.value)}
+            required
+          />
         </label>
-        <form
-          className="ai-horizon-controls"
-          onSubmit={(e) => {
-            e.preventDefault();
-            setTargetYear(
-              Number(yearInput ?? baseContext?.forecast.target_year),
-            );
-          }}
-        >
-          <label>
-            Año objetivo
-            <input
-              aria-label="Año objetivo del asistente"
-              type="number"
-              min={cutoff + 1}
-              max={2029}
-              step={1}
-              value={
-                yearInput ?? String(baseContext?.forecast.target_year ?? "")
-              }
-              onChange={(e) => setYearInput(e.target.value)}
-              required
-            />
-          </label>
-          <label>
-            Tipo de referencia
-            <DashboardSelect
-              aria-label="Tipo de elección del asistente"
-              value={
-                electionType ?? baseContext?.forecast.election_type ?? "midterm"
-              }
-              onChange={(e) => setElectionType(e.target.value as ElectionType)}
-            >
-              <option value="midterm">Intermedia</option>
-              <option value="presidential">Presidencial</option>
-            </DashboardSelect>
-          </label>
-          <button type="submit" disabled={!baseContext}>
-            Calcular proyección
-          </button>
-        </form>
-        {horizon.error && (
-          <p role="alert" className="ai-error-notice">
-            {horizon.error}
-          </p>
-        )}
-        {projection && (
-          <div
-            className="ai-projection-result"
-            aria-label="Proyección del asistente"
-            aria-live="polite"
+        <div className="ai-field">
+          <span>Tipo de referencia</span>
+          <DashboardSelect
+            aria-label="Tipo de elección del asistente"
+            value={
+              assistant.electionType ??
+              baseContext?.forecast.election_type ??
+              "midterm"
+            }
+            onChange={(e) =>
+              assistant.setElectionType(e.target.value as ElectionType)
+            }
           >
-            <strong>
+            <option value="midterm">Intermedia</option>
+            <option value="presidential">Presidencial</option>
+          </DashboardSelect>
+        </div>
+        <button
+          type="submit"
+          className="ai-calc ai-field-wide"
+          disabled={!baseContext}
+        >
+          Calcular proyección
+        </button>
+      </form>
+      {assistant.horizonError && (
+        <p role="alert" className="ai-error-notice">
+          {assistant.horizonError}
+        </p>
+      )}
+      <div
+        className="ai-projection"
+        aria-label="Proyección del asistente"
+        aria-live="polite"
+      >
+        {projection ? (
+          <>
+            <strong className="ai-projection-title">
               {projection.kind === "registered"
                 ? "Pronóstico registrado"
                 : "Proyección de referencia"}{" "}
               · {projection.targetYear}
             </strong>
-            <p>
-              Abstención {(projection.abstention * 100).toFixed(1)}% ·
-              Participación {(projection.participation * 100).toFixed(1)}%
-            </p>
-            <small>
+            <div className="ai-projection-values">
+              <div>
+                <span>Abstención</span>
+                <b>{pct(projection.abstention)}</b>
+              </div>
+              <div>
+                <span>Participación</span>
+                <b>{pct(projection.participation)}</b>
+              </div>
+            </div>
+            {projection.lower != null && projection.upper != null && (
+              <p className="ai-projection-range">
+                Rango de abstención: {pct(projection.lower)} –{" "}
+                {pct(projection.upper)}
+              </p>
+            )}
+            <p className="ai-projection-method">{projection.method}</p>
+            <p className="ai-projection-method">{projection.warning}</p>
+            <small className="ai-projection-method">
               Referencia {projection.referenceYear} · Corte{" "}
               {projection.cutoffYear} · INE CCPC, fuente {projection.sourceId}
             </small>
-            {projection.lower != null && projection.upper != null && (
-              <p className="ai-projection-band">Rango de abstención: {(projection.lower * 100).toFixed(1)}% – {(projection.upper * 100).toFixed(1)}%</p>
-            )}
-            <p>{projection.method}</p>
-            <p>{projection.warning}</p>
-          </div>
+          </>
+        ) : (
+          <strong className="ai-projection-title">
+            {baseContext ? "Proyección no disponible" : "Sin entidad"}
+          </strong>
         )}
-        <ul className="ai-context-chips" aria-label="Contexto del asistente">
-          <li>
-            <MapPin aria-hidden="true" />
-            {context?.state ?? "Sin entidad"}
-          </li>
-          <li>
-            <Database aria-hidden="true" />
-            INE · CCPC hasta {cutoff}
-          </li>
-          <li>Horizonte {projection?.targetYear ?? "—"}</li>
-        </ul>
-        {quota && (
-          <p
-            className="ai-quota"
-            data-empty={quota.remaining <= 0 || undefined}
-            aria-live="polite"
-          >
-            {quotaSummary(quota)}
-          </p>
+        {onMethodology && (
+          <button type="button" className="ai-link" onClick={onMethodology}>
+            Ver metodología y límites <ArrowRight aria-hidden="true" />
+          </button>
         )}
       </div>
+      <ul className="ai-context-chips" aria-label="Contexto del asistente">
+        <li>
+          <MapPin aria-hidden="true" />
+          {stateName}
+        </li>
+        <li>
+          <FileText aria-hidden="true" />
+          INE · CCPC hasta {cutoff}
+        </li>
+        <li>
+          <ChartColumn aria-hidden="true" />
+          Horizonte {projection?.targetYear ?? "—"}
+        </li>
+      </ul>
+      {quota && (
+        <p
+          className="ai-quota"
+          data-empty={quota.remaining <= 0 || undefined}
+          aria-live="polite"
+        >
+          {quotaSummary(quota)}
+        </p>
+      )}
+    </section>
+  );
+}
+
+/** Full-width conversation card below the chart and the panel. */
+export function AssistantChat({ assistant }: { assistant: Assistant }) {
+  const { context, chat, notice, pending, online, status, provider, targetYear } =
+    assistant;
+  const projection = context?.projection;
+  const [draft, setDraft] = useState("");
+  const log = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    log.current?.scrollTo({
+      top: log.current.scrollHeight,
+      behavior: "smooth",
+    });
+  }, [chat.length]);
+  const bot = (
+    <span className="ai-message-avatar" aria-hidden="true">
+      <Sparkles />
+    </span>
+  );
+  return (
+    <section className="section-card ai-chat" aria-labelledby="ai-chat-title">
+      <header className="section-card-heading">
+        <span className="ai-chat-icon" aria-hidden="true">
+          <MessageSquareText />
+        </span>
+        <div>
+          <h2 id="ai-chat-title">Conversa con la IA</h2>
+          <p>
+            Haz preguntas sobre los resultados, el histórico y los límites de la
+            estimación.
+          </p>
+        </div>
+        <button
+          type="button"
+          className="ai-new-chat"
+          onClick={assistant.reset}
+          disabled={!chat.length || pending}
+        >
+          <PlusCircle aria-hidden="true" />
+          Nueva conversación
+        </button>
+      </header>
       {!status.isPending && !online && (
         <p className="ai-offline-notice">
           <strong>El asistente no está conectado.</strong> Las respuestas son
           lecturas automáticas calculadas con reglas sobre los mismos datos.
           Configura{" "}
           <code>
-            {status.data?.provider === "gemini"
+            {provider === "gemini"
               ? "GEMINI_API_KEY"
-              : status.data?.provider === "ollama"
+              : provider === "ollama"
                 ? "OLLAMA_URL"
                 : "GROQ_API_KEY"}
           </code>{" "}
@@ -363,14 +479,12 @@ export function AiAssistant({
         className="ai-chat-log"
         ref={log}
         aria-live="polite"
-        aria-busy={mutation.isPending}
+        aria-busy={pending}
         tabIndex={0}
         aria-label="Conversación con el asistente"
       >
         <div className="ai-message" data-role="assistant">
-          <span className="ai-message-avatar" aria-hidden="true">
-            <Bot />
-          </span>
+          {bot}
           <div>
             <p>
               {context
@@ -381,11 +495,7 @@ export function AiAssistant({
         </div>
         {chat.map((entry, index) => (
           <div className="ai-message" data-role={entry.role} key={index}>
-            {entry.role === "assistant" && (
-              <span className="ai-message-avatar" aria-hidden="true">
-                <Bot />
-              </span>
-            )}
+            {entry.role === "assistant" && bot}
             <div>
               <p>{entry.content}</p>
               {entry.role === "assistant" && (
@@ -396,13 +506,16 @@ export function AiAssistant({
                 </small>
               )}
             </div>
+            {entry.role === "user" && (
+              <span className="ai-user-avatar" aria-hidden="true">
+                <UserRound />
+              </span>
+            )}
           </div>
         ))}
-        {mutation.isPending && (
+        {pending && (
           <div className="ai-message" data-role="assistant">
-            <span className="ai-message-avatar" aria-hidden="true">
-              <Bot />
-            </span>
+            {bot}
             <div>
               <p
                 className="ai-typing"
@@ -418,7 +531,7 @@ export function AiAssistant({
       </div>
       {notice && <p className="ai-error-notice">{notice}</p>}
       <div className="ai-suggestions" aria-label="Preguntas sugeridas">
-        {(projection && targetYear !== null ? [
+        {(context && projection && targetYear !== null ? [
           `¿Cómo se calculó la estimación de ${context.state} para ${projection.targetYear} y qué datos la respaldan?`,
           "¿Qué mecanismos de seguimiento permiten anticipar este escenario?",
           "¿Qué señales de alerta debemos revisar y qué datos faltan?",
@@ -426,8 +539,8 @@ export function AiAssistant({
           <button
             type="button"
             key={s}
-            onClick={() => send(s)}
-            disabled={!context || mutation.isPending}
+            onClick={() => assistant.send(s)}
+            disabled={!context || pending}
           >
             {s}
           </button>
@@ -437,14 +550,15 @@ export function AiAssistant({
         className="ai-composer"
         onSubmit={(e) => {
           e.preventDefault();
-          send(draft);
+          if (assistant.send(draft)) setDraft("");
         }}
       >
+        <MessageSquareText className="ai-composer-icon" aria-hidden="true" />
         <input
           aria-label="Pregunta para el asistente"
           placeholder={
             context
-              ? `Pregunta sobre ${context.state}…`
+              ? `Escribe tu pregunta sobre ${context.state}…`
               : "Selecciona una entidad"
           }
           value={draft}
@@ -453,24 +567,13 @@ export function AiAssistant({
           disabled={!context}
         />
         <button
-          type="button"
-          className="ai-clear"
-          aria-label="Borrar conversación"
-          onClick={() => {
-            setChat([]);
-            setNotice(null);
-          }}
-          disabled={!chat.length || mutation.isPending}
-        >
-          <Trash2 />
-        </button>
-        <button
           type="submit"
           className="ai-send"
           aria-label="Enviar pregunta"
-          disabled={!draft.trim() || !context || mutation.isPending}
+          disabled={!draft.trim() || !context || pending}
         >
-          <SendHorizontal />
+          <SendHorizontal aria-hidden="true" />
+          <span>Enviar</span>
         </button>
       </form>
       <p className="section-card-note">

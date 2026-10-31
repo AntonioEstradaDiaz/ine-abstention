@@ -594,44 +594,6 @@
   background: #fff4e5;
   color: #a65d00;
 }
-.ai-assistant-config {
-  display: flex;
-  flex-direction: column;
-  gap: 9px;
-}
-.ai-assistant-config label {
-  display: grid;
-  grid-template-columns: 16px auto minmax(0, 1fr);
-  align-items: center;
-  gap: 8px;
-  padding: 8px 10px;
-  border: 1px solid var(--sp-line);
-  border-radius: 9px;
-  background: #fff;
-  font-size: 12px;
-  color: var(--sp-muted);
-}
-.ai-assistant-config label > svg {
-  width: 16px;
-  height: 16px;
-  color: var(--sp-pink);
-}
-.ai-assistant-config label > strong {
-  justify-self: end;
-  font-size: 12px;
-  color: var(--sp-text);
-  font-weight: 600;
-}
-.ai-assistant-config :is(select, .dashboard-select-trigger) {
-  min-height: 28px;
-  padding: 3px 24px 3px 8px;
-  border: 0;
-  background: transparent;
-  font-size: 12px;
-  color: var(--sp-text);
-  justify-self: end;
-  max-width: 100%;
-}
 .ai-context-chips {
   display: flex;
   flex-wrap: wrap;
@@ -842,10 +804,6 @@ small.ai-quota {
   width: 17px;
   height: 17px;
 }
-.ai-composer .ai-clear {
-  background: transparent;
-  color: #8a98ae;
-}
 .ai-composer .ai-send {
   background: var(--sp-pink);
   color: #fff;
@@ -853,6 +811,395 @@ small.ai-quota {
 .ai-composer button:disabled {
   opacity: 0.4;
   cursor: default;
+}
+
+/* Predicciones · gráfica, panel del asistente y conversación (diseño propuesto). */
+.predictions-main {
+  grid-template-columns: minmax(0, 1fr) 400px;
+}
+.forecast-chart-card,
+.ai-panel,
+.ai-chat {
+  border-color: #fbe1ef;
+  border-radius: 18px;
+  box-shadow: 0 6px 22px #b2497a0a;
+}
+.forecast-chart-card {
+  background: linear-gradient(180deg, #fff 0, #fffbfd 100%);
+}
+.forecast-chart-card .section-card-icon {
+  box-sizing: content-box;
+  width: 22px;
+  height: 22px;
+  padding: 12px;
+  margin-top: 0;
+  border-radius: 13px;
+  background: #fff0f8;
+  stroke-width: 2;
+}
+.section-page .forecast-chart-card .section-card-heading h2,
+.section-page .ai-panel .section-card-heading h2,
+.section-page .ai-chat .section-card-heading h2 {
+  font-size: 20px;
+  letter-spacing: -0.3px;
+}
+.forecast-chart-card .section-card-heading p,
+.ai-panel .section-card-heading p,
+.ai-chat .section-card-heading p {
+  font-size: 14px;
+}
+.forecast-chart-card .section-tag {
+  padding: 7px 12px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.forecast-strip {
+  gap: 14px;
+}
+.forecast-strip > div {
+  gap: 6px;
+  padding: 14px 18px;
+  border-color: #fbe1ef;
+  border-radius: 12px;
+  background: #fff8fc;
+}
+.forecast-strip span {
+  font-size: 13px;
+  color: #4b5a75;
+}
+.forecast-strip strong {
+  font-size: 26px;
+  line-height: 1.1;
+}
+.forecast-strip small {
+  font-size: 12px;
+  color: #6d7e96;
+}
+.forecast-band-track {
+  height: 10px;
+  margin-top: 6px;
+  background: #fbd3e8;
+}
+.forecast-band-track > i {
+  background: #e5007e;
+}
+.forecast-band-track > i::before,
+.forecast-band-track > i::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: #e5007e;
+  box-shadow: 0 1px 4px #b9005e40;
+  transform: translate(-50%, -50%);
+}
+.forecast-band-track > i::before {
+  left: 0;
+}
+.forecast-band-track > i::after {
+  left: 100%;
+}
+.forecast-band-track > b {
+  display: none;
+}
+
+.ai-panel {
+  gap: 16px;
+  background: linear-gradient(180deg, #fff6fb 0, #fff 170px);
+}
+.ai-panel .ai-assistant-avatar,
+.ai-chat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+}
+.ai-panel .ai-assistant-avatar svg {
+  width: 24px;
+  height: 24px;
+}
+.ai-panel .ai-connection {
+  padding: 6px 11px;
+  font-size: 11px;
+}
+.ai-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 12px;
+}
+.ai-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+  font-size: 13px;
+  color: #4b5a75;
+}
+.ai-field-wide {
+  grid-column: 1 / -1;
+}
+.ai-field .dashboard-select-trigger,
+.ai-field input,
+.ai-field-empty {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  min-height: 46px;
+  padding: 0 14px;
+  border: 1px solid #e3e7ef;
+  border-radius: 11px;
+  background: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--sp-text);
+}
+.ai-field input {
+  font-family: inherit;
+}
+.ai-field .dashboard-select-trigger[data-disabled] {
+  opacity: 1;
+}
+.ai-calc {
+  min-height: 48px;
+  border: 0;
+  border-radius: 11px;
+  background: linear-gradient(90deg, #e5007e, #c8006c);
+  color: #fff;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 18px #e5007e33;
+}
+@media (hover: hover) {
+  .ai-calc:hover:not(:disabled) {
+    background: linear-gradient(90deg, #cf0072, #b9005e);
+  }
+}
+.ai-calc:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.ai-calc:focus-visible,
+.ai-link:focus-visible,
+.ai-new-chat:focus-visible {
+  outline: 2px solid #b9005e;
+  outline-offset: 3px;
+}
+.ai-projection {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  border: 1px solid #fbe1ef;
+  border-radius: 14px;
+  background: #fff8fc;
+}
+.ai-projection-title {
+  font-size: 15px;
+  font-weight: 700;
+}
+.ai-projection-values {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding-bottom: 10px;
+  border-bottom: 1px solid #f6d3e6;
+}
+.ai-projection-values > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.ai-projection-values > div + div {
+  padding-left: 16px;
+  border-left: 1px solid #f6d3e6;
+}
+.ai-projection-values span {
+  font-size: 13px;
+  color: #4b5a75;
+}
+.ai-projection-values b {
+  font-size: 28px;
+  line-height: 1.15;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--sp-pink);
+}
+.ai-projection-range {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--sp-text);
+}
+.ai-projection-method {
+  margin: -4px 0 0;
+  font-size: 13px;
+  color: #6d7e96;
+}
+.ai-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--sp-pink);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.ai-link svg {
+  width: 15px;
+  height: 15px;
+}
+.ai-panel .ai-context-chips {
+  gap: 8px;
+}
+.ai-panel .ai-context-chips li {
+  gap: 6px;
+  padding: 7px 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+.ai-panel .ai-context-chips svg {
+  width: 14px;
+  height: 14px;
+}
+
+.ai-chat {
+  gap: 16px;
+  background: linear-gradient(180deg, #fff 0, #fffafd 100%);
+}
+.ai-chat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: #fff0f8;
+  color: var(--sp-pink);
+}
+.ai-chat-icon svg {
+  width: 24px;
+  height: 24px;
+}
+.ai-new-chat {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 0 16px;
+  border: 1px solid #f3b6d6;
+  border-radius: 11px;
+  background: #fff;
+  color: var(--sp-deep);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.ai-new-chat svg {
+  width: 18px;
+  height: 18px;
+}
+@media (hover: hover) {
+  .ai-new-chat:hover:not(:disabled) {
+    background: var(--sp-tint);
+  }
+}
+.ai-new-chat:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+.ai-chat .ai-chat-log {
+  gap: 14px;
+  min-height: 150px;
+  max-height: 380px;
+}
+.ai-chat .ai-message {
+  align-items: center;
+  gap: 12px;
+}
+.ai-chat .ai-message > div {
+  max-width: min(780px, 78%);
+  padding: 12px 16px;
+  border: 1px solid #e8ebf1;
+  border-radius: 12px;
+  background: #f5f6f9;
+}
+.ai-chat .ai-message p {
+  font-size: 14px;
+  color: #1b2d4a;
+}
+.ai-chat .ai-message[data-role="user"] > div {
+  border-color: #f8cfe4;
+  background: #fdeef6;
+}
+.ai-chat .ai-message[data-role="user"] p {
+  color: #1b2d4a;
+}
+.ai-chat .ai-message-avatar,
+.ai-user-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #fff0f8;
+  color: var(--sp-pink);
+}
+.ai-chat .ai-message-avatar svg,
+.ai-user-avatar svg {
+  width: 20px;
+  height: 20px;
+}
+.ai-chat .ai-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.ai-chat .ai-suggestions button {
+  padding: 8px 16px;
+  border-color: #f3b6d6;
+  border-radius: 999px;
+  font-size: 13px;
+}
+.ai-chat .ai-composer {
+  gap: 12px;
+  padding: 6px 6px 6px 16px;
+  border-color: #ead7e2;
+  border-radius: 13px;
+}
+.ai-composer-icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  color: #6d7e96;
+}
+.section-page .ai-chat .ai-composer input {
+  padding: 10px 0;
+  font-size: 14px;
+}
+.ai-chat .ai-composer .ai-send {
+  gap: 8px;
+  width: auto;
+  height: 46px;
+  padding: 0 22px;
+  border-radius: 11px;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
 }
 
 /* Escenarios. */
@@ -1039,6 +1386,28 @@ small.ai-quota {
   }
 }
 @media (max-width: 700px) {
+  .ai-new-chat {
+    flex-basis: 100%;
+    justify-content: center;
+  }
+  .ai-fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .ai-chat .ai-message > div {
+    max-width: 100%;
+  }
+  .ai-chat .ai-message-avatar,
+  .ai-user-avatar {
+    width: 32px;
+    height: 32px;
+  }
+  .ai-chat .ai-composer .ai-send {
+    padding: 0 14px;
+  }
+  .ai-chat .ai-composer .ai-send span,
+  .ai-composer-icon {
+    display: none;
+  }
   .page-kpis,
   .section-grid-4,
   .forecast-strip,
@@ -1071,16 +1440,6 @@ small.ai-quota {
 .scenario-results .section-table {
   white-space: normal;
 }
-
-/* Forecast controls stay usable within the assistant column. */
-.ai-assistant .ai-horizon-controls { display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0; }
-.ai-assistant .ai-horizon-controls label { display: flex; flex: 1 1 130px; flex-direction: column; align-items: stretch; gap: 6px; font-size: 12px; }
-.ai-horizon-controls input, .ai-horizon-controls .dashboard-select-trigger { width: 100%; min-width: 0; padding: 10px; border: 1px solid #efc9df; border-radius: 10px; background: white; color: #0d172f; }
-.ai-horizon-controls button[type="submit"] { border: 0; border-radius: 10px; padding: 10px 14px; background: #c4006b; color: white; cursor: pointer; }
-.ai-horizon-controls button:disabled { opacity: .5; cursor: default; }
-.ai-projection-result { padding: 14px; border: 1px solid #f4cfe4; border-radius: 14px; background: #fff6fa; font-size: 13px; }
-.ai-projection-result p { margin: 6px 0; }
-.ai-projection-result small { color: #596d8d; }
 
 /* Prediction cards follow the numbered, four-column pastel reference. */
 .section-page .prediction-details { grid-template-columns: repeat(4,minmax(0,1fr)); gap: 18px; align-items: stretch; counter-reset: prediction-card; }
