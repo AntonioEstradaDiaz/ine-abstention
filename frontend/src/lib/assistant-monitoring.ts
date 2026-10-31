@@ -4,6 +4,11 @@ import { projectHorizon } from "./assistant-projection.ts";
 export function monitoringFacts(c: AssistantContext) {
   const type = c.projection?.electionType ?? c.forecast.election_type;
   const rows = c.observedHistory.filter(r => (r.state_code || r.official_code) === c.stateCode && r.election_type === type).sort((a,b) => a.year-b.year);
+  const invalid = rows.some(r => !Number.isInteger(r.year) || !Number.isFinite(r.voter_count) || !Number.isFinite(r.nonvoter_count) || r.voter_count < 0 || r.nonvoter_count < 0 || r.voter_count + r.nonvoter_count <= 0) || new Set(rows.map(r => r.year)).size !== rows.length;
+  if (!rows.length || invalid) {
+    const reason = invalid ? "Hay conteos inválidos o años duplicados: revisar la fuente antes de calcular cambios." : "No hay observaciones comparables del estado y tipo seleccionados.";
+    return { history: reason, comparison: reason, signals: reason, plan: "Verificar la procedencia y disponer de observaciones comparables antes de interpretar tendencias o activar alertas." };
+  }
   const latest = rows.at(-1), previous = rows.at(-2);
   const rate = (r: typeof latest) => r && r.voter_count + r.nonvoter_count > 0 ? r.voter_count / (r.voter_count + r.nonvoter_count) : null;
   const a = rate(previous), b = rate(latest);
@@ -12,7 +17,7 @@ export function monitoringFacts(c: AssistantContext) {
     : "Histórico comparable insuficiente para calcular un cambio entre dos elecciones.";
   const cutoff = Math.max(...c.observedHistory.filter(r => (r.state_code || r.official_code) === c.stateCode).map(r => r.year));
   const projections: string[] = [];
-  for(let year=cutoff+1; year<=2029 && year>=2025; year++) {
+  for(let year=Math.max(2025,cutoff+1); year<=2029 && year>=2025; year++) {
     try {
       const p=projectHorizon(c.observedHistory,c.stateCode,year,type,{forecast:c.forecast,prediction:c.prediction});
       projections.push(`${year}: participación ${(p.participation*100).toFixed(1)}%, abstención ${(p.abstention*100).toFixed(1)}%; rango de abstención ${p.lower === null || p.upper === null ? "no disponible" : `${(p.lower*100).toFixed(1)}%–${(p.upper*100).toFixed(1)}%`}. ${p.method}`);
@@ -31,9 +36,11 @@ export function monitoringFacts(c: AssistantContext) {
 export function monitoringAnswer(c: AssistantContext, question: string): string | null {
   const q=question.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
   const f=monitoringFacts(c);
+  const years = [...q.matchAll(/\b20\d{2}\b/g)].map(m => Number(m[0]));
+  if (/compar|proyeccion|escenario/.test(q) && years.some(y => y > 2029)) return "Las proyecciones admitidas llegan hasta 2029. No hay una estimación calculada para años posteriores.";
   if (/compar.*(ano|202[5-9]|proyeccion)|202[5-9].*202[5-9]/.test(q)) return f.comparison;
   if (/senal|alerta|datos faltan/.test(q)) return f.signals;
   if (/seguimiento|anticipar|que observar/.test(q)) return `${f.signals}\n\n${f.plan}`;
-  if (/cambio.*histor|participacion.*baj|votos.*baj|histor.*cambio/.test(q)) return f.history;
+  if (/cambio.*histor|participacion.*(baj|dismin|ca[iy])|votos.*(baj|dismin|ca[iy])|histor.*cambio|esta empeorando/.test(q)) return f.history;
   return null;
 }
