@@ -756,12 +756,16 @@
   padding: 12px 10px;
   justify-content: center;
   gap: 7px;
+  /* Between ~1000 and 1200 px the side panel leaves these cards ~50 px of text width. */
+  container-type: inline-size;
 }
 .territory-stat-cards > div > span:first-child {
-  font-size: 10px;
+  font-size: clamp(8px, 16cqi, 10px);
 }
 .territory-stat-cards strong {
-  font-size: 18px;
+  /* A figure such as 559,413 must never break across lines; it shrinks to fit instead. */
+  font-size: clamp(12px, 27cqi, 18px);
+  white-space: nowrap;
 }
 .territory-stat-cards small {
   font-size: 9px;

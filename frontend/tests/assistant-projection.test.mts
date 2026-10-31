@@ -149,3 +149,32 @@ test("learns a linear trend without using the held-out observation for fitting",
   assert.ok(Math.abs(p.abstention - (0.4+0.1/6)) < 1e-9);
   assert.match(p.method,/Regresión/);
 });
+
+
+test("monitoring distinguishes vote counts from rates using comparable elections", () => {
+  const row = history.find((r: { year: number }) => r.year === 2024);
+  const c = { ...context, forecast: { ...context.forecast, election_type: "presidential" }, observedHistory: [
+    { ...row, year: 2018, voter_count: 60, nonvoter_count: 40 },
+    { ...row, year: 2024, voter_count: 70, nonvoter_count: 70 },
+  ] };
+  const answer = automaticAnswer("¿La participación está bajando?", c);
+  assert.match(answer, /60.0% → 50.0%/);
+  assert.match(answer, /diferencia 10/);
+  assert.match(answer, /-10.00 pp/);
+});
+
+test("monitoring rejects missing, duplicate and invalid observations", () => {
+  for (const observedHistory of [[], [history[0], history[0]], [{ ...history[0], voter_count: -1 }]]) {
+    const answer = automaticAnswer("¿Qué señales de alerta hay?", { ...context, observedHistory });
+    assert.match(answer, /No hay observaciones|inválidos/);
+    assert.doesNotMatch(answer, /NaN|Infinity/);
+  }
+});
+
+test("monitoring compares calculated horizons and rejects years beyond 2029", () => {
+  const answer = automaticAnswer("Compara 2027 y 2029", context);
+  assert.match(answer, /2027: participación/);
+  assert.match(answer, /2029: participación/);
+  assert.match(automaticAnswer("Compara 2027 y 2030", context), /hasta 2029/);
+  assert.match(automaticAnswer("Plan de seguimiento", context), /no un monitor automático activo/);
+});
