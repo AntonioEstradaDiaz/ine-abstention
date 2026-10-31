@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import { api } from "@/lib/api";
 import type { Election, Forecast, Prediction, Risk, Source } from "@/lib/types";
+import { latestRetrieved } from "@/lib/provenance";
 import { number, pct, riskLabels } from "@/lib/utils";
 import { DataProvenance } from "./data-provenance";
 import { PageKpis } from "./page-kpis";
@@ -137,8 +138,8 @@ export function DataHeaderStats({
   const stats = [
     {
       icon: CalendarDays,
-      label: "Última actualización",
-      value: shortDate(forecast?.created_at),
+      label: "Datos consultados",
+      value: shortDate(latestRetrieved(sources ?? [])),
     },
     {
       icon: ShieldCheck,
@@ -618,11 +619,11 @@ export function DataSources({
                 icon: ShieldCheck,
               },
               {
-                title: "Última actualización",
+                title: "Predicción generada",
                 value: shortDate(forecast?.created_at),
                 reference: preview
-                  ? "Copia del repositorio"
-                  : "Datos verificados",
+                  ? "Copia fija de la demo"
+                  : "API del proyecto",
                 icon: CalendarDays,
               },
             ]}
@@ -894,7 +895,11 @@ export function DataSources({
                 <dd>Estatal (32 entidades)</dd>
               </div>
               <div>
-                <dt>Última actualización</dt>
+                <dt>Datos consultados</dt>
+                <dd>{shortDate(latestRetrieved(sources ?? []))}</dd>
+              </div>
+              <div>
+                <dt>Predicción generada</dt>
                 <dd>{shortDate(forecast?.created_at)}</dd>
               </div>
             </dl>
@@ -921,7 +926,7 @@ export function DataSources({
                   onClick={() => coverage.forEach((q) => void q.refetch())}
                 >
                   <RotateCcw aria-hidden="true" />
-                  <span>Actualizar fuentes</span>
+                  <span>Recargar datos</span>
                   <ChevronRight aria-hidden="true" />
                 </button>
               </li>
