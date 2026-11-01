@@ -843,7 +843,6 @@ export function DataSources({
               </>
             )}
           </section>
-          <DataProvenance forecast={forecast} preview={preview} />
         </div>
 
         <div className="data-side">
@@ -982,6 +981,7 @@ export function DataSources({
             </div>
           </section>
         </div>
+        <DataProvenance forecast={forecast} preview={preview} />
       </div>
       <Dialog.Root open={glossaryOpen} onOpenChange={setGlossaryOpen}>
         <Dialog.Portal>
