@@ -60,3 +60,28 @@
 /* Hide only the scrollbar chrome; keep territory content scrollable. */
 .app-shell .territory-metrics .territory-metrics-body[data-tab] { scrollbar-width: none; }
 .app-shell .territory-metrics .territory-metrics-body[data-tab]::-webkit-scrollbar { display: none; width: 0; height: 0; }
+
+/* Datos: provenance spans the full width below the three columns, so side cards no longer stretch beside it. */
+.app-shell .data-layout > .data-provenance {
+  grid-column: 1 / -1;
+}
+/* Predicciones: with the assistant beside it, the chart grows to the panel's height instead of leaving a gap above the chat. */
+@media (min-width: 1181px) {
+  .app-shell .predictions-main {
+    align-items: stretch;
+  }
+  .app-shell .predictions-main > .forecast-chart-card {
+    align-self: stretch;
+  }
+  .app-shell .forecast-chart-card > [role="img"] {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 330px;
+  }
+  .app-shell .forecast-chart-card > [role="img"] > .chart {
+    flex: 1 1 auto;
+    height: auto !important;
+    min-height: 330px;
+  }
+}
